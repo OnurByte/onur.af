@@ -22,7 +22,7 @@ main { width: min(100% - 48px, 960px); flex: 1; margin: 0 auto; padding: 72px 0 
 .footer-link img { display: block; width: 32px; height: 32px; object-fit: contain; filter: brightness(0) invert(1); }
 .footer-link img[src$="i2p.svg"] { width: 64px; }
 .unavailable-link { color: var(--bleed-white); cursor: default; }
-.brand { display: inline-flex; align-items: center; gap: .24em; white-space: nowrap; }
+.brand { color: #e8dfce; display: inline-flex; align-items: center; gap: .24em; white-space: nowrap; }
 .brand-mark { position: relative; display: inline-block; width: .78em; height: .78em; flex: none; -webkit-mask: url("/brand/onur.svg") center / contain no-repeat; mask: url("/brand/onur.svg") center / contain no-repeat; }
 .brand-gradient { position: absolute; inset: -35%; background: linear-gradient(112deg, var(--accent) 8%, var(--ink) 38%, var(--positive) 68%, var(--accent) 92%); background-size: 240% 100%; }
 .eyebrow { margin: 0 0 12px; color: var(--bleed-soft); font: 400 .7rem/1.5 var(--bleed-mono); letter-spacing: .02em; text-transform: uppercase; }
