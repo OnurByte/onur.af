@@ -18,7 +18,7 @@ test.skipIf(!enabled)('built SSR checkout accepts custom amounts and preserves p
   }});
   const port = 14322;
   const origin = `http://127.0.0.1:${port}`;
-  const server = Bun.spawn(['node','dist/server/entry.mjs'], {env:{...process.env,HOST:'127.0.0.1',PORT:String(port),DONATION_GATEWAY_URL:`http://127.0.0.1:${gateway.port}`,DONATION_GATEWAY_TOKEN:token,XMR_NETWORK:'stagenet'},stdout:'ignore',stderr:'ignore'});
+  const server = Bun.spawn(['node','dist/server/entry.mjs'], {env:{...process.env,HOST:'127.0.0.1',PORT:String(port),DONATION_GATEWAY_URL:`http://127.0.0.1:${gateway.port}`,DONATION_GATEWAY_TOKEN:token,XMR_NETWORK:'stagenet',PORTFOLIO_TOR_URL:'http://example.onion',PORTFOLIO_I2P_URL:'javascript:alert(1)',PORTFOLIO_PGP_URL:'/keys/pgp.asc'},stdout:'ignore',stderr:'ignore'});
   try {
     let ready = false;
     for (let attempt=0;attempt<40;attempt++) {
@@ -40,6 +40,10 @@ test.skipIf(!enabled)('built SSR checkout accepts custom amounts and preserves p
     expect(html).toContain(`monero:${address}?tx_amount=0.025`);
     expect(html).toContain('Requested donation: 0.075 XMR');
     expect(html).toContain('<svg');
+    expect(html).toContain('href="http://example.onion/"');
+    expect(html).toContain('href="/keys/pgp.asc"');
+    expect(html).not.toContain('javascript:alert(1)');
+    expect(html).toContain('href="/donate"');
     expect(html).not.toContain(token);
     expect(creations).toBe(1);
   } finally { server.kill(); await server.exited; gateway.stop(true); }

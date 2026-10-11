@@ -2,6 +2,8 @@
 
 Astro SSR portfolio with a TypeScript `donations` module using xmr-pay watch mode. This project is distinct from the existing private `safestpayment` repository.
 
+The shared footer always links to `/donate`. Set `PORTFOLIO_TOR_URL`, `PORTFOLIO_I2P_URL`, and `PORTFOLIO_PGP_URL` in `.env` to show the optional links. TOR must use an HTTP(S) `.onion` URL, I2P an HTTP(S) `.i2p` URL, and PGP an HTTPS URL or a site-local path. Blank or invalid values are omitted.
+
 ## Local development
 
 Use Bun and Node 22.12+ to install dependencies, then copy `.env.example` to `.env` and configure the server variables locally. Do not commit credentials. Bun reads the local `.env` for gateway/agent commands; `bun run start` loads it for the built site. Restart the relevant process after editing. Runtime environment values take precedence over build-time checkout settings. The public site needs the gateway URL/token; the gateway needs PostgreSQL and the authenticated local xmr-pay agent.

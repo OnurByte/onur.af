@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
+import { portfolioLinks } from '../portfolio/links';
 const { title = 'Onur Stirner' } = Astro.props;
+const links = portfolioLinks();
 ---
 <!doctype html>
 <html lang="en">
@@ -11,5 +13,14 @@ const { title = 'Onur Stirner' } = Astro.props;
     <title>{title}</title>
     <meta name="description" content="Onur Stirner — independent work and Monero donations." />
   </head>
-  <body><slot /></body>
+  <body>
+    <slot />
+    <footer class="site-footer" aria-label="Contact and donation links">
+      <span class="footer-name">ONUR STIRNER</span>
+      <nav aria-label="Alternate sites and contact">
+        {links.map(({ label, href }) => <a href={href}>{label}</a>)}
+        <a href="/donate">DONATE</a>
+      </nav>
+    </footer>
+  </body>
 </html>
