@@ -6,11 +6,11 @@ const { title = 'Onur' } = Astro.props;
 const links = portfolioLinks();
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="bleed">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0d0d0d" />
+    <meta name="theme-color" content="#151826" />
     <title>{title}</title>
     <meta name="description" content="Onur — independent software." />
     <link rel="icon" type="image/svg+xml" href="/brand/onur.svg" />
@@ -19,7 +19,6 @@ const links = portfolioLinks();
     <header class="site-header">
       <nav class="site-nav" aria-label="Main navigation">
         <a class="home-link" href="/" aria-label="Onur home"><Brand /></a>
-        <a class="github-link" href="https://github.com/OnurByte" rel="me">GitHub</a>
       </nav>
     </header>
     <slot />
