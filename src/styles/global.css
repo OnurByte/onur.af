@@ -46,8 +46,7 @@ main { width: min(100% - 48px, 960px); flex: 1; margin: 0 auto; padding: 72px 0 
 .footer-link img[src$="i2p.svg"] { width: 64px; }
 .unavailable-link { color: var(--muted); cursor: default; }
 .brand { color: var(--text); display: inline-flex; align-items: center; gap: .24em; white-space: nowrap; }
-.brand-mark { position: relative; display: inline-block; width: .78em; height: .78em; flex: none; -webkit-mask: url("/brand/onur.svg") center / contain no-repeat; mask: url("/brand/onur.svg") center / contain no-repeat; }
-.brand-gradient { position: absolute; inset: -35%; background: linear-gradient(112deg, #4cc9f0 8%, #d65ad1 38%, #45d483 68%, #4cc9f0 92%); background-size: 240% 100%; }
+.brand-mark { background: #fff; position: relative; display: inline-block; width: .78em; height: .78em; flex: none; -webkit-mask: url("/brand/onur.svg") center / contain no-repeat; mask: url("/brand/onur.svg") center / contain no-repeat; }
 .eyebrow { margin: 0 0 12px; color: var(--muted); font-size: .8rem; letter-spacing: .02em; text-transform: uppercase; }
 h1 { margin: 0; max-width: 100%; overflow-wrap: anywhere; font: 400 clamp(2.25rem, 9vw, 3rem)/1.1 var(--font); letter-spacing: -.03em; }
 .donate { max-width: 740px; }
@@ -87,3 +86,5 @@ button:hover { color: var(--text); background: var(--surface); border-color: var
 .refresh button:hover { color: var(--background); background: var(--text); border-color: var(--text); }
 @media (max-width: 620px) { main, .site-header, .site-footer { width: min(100% - 40px, 960px); } main { padding-top: 40px; } .payment-grid { grid-template-columns: 1fr; gap: 28px; } .qr { width: min(100%, 300px); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+
+@media (prefers-color-scheme: light) { .brand-mark { background: #000; } }
