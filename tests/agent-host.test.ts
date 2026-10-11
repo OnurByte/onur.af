@@ -1,5 +1,6 @@
 import { expect, test } from 'bun:test';
-import { createAgentPoller, createOrderHandler, createWriterLockGuard } from '../src/xmr/agent-host';
+import { createRequire } from 'node:module';
+import { createAgentPoller, createOrderHandler, createWriterLockGuard, reconcilePaidOrders } from '../src/xmr/agent-host';
 
 const ID = '5f14af55-aacc-4660-8658-58dc000247e5';
 const ADDRESS = `7${'1'.repeat(94)}`;
@@ -35,6 +36,71 @@ test('poller shutdown waits until its current scanner tick finishes', async () =
   release.resolve();
   await stopping;
   expect(finished).toBe(true);
+});
+
+test('reconciles settled orders from the fresh scanner snapshot after a reorg', async () => {
+  const orders = new Map<string, any>([
+    [ID, { id: ID, index: 4, birthdayHeight: 100, amount: '0.01', status: 'paid', state: 'settled', paid: true, receivedXmr: 0.01, confirmations: 12, txids: ['old-tx'] }],
+    ['5f14af55-aacc-4660-8658-58dc000247e6', { id: '5f14af55-aacc-4660-8658-58dc000247e6', index: 5, birthdayHeight: 100, amount: '0.02', status: 'paid', state: 'settled', paid: true, receivedXmr: 0.02, confirmations: 14, txids: ['stable-tx'] }],
+  ]);
+  const snapshots = new Map([
+    [ID, { paid: false, status: 'partial', receivedXmr: 0.004, receivedPico: '4000000000', pendingXmr: 0, lockedXmr: 0, shortfallXmr: '0.006', confirmations: 0, txids: ['old-tx'] }],
+    ['5f14af55-aacc-4660-8658-58dc000247e6', { paid: true, status: 'paid', receivedXmr: 0.02, receivedPico: '20000000000', pendingXmr: 0, lockedXmr: 0, shortfallXmr: '0', overpaid: false, overpaidXmr: '0', confirmations: 14, txids: ['stable-tx'] }],
+  ]);
+  let query: any;
+  const scanner = { async checkOrders(list: any[], options: any) { query = { list, options }; return snapshots; } };
+
+  expect(await reconcilePaidOrders(scanner, orders, 10)).toBe(true);
+  expect(query.list).toHaveLength(2);
+  expect(query.options).toEqual({ minConfirmations: 10, toleranceXmr: '0', sync: false });
+  expect(orders.get(ID)).toMatchObject({ status: 'partial', state: 'processing', paid: false, receivedXmr: 0.004, pendingXmr: 0, lockedXmr: 0, shortfallXmr: '0.006', confirmations: 0, txids: ['old-tx'] });
+  expect(orders.get('5f14af55-aacc-4660-8658-58dc000247e6')).toMatchObject({ status: 'paid', state: 'settled', paid: true, receivedXmr: 0.02, confirmations: 14 });
+});
+
+test('rejects an incomplete paid-order scanner snapshot', async () => {
+  const orders = new Map([[ID, { id: ID, address: ADDRESS, index: 4, amount: '0.01', status: 'paid', paid: true }]]);
+  await expect(reconcilePaidOrders({ checkOrders: async () => new Map() }, orders, 10)).rejects.toThrow(/incomplete/);
+  expect(orders.get(ID)?.paid).toBe(true);
+});
+
+test('a reorged payment can move to pending and settle again from later scanner checks', async () => {
+  const order = { id: ID, address: ADDRESS, index: 4, birthdayHeight: 100, amount: '0.01', status: 'paid', state: 'settled', paid: true, receivedXmr: 0.01, confirmations: 12, txids: ['tx'] };
+  const orders = new Map([[ID, order]]);
+  const result = (status: string, paid: boolean, receivedXmr: number, pendingXmr: number, confirmations: number) => ({ paid, status, receivedXmr, pendingXmr, lockedXmr: 0, shortfallXmr: paid ? '0' : '0.01', confirmations, txids: ['tx'] });
+  const later = [result('pending', false, 0, 0, 0), result('paid', true, 0.01, 0, 10)];
+  const scanner = {
+    checkOrders: async () => new Map([[ID, result('mempool', false, 0, 0.01, 0)]]),
+    checkOrder: async () => later.shift()!,
+    newSubaddress: async () => ({ address: ADDRESS, index: 6 }),
+  };
+  const agent = createRequire(import.meta.url)('xmr-pay/agent').createPaymentAgent({ scanner, store: orders, minConfirmations: 10 });
+
+  await reconcilePaidOrders(scanner, orders, 10);
+  expect(order).toMatchObject({ status: 'mempool', state: 'processing', paid: false, pendingXmr: 0.01 });
+  await agent.check(ID, { sync: false });
+  expect(order).toMatchObject({ status: 'pending', state: 'created', paid: false, pendingXmr: 0 });
+  await agent.check(ID, { sync: false });
+  expect(order).toMatchObject({ status: 'paid', state: 'settled', paid: true, confirmations: 10 });
+});
+
+test('GET refreshes a paid order before returning its reorged status', async () => {
+  const order = { id: ID, address: ADDRESS, amount: '0.01', status: 'paid', paid: true, receivedXmr: 0.01, confirmations: 12 };
+  const handle = createOrderHandler({ agent: { get: () => order, createOrder: async () => order }, saveWallet: async () => {}, persistOrders: async () => {}, refreshOrder: async id => {
+    expect(id).toBe(ID);
+    Object.assign(order, { status: 'partial', paid: false, receivedXmr: 0.004, confirmations: 0 });
+  } });
+
+  const response = await handle(new Request(`http://127.0.0.1:8788/order/${ID}`));
+  expect(response.status).toBe(200);
+  expect(await response.json()).toMatchObject({ paid: false, status: 'partial', receivedXmr: 0.004, confirmations: 0 });
+});
+
+test('GET fails closed when a paid-order refresh fails', async () => {
+  const order = { id: ID, address: ADDRESS, amount: '0.01', status: 'paid', paid: true };
+  const handle = createOrderHandler({ agent: { get: () => order, createOrder: async () => order }, saveWallet: async () => {}, persistOrders: async () => {}, refreshOrder: async () => { throw new Error('sync failed'); } });
+
+  expect((await handle(new Request(`http://127.0.0.1:8788/order/${ID}`))).status).toBe(503);
+  expect(handle.isHealthy()).toBe(false);
 });
 
 test('serializes same-id creates and returns the durable address on a lost-response retry', async () => {

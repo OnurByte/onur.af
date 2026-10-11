@@ -10,7 +10,7 @@ Start the gateway with `bun run gateway`, and the Astro site with `bun run dev`.
 
 A new UUID is reserved before upstream allocation. Once an address is stored, repeated submission and page refresh retain the same address. The bundled TypeScript host uses xmr-pay's public agent/scanner exports and extends authenticated status with the durable address. If creation replies are lost, the gateway performs a read-only ID/amount-bound recovery and attaches that same address. The stock HTTP agent omits this address and still requires operator recovery. A crash before any agent allocation remains an explicit operator-recovery case; no replacement allocation is attempted by the gateway. Full crash/restart recovery still requires live wallet/ledger tests.
 
-Deployment remains blocked on verified scanner persistence and restart, real stagenet partial/full/late payment, reorg reconciliation, backup/restore and Tor/I2P fail-closed network configuration. Upstream paid orders do not automatically reverse after a reorg. The gateway currently displays the agent snapshot and does not independently reconcile settled donations.
+Deployment remains blocked on verified scanner persistence and restart, real stagenet partial/full/late payment, live reorg verification, backup/restore and Tor/I2P fail-closed network configuration. Upstream paid orders do not automatically reverse after a reorg. The bundled host independently rechecks settled orders using fresh scanner snapshots at startup, during polling and before returning their status. Lost settlement is reversed and saved through the wallet-before-ledger barrier; sync or reconciliation failures stop successful responses. Live reorg behavior still needs a stagenet experiment.
 
 The visual styling is provisional. Exact Bleed tokens, components and the user's braided SVG must be supplied and integrated before calling the design complete. No fabricated Tor/I2P or PGP links are published.
 
@@ -18,7 +18,7 @@ Run `bun test` and `bun run check`. PostgreSQL tests require `TEST_DATABASE_URL`
 
 For the built-site form/checkout integration check, run `TEST_CHECKOUT=1 bun test tests/checkout.test.ts` after `bun run build`. It starts a loopback Astro process and a fake gateway. The test verifies CSRF rejection, accepted same-origin custom amount submission, the QR/wallet URI, partial status rendering and absence of the server token in HTML.
 
-The checkout prioritizes unavailable/syncing health over a cached paid status. Until settled reorg reconciliation is implemented, it avoids presenting a paid claim while current chain status is uncertain. Local production builds currently allow only loopback HTTP origins; production HTTPS/onion/I2P domains must be explicitly configured in Astro's allowed domains before deployment.
+The checkout prioritizes unavailable/syncing health over a cached paid status. It avoids presenting a paid claim while current chain status is uncertain. Local production builds currently allow only loopback HTTP origins; production HTTPS/onion/I2P domains must be explicitly configured in Astro's allowed domains before deployment.
 
 Run the bundled host with `bun run agent`. It requires the primary address, private view key, persisted wallet path, explicit restore height and configured nodes from `.env.example`. Its PostgreSQL advisory lock enforces a single agent writer. `bun run test:wallet` exercises an offline generated view-only stagenet wallet lifecycle and removes its temporary cache; it does not contact a node or prove payment detection.
 

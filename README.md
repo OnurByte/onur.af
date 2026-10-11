@@ -22,4 +22,4 @@ bun run build
 
 To include real database checks, set `TEST_DATABASE_URL` to an isolated PostgreSQL test database. After building, set `TEST_CHECKOUT=1` to run the built SSR checkout test. That test uses a local fake gateway and checks form submission, custom amounts, QR/payment URI and server token isolation; it does not simulate blockchain evidence.
 
-See [donation behavior and deployment gates](docs/donations.md). Bleed styling and the owner's SVG still need their authoritative source. Read-only recovery retains an already allocated address after a lost agent response. A crash before allocation still requires operator recovery; live crash/restart proof and settled-payment reorg reconciliation remain unfinished.
+See [donation behavior and deployment gates](docs/donations.md). Bleed styling and the owner's SVG still need their authoritative source. Read-only recovery retains an already allocated address after a lost agent response. A crash before allocation still requires operator recovery; settled payments are rechecked against fresh scanner data. Live crash/restart and reorg proof remain unfinished.

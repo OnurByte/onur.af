@@ -11,7 +11,7 @@ This checklist covers the pasted brief and the later naming correction. An empty
 | QR/address and amount copy/monero URI | SSR integration test; local copy script with fallback | 244px QR independently decoded to exact wallet URI; browser clipboard and camera scan pending |
 | Custom XMR amount | Streaming body bounds and strict piconero parser; SSR POST test | None for local request validation |
 | Automatic detection/partial payment/confirmation | Agent status client; SSR display verified with fake gateway | Real stagenet partial/full/late payment |
-| Paid health/reorg correctness | Unavailable/syncing takes priority over cached paid | Independent settled reorg reconciliation |
+| Paid health/reorg correctness | Fresh scanner rechecks at startup, polling and status reads; reversal and refresh-failure tests | Live stagenet reorg proof |
 | Anonymous SSR without required JS or analytics | Native forms, manually refreshed status, local optional clipboard JS | Full browser QA |
 | Durable PostgreSQL + recovery | Real PostgreSQL reservations, concurrency and reopen tests | Consistent agent wallet/ledger/database backup and restore |
 | View-only/secret boundaries | Loopback authenticated clients, no token in tested HTML | Runtime view-only wallet proof and production ACLs |
@@ -20,6 +20,6 @@ This checklist covers the pasted brief and the later naming correction. An empty
 | Bleed typography/colors/icons and braided SVG | No authoritative source available | Source required; current CSS is provisional |
 | Footer TOR/I2P/PGP/DONATE | DONATE link present | Verified destinations and required brand/design |
 | Optional receipt/notification | Agent receipt client available | Not added to first UI; no external notification authorized |
-| Build/check/tests | 20 tests / 112 assertions, real isolated PG + built SSR; build/check pass | Live-provider acceptance gates above |
+| Build/check/tests | 25 tests / 127 assertions, real isolated PG + built SSR; build/check pass | Live-provider acceptance gates above |
 
 A successful build or fake-agent test does not prove live Monero settlement. The implementation is delivered on `feature/1-portfolio-donations`; no mainnet deployment has occurred. The initially empty repository has no separate base branch for a pull request yet.

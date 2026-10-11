@@ -32,6 +32,7 @@ type XmrOrder = {
 export interface PaymentAgent {
   get(id: string): XmrOrder | null;
   createOrder(input: { id: string; amount: string }): Promise<XmrOrder>;
+  check(id: string, options?: { sync?: boolean }): Promise<XmrOrder | null>;
   list(): XmrOrder[];
   tick(): Promise<void>;
   stop(): void;
@@ -128,6 +129,7 @@ export function createOrderHandler({
   persistOrders,
   onUnhealthy,
   getSyncing,
+  refreshOrder,
   minConfirmations = 10,
   network = 'stagenet',
 }: {
@@ -136,6 +138,7 @@ export function createOrderHandler({
   persistOrders: () => Promise<void>;
   onUnhealthy?: () => void;
   getSyncing?: () => Promise<boolean>;
+  refreshOrder?: (id: string) => Promise<void>;
   minConfirmations?: number;
   network?: 'mainnet' | 'stagenet' | 'testnet';
 }): OrderHandler {
@@ -243,6 +246,8 @@ export function createOrderHandler({
       if (!UUID.test(id)) return json({ error: 'invalid order id' }, 400);
       return serialize(async () => {
         if (!healthy) return json({ error: 'payment agent unavailable' }, 503);
+        try { await refreshOrder?.(id); }
+        catch { unhealthy(); return json({ error: 'payment agent unavailable' }, 503); }
         const order = agent.get(id);
         if (!order) return json({ error: 'unknown order' }, 404);
         try {
@@ -279,6 +284,33 @@ export function createOrderHandler({
 }
 
 const require = createRequire(import.meta.url);
+
+export async function reconcilePaidOrders(scanner: Pick<any, 'checkOrders'>, orders: Map<string, XmrOrder>, minConfirmations: number): Promise<boolean> {
+  const paid = [...orders.values()].filter(order => order.paid);
+  if (!paid.length) return false;
+  const results = await scanner.checkOrders(paid.map(({ id, index, amount, birthdayHeight }) => ({ id, index, amount, birthdayHeight })), { minConfirmations, toleranceXmr: '0', sync: false });
+  let changed = false;
+  const { toInvoiceState } = require('xmr-pay/state') as { toInvoiceState(status: string): string | null };
+  for (const order of paid) {
+    const result = results.get(order.id);
+    if (!result) throw new Error('incomplete xmr reorg reconciliation snapshot');
+    if (result.paid) continue;
+    order.status = result.status;
+    order.state = toInvoiceState(result.status) ?? order.state;
+    order.paid = false;
+    order.receivedXmr = result.receivedXmr;
+    order.receivedPico = result.receivedPico;
+    order.pendingXmr = result.pendingXmr;
+    order.lockedXmr = result.lockedXmr;
+    order.shortfallXmr = result.shortfallXmr;
+    order.overpaid = !!result.overpaid;
+    order.overpaidXmr = result.overpaidXmr ?? '0';
+    order.confirmations = result.confirmations;
+    order.txids = result.txids;
+    changed = true;
+  }
+  return changed;
+}
 
 function required(name: string): string {
   const value = process.env[name];
@@ -449,6 +481,25 @@ export async function startXmrAgent(): Promise<{ port: number; stop(force?: bool
         return persistPaidUpdate();
       },
     });
+    const refreshPaidOrders = async (id?: string, checkUnpaid = false) => {
+      let changed = false;
+      await withScannerWork(async () => {
+        await assertWriterLock();
+        await scanner.sync();
+        const target = new Map<string, XmrOrder>();
+        if (id) {
+          const order = orders.get(id);
+          if (order?.paid) target.set(id, order);
+        } else {
+          for (const [orderId, order] of orders) target.set(orderId, order);
+        }
+        changed = await reconcilePaidOrders(scanner, target, 10);
+        if (checkUnpaid) {
+          for (const order of paymentAgent!.list()) if (!order.paid) await paymentAgent!.check(order.id, { sync: false });
+        }
+      });
+      if (changed) await persistAgentUpdate();
+    };
     const hostAgent: Pick<PaymentAgent, 'get' | 'createOrder'> = {
       get: id => paymentAgent!.get(id),
       createOrder: input => withScannerWork(async () => {
@@ -463,6 +514,7 @@ export async function startXmrAgent(): Promise<{ port: number; stop(force?: bool
       saveWallet,
       persistOrders,
       onUnhealthy: failClosed,
+      refreshOrder: id => refreshPaidOrders(id),
       getSyncing: async () => {
         try { return await withScannerWork(async () => {
           await assertWriterLock();
@@ -473,9 +525,10 @@ export async function startXmrAgent(): Promise<{ port: number; stop(force?: bool
       minConfirmations: 10,
       network,
     });
+    await refreshPaidOrders();
     poller = createAgentPoller({
       assertLock: assertWriterLock,
-      tick: () => withScannerWork(() => paymentAgent!.tick()),
+      tick: async () => { await refreshPaidOrders(undefined, true); await paidCallbackTail; },
       isActive: () => paymentAgent!.list().some(order => !order.paid && order.createdAt != null && Date.now() - order.createdAt < 1800000),
       onFailure: failClosed,
     });
