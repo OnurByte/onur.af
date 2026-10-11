@@ -336,6 +336,17 @@ function validStoredOrder(value: unknown, id: string, network: 'mainnet' | 'stag
   return order;
 }
 
+export async function validateWalletLedger(scanner: Pick<any, 'addressAt'>, orders: Map<string, XmrOrder>, primaryAddress: string): Promise<void> {
+  try {
+    if (await scanner.addressAt(0) !== primaryAddress) throw new Error();
+    for (const order of orders.values()) {
+      if (await scanner.addressAt(order.index) !== order.address) throw new Error();
+    }
+  } catch {
+    throw new Error('xmr wallet and order ledger do not match');
+  }
+}
+
 export async function startXmrAgent(): Promise<{ port: number; stop(force?: boolean): Promise<void> }> {
   process.umask(0o077);
   const token = required('XMR_AGENT_TOKEN');
@@ -411,6 +422,7 @@ export async function startXmrAgent(): Promise<{ port: number; stop(force?: bool
       syncTimeoutMs: 120000,
     });
     if (scanner.viewOnly !== true) throw new Error('refusing to start xmr agent without a view-only wallet');
+    await validateWalletLedger(scanner, orders, primaryAddress);
 
     let persistTail = Promise.resolve();
     let paidCallbackTail = Promise.resolve();

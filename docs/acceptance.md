@@ -14,13 +14,13 @@ This checklist covers the pasted brief and the later naming correction. An empty
 | Automatic detection/partial payment/confirmation | Agent status client; SSR display verified with fake gateway | Real stagenet partial/full/late payment |
 | Paid health/reorg correctness | Fresh scanner rechecks at startup, polling and status reads; reversal and refresh-failure tests | Live stagenet reorg proof |
 | Anonymous SSR without required JS or analytics | Native forms, manually refreshed status, local optional clipboard JS; actual browser custom-amount/outage retry and shared footer checked | Payment checkout clipboard/camera and live-wallet browser QA |
-| Durable PostgreSQL + recovery | Real PostgreSQL reservations, concurrency and reopen tests | Consistent agent wallet/ledger/database backup and restore |
+| Durable PostgreSQL + recovery | Real PostgreSQL reservations, concurrency and reopen tests; startup wallet primary/subaddress identity guard tested, including an actual offline view-only wallet | Consistent agent wallet/ledger/database backup and restore |
 | View-only/secret boundaries | Loopback authenticated clients, no token in tested HTML | Runtime view-only wallet proof and production ACLs |
 | Creation abuse limits | Single in-flight allocation + PostgreSQL global cap 30/minute; no IP data | Production load/outage proof |
 | Tor/I2P fail-closed | No network isolation is claimed | Actual deployment addresses, firewall and outage proof |
 | Bleed typography/colors/icons and braided SVG | No authoritative source available | Source required; current CSS is provisional |
 | Footer TOR/I2P/PGP/DONATE | Shared footer; TOR/I2P/PGP optional targets editable in .env; validation and built SSR tests | Actual verified destinations and required brand/design |
 | Optional receipt/notification | Agent receipt client available | Not added to first UI; no external notification authorized |
-| Build/check/tests | 32 tests / 158 assertions, real isolated PG + built SSR; build/check pass | Live-provider acceptance gates above |
+| Build/check/tests | 37 tests / 163 assertions, real isolated PG + built SSR; build/check pass | Live-provider acceptance gates above |
 
 A successful build or fake-agent test does not prove live Monero settlement. The implementation is delivered on `feature/1-portfolio-donations`; no mainnet deployment has occurred. The initially empty repository has no separate base branch for a pull request yet.

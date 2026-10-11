@@ -1,9 +1,43 @@
 import { expect, test } from 'bun:test';
 import { createRequire } from 'node:module';
-import { createAgentPoller, createOrderHandler, createWriterLockGuard, reconcilePaidOrders } from '../src/xmr/agent-host';
+import { createAgentPoller, createOrderHandler, createWriterLockGuard, reconcilePaidOrders, validateWalletLedger } from '../src/xmr/agent-host';
 
 const ID = '5f14af55-aacc-4660-8658-58dc000247e5';
 const ADDRESS = `7${'1'.repeat(94)}`;
+const PRIMARY = `7${'2'.repeat(94)}`;
+
+test('accepts a wallet whose primary and order addresses match the ledger', async () => {
+  const orders = new Map([[ID, { id: ID, address: ADDRESS, index: 4 } as any]]);
+  const scanner = { addressAt: async (index: number) => index === 0 ? PRIMARY : ADDRESS };
+
+  await expect(validateWalletLedger(scanner, orders, PRIMARY)).resolves.toBeUndefined();
+});
+
+test('rejects a wallet primary address that differs from configuration', async () => {
+  const scanner = { addressAt: async () => ADDRESS };
+
+  await expect(validateWalletLedger(scanner, new Map(), PRIMARY)).rejects.toThrow('xmr wallet and order ledger do not match');
+});
+
+test('rejects a ledger index missing from the opened wallet', async () => {
+  const orders = new Map([[ID, { id: ID, address: ADDRESS, index: 4 } as any]]);
+  const scanner = { addressAt: async (index: number) => index === 0 ? PRIMARY : undefined };
+
+  await expect(validateWalletLedger(scanner, orders, PRIMARY)).rejects.toThrow('xmr wallet and order ledger do not match');
+});
+
+test('rejects an order address that differs from its wallet index', async () => {
+  const orders = new Map([[ID, { id: ID, address: ADDRESS, index: 4 } as any]]);
+  const scanner = { addressAt: async (index: number) => index === 0 ? PRIMARY : PRIMARY };
+
+  await expect(validateWalletLedger(scanner, orders, PRIMARY)).rejects.toThrow('xmr wallet and order ledger do not match');
+});
+
+test('hides wallet address lookup errors behind a generic startup failure', async () => {
+  const scanner = { addressAt: async () => { throw new Error(`wallet read failed for ${PRIMARY}`); } };
+
+  await expect(validateWalletLedger(scanner, new Map(), PRIMARY)).rejects.toThrow('xmr wallet and order ledger do not match');
+});
 
 function deferred() {
   let resolve!: () => void;
