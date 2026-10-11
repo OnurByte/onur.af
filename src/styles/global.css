@@ -24,7 +24,7 @@ main { width: min(100% - 48px, 960px); flex: 1; margin: 0 auto; padding: 72px 0 
 .home-link { color: var(--white); font: 500 2.5rem/1.15 var(--font); }
 .home-link .brand-mark { width: 56px; height: 56px; }
 .site-footer a:hover, .back-link:hover { color: var(--white); }
-.site-footer { color: var(--white); font-size: 1.25rem; padding: 20px 0 28px; }
+.site-footer { color: var(--white); font-size: 1.25rem; font-weight: 700; padding: 20px 0 28px; }
 .site-footer .footer-nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; gap: 18px; }
 .footer-pgp { justify-self: start; }
 .footer-networks { display: flex; align-items: center; gap: 20px; }
