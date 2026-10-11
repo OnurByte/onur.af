@@ -13,7 +13,7 @@ This checklist covers the pasted brief and the later naming correction. An empty
 | Scanner safety | Actual pinned scanner exercised with an injected wallet: duplicate rows, double-spend, locked/mempool, exact sums, sync outage, birthday-height boundary | Live wallet transfers; distinct outputs within one transaction |
 | Automatic detection/partial payment/confirmation | Agent status client; SSR display verified with fake gateway | Real stagenet partial/full/late payment |
 | Paid health/reorg correctness | Fresh scanner rechecks at startup, polling and status reads; reversal and refresh-failure tests | Live stagenet reorg proof |
-| Anonymous SSR without required JS or analytics | Native forms, manually refreshed status, local optional clipboard JS | Full browser QA |
+| Anonymous SSR without required JS or analytics | Native forms, manually refreshed status, local optional clipboard JS; actual browser custom-amount/outage retry and shared footer checked | Payment checkout clipboard/camera and live-wallet browser QA |
 | Durable PostgreSQL + recovery | Real PostgreSQL reservations, concurrency and reopen tests | Consistent agent wallet/ledger/database backup and restore |
 | View-only/secret boundaries | Loopback authenticated clients, no token in tested HTML | Runtime view-only wallet proof and production ACLs |
 | Creation abuse limits | Single in-flight allocation + PostgreSQL global cap 30/minute; no IP data | Production load/outage proof |
