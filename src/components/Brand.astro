@@ -15,26 +15,38 @@
     opacity: random(.82, 1),
   });
 
-  async function drift(mark: HTMLElement, current: number) {
-    while (current === generation && !motion.matches) {
-      const gradient = mark.firstElementChild as HTMLElement;
-      const style = getComputedStyle(gradient);
+  async function drift(current: number) {
+    while (current === generation && !motion.matches && marks.length) {
       const target = frame();
-      const animation = gradient.animate([
-        { transform: style.transform, filter: style.filter, opacity: style.opacity },
-        target,
-      ], {
+      const timing = {
         duration: random(3000, 8000),
         easing: `cubic-bezier(${random(.2, .4)}, ${random(.2, .4)}, ${random(.6, .8)}, ${random(.6, .8)})`,
-        fill: "forwards",
+        fill: "forwards" as FillMode,
+      };
+      const firstGradient = marks[0].firstElementChild as HTMLElement;
+      const style = getComputedStyle(firstGradient);
+      const from = { transform: style.transform, filter: style.filter, opacity: style.opacity };
+      const animations = marks.map(mark => {
+        const gradient = mark.firstElementChild as HTMLElement;
+        const animation = gradient.animate([
+          from,
+          target,
+        ], timing);
+        active.set(mark, animation);
+        return { mark, gradient, animation };
       });
-      active.set(mark, animation);
-      const finished = await animation.finished.then(() => true, () => false);
-      if (finished && current === generation && !motion.matches) {
-        Object.assign(gradient.style, target);
-        animation.cancel();
+      const startTime = document.timeline.currentTime ?? performance.now();
+      animations.forEach(({ animation }) => (animation.startTime = startTime));
+      const finished = await Promise.all(animations.map(({ animation }) =>
+        animation.finished.then(() => true, () => false),
+      ));
+      if (finished.every(Boolean) && current === generation && !motion.matches) {
+        animations.forEach(({ gradient }) => Object.assign(gradient.style, target));
+        animations.forEach(({ animation }) => animation.cancel());
       }
-      if (active.get(mark) === animation) active.delete(mark);
+      animations.forEach(({ mark, animation }) => {
+        if (active.get(mark) === animation) active.delete(mark);
+      });
     }
   }
 
@@ -43,7 +55,7 @@
     active.forEach(animation => animation.cancel());
     active.clear();
     if (motion.matches) marks.forEach(mark => (mark.firstElementChild as HTMLElement).removeAttribute("style"));
-    if (!motion.matches) marks.forEach(mark => void drift(mark, generation));
+    if (!motion.matches) void drift(generation);
   }
 
   motion.addEventListener("change", updateMotion);

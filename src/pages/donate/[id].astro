@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import Brand from '../../components/Brand.astro';
 import { makePaymentURI, qrSvg } from 'xmr-pay/core';
 import { formatXmrAmount, parseXmrAmount, parseXmrAmountOrZero } from '../../donations/money';
 import { donationGateway } from '../../client/gateway';
@@ -60,7 +59,6 @@ const partialDetails = state === 'partial' && donation?.received !== undefined &
 ---
 <Layout title="XMR donation · Onur">
   <main class="donate checkout">
-    <a class="back-link" href="/">← <Brand /></a>
     <p class="eyebrow">MONERO · {network.toUpperCase()}</p>
     <h1>Your donation</h1>
     <p class="status" data-state={state} role="status">{shownStatus}</p>
