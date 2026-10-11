@@ -123,7 +123,7 @@ async function recover() {
     const orders = new Map([[restoredOrder.id, restoredOrder]]);
     recoveryStage = 'wallet ledger validation';
     const { validateWalletLedger } = await import('../src/xmr/agent-host');
-    await validateWalletLedger({ addressAt: async index => restoredWallet.getAddress(0, index) }, orders, primaryAddress);
+    await validateWalletLedger({ addressAt: async (index: number) => restoredWallet.getAddress(0, index) }, orders, primaryAddress);
     assert.equal(await restoredWallet.getAddress(0, order.index), order.address);
   } finally {
     for (const handle of [restoredWallet, wallet, source]) if (handle) { try { await handle.close(true); } catch {} }
