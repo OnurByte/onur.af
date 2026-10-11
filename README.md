@@ -4,7 +4,7 @@ Astro SSR portfolio with a TypeScript `donations` module using xmr-pay watch mod
 
 ## Local development
 
-Use Bun to install dependencies, then copy `.env.example` to `.env` and configure the server variables locally. Do not commit credentials. The public site needs the gateway URL/token; the gateway needs PostgreSQL and the authenticated local xmr-pay agent.
+Use Bun and Node 22.12+ to install dependencies, then copy `.env.example` to `.env` and configure the server variables locally. Do not commit credentials. Bun reads the local `.env` for gateway/agent commands; `bun run start` loads it for the built site. Restart the relevant process after editing. Runtime environment values take precedence over build-time checkout settings. The public site needs the gateway URL/token; the gateway needs PostgreSQL and the authenticated local xmr-pay agent.
 
 ```sh
 bun install
