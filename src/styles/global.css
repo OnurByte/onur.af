@@ -1,5 +1,5 @@
 @font-face { font-family: "IBM Plex Mono"; src: url("/fonts/ibm-plex-mono.woff2") format("woff2"); font-style: normal; font-weight: 500; font-display: swap; }
-:root { color-scheme: dark; --bleed-ink: #0d0d0d; --bleed-paper: #f4f5f2; --bleed-gray: #404040; --bleed-white: #fff; --bleed-soft: #ebebeb; --bleed-surface: #2b2b2b; --bleed-mono: "IBM Plex Mono", "Courier New", monospace; background: var(--bleed-ink); color: var(--bleed-paper); font-family: Arial, Helvetica, sans-serif; font-synthesis: none; }
+:root { color-scheme: dark; --bleed-ink: #0d0d0d; --bleed-paper: #f4f5f2; --bleed-gray: #404040; --bleed-white: #fff; --bleed-soft: #ebebeb; --bleed-surface: #2b2b2b; --bleed-sans: Arial, Helvetica, sans-serif; --bleed-mono: "IBM Plex Mono", "Courier New", monospace; background: var(--bleed-ink); color: var(--bleed-paper); font-family: var(--bleed-sans); font-synthesis: none; }
 * { box-sizing: border-box; }
 body { min-height: 100svh; margin: 0; min-width: 320px; background: var(--bleed-ink); display: flex; flex-direction: column; }
 a { color: inherit; }
@@ -8,28 +8,24 @@ main { width: min(100% - 48px, 960px); flex: 1; margin: 0 auto; padding: 72px 0 
 .site-header { padding: 24px 0; }
 .site-nav { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 18px; }
 .home-link, .github-link, .site-footer a { text-decoration: none; }
-.home-link { color: var(--bleed-paper); font: 500 2rem/1 Arial, Helvetica, sans-serif; }
+.home-link { color: var(--bleed-paper); font: 500 2rem/1 var(--bleed-sans); }
 .home-link .brand-mark { width: 36px; height: 36px; }
-.github-link:hover, .site-footer a:hover, .text-link:hover, .back-link:hover { color: var(--bleed-white); }
+.github-link:hover, .site-footer a:hover, .back-link:hover { color: var(--bleed-white); }
 .site-footer { color: var(--bleed-white); padding: 20px 0 28px; border-top: 1px solid var(--bleed-gray); }
 .site-footer .footer-nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; gap: 18px; }
 .footer-pgp { justify-self: start; }
 .footer-networks { display: flex; align-items: center; gap: 20px; }
 .footer-donate { justify-self: end; }
 .footer-link { display: inline-flex; align-items: center; min-height: 32px; gap: 7px; }
-.footer-link img { display: block; width: 22px; height: 22px; object-fit: contain; }
-.footer-link img { filter: brightness(0) invert(1); }
+.footer-link img { display: block; width: 22px; height: 22px; object-fit: contain; filter: brightness(0) invert(1); }
 .footer-link img[src$="i2p.svg"] { width: 44px; }
 .unavailable-link { color: var(--bleed-white); cursor: default; }
 .brand { display: inline-flex; align-items: center; gap: .24em; white-space: nowrap; }
 .brand-mark { display: inline-block; width: .78em; height: .78em; flex: none; background: linear-gradient(112deg, var(--bleed-white) 8%, var(--bleed-soft) 38%, var(--bleed-gray) 68%, var(--bleed-white) 92%); background-size: 240% 100%; background-position: 0% 50%; -webkit-mask: url("/brand/onur.svg") center / contain no-repeat; mask: url("/brand/onur.svg") center / contain no-repeat; animation: onur-mark-drift 9s ease-in-out infinite alternate; }
 @keyframes onur-mark-drift { to { background-position: 100% 50%; } }
-.home { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
 .eyebrow { margin: 0 0 12px; color: var(--bleed-soft); font: 500 .7rem/1.5 var(--bleed-mono); letter-spacing: .02em; text-transform: uppercase; }
 h1 { margin: 0; font-size: clamp(4rem, 12vw, 9rem); font-weight: 600; letter-spacing: -.085em; line-height: .88; }
-.text-link, .back-link { text-decoration-thickness: 1px; text-underline-offset: .35em; }
-.text-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 34px; color: var(--bleed-soft); font: 500 .76rem/1.5 var(--bleed-mono); }
-.text-link svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.2; }
+.back-link { text-decoration-thickness: 1px; text-underline-offset: .35em; }
 .donate { max-width: 740px; }
 .back-link { display: inline-block; margin-bottom: 56px; color: var(--bleed-soft); font: 500 .76rem/1.5 var(--bleed-mono); }
 .intro { color: var(--bleed-soft); line-height: 1.7; max-width: 55ch; font-size: .95rem; }
@@ -43,7 +39,7 @@ legend { width: 100%; color: var(--bleed-soft); font: 500 .7rem/1.5 var(--bleed-
 .amount input:focus-visible + span, button:focus-visible, a:focus-visible { outline: 2px solid var(--bleed-white); outline-offset: 3px; }
 .custom-amount { display: grid; gap: 9px; max-width: 320px; margin-top: 22px; font-size: .85rem; }
 .custom-amount input { font: 500 .75rem/1.5 var(--bleed-mono); color: var(--bleed-paper); background: var(--bleed-surface); border: 1px solid var(--bleed-gray); padding: 12px; }
-.custom-amount span, .form-error { color: var(--bleed-soft); font: 400 .68rem/1.7 var(--bleed-mono); }
+.custom-amount span, .form-error { color: var(--bleed-soft); font: 500 .68rem/1.7 var(--bleed-mono); }
 .form-error { border-left: 2px solid var(--bleed-white); padding-left: 12px; }
 button { font: 500 .75rem/1.5 var(--bleed-mono); cursor: pointer; color: var(--bleed-ink); background: var(--bleed-paper); border: 1px solid var(--bleed-paper); padding: 14px 18px; }
 button:hover { background: var(--bleed-soft); border-color: var(--bleed-soft); }
@@ -54,10 +50,10 @@ button:hover { background: var(--bleed-soft); border-color: var(--bleed-soft); }
 .amount-value { font-size: 1.5rem; font-weight: 500; }
 .copy { color: var(--bleed-paper); background: transparent; border-color: var(--bleed-gray); padding: 8px 10px; font-size: .67rem; }
 .address-label { margin-top: 30px; }
-.address { overflow-wrap: anywhere; line-height: 1.7; user-select: all; font: 400 .72rem/1.7 var(--bleed-mono); }
+.address { overflow-wrap: anywhere; line-height: 1.7; user-select: all; font: 500 .72rem/1.7 var(--bleed-mono); }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 16px; }
 .wallet-link { font: 500 .7rem/1.5 var(--bleed-mono); text-underline-offset: .3em; }
-.hint { font: 400 .67rem/1.7 var(--bleed-mono); color: var(--bleed-soft); margin-top: 22px; }
+.hint { font: 500 .67rem/1.7 var(--bleed-mono); color: var(--bleed-soft); margin-top: 22px; }
 .status { display: inline-block; border: 1px solid var(--bleed-gray); padding: 9px 12px; font: 500 .7rem/1.5 var(--bleed-mono); }
 .partial-details { border-left: 2px solid var(--bleed-paper); padding-left: 12px; line-height: 1.7; }
 .status[data-state="paid"] { border-color: var(--bleed-soft); color: var(--bleed-white); }
