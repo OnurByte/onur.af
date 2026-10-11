@@ -8,7 +8,7 @@ This checklist covers the pasted brief and the later naming correction. An empty
 | xmr-pay | Fixed upstream commit; core URI/QR exercised; authenticated agent client | Real scanner and agent integration |
 | Each donation gets its own permanent subaddress | DB unique address and UUID, fake-agent creation test | Real wallet allocations/restart; no address reuse after recovery |
 | Same request/page retains address | PostgreSQL and gateway retry tests | Read-only recovery of an already allocated address tested; actual crash/restart and pre-allocation recovery pending |
-| QR/address and amount copy/monero URI | SSR integration test; local copy script with fallback | 244px QR independently decoded to exact wallet URI; browser clipboard and camera scan pending |
+| QR/address and amount copy/monero URI | SSR integration test; local copy script with fallback | 244px QR independently decoded to exact wallet URI; Browser copy buttons acknowledge success; independent clipboard read returned empty, so exact clipboard content and camera scan remain pending |
 | Custom XMR amount | Streaming body bounds and strict piconero parser; SSR POST test | None for local request validation |
 | Scanner safety | Actual pinned scanner exercised with an injected wallet: duplicate rows, double-spend, locked/mempool, exact sums, sync outage, birthday-height boundary | Live wallet transfers; distinct outputs within one transaction |
 | Automatic detection/partial payment/confirmation | Agent status client; SSR display verified with fake gateway | Real stagenet partial/full/late payment |
@@ -19,8 +19,10 @@ This checklist covers the pasted brief and the later naming correction. An empty
 | Creation abuse limits | Single in-flight allocation + PostgreSQL global cap 30/minute; no IP data | Production load/outage proof |
 | Tor/I2P fail-closed | No network isolation is claimed | Actual deployment addresses, firewall and outage proof |
 | Bleed typography/colors/icons and braided SVG | Supplied SVG, Bleed live palette, local fonts | Icon and motion integrated; proprietary Suisse uses Arial/Helvetica fallback |
-| Footer TOR/I2P/PGP/DONATE | Shared footer; TOR/I2P/PGP optional targets editable in .env; validation and built SSR tests | Actual verified destinations and required brand/design |
+| Footer TOR/I2P/PGP/DONATE | Shared footer; TOR/I2P/PGP optional targets editable in .env; validation and built SSR tests | Actual verified destinations; supplied brand is integrated |
 | Optional receipt/notification | Agent receipt client available | Not added to first UI; no external notification authorized |
-| Build/check/tests | 37 tests / 163 assertions, real isolated PG + built SSR; separate opt-in real wallet + pg_dump/restore test passed; build/check pass | Live-provider acceptance gates above |
+| Build/check/tests | 38 tests / 169 assertions, real isolated PG + built SSR; separate opt-in real wallet + pg_dump/restore test passed; build/check pass | Live-provider acceptance gates above |
 
 A successful build or fake-agent test does not prove live Monero settlement. The implementation is delivered on `feature/1-portfolio-donations`; no mainnet deployment has occurred. The initially empty repository has no separate base branch for a pull request yet.
+
+Browser checkout proof (2026-10-12): built SSR on an isolated loopback port with a fake gateway rendered partial payment, requested 0.075 XMR and remaining 0.025 XMR. Both copy buttons changed to Copied. The browser clipboard inspection API returned empty, so this proves UI acknowledgement rather than independently read clipboard bytes. No live funds were used.
