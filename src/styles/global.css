@@ -23,8 +23,8 @@ main { width: min(100% - 48px, 960px); flex: 1; margin: 0 auto; padding: 72px 0 
 .footer-link img[src$="i2p.svg"] { width: 64px; }
 .unavailable-link { color: var(--bleed-white); cursor: default; }
 .brand { display: inline-flex; align-items: center; gap: .24em; white-space: nowrap; }
-.brand-mark { display: inline-block; width: .78em; height: .78em; flex: none; background: linear-gradient(112deg, var(--accent) 8%, var(--ink) 38%, var(--positive) 68%, var(--accent) 92%); background-size: 240% 100%; background-position: 0% 50%; -webkit-mask: url("/brand/onur.svg") center / contain no-repeat; mask: url("/brand/onur.svg") center / contain no-repeat; animation: onur-mark-drift 9s ease-in-out infinite alternate; }
-@keyframes onur-mark-drift { to { background-position: 100% 50%; } }
+.brand-mark { position: relative; display: inline-block; width: .78em; height: .78em; flex: none; -webkit-mask: url("/brand/onur.svg") center / contain no-repeat; mask: url("/brand/onur.svg") center / contain no-repeat; }
+.brand-gradient { position: absolute; inset: -35%; background: linear-gradient(112deg, var(--accent) 8%, var(--ink) 38%, var(--positive) 68%, var(--accent) 92%); background-size: 240% 100%; }
 .eyebrow { margin: 0 0 12px; color: var(--bleed-soft); font: 400 .7rem/1.5 var(--bleed-mono); letter-spacing: .02em; text-transform: uppercase; }
 h1 { margin: 0; max-width: 100%; overflow-wrap: anywhere; font: 400 clamp(2.25rem, 9vw, 3rem)/1.05 var(--bleed-display); letter-spacing: -.04em; }
 .back-link { text-decoration-thickness: 1px; text-underline-offset: .35em; }

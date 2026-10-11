@@ -1,3 +1,51 @@
 ---
 ---
-<span class="brand"><span class="brand-mark" aria-hidden="true"></span><span>Onur</span></span>
+<span class="brand"><span class="brand-mark" aria-hidden="true"><span class="brand-gradient"></span></span><span>Onur</span></span>
+
+<script>
+  const marks = [...document.querySelectorAll<HTMLElement>(".brand-mark")];
+  const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const active = new Map<HTMLElement, Animation>();
+  let generation = 0;
+
+  const random = (min: number, max: number) => min + Math.random() * (max - min);
+  const frame = () => ({
+    transform: `translate(${random(-18, 18)}%, ${random(-18, 18)}%) rotate(${random(-24, 24)}deg) scale(${random(.82, 1.18)})`,
+    filter: `blur(${random(0, 2)}px)`,
+    opacity: random(.82, 1),
+  });
+
+  async function drift(mark: HTMLElement, current: number) {
+    while (current === generation && !motion.matches) {
+      const gradient = mark.firstElementChild as HTMLElement;
+      const style = getComputedStyle(gradient);
+      const target = frame();
+      const animation = gradient.animate([
+        { transform: style.transform, filter: style.filter, opacity: style.opacity },
+        target,
+      ], {
+        duration: random(3000, 8000),
+        easing: `cubic-bezier(${random(.2, .4)}, ${random(.2, .4)}, ${random(.6, .8)}, ${random(.6, .8)})`,
+        fill: "forwards",
+      });
+      active.set(mark, animation);
+      const finished = await animation.finished.then(() => true, () => false);
+      if (finished && current === generation && !motion.matches) {
+        Object.assign(gradient.style, target);
+        animation.cancel();
+      }
+      if (active.get(mark) === animation) active.delete(mark);
+    }
+  }
+
+  function updateMotion() {
+    generation++;
+    active.forEach(animation => animation.cancel());
+    active.clear();
+    if (motion.matches) marks.forEach(mark => (mark.firstElementChild as HTMLElement).removeAttribute("style"));
+    if (!motion.matches) marks.forEach(mark => void drift(mark, generation));
+  }
+
+  motion.addEventListener("change", updateMotion);
+  updateMotion();
+</script>
