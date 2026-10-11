@@ -11,7 +11,7 @@
   const random = (min: number, max: number) => min + Math.random() * (max - min);
   const frame = () => ({
     transform: `translate(${random(-18, 18)}%, ${random(-18, 18)}%) rotate(${random(-24, 24)}deg) scale(${random(.82, 1.18)})`,
-    filter: `blur(${random(0, 2)}px)`,
+    filter: `blur(${random(0, 2)}px) hue-rotate(${random(0, 360)}deg) saturate(${random(.7, 1.8)})`,
     opacity: random(.82, 1),
   });
 
