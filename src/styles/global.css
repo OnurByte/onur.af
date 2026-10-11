@@ -8,15 +8,16 @@ main { width: min(100% - 48px, 960px); flex: 1; margin: 0 auto; padding: 72px 0 
 .site-header { padding: 24px 0; }
 .site-nav { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 18px; }
 .home-link, .github-link, .site-footer a { text-decoration: none; }
-.home-link { color: var(--bleed-paper); font: 500 1.15rem/1 Arial, Helvetica, sans-serif; }
-.home-link .brand-mark { width: 22px; height: 22px; }
+.home-link { color: var(--bleed-paper); font: 500 2rem/1 Arial, Helvetica, sans-serif; }
+.home-link .brand-mark { width: 36px; height: 36px; }
 .github-link:hover, .site-footer a:hover, .text-link:hover, .back-link:hover { color: var(--bleed-white); }
-.site-footer { padding: 20px 0 28px; border-top: 1px solid var(--bleed-gray); }
+.site-footer { color: var(--bleed-white); padding: 20px 0 28px; border-top: 1px solid var(--bleed-gray); }
 .site-footer nav { display: flex; flex-wrap: wrap; gap: 18px; }
 .footer-link { display: inline-flex; align-items: center; gap: 7px; }
 .footer-link img { display: block; width: 22px; height: 22px; object-fit: contain; }
-.footer-link img[src$="tor.svg"] { filter: invert(1); }
-.unavailable-link { color: var(--bleed-soft); cursor: default; }
+.footer-link img { filter: brightness(0) invert(1); }
+.footer-link img[src$="i2p.svg"] { width: 44px; }
+.unavailable-link { color: var(--bleed-white); cursor: default; }
 .brand { display: inline-flex; align-items: center; gap: .24em; white-space: nowrap; }
 .brand-mark { display: inline-block; width: .78em; height: .78em; flex: none; background: linear-gradient(112deg, var(--bleed-white) 8%, var(--bleed-soft) 38%, var(--bleed-gray) 68%, var(--bleed-white) 92%); background-size: 240% 100%; background-position: 0% 50%; -webkit-mask: url("/brand/onur.svg") center / contain no-repeat; mask: url("/brand/onur.svg") center / contain no-repeat; animation: onur-mark-drift 9s ease-in-out infinite alternate; }
 @keyframes onur-mark-drift { to { background-position: 100% 50%; } }
