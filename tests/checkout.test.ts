@@ -39,7 +39,8 @@ test.skipIf(!enabled)('built SSR checkout accepts custom amounts and preserves p
     expect(html).not.toContain('Stirner');
     expect(html).toContain('recipient_name=Onur');
     expect(html).toContain('brand-mark');
-    expect(html).toContain('>I2P</span>');
+    expect(html).toContain('aria-label="I2P"');
+    expect(html).toContain('class="footer-networks"');
     expect(html).toContain(address);
     expect(html).toContain(`monero:${address}?tx_amount=0.025`);
     expect(html).toContain('Requested donation: 0.075 XMR');

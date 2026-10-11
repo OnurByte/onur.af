@@ -24,14 +24,19 @@ const links = portfolioLinks();
     </header>
     <slot />
     <footer class="site-footer" aria-label="Contact and donation links">
-      <nav aria-label="Alternate sites and contact">
-        {links.map(({ label, href }) => {
-          const icon = label === 'TOR' ? '/brand/tor.svg' : label === 'I2P' ? '/brand/i2p.svg' : undefined;
-          return href
-            ? <a class="footer-link" href={href}>{icon && <img src={icon} alt="" aria-hidden="true" />}{label}</a>
-            : <span class="footer-link unavailable-link" title="Address not published">{icon && <img src={icon} alt="" aria-hidden="true" />}{label}</span>;
-        })}
-        <a href="/donate">DONATE</a>
+      <nav class="footer-nav" aria-label="Alternate sites and contact">
+        {links.filter(({ label }) => label === 'PGP').map(({ href }) => href
+          ? <a class="footer-link footer-pgp" href={href}>PGP</a>
+          : <span class="footer-link footer-pgp unavailable-link" title="Address not published">PGP</span>)}
+        <span class="footer-networks">
+          {links.filter(({ label }) => label !== 'PGP').map(({ label, href }) => {
+            const icon = label === 'TOR' ? '/brand/tor.svg' : '/brand/i2p.svg';
+            return href
+              ? <a class="footer-link" href={href} aria-label={label}><img src={icon} alt="" aria-hidden="true" /></a>
+              : <span class="footer-link unavailable-link" role="img" aria-label={label} title={`${label} address not published`}><img src={icon} alt="" aria-hidden="true" /></span>;
+          })}
+        </span>
+        <a class="footer-link footer-donate" href="/donate">DONATE</a>
       </nav>
     </footer>
   </body>
