@@ -18,7 +18,7 @@ This checklist covers the pasted brief and the later naming correction. An empty
 | View-only/secret boundaries | Loopback authenticated clients, no token in tested HTML | Runtime view-only wallet proof and production ACLs |
 | Creation abuse limits | Single in-flight allocation + PostgreSQL global cap 30/minute; no IP data | Production load/outage proof |
 | Tor/I2P fail-closed | No network isolation is claimed | Actual deployment addresses, firewall and outage proof |
-| Bleed typography/colors/icons and braided SVG | No authoritative source available | Source required; current CSS is provisional |
+| Bleed typography/colors/icons and braided SVG | Supplied SVG, Bleed live palette, local fonts | Icon and motion integrated; proprietary Suisse uses Arial/Helvetica fallback |
 | Footer TOR/I2P/PGP/DONATE | Shared footer; TOR/I2P/PGP optional targets editable in .env; validation and built SSR tests | Actual verified destinations and required brand/design |
 | Optional receipt/notification | Agent receipt client available | Not added to first UI; no external notification authorized |
 | Build/check/tests | 37 tests / 163 assertions, real isolated PG + built SSR; separate opt-in real wallet + pg_dump/restore test passed; build/check pass | Live-provider acceptance gates above |

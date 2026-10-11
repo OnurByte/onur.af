@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Brand from '../../components/Brand.astro';
 import { makePaymentURI, qrSvg } from 'xmr-pay/core';
 import { formatXmrAmount, parseXmrAmount, parseXmrAmountOrZero } from '../../donations/money';
 import { donationGateway } from '../../client/gateway';
@@ -49,7 +50,7 @@ const state = unavailable || donation?.unavailable ? 'unavailable'
   : donation?.status === 'pending' ? 'waiting'
   : 'syncing';
 const paymentAmount = state === 'partial' ? (donation?.shortfall && donation.shortfall !== '0' ? donation.shortfall : undefined) : donation?.amount;
-const uri = donation && networkValid && paymentAmount ? makePaymentURI({ address: donation.address, amount: paymentAmount, recipientName: 'Onur Stirner', description: 'Donation', networkType: network as 'mainnet' | 'stagenet' | 'testnet' }) : '';
+const uri = donation && networkValid && paymentAmount ? makePaymentURI({ address: donation.address, amount: paymentAmount, recipientName: 'Onur', description: 'Donation', networkType: network as 'mainnet' | 'stagenet' | 'testnet' }) : '';
 const qr = uri ? qrSvg(uri, { ec: 'H', moduleColor: '#000000', finderColor: '#000000', scale: 5, quietZone: 4 }) : '';
 const statusText = ({ unavailable: 'Payment status unavailable', paid: 'Donation received', partial: 'Partial payment received', confirming: 'Payment detected · confirming', waiting: 'Waiting for payment', syncing: 'Payment network syncing' } as const)[state];
 const shownStatus = state === 'confirming' && donation?.confirmations !== undefined && donation.minConfirmations !== undefined
@@ -57,15 +58,15 @@ const shownStatus = state === 'confirming' && donation?.confirmations !== undefi
 const partialDetails = state === 'partial' && donation?.received !== undefined && donation.shortfall !== undefined
   ? `Received ${donation.received} XMR · Remaining ${donation.shortfall} XMR` : undefined;
 ---
-<Layout title="XMR donation · Onur Stirner">
+<Layout title="XMR donation · Onur">
   <main class="donate checkout">
-    <a class="back-link" href="/">← Onur Stirner</a>
+    <a class="back-link" href="/">← <Brand /></a>
     <p class="eyebrow">MONERO · {network.toUpperCase()}</p>
     <h1>Your donation</h1>
     <p class="status" data-state={state} role="status">{shownStatus}</p>
     {donation && <>
       <div class="payment-grid">
-        {qr && <div class="qr" set:html={qr} aria-label="Monero payment QR code"></div>}
+        {qr && <div class="qr" role="img" set:html={qr} aria-label="Monero payment QR code"></div>}
         <div class="payment-details">
           <p class="eyebrow">{state === 'partial' ? 'REMAINING AMOUNT' : 'AMOUNT'}</p><p class="amount-value"><span id="amount">{paymentAmount ?? 'Unavailable'}</span>{paymentAmount && <> XMR <button class="copy" type="button" data-copy="amount">Copy amount</button></>}</p>
           {state === 'partial' && <p class="hint">Requested donation: {donation.amount} XMR</p>}

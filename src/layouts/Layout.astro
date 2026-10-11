@@ -1,7 +1,8 @@
 ---
 import '../styles/global.css';
 import { portfolioLinks } from '../portfolio/links';
-const { title = 'Onur Stirner' } = Astro.props;
+import Brand from '../components/Brand.astro';
+const { title = 'Onur' } = Astro.props;
 const links = portfolioLinks();
 ---
 <!doctype html>
@@ -9,16 +10,17 @@ const links = portfolioLinks();
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#101010" />
+    <meta name="theme-color" content="#0d0d0d" />
     <title>{title}</title>
-    <meta name="description" content="Onur Stirner — independent work and Monero donations." />
+    <meta name="description" content="Onur — independent software." />
+    <link rel="icon" type="image/svg+xml" href="/brand/onur.svg" />
   </head>
   <body>
     <slot />
     <footer class="site-footer" aria-label="Contact and donation links">
-      <span class="footer-name">ONUR STIRNER</span>
+      <span class="footer-name"><Brand /></span>
       <nav aria-label="Alternate sites and contact">
-        {links.map(({ label, href }) => <a href={href}>{label}</a>)}
+        {links.map(({ label, href }) => href ? <a href={href}>{label}</a> : <span class="unavailable-link" title="Address not published">{label}</span>)}
         <a href="/donate">DONATE</a>
       </nav>
     </footer>

@@ -1,7 +1,7 @@
 type LinkName = 'TOR' | 'I2P' | 'PGP';
-type PortfolioLink = { label: LinkName; href: string };
+type PortfolioLink = { label: LinkName; href?: string };
 
-const env = (key: string) => process.env[key] ?? import.meta.env[key];
+const env = (key: string) => process.env[key] ?? import.meta.env?.[key];
 
 export function validPortfolioUrl(label: LinkName, value: string): string | undefined {
   if (!value || /[\u0000-\u001f\u007f\\]/.test(value)) return;
@@ -20,9 +20,9 @@ export function validPortfolioUrl(label: LinkName, value: string): string | unde
 }
 
 export function portfolioLinks(): PortfolioLink[] {
-  return (['TOR', 'I2P', 'PGP'] as const).flatMap(label => {
+  return (['TOR', 'I2P', 'PGP'] as const).map(label => {
     const key = `PORTFOLIO_${label}_URL`;
     const href = validPortfolioUrl(label, env(key) ?? '');
-    return href ? [{ label, href }] : [];
+    return { label, href };
   });
 }

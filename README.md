@@ -2,7 +2,7 @@
 
 Astro SSR portfolio with a TypeScript `donations` module using xmr-pay watch mode. This project is distinct from the existing private `safestpayment` repository.
 
-The shared footer always links to `/donate`. Set `PORTFOLIO_TOR_URL`, `PORTFOLIO_I2P_URL`, and `PORTFOLIO_PGP_URL` in `.env` to show the optional links. TOR must use an HTTP(S) `.onion` URL, I2P an HTTP(S) `.i2p` URL, and PGP an HTTPS URL or a site-local path. Blank or invalid values are omitted.
+The shared footer always links to `/donate`. Set `PORTFOLIO_TOR_URL`, `PORTFOLIO_I2P_URL`, and `PORTFOLIO_PGP_URL` in `.env` to enable their destinations. TOR must use an HTTP(S) `.onion` URL, I2P an HTTP(S) `.i2p` URL, and PGP an HTTPS URL or a site-local path. All four footer labels remain visible; blank or invalid destinations render as unlinked text.
 
 ## Local development
 
@@ -24,4 +24,4 @@ bun run build
 
 To include real database checks, set `TEST_DATABASE_URL` to an isolated PostgreSQL test database. After building, set `TEST_CHECKOUT=1` to run the built SSR checkout test. That test uses a local fake gateway and checks form submission, custom amounts, QR/payment URI and server token isolation; it does not simulate blockchain evidence.
 
-See [donation behavior and deployment gates](docs/donations.md). Bleed styling and the owner's SVG still need their authoritative source. Read-only recovery retains an already allocated address after a lost agent response. A crash before allocation still requires operator recovery; settled payments are rechecked against fresh scanner data. Live crash/restart and reorg proof remain unfinished.
+See [donation behavior and deployment gates](docs/donations.md). The supplied SVG is integrated next to each visible Onur name. Styling references Bleed's monochrome palette, with local sans-serif fallback typography and a moving gradient in the icon. Read-only recovery retains an already allocated address after a lost agent response. A crash before allocation still requires operator recovery; settled payments are rechecked against fresh scanner data. Live crash/restart and reorg proof remain unfinished.

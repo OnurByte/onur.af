@@ -12,7 +12,7 @@ A new UUID is reserved before upstream allocation. Once an address is stored, re
 
 Deployment remains blocked on verified scanner persistence and restart, real stagenet partial/full/late payment, live reorg verification, backup/restore and Tor/I2P fail-closed network configuration. Upstream paid orders do not automatically reverse after a reorg. The bundled host independently rechecks settled orders using fresh scanner snapshots at startup, during polling and before returning their status. Lost settlement is reversed and saved through the wallet-before-ledger barrier; sync or reconciliation failures stop successful responses. Live reorg behavior still needs a stagenet experiment.
 
-The visual styling is provisional. Exact Bleed tokens, components and the user's braided SVG must be supplied and integrated before calling the design complete. No fabricated Tor/I2P or PGP links are published.
+The supplied braided SVG is integrated as a moving gradient mask. Colors reference https://bleed.com: ink #0d0d0d, paper #f4f5f2, gray #404040, white #fff and soft #ebebeb. Arial/Helvetica replace Bleed's proprietary Suisse font; IBM Plex Mono is served locally with its license. This is an implementation of that visual reference, not a claim that a separate Bleed component library was supplied. No fabricated Tor/I2P or PGP links are published.
 
 Run `bun test` and `bun run check`. PostgreSQL tests require `TEST_DATABASE_URL` pointing at an isolated test database; they remove only their generated donation IDs. Run `bun run build` to verify Astro SSR output. Fake-agent tests do not prove blockchain payment detection.
 
