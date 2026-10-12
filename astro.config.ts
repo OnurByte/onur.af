@@ -3,7 +3,7 @@ import node from '@astrojs/node';
 import vercel from '@astrojs/vercel';
 import { loadEnv } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
-import { validSiteUrl } from './src/portfolio/seo.ts';
+import { validSiteUrl } from './src/portfolio/seo';
 
 const site = validSiteUrl(
   process.env.SITE_URL ??
