@@ -1,4 +1,5 @@
 import { notes, projects } from './content';
+import { siteDescription } from './seo';
 
 export const mottos = [
   'The creator originates.',
@@ -13,14 +14,12 @@ const pages: Record<
   '/': {
     key: 'home',
     title: 'Home',
-    description:
-      'Onur’s personal index: public notes, projects, reading, RSS feeds and PGP identity, collected in one place.',
+    description: siteDescription,
   },
   '/donate': {
     key: 'donate',
     title: 'Donate',
-    description:
-      'Send a Monero donation to Onur. Choose an amount, open the payment details and follow the status of your donation.',
+    description: 'Support my work with Monero.',
   },
   '/projects': {
     key: 'projects',
@@ -50,13 +49,13 @@ const pages: Record<
     key: 'rss',
     title: 'RSS',
     description:
-      'Follow Onur’s public writing with RSS. Copy the feed address into your reader and receive new entries when they are published.',
+      'RSS brings new writing to your feed reader. Add this address to subscribe.',
   },
   '/pgp': {
     key: 'pgp',
     title: 'PGP',
     description:
-      'Read or download Onur’s public PGP key and check its fingerprint before using it to verify identity or encrypt a message.',
+      'My public key for encrypted messages and signature verification.',
   },
 };
 

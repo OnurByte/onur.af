@@ -1,12 +1,12 @@
 # Link previews
 
-The server renders Open Graph and X Card metadata for public pages. The homepage title is `motto · Onur`, with the same randomly selected motto as its heading and preview image. Public descriptions provide page context in 50–159 characters. Messaging services cache previews independently; refreshing the page does not refresh an existing message.
+The server renders Open Graph and X Card metadata for public pages. The homepage title is `motto · Onur`, with the same randomly selected motto as its heading and preview image. Public descriptions come from the same shared copy rendered visibly on each page; metadata, image cards and Discord use that text without a separate rewrite. Messaging services cache previews independently; refreshing the page does not refresh an existing message.
 
 `SITE_URL` must contain the public HTTP(S) origin. Never derive public asset addresses from an incoming Host header. Without that configuration, canonical URLs, oEmbed discovery and the Discord component card are omitted.
 
 ## Shared preview
 
-- `/social/<public-page-key>.png?m=0|1|2`: page-specific 1200 × 630 PNG. Header: owner logo, motto, then Onur. Body: large page title and its description, separated by a fine rule. `public/brand/social.png` remains a redesigned home-card fallback for older shared URLs.
+- `/social/<public-page-key>.png?m=0|1|2`: page-specific 1200 × 630 PNG. Header: owner logo, larger Onur name, then the smaller motto. Body: large page title and its description, separated by a fine rule. `public/brand/social.png` remains a redesigned home-card fallback for older shared URLs.
 - `public/brand/icon.png`: 512 × 512; `apple-touch-icon.png`: 180 × 180; `/favicon.ico`: 16/32/48 pixels.
 - OG image URL, HTTPS secure URL, MIME type, dimensions and alt text; matching X large-image card.
 - Absolute PNG/touch/icon addresses when the public origin is configured. PNG is the first favicon declaration; the SVG and ICO fallbacks remain available.
@@ -29,7 +29,7 @@ Sources: [oEmbed specification](https://oembed.com/), [specification repository]
 
 ## Discord component card
 
-Public pages additionally render a compact `discord:component-embed` JSON script: one Container, a header Section containing the motto followed by Onur with a logo thumbnail, a large page title and description, the matching page image, and Open page / PGP / RSS link buttons. Private payment status pages do not expose images or component cards. No bot, webhook or client script is required.
+Public pages additionally render a compact `discord:component-embed` JSON script: one Container, a header Section containing Onur followed by the smaller motto with a logo thumbnail, a large page title and description, the matching page image, and Open page / PGP / RSS link buttons. Private payment status pages do not expose images or component cards. No bot, webhook or client script is required.
 
 The official format requires server HTML, a single root Container, at most 3,000 JSON bytes and 40 components, link-style buttons, and a complete page/media fetch within ten seconds. OG remains the fallback. Source: [official component embeds](https://github.com/discord/discord-api-docs/blob/main/developers/link-previews/component-embeds.mdx), [documentation PR](https://github.com/discord/discord-api-docs/pull/8606). Implementation examples examined: [Seedcord](https://github.com/seedcord/seedcord/tree/next/packages/discord-component-embed), [Discord Embed Studio](https://github.com/bobjoerules/Discord-Embed-Studio). Simulator output is not a live Discord result.
 

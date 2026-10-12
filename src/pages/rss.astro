@@ -1,4 +1,5 @@
 ---
+import { publicPreview } from '../portfolio/previews';
 import Layout from '../layouts/Layout.astro';
 import { siteOrigin } from '../portfolio/seo';
 import { rssResponse, wantsFeedHtml } from '../portfolio/feeds';
@@ -8,18 +9,16 @@ if (!wantsFeedHtml(Astro.request.headers.get('accept'))) {
 }
 Astro.response.headers.set('Vary', 'Accept');
 const feedUrl = new URL('/rss', siteOrigin() ?? Astro.url.origin).href;
+const description = publicPreview('/rss')!.description;
 ---
 
-<Layout title="RSS · Onur" description="Follow new writing through RSS.">
+<Layout title="RSS · Onur" description={description}>
   <main class="mx-auto w-[calc(100%_-_40px)] max-w-[960px] flex-1 pt-10 pb-[104px] min-[621px]:w-[calc(100%_-_48px)] min-[621px]:pt-[72px] [&_a]:underline [&_a]:underline-offset-[0.2em] [&_h2]:mb-5 [&_h2]:text-[1.35rem] [&_h2]:font-medium [&_p]:my-4 [&_p]:leading-[1.7]">
     <h1 class="max-w-full text-[clamp(2.25rem,9vw,3rem)] leading-[1.1] font-normal tracking-[-0.03em] [overflow-wrap:anywhere]">
       RSS
     </h1>
     <div class="max-w-[65ch] leading-[1.8] [&_p]:my-6 [&_ul]:my-6 [&_h2]:mt-11 [&_code]:[overflow-wrap:anywhere]">
-      <p>
-        RSS brings new writing to your feed reader. Add this address to
-        subscribe.
-      </p>
+      <p data-page-description>{description}</p>
       <div class="my-6 flex flex-wrap items-center gap-x-5 gap-y-3 [&_span]:min-w-0 [&_button]:shrink-0">
         <span
           class="font-mono text-[0.9rem] leading-[1.7] font-normal [overflow-wrap:anywhere] select-all"

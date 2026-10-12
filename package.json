@@ -10,10 +10,10 @@
     "preview": "astro preview",
     "start": "node --env-file-if-exists=.env ./dist/server/entry.mjs",
     "check": "astro check",
-    "test:wallet": "bun scripts/probe-wallet.cjs",
+    "test:wallet": "bun scripts/probe-wallet.ts",
     "agent": "bun src/xmr/agent-host.ts",
-    "format": "prettier --write \"{src,tests,scripts,docs,public}/**/*.{astro,ts,js,cjs,mjs,css,json,md}\" \"*.{json,mjs,md}\" \".github/workflows/*.yml\" \".prettierrc.json\"",
-    "format:check": "prettier --check \"{src,tests,scripts,docs,public}/**/*.{astro,ts,js,cjs,mjs,css,json,md}\" \"*.{json,mjs,md}\" \".github/workflows/*.yml\" \".prettierrc.json\""
+    "format": "prettier --write \"{src,tests,scripts,docs,public}/**/*.{astro,ts,json,md}\" \"*.{ts,json,md}\" \".github/workflows/*.yml\" \".prettierrc.json\"",
+    "format:check": "prettier --check \"{src,tests,scripts,docs,public}/**/*.{astro,ts,json,md}\" \"*.{ts,json,md}\" \".github/workflows/*.yml\" \".prettierrc.json\""
   },
   "dependencies": {
     "@astrojs/node": "^11.1.7",

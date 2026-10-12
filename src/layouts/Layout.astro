@@ -1,5 +1,4 @@
 ---
-import '../styles/global.css';
 import { portfolioLinks } from '../portfolio/links';
 import { mottos, publicPreview } from '../portfolio/previews';
 import Brand from '../components/Brand.astro';
@@ -43,7 +42,7 @@ const discordEmbed =
           components: [
             {
               type: 9,
-              components: [{ type: 10, content: `## ${motto}\nOnur` }],
+              components: [{ type: 10, content: `## Onur\n${motto}` }],
               accessory: {
                 type: 11,
                 media: { url: iconUrl },
@@ -95,7 +94,11 @@ const schema =
 ---
 
 <!doctype html>
-<html lang="en" prefix="og: https://ogp.me/ns#">
+<html
+  lang="en"
+  prefix="og: https://ogp.me/ns#"
+  class="[color-scheme:light] [--background:#fff] [--text:#0d0d0d] [--muted:#333] [--border:#b3b3b3] [--surface:#f2f2f2] dark:[color-scheme:dark] dark:[--background:#000] dark:[--text:#fff] dark:[--muted:#fff] dark:[--border:#404040] dark:[--surface:#222]"
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -296,3 +299,10 @@ const schema =
     </footer>
   </body>
 </html>
+
+<style is:global>
+  @import 'tailwindcss';
+  @theme {
+    --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+</style>

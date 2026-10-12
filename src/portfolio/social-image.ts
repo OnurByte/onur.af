@@ -65,8 +65,8 @@ export async function socialImage(page: string, mottoIndex = 0) {
       .resize(64, 64, { fit: 'contain' })
       .png()
       .toBuffer(),
-    text(mottos[mottoIndex]!, 28, false, 930),
-    text('Onur', 19),
+    text(mottos[mottoIndex]!, 19, false, 930),
+    text('Onur', 28),
     text(preview.title, 96, true, 1056, 145),
     text(preview.description, 28, false, 1000),
   ]);
@@ -75,8 +75,8 @@ export async function socialImage(page: string, mottoIndex = 0) {
   })
     .composite([
       { input: logo, left: 72, top: 55 },
-      { input: motto, left: 162, top: 57 },
-      { input: name, left: 162, top: 99 },
+      { input: name, left: 162, top: 57 },
+      { input: motto, left: 162, top: 99 },
       {
         input: Buffer.from(
           '<svg width="1056" height="1"><path d="M0 .5H1056" stroke="#fff"/></svg>',

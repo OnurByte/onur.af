@@ -1,18 +1,19 @@
-'use strict';
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const os = require('node:os');
-const path = require('node:path');
-const mono = require('monero-ts');
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import * as mono from 'monero-ts';
 
 (async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xmr-wasm-probe-'));
   fs.chmodSync(dir, 0o700);
-  let source, view, reopened;
+  let source: mono.MoneroWalletFull | undefined;
+  let view: mono.MoneroWalletFull | undefined;
+  let reopened: mono.MoneroWalletFull | undefined;
   try {
     console.log('step: create random in-memory stagenet wallet');
     source = await mono.createWalletFull({
-      networkType: 'stagenet',
+      networkType: mono.MoneroNetworkType.STAGENET,
       password: '',
       proxyToWorker: false,
     });
@@ -27,7 +28,7 @@ const mono = require('monero-ts');
     console.log('step: create and persist view-only wallet; create subaddress');
     const walletPath = path.join(dir, 'view-wallet');
     view = await mono.createWalletFull({
-      networkType: 'stagenet',
+      networkType: mono.MoneroNetworkType.STAGENET,
       primaryAddress: address,
       privateViewKey,
       restoreHeight: 0,
@@ -45,13 +46,13 @@ const mono = require('monero-ts');
     assert.equal(await view.getAddress(0, sub.getIndex()), subaddress);
     await view.save();
     await view.close(true);
-    view = null;
+    view = undefined;
 
     console.log('step: reopen persisted view-only wallet');
     reopened = await mono.openWalletFull({
       path: walletPath,
       password: 'probe-only',
-      networkType: 'stagenet',
+      networkType: mono.MoneroNetworkType.STAGENET,
       proxyToWorker: false,
     });
     assert.equal(
@@ -77,14 +78,14 @@ const mono = require('monero-ts');
       if (wallet) {
         try {
           await wallet.close(true);
-        } catch (_) {}
+        } catch {}
       }
     }
     fs.rmSync(dir, { recursive: true, force: true });
   }
 })().catch((error) => {
   console.error(
-    `result: FAIL ${(error && error.name) || 'Error'}: ${(error && error.message) || 'unknown error'}`,
+    `result: FAIL ${error instanceof Error ? `${error.name}: ${error.message}` : 'unknown error'}`,
   );
   process.exitCode = 1;
 });

@@ -1,4 +1,6 @@
 import { expect, test } from 'bun:test';
+import { publicPaths } from '../src/portfolio/seo';
+import { publicPreview } from '../src/portfolio/previews';
 
 const enabled = Bun.env.TEST_CHECKOUT === '1';
 test.skipIf(!enabled)(
@@ -88,6 +90,32 @@ test.skipIf(!enabled)(
       ).toBe(true);
       expect(home).toContain('src="/brand/onur.svg"');
       expect(home).not.toContain('aria-label="Onur home"');
+      for (const path of publicPaths) {
+        const page = await (
+          await fetch(`${origin}${path}`, { headers: { Accept: 'text/html' } })
+        ).text();
+        const description = publicPreview(path)!.description;
+        expect(
+          page
+            .match(/<p\b[^>]*data-page-description[^>]*>([\s\S]*?)<\/p>/)?.[1]
+            ?.trim(),
+        ).toBe(description);
+        expect(page).toContain(`name="description" content="${description}"`);
+        if (path !== '/')
+          expect(
+            (
+              await fetch(`${origin}${path}/`, {
+                headers: { Accept: 'text/html' },
+              })
+            ).status,
+          ).toBe(200);
+        expect(page).toContain(
+          `property="og:description" content="${description}"`,
+        );
+        expect(page).toContain(
+          `name="twitter:description" content="${description}"`,
+        );
+      }
       const sitemap = await (await fetch(`${origin}/sitemap.xml`)).text();
       expect(sitemap.match(/<loc>/g)).toHaveLength(8);
       for (const path of [
