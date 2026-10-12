@@ -1,0 +1,27 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { notes } from '../../portfolio/content';
+---
+
+<Layout title="Notes · Onur" description="Notes.">
+  <main class="editorial">
+    <header class="section-heading">
+      <h1>Notes</h1>
+      <a href="/rss">Follow through RSS</a>
+    </header>
+    {notes.length === 0 && <p>No notes published.</p>}
+    <div class="entry-list">
+      {notes.map((note) => (
+        <article class="entry">
+          <time class="entry-meta" datetime={note.date}>
+            {note.date}
+          </time>
+          <h2>
+            <a href={`/notes/${note.slug}`}>{note.title}</a>
+          </h2>
+          <p>{note.summary}</p>
+        </article>
+      ))}
+    </div>
+  </main>
+</Layout>

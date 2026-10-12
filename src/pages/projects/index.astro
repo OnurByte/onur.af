@@ -1,0 +1,25 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { projects } from '../../portfolio/content';
+---
+
+<Layout title="Projects · Onur" description="Projects.">
+  <main class="editorial">
+    <header class="section-heading">
+      <h1>Projects</h1>
+    </header>
+    {projects.length === 0 && <p>No projects published.</p>}
+    <div class="entry-list">
+      {projects.map((project) => (
+        <article class="entry">
+          <div class="entry-meta">{project.status}</div>
+          <h2>
+            <a href={`/projects/${project.slug}`}>{project.name}</a>
+          </h2>
+          <p>{project.summary}</p>
+          <a href={project.repository}>Source code ↗</a>
+        </article>
+      ))}
+    </div>
+  </main>
+</Layout>

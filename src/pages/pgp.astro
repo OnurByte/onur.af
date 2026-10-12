@@ -1,0 +1,30 @@
+---
+import Layout from '../layouts/Layout.astro';
+import publicKey from '../../public/pgp.asc?raw';
+---
+
+<Layout title="PGP · Onur" description="Onur’s public PGP key.">
+  <main>
+    <h1>PGP</h1>
+    <div class="prose">
+      <p>My public key for encrypted messages and signature verification.</p>
+      <p class="address">3356 36C1 5D02 326F 9A43 1C98 4103 A3DD C441 9B61</p>
+      <a class="button" href="/pgp.asc" download>
+        Download public key
+      </a>
+    </div>
+    <pre class="public-key"><code>{publicKey.trim()}</code></pre>
+  </main>
+</Layout>
+
+<style>
+  .public-key {
+    margin: 32px 0 0;
+    padding: 16px;
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+</style>

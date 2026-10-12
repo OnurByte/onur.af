@@ -1,0 +1,33 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { notes } from '../../portfolio/content';
+export const prerender = true;
+export function getStaticPaths() {
+  return notes.map((note) => ({
+    params: { slug: note.slug },
+    props: { note },
+  }));
+}
+const { note } = Astro.props;
+---
+
+<Layout title={`${note.title} · Onur`} description={note.summary}>
+  <main class="editorial prose">
+    <a class="back-link" href="/notes">
+      ← Notes
+    </a>
+    <header class="section-heading">
+      <time class="entry-meta" datetime={note.date}>
+        {note.date}
+      </time>
+      <h1>{note.title}</h1>
+      <p>{note.summary}</p>
+    </header>
+    {note.paragraphs.map((paragraph: string) => (
+      <p>{paragraph}</p>
+    ))}
+    <p>
+      <a href="/rss">Follow new notes through RSS</a>
+    </p>
+  </main>
+</Layout>

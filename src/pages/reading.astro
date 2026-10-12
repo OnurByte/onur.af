@@ -1,0 +1,35 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { reading } from '../portfolio/content';
+---
+
+<Layout title="Reading · Onur" description="Reading list and OPML.">
+  <main class="editorial">
+    <header class="section-heading">
+      <h1>Reading</h1>
+    </header>
+    <p>
+      <a href="/feeds.opml">Download OPML</a>
+    </p>
+    {reading.length === 0 && <p>No sources published.</p>}
+    <div class="entry-list reading-list">
+      {reading.map((item) => (
+        <article class="entry">
+          <h2>
+            <a href={item.url}>{item.name} ↗</a>
+          </h2>
+          <p>{item.summary}</p>
+          <div class="entry-meta">
+            <a href={item.source}>Source reference</a>
+            {item.feed && (
+              <>
+                {' '}
+                · <a href={item.feed}>RSS</a>
+              </>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+  </main>
+</Layout>

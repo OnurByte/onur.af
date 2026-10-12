@@ -17,9 +17,10 @@
   },
   "dependencies": {
     "@astrojs/node": "^11.1.7",
+    "@astrojs/vercel": "^11.0.14",
     "astro": "^7.3.8",
-    "xmr-pay": "github:SlowBearDigger/xmr-pay#26d25eea800b831c6a90d180c698a4ac6426502c",
-    "monero-ts": "0.11.20"
+    "monero-ts": "0.11.20",
+    "xmr-pay": "github:SlowBearDigger/xmr-pay#26d25eea800b831c6a90d180c698a4ac6426502c"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

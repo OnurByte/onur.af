@@ -1,0 +1,38 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { portfolioLinks } from '../portfolio/links';
+const links = portfolioLinks();
+const pgp = links.find((link) => link.label === 'PGP');
+const networks = links.filter((link) => link.label !== 'PGP');
+---
+
+<Layout
+  title="Identity · Onur"
+  description="Public key, alternate addresses and source code."
+>
+  <main class="editorial">
+    <header class="section-heading">
+      <h1>Identity</h1>
+    </header>
+    <h2>OpenPGP</h2>
+    <p>
+      <a href={pgp?.href ?? '/pgp'}>Public key</a>
+    </p>
+    <h2>Alternate addresses</h2>
+    <ul>
+      {networks.map(({ label, href }) => (
+        <li>
+          {href ? (
+            <a href={href}>{label}</a>
+          ) : (
+            <span>{label}: address not published</span>
+          )}
+        </li>
+      ))}
+    </ul>
+    <h2>Source</h2>
+    <p>
+      <a href="https://github.com/OnurByte/portfolio">Source code ↗</a>
+    </p>
+  </main>
+</Layout>

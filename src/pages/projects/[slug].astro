@@ -1,0 +1,35 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { projects } from '../../portfolio/content';
+export const prerender = true;
+export function getStaticPaths() {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+const { project } = Astro.props;
+---
+
+<Layout title={`${project.name} · Onur`} description={project.summary}>
+  <main class="editorial prose">
+    <a class="back-link" href="/projects">
+      ← Projects
+    </a>
+    <header class="section-heading">
+      <p class="entry-meta">{project.status}</p>
+      <h1>{project.name}</h1>
+      <p>{project.summary}</p>
+    </header>
+    <p>{project.description}</p>
+    <h2>Approach and boundaries</h2>
+    {project.details.map((detail: string) => (
+      <p>{detail}</p>
+    ))}
+    <p>
+      <a href={project.repository}>
+        Read the source and project documentation ↗
+      </a>
+    </p>
+  </main>
+</Layout>

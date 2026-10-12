@@ -1,4 +1,10 @@
-export const publicPaths = ['/', '/donate'] as const;
+import { publicEditorialPaths } from './content';
+
+export const publicPaths: readonly string[] = [
+  '/',
+  '/donate',
+  ...publicEditorialPaths,
+];
 export const siteDescription =
   'Onur — independent software. Support my work with a private Monero donation.';
 

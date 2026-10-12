@@ -83,7 +83,19 @@ test.skipIf(!enabled)(
       expect(home).toContain('<span class="home-link">');
       expect(home).not.toContain('aria-label="Onur home"');
       const sitemap = await (await fetch(`${origin}/sitemap.xml`)).text();
-      expect(sitemap.match(/<loc>/g)).toHaveLength(2);
+      expect(sitemap.match(/<loc>/g)).toHaveLength(8);
+      for (const path of [
+        '/projects',
+        '/notes',
+        '/reading',
+        '/identity',
+        '/rss',
+        '/pgp',
+      ]) {
+        expect(sitemap).toContain(
+          `<loc>https://portfolio.example${path}</loc>`,
+        );
+      }
       expect(sitemap).toContain('<loc>https://portfolio.example/donate</loc>');
       expect(sitemap).not.toContain(id);
       expect(await (await fetch(`${origin}/robots.txt`)).text()).toContain(
@@ -127,7 +139,7 @@ test.skipIf(!enabled)(
       expect(html).toContain('Requested donation: 0.075 XMR');
       expect(html).toContain('<svg');
       expect(html).toContain('href="http://example.onion/"');
-      expect(html).toContain('href="/keys/pgp.asc"');
+      expect(html).toContain('href="/pgp"');
       expect(html).not.toContain('javascript:alert(1)');
       expect(html).toContain('href="/donate"');
       expect(html).not.toContain(token);
