@@ -1,6 +1,6 @@
 # Onur's portfolio
 
-Astro SSR portfolio with a TypeScript `donations` module using xmr-pay watch mode. This project is distinct from the existing private `safestpayment` repository.
+Astro SSR portfolio with a TypeScript `donations` module using xmr-pay watch mode.
 
 The shared footer always links to `/donate`. Set `PORTFOLIO_TOR_URL`, `PORTFOLIO_I2P_URL`, and `PORTFOLIO_PGP_URL` in `.env` to enable their destinations. TOR must use an HTTP(S) `.onion` URL, I2P an HTTP(S) `.i2p` URL, and PGP an HTTPS URL or a site-local path. All four footer labels remain visible; blank or invalid destinations render as unlinked text.
 

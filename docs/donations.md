@@ -1,6 +1,6 @@
 # Donations
 
-The TypeScript module is named `donations`. `OnurByte/safestpayment` is a separate existing private repository; it is not this application's name.
+The TypeScript donation module uses xmr-pay with a PostgreSQL-backed payment ledger.
 
 The Astro site renders the amount form and individual checkout. Its server calls a loopback Bun gateway. The gateway persists donation IDs, canonical XMR amounts and unique addresses in PostgreSQL, and calls an authenticated xmr-pay watch agent. Agent keys never enter browser HTML. Amount arithmetic uses integer piconero; upstream numeric received amounts are display data only.
 

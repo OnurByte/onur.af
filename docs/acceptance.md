@@ -1,6 +1,6 @@
 # Delivery evidence
 
-This checklist covers the pasted brief and the later naming correction. An empty GitHub repository was verified and cloned from `OnurByte/portfolio`. The application/module is `onur-portfolio` / `donations`; the old private `safestpayment` repository has not been modified.
+This checklist tracks implementation evidence and remaining deployment requirements for the portfolio and its donation module.
 
 | Requirement | Current evidence | Remaining work |
 | --- | --- | --- |
