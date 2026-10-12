@@ -4,22 +4,24 @@ import { reading } from '../portfolio/content';
 ---
 
 <Layout title="Reading · Onur" description="Reading list and OPML.">
-  <main class="editorial">
-    <header class="section-heading">
-      <h1>Reading</h1>
+  <main class="mx-auto w-[calc(100%_-_40px)] max-w-[960px] flex-1 pt-10 pb-[104px] min-[621px]:w-[calc(100%_-_48px)] min-[621px]:pt-[72px] [&_a]:underline [&_a]:underline-offset-[0.2em] [&_h2]:mb-5 [&_h2]:text-[1.35rem] [&_h2]:font-medium [&_p]:my-4 [&_p]:leading-[1.7]">
+    <header class="mb-10">
+      <h1 class="max-w-full text-[clamp(2.25rem,9vw,3rem)] leading-[1.1] font-normal tracking-[-0.03em] [overflow-wrap:anywhere]">
+        Reading
+      </h1>
     </header>
     <p>
       <a href="/feeds.opml">Download OPML</a>
     </p>
     {reading.length === 0 && <p>No sources published.</p>}
-    <div class="entry-list reading-list">
+    <div class="my-7 p-0">
       {reading.map((item) => (
-        <article class="entry">
+        <article class="border-t border-[var(--border)] py-6">
           <h2>
             <a href={item.url}>{item.name} ↗</a>
           </h2>
           <p>{item.summary}</p>
-          <div class="entry-meta">
+          <div class="text-[0.85rem] text-[var(--muted)]">
             <a href={item.source}>Source reference</a>
             {item.feed && (
               <>

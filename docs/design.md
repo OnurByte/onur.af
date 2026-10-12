@@ -1,11 +1,11 @@
 # Design standard
 
-The site uses one restrained, monochrome design. Shared rules live in `src/styles/global.css`; pages use them instead of defining separate control styles.
+The site uses one restrained, monochrome design implemented with Tailwind CSS utilities compiled by the Vite plugin. `src/styles/global.css` contains only the Tailwind import, font theme and system color tokens. Pages and shared components use utilities directly; no page-specific CSS blocks or legacy selector compatibility layer remain.
 
 - Utility pages (RSS, Donate, PGP): one plain `h1`, followed by a short introduction in `.prose`, then the controls or empty state. Use the common main alignment.
 - Typeface: Helvetica Neue, Helvetica, Arial. Body: 16 px, line height 1.6. Machine addresses use monospace for readability.
 - Theme: system preference, white/black backgrounds. No shadows, gradients or theme selector. The brand stays monochrome.
-- Corners: 4 px on buttons, inputs, amount choices and status labels, through `--radius`.
+- Corners: 4 px on buttons, inputs, amount choices and status labels, through Tailwind `rounded`.
 - Borders: 1 px for controls and separators. Keyboard focus: 2 px outline, 3 px offset.
 - Controls: at least 44 px high, 16 px text, weight 500, line height 1.4. Buttons use 12 px vertical and 16 px horizontal padding.
 - Primary actions: solid foreground background, inverted text. Secondary actions such as Copy: transparent with a neutral border. Navigation actions remain native links, styled with `.button` when they need button emphasis.
@@ -14,4 +14,4 @@ The site uses one restrained, monochrome design. Shared rules live in `src/style
 - Responsive groups wrap instead of overflowing. Preserve visible keyboard focus and reduced-motion preferences.
 - QR codes keep a white background for scanning. Footer icons retain their existing proportions; the RSS icon is white in dark mode and black in light mode for visibility.
 
-Do not add page-specific button radii, fonts or colors. Reuse `button`, `.button`, `.copy` and the shared variables.
+Do not add page-specific button radii, fonts or colors. Keep the existing utility patterns and shared system color tokens. Tailwind is compiled locally; the browser does not download a CSS framework or execute a CDN runtime.

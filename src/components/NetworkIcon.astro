@@ -13,7 +13,10 @@ const icon =
 ---
 
 <span
-  class="network-icon"
+  class:list={[
+    'network-icon block h-8 brightness-0 dark:invert [&_svg]:block [&_svg]:size-full',
+    network === 'I2P' ? 'w-16' : 'w-8',
+  ]}
   data-network={network}
   aria-hidden="true"
   set:html={icon.slice(icon.indexOf('<svg'))}

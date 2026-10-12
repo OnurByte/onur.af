@@ -194,54 +194,80 @@ const partialDetails =
   description="View the status of your private Monero donation."
   noindex
 >
-  <main class="donate checkout">
-    <p class="eyebrow">MONERO · {network.toUpperCase()}</p>
-    <h1>Your donation</h1>
-    <p class="status" data-state={state} role="status">
+  <main class="mx-auto w-[calc(100%_-_40px)] max-w-[960px] flex-1 pt-10 pb-[104px] min-[621px]:w-[calc(100%_-_48px)] min-[621px]:pt-[72px] [&_form]:max-w-[740px]">
+    <p class="mb-3 text-[0.8rem] tracking-[0.02em] text-[var(--muted)] uppercase">
+      MONERO · {network.toUpperCase()}
+    </p>
+    <h1 class="max-w-full text-[clamp(2.25rem,9vw,3rem)] leading-[1.1] font-normal tracking-[-0.03em] [overflow-wrap:anywhere]">
+      Your donation
+    </h1>
+    <p
+      class="my-4 inline-flex items-center rounded border border-[var(--border)] px-3 py-2 text-base leading-[1.3] font-normal data-[state=paid]:border-[var(--text)] data-[state=paid]:text-[var(--text)]"
+      data-state={state}
+      role="status"
+    >
       {shownStatus}
     </p>
     {donation && (
       <>
-        <div class="payment-grid">
+        <div class="mt-10 grid max-w-[740px] grid-cols-1 items-start gap-7 min-[621px]:grid-cols-[minmax(180px,260px)_minmax(0,1fr)] min-[621px]:gap-9">
           {qr && (
             <div
-              class="qr"
+              class="w-full max-w-[300px] bg-white p-2 text-black min-[621px]:max-w-[260px] [&_svg]:block [&_svg]:h-auto [&_svg]:w-full"
               role="img"
               set:html={qr}
               aria-label="Monero payment QR code"
             />
           )}
-          <div class="payment-details">
-            <p class="eyebrow">
+          <div class="[&_p]:mt-0 [&_p]:mb-4">
+            <p class="mb-3 text-[0.8rem] tracking-[0.02em] text-[var(--muted)] uppercase">
               {state === 'partial' ? 'REMAINING AMOUNT' : 'AMOUNT'}
             </p>
-            <p class="amount-value">
+            <p class="text-2xl font-normal">
               <span id="amount">{shownAmount ?? 'Unavailable'}</span>
               {shownAmount && ' XMR'}{' '}
               {paymentAmount && (
-                <button class="copy" type="button" data-copy="amount">
+                <button
+                  class="inline-flex min-h-11 cursor-pointer items-center justify-center whitespace-normal rounded border border-[var(--border)] bg-transparent px-4 py-3 text-base leading-[1.4] font-medium text-[var(--text)] hover:border-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--background)]"
+                  type="button"
+                  data-copy="amount"
+                >
                   Copy amount
                 </button>
               )}
             </p>
             {state === 'partial' && (
-              <p class="hint">Requested donation: {donation.amount} XMR</p>
+              <p class="mt-6 text-[0.9rem] leading-[1.7] text-[var(--muted)]">
+                Requested donation: {donation.amount} XMR
+              </p>
             )}
-            <p class="eyebrow address-label">PAYMENT ADDRESS</p>
-            <p class="address" id="address">
+            <p class="mb-3 text-[0.8rem] tracking-[0.02em] text-[var(--muted)] uppercase mt-8!">
+              PAYMENT ADDRESS
+            </p>
+            <p
+              class="font-mono text-[0.9rem] leading-[1.7] font-normal [overflow-wrap:anywhere] select-all"
+              id="address"
+            >
               {donation.address}
             </p>
-            <div class="actions">
-              <button class="copy" type="button" data-copy="address">
+            <div class="mt-4 flex flex-wrap items-center gap-4">
+              <button
+                class="inline-flex min-h-11 cursor-pointer items-center justify-center whitespace-normal rounded border border-[var(--border)] bg-transparent px-4 py-3 text-base leading-[1.4] font-medium text-[var(--text)] hover:border-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--background)]"
+                type="button"
+                data-copy="address"
+              >
                 Copy address
               </button>
               {uri && (
-                <a class="wallet-link" href={uri}>
+                <a
+                  class="text-[0.9rem] underline underline-offset-[0.3em]"
+                  href={uri}
+                >
                   Open in wallet ↗
                 </a>
               )}
             </div>
-            <p class="hint">
+            <p class="mt-6 text-[0.9rem] leading-[1.7] text-[var(--muted)]">
               {state === 'paid'
                 ? 'Thank you for your support. No further payment is needed.'
                 : paymentAmount
@@ -251,24 +277,31 @@ const partialDetails =
           </div>
         </div>
         {partialDetails && (
-          <p class="partial-details">
+          <p class="border-l-2 border-[var(--text)] pl-3 leading-[1.7]">
             {partialDetails}
             <br />
             Send the remaining amount to this same address.
           </p>
         )}
-        <form method="get" action={`/donate/${id}`} class="refresh">
-          <button type="submit">Refresh payment status</button>
+        <form method="get" action={`/donate/${id}`} class="mt-9">
+          <button
+            class="inline-flex min-h-11 cursor-pointer items-center justify-center whitespace-normal rounded border border-[var(--border)] bg-transparent px-4 py-3 text-base leading-[1.4] font-medium text-[var(--text)] hover:border-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--background)]"
+            type="submit"
+          >
+            Refresh payment status
+          </button>
         </form>
       </>
     )}
     {!donation && (
-      <p class="intro">
+      <p class="max-w-[55ch] text-base leading-[1.7] text-[var(--muted)]">
         We couldn’t load this payment. Try refreshing the page in a moment.
       </p>
     )}
     <noscript>
-      <p class="hint">Copy manually by selecting the amount or address.</p>
+      <p class="mt-6 text-[0.9rem] leading-[1.7] text-[var(--muted)]">
+        Copy manually by selecting the amount or address.
+      </p>
     </noscript>
   </main>
   <script>

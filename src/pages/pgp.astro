@@ -4,27 +4,23 @@ import publicKey from '../../public/pgp.asc?raw';
 ---
 
 <Layout title="PGP · Onur" description="Onur’s public PGP key.">
-  <main>
-    <h1>PGP</h1>
-    <div class="prose">
+  <main class="mx-auto w-[calc(100%_-_40px)] max-w-[960px] flex-1 pt-10 pb-[104px] min-[621px]:w-[calc(100%_-_48px)] min-[621px]:pt-[72px]">
+    <h1 class="max-w-full text-[clamp(2.25rem,9vw,3rem)] leading-[1.1] font-normal tracking-[-0.03em] [overflow-wrap:anywhere]">
+      PGP
+    </h1>
+    <div class="max-w-[65ch] leading-[1.8] [&_p]:my-6 [&_ul]:my-6 [&_h2]:mt-11 [&_code]:[overflow-wrap:anywhere]">
       <p>My public key for encrypted messages and signature verification.</p>
-      <p class="address">3356 36C1 5D02 326F 9A43 1C98 4103 A3DD C441 9B61</p>
-      <a class="button" href="/pgp.asc" download>
+      <p class="font-mono text-[0.9rem] leading-[1.7] font-normal [overflow-wrap:anywhere] select-all">
+        3356 36C1 5D02 326F 9A43 1C98 4103 A3DD C441 9B61
+      </p>
+      <a
+        class="inline-flex min-h-11 cursor-pointer items-center justify-center whitespace-normal rounded border border-[var(--text)] bg-[var(--text)] px-4 py-3 text-base leading-[1.4] font-medium text-[var(--background)] no-underline hover:border-[var(--border)] hover:bg-[var(--surface)] hover:text-[var(--text)]"
+        href="/pgp.asc"
+        download
+      >
         Download public key
       </a>
     </div>
-    <pre class="public-key"><code>{publicKey.trim()}</code></pre>
+    <pre class="mt-8 overflow-x-auto rounded border border-[var(--border)] p-4 text-[0.85rem] leading-[1.6]"><code>{publicKey.trim()}</code></pre>
   </main>
 </Layout>
-
-<style>
-  .public-key {
-    margin: 32px 0 0;
-    padding: 16px;
-    border: var(--border-width) solid var(--border);
-    border-radius: var(--radius);
-    font-size: 0.85rem;
-    line-height: 1.6;
-    overflow-x: auto;
-  }
-</style>

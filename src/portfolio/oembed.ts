@@ -1,18 +1,5 @@
-import { notes, projects } from './content';
+import { publicPreview } from './previews';
 import { publicPaths, validSiteUrl } from './seo';
-
-const pageDetails: Record<string, [string, string]> = {
-  '/donate': ['Donate · Onur', 'Donate Monero to Onur.'],
-  '/projects': ['Projects · Onur', 'Projects.'],
-  '/notes': ['Notes · Onur', 'Notes.'],
-  '/reading': ['Reading · Onur', 'Reading list and OPML.'],
-  '/identity': [
-    'Identity · Onur',
-    'Public key, alternate addresses and source code.',
-  ],
-  '/rss': ['RSS · Onur', 'Follow new writing through RSS.'],
-  '/pgp': ['PGP · Onur', 'Onur’s public PGP key.'],
-};
 
 export function oembedResponse(
   origin: string | undefined,
@@ -58,17 +45,9 @@ export function oembedResponse(
     return error(404);
   const size =
     Math.min(...limits) >= 512 ? 512 : Math.min(...limits) >= 180 ? 180 : 0;
-  const project = projects.find(
-    (entry) => target.pathname === `/projects/${entry.slug}`,
-  );
-  const note = notes.find(
-    (entry) => target.pathname === `/notes/${entry.slug}`,
-  );
-  const [title, description] = project
-    ? [`${project.name} · Onur`, project.summary]
-    : note
-      ? [`${note.title} · Onur`, note.summary]
-      : (pageDetails[target.pathname] ?? ['Onur', 'Onur']);
+  const preview = publicPreview(target.pathname);
+  if (!preview) return error(404);
+  const { title, description } = preview;
   return new Response(
     JSON.stringify({
       version: '1.0',
@@ -77,7 +56,9 @@ export function oembedResponse(
       provider_url: `${origin}/`,
       author_name: 'Onur',
       author_url: `${origin}/`,
-      ...(target.pathname === '/' ? {} : { title, description }),
+      ...(target.pathname === '/'
+        ? {}
+        : { title: `${title} · Onur`, description }),
       ...(size
         ? {
             thumbnail_url: `${origin}/brand/${size === 512 ? 'icon.png' : 'apple-touch-icon.png'}`,

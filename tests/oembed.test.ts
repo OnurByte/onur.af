@@ -1,6 +1,7 @@
 import { expect, test } from 'bun:test';
 import { oembedResponse } from '../src/portfolio/oembed';
 import { publicPaths } from '../src/portfolio/seo';
+import { publicPreview } from '../src/portfolio/previews';
 
 const origin = 'https://portfolio.example';
 const request = (target = `${origin}/`, extra = '') =>
@@ -17,7 +18,7 @@ test('homepage does not replace the HTML motto with generic oEmbed text', async 
     request(`${origin}/projects`),
   ).json();
   expect(projectPage.title).toBe('Projects · Onur');
-  expect(projectPage.description).toBe('Projects.');
+  expect(projectPage.description).toBe(publicPreview('/projects')!.description);
 });
 
 test('only public same-origin canonical URLs produce link metadata', async () => {
