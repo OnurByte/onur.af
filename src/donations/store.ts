@@ -154,16 +154,6 @@ export function createDonationStore(databaseUrl: string) {
 
     get: getDonation,
 
-    async review(id: string): Promise<Donation> {
-      validId(id);
-      const updated = await sql<DonationRow[]>`
-        UPDATE donations SET state = 'review' WHERE donation_id = ${id}::uuid
-        RETURNING donation_id, amount, address, state
-      `;
-      if (!updated[0]) throw new Error('donation reservation not found');
-      return donation(updated[0]);
-    },
-
     close(): Promise<void> {
       return sql.close();
     },
