@@ -84,9 +84,9 @@ test.skipIf(!enabled)(
           'The creator originates.',
           'I am. I think. I will.',
           'To think is an act of choice.',
-        ].some((motto) => home.includes(`<h1>${motto}</h1>`)),
+        ].some((motto) => home.match(/<h1\b[^>]*>(.*?)<\/h1>/s)?.[1] === motto),
       ).toBe(true);
-      expect(home).toContain('<span class="home-link">');
+      expect(home).toContain('src="/brand/onur.svg"');
       expect(home).not.toContain('aria-label="Onur home"');
       const sitemap = await (await fetch(`${origin}/sitemap.xml`)).text();
       expect(sitemap.match(/<loc>/g)).toHaveLength(8);
@@ -136,10 +136,10 @@ test.skipIf(!enabled)(
       expect(html).toContain('Partial payment received');
       expect(html).not.toContain('Stirner');
       expect(html).toContain('recipient_name=Onur');
-      expect(html).toContain('brand-mark');
+      expect(html).toContain('src="/brand/onur.svg"');
       expect(html).toContain('href="/" aria-label="Onur home"');
       expect(html).toContain('aria-label="I2P"');
-      expect(html).toContain('class="footer-networks"');
+      expect(html).toContain('aria-label="Alternate sites and contact"');
       expect(html).toContain(address);
       expect(html).toContain(`monero:${address}?tx_amount=0.025`);
       expect(html).toContain('Requested donation: 0.075 XMR');

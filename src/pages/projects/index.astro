@@ -4,15 +4,17 @@ import { projects } from '../../portfolio/content';
 ---
 
 <Layout title="Projects · Onur" description="Projects.">
-  <main class="editorial">
-    <header class="section-heading">
-      <h1>Projects</h1>
+  <main class="mx-auto w-[calc(100%_-_40px)] max-w-[960px] flex-1 pt-10 pb-[104px] min-[621px]:w-[calc(100%_-_48px)] min-[621px]:pt-[72px] [&_a]:underline [&_a]:underline-offset-[0.2em] [&_h2]:mb-5 [&_h2]:text-[1.35rem] [&_h2]:font-medium [&_p]:my-4 [&_p]:leading-[1.7]">
+    <header class="mb-10">
+      <h1 class="max-w-full text-[clamp(2.25rem,9vw,3rem)] leading-[1.1] font-normal tracking-[-0.03em] [overflow-wrap:anywhere]">
+        Projects
+      </h1>
     </header>
     {projects.length === 0 && <p>No projects published.</p>}
-    <div class="entry-list">
+    <div class="my-7 p-0">
       {projects.map((project) => (
-        <article class="entry">
-          <div class="entry-meta">{project.status}</div>
+        <article class="border-t border-[var(--border)] py-6">
+          <div class="text-[0.85rem] text-[var(--muted)]">{project.status}</div>
           <h2>
             <a href={`/projects/${project.slug}`}>{project.name}</a>
           </h2>

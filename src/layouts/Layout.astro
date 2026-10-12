@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { portfolioLinks } from '../portfolio/links';
+import { mottos, publicPreview } from '../portfolio/previews';
 import Brand from '../components/Brand.astro';
 import NetworkIcon from '../components/NetworkIcon.astro';
 import { canonicalUrl, siteDescription, siteOrigin } from '../portfolio/seo';
@@ -8,25 +9,33 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  motto?: string;
 }
 const {
   title = 'Onur',
-  description = siteDescription,
+  description: suppliedDescription = siteDescription,
+  motto = mottos[0],
   noindex = false,
 } = Astro.props;
 const links = portfolioLinks();
 const origin = siteOrigin();
-const socialImage = origin ? `${origin}/brand/social.png` : undefined;
+const preview = publicPreview(Astro.url.pathname);
+const description = preview?.description ?? suppliedDescription;
 const canonical = canonicalUrl(origin, Astro.url.pathname);
 const indexable =
   Boolean(canonical) && !noindex && Astro.response.status === 200;
+const socialImage =
+  indexable && preview
+    ? `${origin}/social/${preview.key}.png?m=${mottos.indexOf(motto as (typeof mottos)[number])}`
+    : undefined;
+const imageAlt = `${preview?.title ?? title} — ${description}`;
 const oembedUrl =
   indexable && canonical
     ? `${origin}/oembed.json?url=${encodeURIComponent(canonical)}&format=json`
     : undefined;
 const iconUrl = origin ? `${origin}/brand/icon.png` : '/brand/icon.png';
 const discordEmbed =
-  indexable && Astro.url.pathname === '/'
+  indexable && preview
     ? {
         component: {
           type: 17,
@@ -34,7 +43,7 @@ const discordEmbed =
           components: [
             {
               type: 9,
-              components: [{ type: 10, content: `# Onur\n${description}` }],
+              components: [{ type: 10, content: `## ${motto}\nOnur` }],
               accessory: {
                 type: 11,
                 media: { url: iconUrl },
@@ -42,9 +51,17 @@ const discordEmbed =
               },
             },
             {
+              type: 10,
+              content: `# ${preview.title}\n${description}`,
+            },
+            {
+              type: 12,
+              items: [{ media: { url: socialImage }, description: imageAlt }],
+            },
+            {
               type: 1,
               components: [
-                { type: 2, style: 5, label: 'Open site', url: `${origin}/` },
+                { type: 2, style: 5, label: 'Open page', url: canonical },
                 { type: 2, style: 5, label: 'PGP', url: `${origin}/pgp` },
                 { type: 2, style: 5, label: 'RSS', url: `${origin}/rss` },
               ],
@@ -115,7 +132,7 @@ const schema =
         <meta property="og:image:type" content="image/png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Onur — geometric ribbon mark" />
+        <meta property="og:image:alt" content={imageAlt} />
       </>
     )}
     {oembedUrl && (
@@ -139,7 +156,7 @@ const schema =
     {socialImage && (
       <>
         <meta name="twitter:image" content={socialImage} />
-        <meta name="twitter:image:alt" content="Onur — geometric ribbon mark" />
+        <meta name="twitter:image:alt" content={imageAlt} />
       </>
     )}
     {schema && (
@@ -154,8 +171,12 @@ const schema =
       title="Onur — working notes"
       href="/rss.xml"
     />
-    <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
     <link rel="icon" type="image/png" sizes="512x512" href={iconUrl} />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href={origin ? `${origin}/brand/favicon.svg` : '/brand/favicon.svg'}
+    />
     <link
       rel="icon"
       type="image/x-icon"
@@ -172,33 +193,56 @@ const schema =
       }
     />
   </head>
-  <body>
-    <a class="skip-link" href="#content">
+  <body class="m-0 flex min-h-svh min-w-80 flex-col bg-[var(--background)] font-sans text-base leading-[1.6] text-[var(--text)] [font-synthesis:none] [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-3 [&_button:focus-visible]:outline-2 [&_button:focus-visible]:outline-offset-3 motion-reduce:[&_*]:animate-none motion-reduce:[&_*]:scroll-auto motion-reduce:[&_*]:transition-none">
+    <a
+      class="absolute -top-25 left-6 z-10 bg-[var(--background)] p-3 focus:top-3 max-[620px]:left-5"
+      href="#content"
+    >
       Skip to content
     </a>
-    <header class="site-header">
-      <nav class="site-nav" aria-label="Main navigation">
+    <header class="mx-auto flex w-[calc(100%-48px)] max-w-240 items-center justify-between gap-5 py-6 max-[620px]:w-[calc(100%-40px)]">
+      <nav
+        class="flex w-full items-center justify-between gap-5"
+        aria-label="Main navigation"
+      >
         {Astro.url.pathname === '/' ? (
-          <span class="home-link">
+          <span class="text-[2.5rem] font-medium leading-[1.15]">
             <Brand />
           </span>
         ) : (
-          <a class="home-link" href="/" aria-label="Onur home">
+          <a
+            class="text-[2.5rem] font-medium leading-[1.15] no-underline"
+            href="/"
+            aria-label="Onur home"
+          >
             <Brand />
           </a>
         )}
       </nav>
     </header>
-    <div id="content" class="page-content" tabindex="-1">
+    <div id="content" class="flex-1" tabindex="-1">
       <slot />
     </div>
-    <footer class="site-footer" aria-label="Contact and donation links">
-      <nav class="footer-nav" aria-label="Alternate sites and contact">
-        <span class="footer-identity">
-          <a class="footer-link footer-pgp" href="/pgp">
+    <footer
+      class="mx-auto flex w-[calc(100%-48px)] max-w-240 items-center justify-between gap-5 pt-5 pb-7 text-xl font-bold max-[620px]:w-[calc(100%-40px)] max-[620px]:text-base"
+      aria-label="Contact and donation links"
+    >
+      <nav
+        class="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-5 max-[620px]:gap-1"
+        aria-label="Alternate sites and contact"
+      >
+        <span class="flex items-center justify-self-start gap-5 max-[620px]:gap-3">
+          <a
+            class="inline-flex min-h-8 items-center gap-2 no-underline"
+            href="/pgp"
+          >
             PGP
           </a>
-          <a class="footer-link" href="/rss" aria-label="RSS">
+          <a
+            class="inline-flex min-h-8 items-center gap-2 no-underline"
+            href="/rss"
+            aria-label="RSS"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="32"
@@ -206,6 +250,7 @@ const schema =
               viewBox="0 0 24 24"
               fill="none"
               aria-hidden="true"
+              class="brightness-0 dark:invert"
             >
               <circle cx="5" cy="19" r="2" fill="white" />
               <path
@@ -217,17 +262,21 @@ const schema =
             </svg>
           </a>
         </span>
-        <span class="footer-networks">
+        <span class="flex items-center justify-self-center gap-5 max-[620px]:gap-3">
           {links
             .filter(({ label }) => label !== 'PGP')
             .map(({ label, href }) => {
               return href ? (
-                <a class="footer-link" href={href} aria-label={label}>
+                <a
+                  class="inline-flex min-h-8 items-center gap-2 no-underline"
+                  href={href}
+                  aria-label={label}
+                >
                   <NetworkIcon network={label === 'TOR' ? 'TOR' : 'I2P'} />
                 </a>
               ) : (
                 <span
-                  class="footer-link unavailable-link"
+                  class="inline-flex min-h-8 cursor-default items-center gap-2 text-[var(--muted)]"
                   role="img"
                   aria-label={label}
                   title={`${label} address not published`}
@@ -237,7 +286,10 @@ const schema =
               );
             })}
         </span>
-        <a class="footer-link footer-donate" href="/donate">
+        <a
+          class="inline-flex min-h-8 items-center justify-self-end gap-2 no-underline"
+          href="/donate"
+        >
           DONATE
         </a>
       </nav>

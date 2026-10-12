@@ -20,13 +20,16 @@
     "@astrojs/vercel": "^11.0.14",
     "astro": "^7.3.8",
     "monero-ts": "0.11.20",
+    "sharp": "0.35.5",
     "xmr-pay": "github:SlowBearDigger/xmr-pay#26d25eea800b831c6a90d180c698a4ac6426502c"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/bun": "latest",
     "prettier": "^3.9.10",
     "prettier-plugin-astro": "^1.1.1",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"
   },
   "overrides": {

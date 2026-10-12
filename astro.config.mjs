@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import node from '@astrojs/node';
 import vercel from '@astrojs/vercel';
 import { loadEnv } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 import { validSiteUrl } from './src/portfolio/seo.ts';
 
 const site = validSiteUrl(
@@ -10,6 +11,7 @@ const site = validSiteUrl(
 );
 
 export default defineConfig({
+  vite: { plugins: [tailwindcss()] },
   site,
   output: 'server',
   adapter: process.env.VERCEL ? vercel() : node({ mode: 'standalone' }),
