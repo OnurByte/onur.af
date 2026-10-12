@@ -1,6 +1,8 @@
 # SVG sources
 
 - `onur.svg`: owner-supplied `/home/yargc/Downloads/logo (4).svg`, unchanged.
+- `social.png`, `icon.png`, `apple-touch-icon.png`: raster versions of `onur.svg`, pure white mark on black; social preview 1200 × 630, icon 512 × 512, touch icon 180 × 180.
+- `/favicon.ico`: 16/32/48px raster variants of the same mark for favicon consumers.
 - `tor.svg`: Tor Project onion glyph, https://styleguide.torproject.org/static/images/tor-browser/glyph/glyph.svg ; displayed in white on dark background. Source: https://styleguide.torproject.org/brand-assets/ .
 - `i2p.svg`: user-selected I2P logo 2019, https://upload.wikimedia.org/wikipedia/commons/4/4e/I2P_logo_2019.svg ; source and public-domain designation: https://tr.wikipedia.org/wiki/Dosya:I2P_logo_2019.svg . Original vector preserved, displayed white with CSS.
 
