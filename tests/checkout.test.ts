@@ -104,8 +104,11 @@ test.skipIf(!enabled)(
         discord.component.components[1].components.map(
           (button: { label: string }) => button.label,
         ),
-      ).toEqual(['Open page', 'PGP', 'RSS']);
+      ).toEqual(['Open page', 'PGP', 'RSS', 'Discord']);
 
+      expect(discord.component.components[1].components[3].url).toBe(
+        'https://discord.com/users/1434953668959932426',
+      );
       for (const path of publicPaths) {
         const page = await (
           await fetch(`${origin}${path}`, { headers: { Accept: 'text/html' } })
