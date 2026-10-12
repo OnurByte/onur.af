@@ -2,30 +2,88 @@
 import Layout from '../../layouts/Layout.astro';
 import { formatXmrAmount, parseXmrAmount } from '../../donations/money';
 const amounts = ['0.01', '0.05', '0.1', '0.25'];
+Astro.response.headers.set('Cache-Control', 'private, no-store');
+Astro.response.headers.set('Referrer-Policy', 'no-referrer');
 const query = Astro.url.searchParams;
 const retryId = query.get('retry') ?? '';
-const id = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(retryId) ? retryId : crypto.randomUUID();
+const id =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    retryId,
+  )
+    ? retryId
+    : crypto.randomUUID();
 const requestedAmount = query.get('choice') ?? '';
-const selectedAmount = amounts.includes(requestedAmount) ? requestedAmount : '0.05';
+const selectedAmount = amounts.includes(requestedAmount)
+  ? requestedAmount
+  : '0.05';
 const customSelected = requestedAmount === 'custom';
 let customAmount = query.get('custom') ?? '';
-try { if (customAmount) customAmount = formatXmrAmount(parseXmrAmount(customAmount)); } catch { customAmount = ''; }
+try {
+  if (customAmount)
+    customAmount = formatXmrAmount(parseXmrAmount(customAmount));
+} catch {
+  customAmount = '';
+}
 ---
-<Layout title="Donate · Onur">
+
+<Layout
+  title="Donate · Onur"
+  description="Support Onur’s independent software with a private Monero donation. Choose an amount and receive a unique payment address."
+>
   <main class="donate">
     <p class="eyebrow">MONERO · XMR</p>
     <h1>Support my work</h1>
-    <p class="intro">Choose an amount to create a private, one-time payment address.</p>
-    {query.has('error') && <p class="form-error" role="alert">{query.get('error') === 'amount' ? 'Enter an amount greater than 0 and no more than 100 XMR, with up to 12 decimal places.' : 'The donation service is temporarily unavailable. Retry this same donation or try again shortly.'}</p>}
+    <p class="intro">
+      Choose an amount to create a private, one-time payment address.
+    </p>
+    {query.has('error') && (
+      <p class="form-error" role="alert">
+        {query.get('error') === 'amount'
+          ? 'Enter an amount greater than 0 and no more than 100 XMR, with up to 12 decimal places.'
+          : 'The donation service is temporarily unavailable. Retry this same donation or try again shortly.'}
+      </p>
+    )}
     <form method="post" action="/donate/create">
       <fieldset>
         <legend>Amount</legend>
-        {amounts.map((amount) => <label class="amount"><input type="radio" name="amount" value={amount} checked={!customSelected && selectedAmount === amount} /><span>{amount} XMR</span></label>)}
-        <label class="amount"><input type="radio" name="amount" value="custom" checked={customSelected} /><span>Custom</span></label>
+        {amounts.map((amount) => (
+          <label class="amount">
+            <input
+              type="radio"
+              name="amount"
+              value={amount}
+              checked={!customSelected && selectedAmount === amount}
+            />
+            <span>{amount} XMR</span>
+          </label>
+        ))}
+        <label class="amount">
+          <input
+            type="radio"
+            name="amount"
+            value="custom"
+            checked={customSelected}
+          />
+          <span>Custom</span>
+        </label>
       </fieldset>
-      <label class="custom-amount">Custom amount in XMR<input name="customAmount" type="text" inputmode="decimal" autocomplete="off" maxlength="16" placeholder="e.g. 0.075" value={customAmount} /><span>More than 0, up to 100 XMR; 12 decimal places maximum.</span></label>
+      <label class="custom-amount">
+        Custom amount in XMR
+        <input
+          name="customAmount"
+          type="text"
+          inputmode="decimal"
+          autocomplete="off"
+          maxlength="16"
+          placeholder="e.g. 0.075"
+          value={customAmount}
+        />
+        <span>More than 0, up to 100 XMR; 12 decimal places maximum.</span>
+      </label>
       <input type="hidden" name="id" value={id} />
-      <button type="submit">Continue to payment <span aria-hidden="true">↗</span></button>
+      <button type="submit">
+        Continue to payment <span aria-hidden="true">↗</span>
+      </button>
     </form>
   </main>
 </Layout>

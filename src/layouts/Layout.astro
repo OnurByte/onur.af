@@ -2,42 +2,144 @@
 import '../styles/global.css';
 import { portfolioLinks } from '../portfolio/links';
 import Brand from '../components/Brand.astro';
-const { title = 'Onur' } = Astro.props;
+import { canonicalUrl, siteDescription, siteOrigin } from '../portfolio/seo';
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+const {
+  title = 'Onur · Independent software',
+  description = siteDescription,
+  noindex = false,
+} = Astro.props;
 const links = portfolioLinks();
+const origin = siteOrigin();
+const canonical = canonicalUrl(origin, Astro.url.pathname);
+const indexable =
+  Boolean(canonical) && !noindex && Astro.response.status === 200;
+const schema =
+  indexable && Astro.url.pathname === '/'
+    ? {
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebSite',
+            '@id': `${origin}/#website`,
+            url: `${origin}/`,
+            name: 'Onur',
+            description,
+            publisher: { '@id': `${origin}/#person` },
+          },
+          {
+            '@type': 'Person',
+            '@id': `${origin}/#person`,
+            name: 'Onur',
+            url: `${origin}/`,
+          },
+        ],
+      }
+    : undefined;
 ---
+
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="theme-color"
+      content="#ffffff"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#000000"
+      media="(prefers-color-scheme: dark)"
+    />
     <title>{title}</title>
-    <meta name="description" content="Onur — independent software." />
+    <meta name="description" content={description} />
+    <meta
+      name="robots"
+      content={indexable ? 'index, follow' : 'noindex, nofollow'}
+    />
+    {indexable && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Onur" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="en_US" />
+    {indexable && <meta property="og:url" content={canonical} />}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {schema && (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify(schema).replaceAll('<', '\\u003c')}
+      />
+    )}
     <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
   </head>
   <body>
     <header class="site-header">
       <nav class="site-nav" aria-label="Main navigation">
-        <a class="home-link" href="/" aria-label="Onur home"><Brand /></a>
+        {Astro.url.pathname === '/' ? (
+          <span class="home-link">
+            <Brand />
+          </span>
+        ) : (
+          <a class="home-link" href="/" aria-label="Onur home">
+            <Brand />
+          </a>
+        )}
       </nav>
     </header>
     <slot />
     <footer class="site-footer" aria-label="Contact and donation links">
       <nav class="footer-nav" aria-label="Alternate sites and contact">
-        {links.filter(({ label }) => label === 'PGP').map(({ href }) => href
-          ? <a class="footer-link footer-pgp" href={href}>PGP</a>
-          : <span class="footer-link footer-pgp unavailable-link" title="Address not published">PGP</span>)}
+        {links
+          .filter(({ label }) => label === 'PGP')
+          .map(({ href }) =>
+            href ? (
+              <a class="footer-link footer-pgp" href={href}>
+                PGP
+              </a>
+            ) : (
+              <span
+                class="footer-link footer-pgp unavailable-link"
+                title="Address not published"
+              >
+                PGP
+              </span>
+            ),
+          )}
         <span class="footer-networks">
-          {links.filter(({ label }) => label !== 'PGP').map(({ label, href }) => {
-            const icon = label === 'TOR' ? '/brand/tor.svg' : '/brand/i2p.svg';
-            return href
-              ? <a class="footer-link" href={href} aria-label={label}><img src={icon} alt="" aria-hidden="true" /></a>
-              : <span class="footer-link unavailable-link" role="img" aria-label={label} title={`${label} address not published`}><img src={icon} alt="" aria-hidden="true" /></span>;
-          })}
+          {links
+            .filter(({ label }) => label !== 'PGP')
+            .map(({ label, href }) => {
+              const icon =
+                label === 'TOR' ? '/brand/tor.svg' : '/brand/i2p.svg';
+              return href ? (
+                <a class="footer-link" href={href} aria-label={label}>
+                  <img src={icon} alt="" aria-hidden="true" />
+                </a>
+              ) : (
+                <span
+                  class="footer-link unavailable-link"
+                  role="img"
+                  aria-label={label}
+                  title={`${label} address not published`}
+                >
+                  <img src={icon} alt="" aria-hidden="true" />
+                </span>
+              );
+            })}
         </span>
-        <a class="footer-link footer-donate" href="/donate">DONATE</a>
+        <a class="footer-link footer-donate" href="/donate">
+          DONATE
+        </a>
       </nav>
     </footer>
   </body>

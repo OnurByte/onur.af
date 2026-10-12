@@ -2,7 +2,9 @@ const PICOS_PER_XMR = 1_000_000_000_000n;
 
 function parseAmount(value: string): bigint {
   if (typeof value !== 'string' || !/^\d+(?:\.\d{1,12})?$/.test(value)) {
-    throw new Error('amount must be a decimal string with at most 12 fractional digits');
+    throw new Error(
+      'amount must be a decimal string with at most 12 fractional digits',
+    );
   }
 
   const [whole, fraction = ''] = value.split('.');
@@ -28,6 +30,9 @@ export function parseXmrAmountOrZero(value: string): bigint {
 export function formatXmrAmount(piconero: bigint): string {
   if (piconero < 0n) throw new Error('amount cannot be negative');
   const whole = piconero / PICOS_PER_XMR;
-  const fraction = (piconero % PICOS_PER_XMR).toString().padStart(12, '0').replace(/0+$/, '');
+  const fraction = (piconero % PICOS_PER_XMR)
+    .toString()
+    .padStart(12, '0')
+    .replace(/0+$/, '');
   return fraction ? `${whole}.${fraction}` : whole.toString();
 }

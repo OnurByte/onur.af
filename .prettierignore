@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+bun.lock
+wallet/
+wallets/
+backups/
+*.keys
+*.cache

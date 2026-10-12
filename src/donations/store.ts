@@ -24,17 +24,25 @@ type DonationRow = {
 };
 
 function validId(id: string): void {
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+  if (
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+  ) {
     throw new Error('donation id must be a UUID');
   }
 }
 
 function donation(row: DonationRow): Donation {
-  return { id: row.donation_id, amount: row.amount, address: row.address, state: row.state };
+  return {
+    id: row.donation_id,
+    amount: row.amount,
+    address: row.address,
+    state: row.state,
+  };
 }
 
 function validAddress(address: string): void {
-  if (!/^[45789AB][1-9A-HJ-NP-Za-km-z]{94}$/.test(address)) throw new Error('invalid donation address');
+  if (!/^[45789AB][1-9A-HJ-NP-Za-km-z]{94}$/.test(address))
+    throw new Error('invalid donation address');
 }
 
 export function createDonationStore(databaseUrl: string) {
@@ -66,11 +74,14 @@ export function createDonationStore(databaseUrl: string) {
       await sql`CREATE INDEX IF NOT EXISTS donations_created_at_idx ON donations (created_at)`;
     },
 
-    async reserve(id: string, amount: string): Promise<{ donation: Donation; created: boolean }> {
+    async reserve(
+      id: string,
+      amount: string,
+    ): Promise<{ donation: Donation; created: boolean }> {
       validId(id);
       const canonicalAmount = formatXmrAmount(parseXmrAmount(amount));
 
-      return sql.begin(async tx => {
+      return sql.begin(async (tx) => {
         const existingReservation = async () => {
           const rows = await tx<DonationRow[]>`
             SELECT donation_id, amount, address, state
@@ -78,7 +89,10 @@ export function createDonationStore(databaseUrl: string) {
           `;
           const existing = rows[0];
           if (!existing) return null;
-          if (existing.amount !== canonicalAmount) throw new Error('donation id already reserved for a different amount');
+          if (existing.amount !== canonicalAmount)
+            throw new Error(
+              'donation id already reserved for a different amount',
+            );
 
           // A crashed or timed-out allocation may already have created an address upstream.
           if (existing.state === 'creating') {
@@ -103,7 +117,8 @@ export function createDonationStore(databaseUrl: string) {
           SELECT count(*)::text AS count FROM donations
           WHERE created_at >= clock_timestamp() - interval '1 minute'
         `;
-        if (BigInt(recent[0]?.count ?? '0') >= 30n) throw new DonationCapacityError();
+        if (BigInt(recent[0]?.count ?? '0') >= 30n)
+          throw new DonationCapacityError();
 
         const inserted = await tx<DonationRow[]>`
           INSERT INTO donations (donation_id, amount, address, state)
@@ -111,7 +126,8 @@ export function createDonationStore(databaseUrl: string) {
           ON CONFLICT (donation_id) DO NOTHING
           RETURNING donation_id, amount, address, state
         `;
-        if (inserted[0]) return { donation: donation(inserted[0]), created: true };
+        if (inserted[0])
+          return { donation: donation(inserted[0]), created: true };
 
         const conflict = await existingReservation();
         if (!conflict) throw new Error('donation reservation disappeared');
@@ -130,7 +146,8 @@ export function createDonationStore(databaseUrl: string) {
       if (updated[0]) return donation(updated[0]);
 
       const existing = await getDonation(id);
-      if (existing?.state === 'ready' && existing.address === address) return existing;
+      if (existing?.state === 'ready' && existing.address === address)
+        return existing;
       if (!existing) throw new Error('donation reservation not found');
       throw new Error('donation address cannot be changed');
     },
