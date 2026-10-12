@@ -1,9 +1,9 @@
-import { publicEditorialPaths } from './content';
-
 export const publicPaths: readonly string[] = [
   '/',
   '/donate',
-  ...publicEditorialPaths,
+  '/identity',
+  '/rss',
+  '/pgp',
 ];
 export const siteDescription = 'My work, in my own words.';
 

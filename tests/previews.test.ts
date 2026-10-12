@@ -33,6 +33,10 @@ test('private checkout and unknown paths have no public preview', () => {
     '/donate/private',
     '/oembed.json',
     '/unknown',
+    '/projects',
+    '/notes',
+    '/reading',
+    '/feeds.opml',
     '/rss.xml',
   ]) {
     expect(publicPreview(path)).toBeUndefined();

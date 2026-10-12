@@ -3,7 +3,6 @@ import { publicPreview } from '../portfolio/previews';
 import Layout from '../layouts/Layout.astro';
 import { siteOrigin } from '../portfolio/seo';
 import { rssResponse, wantsFeedHtml } from '../portfolio/feeds';
-import { notes } from '../portfolio/content';
 if (!wantsFeedHtml(Astro.request.headers.get('accept'))) {
   return rssResponse(siteOrigin(), Astro.url);
 }
@@ -43,28 +42,6 @@ const description = publicPreview('/rss')!.description;
       </a>
       <p id="copy-status" role="status" hidden></p>
     </div>
-    {notes.length > 0 && (
-      <div class="my-7 p-0">
-        {notes.map((note) => (
-          <article class="border-t border-[var(--border)] py-6">
-            <h2>
-              <a href={`/notes/${note.slug}`}>{note.title}</a>
-            </h2>
-            <time
-              class="text-[0.85rem] text-[var(--muted)]"
-              datetime={note.date}
-            >
-              {note.date}
-            </time>
-            <div class="max-w-[65ch] leading-[1.8] [&_p]:my-6 [&_ul]:my-6 [&_h2]:mt-11 [&_code]:[overflow-wrap:anywhere]">
-              {note.paragraphs.map((paragraph) => (
-                <p>{paragraph}</p>
-              ))}
-            </div>
-          </article>
-        ))}
-      </div>
-    )}
   </main>
 </Layout>
 <script>
