@@ -79,7 +79,13 @@ test.skipIf(!enabled)(
         'property="og:url" content="https://portfolio.example/"',
       );
       expect(home).toContain('application/ld+json');
-      expect(home).not.toContain('<h1');
+      expect(
+        [
+          'The creator originates.',
+          'I am. I think. I will.',
+          'To think is an act of choice.',
+        ].some((motto) => home.includes(`<h1>${motto}</h1>`)),
+      ).toBe(true);
       expect(home).toContain('<span class="home-link">');
       expect(home).not.toContain('aria-label="Onur home"');
       const sitemap = await (await fetch(`${origin}/sitemap.xml`)).text();
