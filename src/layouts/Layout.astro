@@ -259,28 +259,26 @@ const schema =
           </a>
         </span>
         <span class="flex items-center justify-self-center gap-5 max-[620px]:gap-3">
-          {links
-            .filter(({ label }) => label !== 'PGP')
-            .map(({ label, href }) => {
-              return href ? (
-                <a
-                  class="inline-flex min-h-8 items-center gap-2 no-underline"
-                  href={href}
-                  aria-label={label}
-                >
-                  <NetworkIcon network={label === 'TOR' ? 'TOR' : 'I2P'} />
-                </a>
-              ) : (
-                <span
-                  class="inline-flex min-h-8 cursor-default items-center gap-2 text-[var(--muted)]"
-                  role="img"
-                  aria-label={label}
-                  title={`${label} address not published`}
-                >
-                  <NetworkIcon network={label === 'TOR' ? 'TOR' : 'I2P'} />
-                </span>
-              );
-            })}
+          {links.map(({ label, href }) => {
+            return href ? (
+              <a
+                class="inline-flex min-h-8 items-center gap-2 no-underline"
+                href={href}
+                aria-label={label}
+              >
+                <NetworkIcon network={label === 'TOR' ? 'TOR' : 'I2P'} />
+              </a>
+            ) : (
+              <span
+                class="inline-flex min-h-8 cursor-default items-center gap-2 text-[var(--muted)]"
+                role="img"
+                aria-label={label}
+                title={`${label} address not published`}
+              >
+                <NetworkIcon network={label === 'TOR' ? 'TOR' : 'I2P'} />
+              </span>
+            );
+          })}
         </span>
         <a
           class="inline-flex min-h-8 items-center justify-self-end gap-2 no-underline"

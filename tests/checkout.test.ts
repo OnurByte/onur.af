@@ -58,7 +58,6 @@ test.skipIf(!enabled)(
         XMR_NETWORK: 'stagenet',
         PORTFOLIO_TOR_URL: 'http://example.onion',
         PORTFOLIO_I2P_URL: 'javascript:alert(1)',
-        PORTFOLIO_PGP_URL: '/keys/pgp.asc',
       },
       stdout: 'ignore',
       stderr: 'ignore',
@@ -143,8 +142,8 @@ test.skipIf(!enabled)(
         );
       }
       const sitemap = await (await fetch(`${origin}/sitemap.xml`)).text();
-      expect(sitemap.match(/<loc>/g)).toHaveLength(5);
-      for (const path of ['/identity', '/rss', '/pgp']) {
+      expect(sitemap.match(/<loc>/g)).toHaveLength(4);
+      for (const path of ['/rss', '/pgp']) {
         expect(sitemap).toContain(
           `<loc>https://portfolio.example${path}</loc>`,
         );
@@ -152,6 +151,7 @@ test.skipIf(!enabled)(
       expect(sitemap).toContain('<loc>https://portfolio.example/donate</loc>');
       expect(sitemap).not.toContain(id);
       for (const removed of [
+        '/identity',
         '/projects',
         '/notes',
         '/reading',

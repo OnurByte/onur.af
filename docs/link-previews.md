@@ -4,7 +4,7 @@ The server renders Open Graph and X Card metadata for public pages. The homepage
 
 `SITE_URL` must contain the public HTTP(S) origin. Never derive public asset addresses from an incoming Host header. Without that configuration, canonical URLs, oEmbed discovery and the Discord component card are omitted.
 
-The public page set is Home, Donate, Identity, RSS and PGP. Empty project, note and reading pages and the OPML endpoint have been removed.
+The public page set is Home, Donate, RSS and PGP. The redundant Identity page, empty project, note and reading pages and the OPML endpoint have been removed.
 
 ## Shared preview
 
