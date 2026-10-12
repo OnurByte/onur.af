@@ -1,20 +1,20 @@
 ---
+import { publicPreview } from '../portfolio/previews';
 import Layout from '../layouts/Layout.astro';
 import { portfolioLinks } from '../portfolio/links';
 const links = portfolioLinks();
 const pgp = links.find((link) => link.label === 'PGP');
 const networks = links.filter((link) => link.label !== 'PGP');
+const description = publicPreview('/identity')!.description;
 ---
 
-<Layout
-  title="Identity · Onur"
-  description="Public key, alternate addresses and source code."
->
+<Layout title="Identity · Onur" description={description}>
   <main class="mx-auto w-[calc(100%_-_40px)] max-w-[960px] flex-1 pt-10 pb-[104px] min-[621px]:w-[calc(100%_-_48px)] min-[621px]:pt-[72px] [&_a]:underline [&_a]:underline-offset-[0.2em] [&_h2]:mb-5 [&_h2]:text-[1.35rem] [&_h2]:font-medium [&_p]:my-4 [&_p]:leading-[1.7]">
     <header class="mb-10">
       <h1 class="max-w-full text-[clamp(2.25rem,9vw,3rem)] leading-[1.1] font-normal tracking-[-0.03em] [overflow-wrap:anywhere]">
         Identity
       </h1>
+      <p data-page-description>{description}</p>
     </header>
     <h2>OpenPGP</h2>
     <p>

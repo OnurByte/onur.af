@@ -1,9 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { mottos } from '../portfolio/previews';
+import { mottos, publicPreview } from '../portfolio/previews';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 const motto = mottos[Math.floor(Math.random() * mottos.length)];
+const description = publicPreview('/')!.description;
 ---
 
 <Layout title={`${motto} · Onur`} motto={motto}>
@@ -14,5 +15,8 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)];
     <h1 class="max-w-full text-[clamp(2.25rem,9vw,3rem)] leading-[1.1] font-normal tracking-[-0.03em] [overflow-wrap:anywhere]">
       {motto}
     </h1>
+    <p data-page-description class="mt-6 max-w-[65ch] leading-[1.7]">
+      {description}
+    </p>
   </main>
 </Layout>
