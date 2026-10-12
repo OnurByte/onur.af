@@ -1,5 +1,10 @@
 import { describe, expect, test } from 'bun:test';
-import { canonicalUrl, sitemapXml, validSiteUrl } from '../src/portfolio/seo';
+import {
+  canonicalUrl,
+  sitemapXml,
+  validSiteUrl,
+  publicPaths,
+} from '../src/portfolio/seo';
 
 describe('public SEO URLs', () => {
   test('accepts an explicit HTTP(S) origin only', () => {
@@ -37,11 +42,16 @@ describe('public SEO URLs', () => {
     for (const path of ['/donate/private-id', '//evil.example', '/unknown']) {
       expect(canonicalUrl('https://portfolio.example', path)).toBeUndefined();
     }
+    for (const path of publicPaths) {
+      expect(canonicalUrl('https://portfolio.example', path)).toBe(
+        `https://portfolio.example${path}`,
+      );
+    }
     expect(canonicalUrl(undefined, '/')).toBeUndefined();
     expect(sitemapXml(undefined)).not.toContain('<loc>');
     expect(
       sitemapXml('https://portfolio.example').match(/<loc>/g),
-    ).toHaveLength(2);
+    ).toHaveLength(publicPaths.length);
     expect(sitemapXml('https://portfolio.example')).not.toContain('private-id');
   });
 });

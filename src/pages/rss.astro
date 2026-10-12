@@ -1,0 +1,71 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { siteOrigin } from '../portfolio/seo';
+import { rssResponse, wantsFeedHtml } from '../portfolio/feeds';
+import { notes } from '../portfolio/content';
+if (!wantsFeedHtml(Astro.request.headers.get('accept'))) {
+  return rssResponse(siteOrigin(), Astro.url);
+}
+Astro.response.headers.set('Vary', 'Accept');
+const feedUrl = new URL('/rss', siteOrigin() ?? Astro.url.origin).href;
+---
+
+<Layout title="RSS · Onur" description="Follow new writing through RSS.">
+  <main class="editorial">
+    <h1>RSS</h1>
+    <div class="prose">
+      <p>
+        RSS brings new writing to your feed reader. Add this address to
+        subscribe.
+      </p>
+      <div class="feed-row">
+        <span class="address" id="feed-address">
+          {feedUrl}
+        </span>
+        <button class="copy" id="copy-feed" type="button" aria-live="polite">
+          Copy address
+        </button>
+      </div>
+      <a class="button" href={`feed:${feedUrl}`}>
+        Subscribe
+      </a>
+      <p id="copy-status" role="status" hidden></p>
+    </div>
+    {notes.length > 0 && (
+      <div class="entry-list">
+        {notes.map((note) => (
+          <article class="entry">
+            <h2>
+              <a href={`/notes/${note.slug}`}>{note.title}</a>
+            </h2>
+            <time class="entry-meta" datetime={note.date}>
+              {note.date}
+            </time>
+            <div class="prose">
+              {note.paragraphs.map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+  </main>
+</Layout>
+<script>
+  const button = document.querySelector<HTMLButtonElement>('#copy-feed');
+  const address = document.querySelector<HTMLElement>('#feed-address');
+  const status = document.querySelector<HTMLElement>('#copy-status');
+  button?.addEventListener('click', async () => {
+    if (!address || !status) return;
+    try {
+      await navigator.clipboard.writeText(address.textContent?.trim() ?? '');
+      button.textContent = 'Copied';
+      status.textContent = '';
+      status.hidden = true;
+    } catch {
+      status.textContent = 'Select the address above and copy it manually.';
+      status.hidden = false;
+    }
+  });
+</script>
