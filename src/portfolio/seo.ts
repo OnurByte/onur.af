@@ -6,7 +6,7 @@ export const publicPaths: readonly string[] = [
   ...publicEditorialPaths,
 ];
 export const siteDescription =
-  'Onur’s personal index: public notes, projects, reading, RSS feeds and PGP identity, collected in one place.';
+  'My work, in my own words.';
 
 export function validSiteUrl(value: string | undefined): string | undefined {
   if (!value || /[\u0000-\u0020\u007f\\]/.test(value)) return;
