@@ -12,7 +12,7 @@ A new UUID is reserved before upstream allocation. Once an address is stored, re
 
 Deployment remains blocked on verified scanner persistence and restart, real stagenet partial/full/late payment, live reorg verification, backup/restore and Tor/I2P fail-closed network configuration. Upstream paid orders do not automatically reverse after a reorg. The bundled host independently rechecks settled orders using fresh scanner snapshots at startup, during polling and before returning their status. Lost settlement is reversed and saved through the wallet-before-ledger barrier; sync or reconciliation failures stop successful responses. Live reorg behavior still needs a stagenet experiment.
 
-The owner rejected the Bleed design system. The site now uses a neutral dark canvas, system sans-serif typography and simple controls. There are no bundled or external font requests. The owner-supplied Onur SVG retains its randomized gradient, and the wordmark is bone-colored. Footer: white PGP left, Tor onion and I2P 2019 SVG centered, white DONATE right; no divider or GitHub link.
+The site follows the system light/dark theme with pure white/black surfaces, Helvetica Neue with local system fallbacks, a static monochrome Onur mark and simple controls. It requests no bundled or external fonts. The shared footer contains PGP, Tor, I2P and DONATE; configured destinations are validated before rendering links.
 
 Run `bun test` and `bun run check`. PostgreSQL tests require `TEST_DATABASE_URL` pointing at an isolated test database; they remove only their generated donation IDs. Run `bun run build` to verify Astro SSR output. Fake-agent tests do not prove blockchain payment detection.
 

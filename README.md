@@ -6,10 +6,14 @@ The shared footer always links to `/donate`. Set `PORTFOLIO_TOR_URL`, `PORTFOLIO
 
 ## Local development
 
-Use Bun and Node 22.12+ to install dependencies, then copy `.env.example` to `.env` and configure the server variables locally. Do not commit credentials. Bun reads the local `.env` for gateway/agent commands; `bun run start` loads it for the built site. Restart the relevant process after editing. Runtime environment values take precedence over build-time checkout settings. The public site needs the gateway URL/token; the gateway needs PostgreSQL and the authenticated local xmr-pay agent.
+Set `SITE_URL=https://your-public-domain.example` to the real public HTTP(S) origin, without credentials, a path, query or fragment. Localhost and loopback origins are rejected. Set it before building and in the production runtime; rebuild and restart when changing the domain. Canonicals never use the incoming Host header. Without a valid origin all HTML uses `noindex` and the sitemap stays empty, so a local checkout cannot publish localhost SEO URLs.
+
+The shared layout supplies page titles, descriptions, canonical links, Open Graph and Twitter metadata. The home page declares the visible Onur identity using `WebSite` and `Person` JSON-LD. `/sitemap.xml` lists only `/` and `/donate`; private donation checkout pages are always `noindex, nofollow` and have no canonical or schema. `/robots.txt` permits fetching HTML so crawlers can read noindex and advertises the sitemap only when configured. These directives are crawler guidance, not access control. After deployment, submit the sitemap to Google Search Console and inspect the home and donation URLs. Metadata and schema do not guarantee rankings or a particular search appearance.
+
+Use Bun 1.4.0 and Node 26.4.0 (recorded in `.node-version`) to install dependencies, then copy `.env.example` to `.env` and configure the server variables locally. Do not commit credentials. Bun reads the local `.env` for gateway/agent commands; `bun run start` loads it for the built site. Restart the relevant process after editing. Runtime environment values take precedence over build-time checkout settings. The public site needs the gateway URL/token; the gateway needs PostgreSQL and the authenticated local xmr-pay agent.
 
 ```sh
-bun install
+bun install --frozen-lockfile
 bun run gateway
 bun run dev
 ```
@@ -24,4 +28,10 @@ bun run build
 
 To include real database checks, set `TEST_DATABASE_URL` to an isolated PostgreSQL test database. After building, set `TEST_CHECKOUT=1` to run the built SSR checkout test. That test uses a local fake gateway and checks form submission, custom amounts, QR/payment URI and server token isolation; it does not simulate blockchain evidence.
 
-See [donation behavior and deployment gates](docs/donations.md). The supplied SVG is integrated next to each visible Onur name. Styling uses neutral dark colors, system sans-serif fonts, a white footer and a randomized icon gradient. Read-only recovery retains an already allocated address after a lost agent response. A crash before allocation still requires operator recovery; settled payments are rechecked against fresh scanner data. Live crash/restart and reorg proof remain unfinished.
+See [donation behavior and deployment gates](docs/donations.md). The supplied SVG accompanies the visible Onur name. Styling uses Helvetica Neue with sans-serif fallbacks, a static monochrome brand and pure white or black colors following the system theme. Read-only recovery retains an already allocated address after a lost agent response. A crash before allocation still requires operator recovery; settled payments are rechecked against fresh scanner data. Live crash/restart and reorg proof remain unfinished.
+
+## Code checks
+
+Run `bun run format` to apply the shared Prettier and Astro formatting rules, or `bun run format:check` to verify without editing. Generated output, environment files and wallet data are excluded.
+
+GitHub Actions runs formatting, Astro checks, a production build and the test suite on pushes and pull requests. Tests use a disposable PostgreSQL service and a local fake payment gateway; production credentials and real wallet access are not required. The offline wallet backup test remains opt-in. CI actions are pinned to commit hashes, Node is read from `.node-version`, and Bun is pinned to 1.4.0.

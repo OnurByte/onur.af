@@ -1,93 +1,292 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { makePaymentURI, qrSvg } from 'xmr-pay/core';
-import { formatXmrAmount, parseXmrAmount, parseXmrAmountOrZero } from '../../donations/money';
+import {
+  formatXmrAmount,
+  parseXmrAmount,
+  parseXmrAmountOrZero,
+} from '../../donations/money';
 import { donationGateway } from '../../client/gateway';
 export const prerender = false;
+Astro.response.headers.set('Cache-Control', 'private, no-store');
+Astro.response.headers.set('Referrer-Policy', 'no-referrer');
+Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
 const id = (Astro.params.id ?? '').toLowerCase();
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-let donation: { id: string; amount: string; address: string; status?: string; unavailable?: boolean; syncing?: boolean; confirmations?: number; minConfirmations?: number; received?: string; shortfall?: string } | undefined;
+const UUID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+let donation:
+  | {
+      id: string;
+      amount: string;
+      address: string;
+      status?: string;
+      unavailable?: boolean;
+      syncing?: boolean;
+      confirmations?: number;
+      minConfirmations?: number;
+      received?: string;
+      shortfall?: string;
+    }
+  | undefined;
 let unavailable = false;
-const network = import.meta.env.XMR_NETWORK ?? process.env.XMR_NETWORK ?? 'stagenet';
+const network =
+  import.meta.env.XMR_NETWORK ?? process.env.XMR_NETWORK ?? 'stagenet';
 const networkValid = ['mainnet', 'stagenet', 'testnet'].includes(network);
 if (!networkValid) unavailable = true;
-const subaddressPrefix = network === 'mainnet' ? '8' : network === 'stagenet' ? '7' : 'B';
+const subaddressPrefix =
+  network === 'mainnet' ? '8' : network === 'stagenet' ? '7' : 'B';
 if (UUID.test(id)) {
   try {
     const { url: base, token } = donationGateway();
     const endpoint = new URL(`/donations/${id}`, base);
-    const response = await fetch(endpoint, { headers: { authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(3000), redirect: 'error' });
-    if (!response.ok) throw new Error('unavailable');
+    const response = await fetch(endpoint, {
+      headers: { authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(3000),
+      redirect: 'error',
+    });
+    if (!response.ok) {
+      if (response.status === 404) Astro.response.status = 404;
+      throw new Error('unavailable');
+    }
     const value: unknown = await response.json();
     if (!value || typeof value !== 'object') throw new Error('unavailable');
     const row = value as Record<string, unknown>;
     const address = row.address;
     const amount = row.amount;
-    if (row.id !== id || typeof amount !== 'string' || typeof address !== 'string' || !new RegExp(`^${subaddressPrefix}[1-9A-HJ-NP-Za-km-z]{94}$`).test(address)) throw new Error('unavailable');
+    if (
+      row.id !== id ||
+      typeof amount !== 'string' ||
+      typeof address !== 'string' ||
+      !new RegExp(`^${subaddressPrefix}[1-9A-HJ-NP-Za-km-z]{94}$`).test(address)
+    )
+      throw new Error('unavailable');
     parseXmrAmount(amount);
-    const status = row.status && typeof row.status === 'object' ? row.status as Record<string, unknown> : undefined;
-    const paymentStatus = typeof status?.status === 'string' ? status.status : typeof row.status === 'string' ? row.status : undefined;
-    const confirmations = typeof status?.confirmations === 'number' && Number.isSafeInteger(status.confirmations) ? status.confirmations : undefined;
-    const minConfirmations = typeof status?.minConfirmations === 'number' && Number.isSafeInteger(status.minConfirmations) ? status.minConfirmations : undefined;
+    const status =
+      row.status && typeof row.status === 'object'
+        ? (row.status as Record<string, unknown>)
+        : undefined;
+    const paymentStatus =
+      typeof status?.status === 'string'
+        ? status.status
+        : typeof row.status === 'string'
+          ? row.status
+          : undefined;
+    const confirmations =
+      typeof status?.confirmations === 'number' &&
+      Number.isSafeInteger(status.confirmations)
+        ? status.confirmations
+        : undefined;
+    const minConfirmations =
+      typeof status?.minConfirmations === 'number' &&
+      Number.isSafeInteger(status.minConfirmations)
+        ? status.minConfirmations
+        : undefined;
     let received: string | undefined;
-    if (typeof status?.receivedXmr === 'number' && Number.isFinite(status.receivedXmr) && status.receivedXmr >= 0 && status.receivedXmr <= 100) {
-      try { received = formatXmrAmount(parseXmrAmountOrZero(status.receivedXmr.toFixed(12))); } catch {}
+    if (
+      typeof status?.receivedXmr === 'number' &&
+      Number.isFinite(status.receivedXmr) &&
+      status.receivedXmr >= 0 &&
+      status.receivedXmr <= 100
+    ) {
+      try {
+        received = formatXmrAmount(
+          parseXmrAmountOrZero(status.receivedXmr.toFixed(12)),
+        );
+      } catch {}
     }
     let shortfall: string | undefined;
     if (typeof status?.shortfallXmr === 'string') {
-      try { shortfall = formatXmrAmount(parseXmrAmountOrZero(status.shortfallXmr)); } catch {}
+      try {
+        shortfall = formatXmrAmount(parseXmrAmountOrZero(status.shortfallXmr));
+      } catch {}
     }
     unavailable = unavailable || row.unavailable === true || !paymentStatus;
-    donation = { id, amount, address, status: paymentStatus, syncing: status?.syncing === true, confirmations, minConfirmations, received, shortfall, unavailable };
-  } catch { unavailable = true; }
-} else unavailable = true;
-const state = unavailable || donation?.unavailable ? 'unavailable'
-  : donation?.syncing ? 'syncing'
-  : donation?.status === 'paid' ? 'paid'
-  : ['partial', 'underpaid'].includes(donation?.status ?? '') ? 'partial'
-  : ['unconfirmed', 'locked', 'mempool'].includes(donation?.status ?? '') ? 'confirming'
-  : donation?.status === 'pending' ? 'waiting'
-  : 'syncing';
-const paymentAmount = state === 'partial' ? (donation?.shortfall && donation.shortfall !== '0' ? donation.shortfall : undefined) : donation?.amount;
-const uri = donation && networkValid && paymentAmount ? makePaymentURI({ address: donation.address, amount: paymentAmount, recipientName: 'Onur', description: 'Donation', networkType: network as 'mainnet' | 'stagenet' | 'testnet' }) : '';
-const qr = uri ? qrSvg(uri, { ec: 'H', moduleColor: '#000000', finderColor: '#000000', scale: 5, quietZone: 4 }) : '';
-const statusText = ({ unavailable: 'Payment status unavailable', paid: 'Donation received', partial: 'Partial payment received', confirming: 'Payment detected · confirming', waiting: 'Waiting for payment', syncing: 'Payment network syncing' } as const)[state];
-const shownStatus = state === 'confirming' && donation?.confirmations !== undefined && donation.minConfirmations !== undefined
-  ? `Payment detected · confirming ${donation.confirmations}/${donation.minConfirmations}` : statusText;
-const partialDetails = state === 'partial' && donation?.received !== undefined && donation.shortfall !== undefined
-  ? `Received ${donation.received} XMR · Remaining ${donation.shortfall} XMR` : undefined;
+    donation = {
+      id,
+      amount,
+      address,
+      status: paymentStatus,
+      syncing: status?.syncing === true,
+      confirmations,
+      minConfirmations,
+      received,
+      shortfall,
+      unavailable,
+    };
+  } catch {
+    unavailable = true;
+  }
+} else {
+  unavailable = true;
+  Astro.response.status = 404;
+}
+if (unavailable && Astro.response.status !== 404) Astro.response.status = 503;
+const state =
+  unavailable || donation?.unavailable
+    ? 'unavailable'
+    : donation?.syncing
+      ? 'syncing'
+      : donation?.status === 'paid'
+        ? 'paid'
+        : ['partial', 'underpaid'].includes(donation?.status ?? '')
+          ? 'partial'
+          : ['unconfirmed', 'locked', 'mempool'].includes(
+                donation?.status ?? '',
+              )
+            ? 'confirming'
+            : donation?.status === 'pending'
+              ? 'waiting'
+              : 'syncing';
+const paymentAmount =
+  state === 'partial'
+    ? donation?.shortfall && donation.shortfall !== '0'
+      ? donation.shortfall
+      : undefined
+    : state === 'waiting'
+      ? donation?.amount
+      : undefined;
+const shownAmount = state === 'partial' ? paymentAmount : donation?.amount;
+const uri =
+  donation && networkValid && paymentAmount
+    ? makePaymentURI({
+        address: donation.address,
+        amount: paymentAmount,
+        recipientName: 'Onur',
+        description: 'Donation',
+        networkType: network as 'mainnet' | 'stagenet' | 'testnet',
+      })
+    : '';
+const qr = uri
+  ? qrSvg(uri, {
+      ec: 'H',
+      moduleColor: '#000000',
+      finderColor: '#000000',
+      scale: 5,
+      quietZone: 4,
+    })
+  : '';
+const statusText = (
+  {
+    unavailable: 'Payment status unavailable',
+    paid: 'Donation received',
+    partial: 'Partial payment received',
+    confirming: 'Payment detected · confirming',
+    waiting: 'Waiting for payment',
+    syncing: 'Payment network syncing',
+  } as const
+)[state];
+const shownStatus =
+  state === 'confirming' &&
+  donation?.confirmations !== undefined &&
+  donation.minConfirmations !== undefined
+    ? `Payment detected · confirming ${donation.confirmations}/${donation.minConfirmations}`
+    : statusText;
+const partialDetails =
+  state === 'partial' &&
+  donation?.received !== undefined &&
+  donation.shortfall !== undefined
+    ? `Received ${donation.received} XMR · Remaining ${donation.shortfall} XMR`
+    : undefined;
 ---
-<Layout title="XMR donation · Onur">
+
+<Layout
+  title="XMR donation · Onur"
+  description="View the status of your private Monero donation."
+  noindex
+>
   <main class="donate checkout">
     <p class="eyebrow">MONERO · {network.toUpperCase()}</p>
     <h1>Your donation</h1>
-    <p class="status" data-state={state} role="status">{shownStatus}</p>
-    {donation && <>
-      <div class="payment-grid">
-        {qr && <div class="qr" role="img" set:html={qr} aria-label="Monero payment QR code"></div>}
-        <div class="payment-details">
-          <p class="eyebrow">{state === 'partial' ? 'REMAINING AMOUNT' : 'AMOUNT'}</p><p class="amount-value"><span id="amount">{paymentAmount ?? 'Unavailable'}</span>{paymentAmount && <> XMR <button class="copy" type="button" data-copy="amount">Copy amount</button></>}</p>
-          {state === 'partial' && <p class="hint">Requested donation: {donation.amount} XMR</p>}
-          <p class="eyebrow address-label">PAYMENT ADDRESS</p>
-          <p class="address" id="address">{donation.address}</p>
-          <div class="actions"><button class="copy" type="button" data-copy="address">Copy address</button>{uri && <a class="wallet-link" href={uri}>Open in wallet ↗</a>}</div>
-          <p class="hint">Send the exact amount to this address. This address belongs to this donation.</p>
+    <p class="status" data-state={state} role="status">
+      {shownStatus}
+    </p>
+    {donation && (
+      <>
+        <div class="payment-grid">
+          {qr && (
+            <div
+              class="qr"
+              role="img"
+              set:html={qr}
+              aria-label="Monero payment QR code"
+            />
+          )}
+          <div class="payment-details">
+            <p class="eyebrow">
+              {state === 'partial' ? 'REMAINING AMOUNT' : 'AMOUNT'}
+            </p>
+            <p class="amount-value">
+              <span id="amount">{shownAmount ?? 'Unavailable'}</span>
+              {shownAmount && ' XMR'}{' '}
+              {paymentAmount && (
+                <button class="copy" type="button" data-copy="amount">
+                  Copy amount
+                </button>
+              )}
+            </p>
+            {state === 'partial' && (
+              <p class="hint">Requested donation: {donation.amount} XMR</p>
+            )}
+            <p class="eyebrow address-label">PAYMENT ADDRESS</p>
+            <p class="address" id="address">
+              {donation.address}
+            </p>
+            <div class="actions">
+              <button class="copy" type="button" data-copy="address">
+                Copy address
+              </button>
+              {uri && (
+                <a class="wallet-link" href={uri}>
+                  Open in wallet ↗
+                </a>
+              )}
+            </div>
+            <p class="hint">
+              {state === 'paid'
+                ? 'Thank you for your support. No further payment is needed.'
+                : paymentAmount
+                  ? 'Send the exact amount to this address. This address belongs to this donation.'
+                  : 'Refresh the payment status before sending any further payment.'}
+            </p>
+          </div>
         </div>
-      </div>
-      {partialDetails && <p class="partial-details">{partialDetails}<br />Send the remaining amount to this same address.</p>}
-      <form method="get" action={`/donate/${id}`} class="refresh"><button type="submit">Refresh payment status</button></form>
-    </>}
-    {!donation && <p class="intro">We couldn’t load this payment. Try refreshing the page in a moment.</p>}
-    <noscript><p class="hint">Copy manually by selecting the amount or address.</p></noscript>
+        {partialDetails && (
+          <p class="partial-details">
+            {partialDetails}
+            <br />
+            Send the remaining amount to this same address.
+          </p>
+        )}
+        <form method="get" action={`/donate/${id}`} class="refresh">
+          <button type="submit">Refresh payment status</button>
+        </form>
+      </>
+    )}
+    {!donation && (
+      <p class="intro">
+        We couldn’t load this payment. Try refreshing the page in a moment.
+      </p>
+    )}
+    <noscript>
+      <p class="hint">Copy manually by selecting the amount or address.</p>
+    </noscript>
   </main>
   <script>
-    document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => button.addEventListener('click', async () => {
-      const target = document.getElementById(button.dataset.copy ?? '');
-      if (!target) return;
-      try {
-        await navigator.clipboard.writeText(target.textContent?.trim() ?? '');
-        button.textContent = 'Copied';
-      } catch { button.textContent = 'Select and copy manually'; }
-    }));
+    document
+      .querySelectorAll<HTMLButtonElement>('[data-copy]')
+      .forEach((button) =>
+        button.addEventListener('click', async () => {
+          const target = document.getElementById(button.dataset.copy ?? '');
+          if (!target) return;
+          try {
+            await navigator.clipboard.writeText(
+              target.textContent?.trim() ?? '',
+            );
+            button.textContent = 'Copied';
+          } catch {
+            button.textContent = 'Select and copy manually';
+          }
+        }),
+      );
   </script>
 </Layout>
