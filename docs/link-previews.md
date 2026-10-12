@@ -29,7 +29,7 @@ Sources: [oEmbed specification](https://oembed.com/), [specification repository]
 
 ## Discord component card
 
-Public pages additionally render a compact `discord:component-embed` JSON script: one Container, a header Section containing Onur followed by the smaller motto with a logo thumbnail, a large page title and description, the matching page image, and Open page / PGP / RSS link buttons. Private payment status pages do not expose images or component cards. No bot, webhook or client script is required.
+Public pages additionally render a compact `discord:component-embed` JSON script: one Container containing the page image and Open page / PGP / RSS link buttons. The name, motto, title and description appear in the image, so the component card does not repeat them as text. Private payment status pages do not expose images or component cards. No bot, webhook or client script is required.
 
 The official format requires server HTML, a single root Container, at most 3,000 JSON bytes and 40 components, link-style buttons, and a complete page/media fetch within ten seconds. OG remains the fallback. Source: [official component embeds](https://github.com/discord/discord-api-docs/blob/main/developers/link-previews/component-embeds.mdx), [documentation PR](https://github.com/discord/discord-api-docs/pull/8606). Implementation examples examined: [Seedcord](https://github.com/seedcord/seedcord/tree/next/packages/discord-component-embed), [Discord Embed Studio](https://github.com/bobjoerules/Discord-Embed-Studio). Simulator output is not a live Discord result.
 

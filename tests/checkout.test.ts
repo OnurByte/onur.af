@@ -90,6 +90,22 @@ test.skipIf(!enabled)(
       ).toBe(true);
       expect(home).toContain('src="/brand/onur.svg"');
       expect(home).not.toContain('aria-label="Onur home"');
+      const discord = JSON.parse(
+        home.match(
+          /<script[^>]*id="discord:component-embed"[^>]*>(.*?)<\/script>/s,
+        )![1]!,
+      );
+      expect(
+        discord.component.components.map(
+          (component: { type: number }) => component.type,
+        ),
+      ).toEqual([12, 1]);
+      expect(
+        discord.component.components[1].components.map(
+          (button: { label: string }) => button.label,
+        ),
+      ).toEqual(['Open page', 'PGP', 'RSS']);
+
       for (const path of publicPaths) {
         const page = await (
           await fetch(`${origin}${path}`, { headers: { Accept: 'text/html' } })
