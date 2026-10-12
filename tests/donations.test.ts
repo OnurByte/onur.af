@@ -36,7 +36,7 @@ describe('donation money', () => {
 });
 
 describe('donation agent client', () => {
-  test('authenticates, creates one address, then reads status and receipt', async () => {
+  test('authenticates, creates one address, then reads status', async () => {
     const client = agent(async (request) => {
       expect(request.headers.get('authorization')).toBe(
         'Bearer test-only-token',
@@ -64,8 +64,6 @@ describe('donation agent client', () => {
           overpaidXmr: '0',
           confirmations: 1,
         });
-      if (url.pathname === '/receipt/d-1')
-        return Response.json({ payload: {}, signature: 'sig' });
       return new Response(null, { status: 404 });
     });
 
@@ -77,10 +75,6 @@ describe('donation agent client', () => {
       birthdayHeight: 42,
     });
     expect((await client.status('d-1')).status).toBe('partial');
-    expect(await client.receipt('d-1')).toEqual({
-      payload: {},
-      signature: 'sig',
-    });
   });
 
   test('rejects bad response ids and never retries ambiguous or duplicate creation', async () => {

@@ -38,7 +38,6 @@ export interface DonationAgentClient {
   create(id: string, amount: string): Promise<AgentOrder>;
   recover(id: string, amount: string): Promise<AgentOrder>;
   status(id: string): Promise<AgentStatus>;
-  receipt(id: string): Promise<unknown>;
 }
 
 const PAYMENT_STATUSES = new Set<AgentPaymentStatus>([
@@ -253,9 +252,6 @@ export function createDonationAgentClient({
         syncing: raw.syncing as boolean | undefined,
         txids: raw.txids as string[] | undefined,
       };
-    },
-    async receipt(id) {
-      return record(await request(`/receipt/${encodeURIComponent(id)}`));
     },
   };
 }

@@ -47,7 +47,6 @@ export interface PaymentAgent {
   createOrder(input: { id: string; amount: string }): Promise<XmrOrder>;
   check(id: string, options?: { sync?: boolean }): Promise<XmrOrder | null>;
   list(): XmrOrder[];
-  tick(): Promise<void>;
   stop(): void;
 }
 
