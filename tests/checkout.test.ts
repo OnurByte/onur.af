@@ -114,11 +114,18 @@ test.skipIf(!enabled)(
           await fetch(`${origin}${path}`, { headers: { Accept: 'text/html' } })
         ).text();
         const description = publicPreview(path)!.description;
-        expect(
-          page
-            .match(/<p\b[^>]*data-page-description[^>]*>([\s\S]*?)<\/p>/)?.[1]
-            ?.trim(),
-        ).toBe(description);
+        if (path === '/') {
+          expect(page).not.toContain('data-page-description');
+          expect(
+            page.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1],
+          ).not.toContain(description);
+        } else {
+          expect(
+            page
+              .match(/<p\b[^>]*data-page-description[^>]*>([\s\S]*?)<\/p>/)?.[1]
+              ?.trim(),
+          ).toBe(description);
+        }
         expect(page).toContain(`name="description" content="${description}"`);
         if (path !== '/')
           expect(
@@ -136,21 +143,24 @@ test.skipIf(!enabled)(
         );
       }
       const sitemap = await (await fetch(`${origin}/sitemap.xml`)).text();
-      expect(sitemap.match(/<loc>/g)).toHaveLength(8);
-      for (const path of [
-        '/projects',
-        '/notes',
-        '/reading',
-        '/identity',
-        '/rss',
-        '/pgp',
-      ]) {
+      expect(sitemap.match(/<loc>/g)).toHaveLength(5);
+      for (const path of ['/identity', '/rss', '/pgp']) {
         expect(sitemap).toContain(
           `<loc>https://portfolio.example${path}</loc>`,
         );
       }
       expect(sitemap).toContain('<loc>https://portfolio.example/donate</loc>');
       expect(sitemap).not.toContain(id);
+      for (const removed of [
+        '/projects',
+        '/notes',
+        '/reading',
+        '/feeds.opml',
+      ]) {
+        expect((await fetch(`${origin}${removed}`)).status).toBe(404);
+        expect(sitemap).not.toContain(`https://portfolio.example${removed}`);
+      }
+
       expect(await (await fetch(`${origin}/robots.txt`)).text()).toContain(
         'Sitemap: https://portfolio.example/sitemap.xml',
       );

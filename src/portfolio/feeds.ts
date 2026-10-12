@@ -1,4 +1,4 @@
-import { notes, reading, type Note, type ReadingEntry } from './content';
+import { publicPreview } from './previews';
 import { validSiteUrl } from './seo';
 
 export function escapeXml(value: string): string {
@@ -10,10 +10,7 @@ export function escapeXml(value: string): string {
     .replaceAll("'", '&apos;');
 }
 
-export function rssXml(
-  origin: string | undefined,
-  entries: Note[] = notes,
-): string | undefined {
+export function rssXml(origin: string | undefined): string | undefined {
   const validOrigin =
     validSiteUrl(origin) ??
     (origin &&
@@ -22,13 +19,8 @@ export function rssXml(
       ? new URL(origin).origin
       : undefined);
   if (!validOrigin) return;
-  const items = entries
-    .map((note) => {
-      const link = escapeXml(new URL(`/notes/${note.slug}`, validOrigin).href);
-      return `<item><title>${escapeXml(note.title)}</title><link>${link}</link><guid isPermaLink="true">${link}</guid><pubDate>${new Date(`${note.date}T00:00:00Z`).toUTCString()}</pubDate><description>${escapeXml(note.paragraphs.join('\n\n'))}</description></item>`;
-    })
-    .join('');
-  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Onur — Notes</title><link>${escapeXml(validOrigin)}/notes</link><description>Notes from Onur.</description><language>en</language>${items}</channel></rss>`;
+  const description = escapeXml(publicPreview('/rss')!.description);
+  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Onur — RSS</title><link>${escapeXml(validOrigin)}/rss</link><description>${description}</description><language>en</language></channel></rss>`;
 }
 
 export function wantsFeedHtml(accept: string | null): boolean {
@@ -78,15 +70,4 @@ export function rssResponse(
       },
     },
   );
-}
-
-export function opmlXml(entries: ReadingEntry[] = reading): string {
-  const feeds = entries
-    .filter((entry) => entry.feed)
-    .map(
-      (entry) =>
-        `<outline text="${escapeXml(entry.name)}" title="${escapeXml(entry.name)}" type="rss" xmlUrl="${escapeXml(entry.feed!)}" htmlUrl="${escapeXml(entry.url)}"/>`,
-    )
-    .join('');
-  return `<?xml version="1.0" encoding="UTF-8"?><opml version="2.0"><head><title>Onur — Recommended feeds</title></head><body>${feeds}</body></opml>`;
 }

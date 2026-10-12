@@ -13,12 +13,9 @@ test('homepage does not replace the HTML motto with generic oEmbed text', async 
   expect(result).not.toHaveProperty('description');
   expect(result.provider_name).toBe('Onur');
   expect(result.thumbnail_url).toBe(`${origin}/brand/icon.png`);
-  const projectPage = await oembedResponse(
-    origin,
-    request(`${origin}/projects`),
-  ).json();
-  expect(projectPage.title).toBe('Projects · Onur');
-  expect(projectPage.description).toBe(publicPreview('/projects')!.description);
+  const rssPage = await oembedResponse(origin, request(`${origin}/rss`)).json();
+  expect(rssPage.title).toBe('RSS · Onur');
+  expect(rssPage.description).toBe(publicPreview('/rss')!.description);
 });
 
 test('only public same-origin canonical URLs produce link metadata', async () => {

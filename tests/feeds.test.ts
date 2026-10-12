@@ -1,17 +1,10 @@
 import { describe, expect, test } from 'bun:test';
 import {
   escapeXml,
-  opmlXml,
   rssResponse,
   rssXml,
   wantsFeedHtml,
 } from '../src/portfolio/feeds';
-import {
-  notes,
-  projects,
-  reading,
-  publicEditorialPaths,
-} from '../src/portfolio/content';
 
 describe('public feeds', () => {
   test('serves HTML only when preferred over XML, with XML as the default', () => {
@@ -45,7 +38,7 @@ describe('public feeds', () => {
       rssResponse(undefined, new URL('http://127.0.0.1:4338/rss.xml')).status,
     ).toBe(200);
     expect(rssXml('http://localhost:4338')).toContain(
-      '<link>http://localhost:4338/notes</link>',
+      '<link>http://localhost:4338/rss</link>',
     );
     expect(
       rssResponse(undefined, new URL('https://unconfigured.example/rss.xml'))
@@ -55,60 +48,22 @@ describe('public feeds', () => {
     expect(rssXml('http://localhost:999999')).toBeUndefined();
     expect(rssXml('http://user@localhost:4338')).toBeUndefined();
   });
-  test('empty infrastructure does not invent authored content or subscriptions', () => {
-    expect(projects).toHaveLength(0);
-    expect(notes).toHaveLength(0);
-    expect(reading).toHaveLength(0);
+  test('publishes an empty RSS channel without invented content', async () => {
     const xml = rssXml('https://example.com')!;
     expect(xml).toContain('<channel>');
+    expect(xml).toContain('<title>Onur — RSS</title>');
+    expect(xml).toContain('<link>https://example.com/rss</link>');
+    expect(xml).toContain(
+      '<description>RSS brings new writing to your feed reader. Add this address to subscribe.</description>',
+    );
     expect(xml).not.toContain('<item>');
+    expect(xml).not.toContain('/notes');
     expect(xml).not.toContain('/donate');
-    expect(xml).not.toContain('/checkout/');
-    expect(rssResponse('https://example.com').headers.get('Content-Type')).toBe(
+    const response = rssResponse('https://example.com');
+    expect(response.headers.get('Content-Type')).toBe(
       'text/xml; charset=utf-8',
     );
-    expect(opmlXml()).not.toContain('<outline ');
-    expect(publicEditorialPaths).toEqual([
-      '/projects',
-      '/notes',
-      '/reading',
-      '/identity',
-      '/rss',
-      '/pgp',
-    ]);
-  });
-  test('publishes full escaped text, dates and stable canonical GUIDs', () => {
-    const fixture = [
-      {
-        slug: 'sample',
-        title: 'A & B',
-        date: '2026-10-12',
-        summary: 'Summary',
-        paragraphs: ['<example>', 'Second & paragraph'],
-      },
-    ];
-    const xml = rssXml('https://example.com', fixture)!;
-    expect(xml.match(/<item>/g)).toHaveLength(1);
-    expect(xml).toContain('<title>A &amp; B</title>');
-    expect(xml).toContain('<link>https://example.com/notes/sample</link>');
-    expect(xml).toContain(
-      '<guid isPermaLink="true">https://example.com/notes/sample</guid>',
-    );
-    expect(xml).toContain('Mon, 12 Oct 2026 00:00:00 GMT');
-    expect(xml).toContain('&lt;example&gt;\n\nSecond &amp; paragraph');
-  });
-  test('exports configured feed attributes with escaping', () => {
-    const xml = opmlXml([
-      {
-        name: 'A & B',
-        url: 'https://example.com/?a=1&b=2',
-        source: 'https://example.com/source',
-        summary: 'Example',
-        feed: 'https://example.com/feed?a=1&b=2',
-      },
-    ]);
-    expect(xml).toContain('text="A &amp; B"');
-    expect(xml).toContain('xmlUrl="https://example.com/feed?a=1&amp;b=2"');
-    expect(xml).toContain('htmlUrl="https://example.com/?a=1&amp;b=2"');
+    expect(response.headers.get('Vary')).toBe('Accept');
+    expect(await response.text()).toBe(xml);
   });
 });
