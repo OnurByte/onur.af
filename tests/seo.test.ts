@@ -39,7 +39,12 @@ describe('public SEO URLs', () => {
     expect(canonicalUrl('https://portfolio.example', '/donate')).toBe(
       'https://portfolio.example/donate',
     );
-    for (const path of ['/donate/private-id', '//evil.example', '/unknown']) {
+    for (const path of [
+      '/donate/private-id',
+      '/identity',
+      '//evil.example',
+      '/unknown',
+    ]) {
       expect(canonicalUrl('https://portfolio.example', path)).toBeUndefined();
     }
     for (const path of publicPaths) {
@@ -53,5 +58,6 @@ describe('public SEO URLs', () => {
       sitemapXml('https://portfolio.example').match(/<loc>/g),
     ).toHaveLength(publicPaths.length);
     expect(sitemapXml('https://portfolio.example')).not.toContain('private-id');
+    expect(sitemapXml('https://portfolio.example')).not.toContain('/identity');
   });
 });

@@ -20,11 +20,6 @@ const pages: Record<
     title: 'Donate',
     description: 'Support my work with Monero.',
   },
-  '/identity': {
-    key: 'identity',
-    title: 'Identity',
-    description: 'Public key, alternate addresses and source code.',
-  },
   '/rss': {
     key: 'rss',
     title: 'RSS',

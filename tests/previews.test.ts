@@ -31,6 +31,7 @@ test('preview descriptions use the published page intros', () => {
 test('private checkout and unknown paths have no public preview', () => {
   for (const path of [
     '/donate/private',
+    '/identity',
     '/oembed.json',
     '/unknown',
     '/projects',

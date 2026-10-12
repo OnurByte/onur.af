@@ -1,10 +1,4 @@
-export const publicPaths: readonly string[] = [
-  '/',
-  '/donate',
-  '/identity',
-  '/rss',
-  '/pgp',
-];
+export const publicPaths: readonly string[] = ['/', '/donate', '/rss', '/pgp'];
 export const siteDescription = 'My work, in my own words.';
 
 export function validSiteUrl(value: string | undefined): string | undefined {
