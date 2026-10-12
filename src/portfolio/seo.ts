@@ -5,8 +5,7 @@ export const publicPaths: readonly string[] = [
   '/donate',
   ...publicEditorialPaths,
 ];
-export const siteDescription =
-  'Onur — independent software. Support my work with a private Monero donation.';
+export const siteDescription = 'Onur';
 
 export function validSiteUrl(value: string | undefined): string | undefined {
   if (!value || /[\u0000-\u0020\u007f\\]/.test(value)) return;

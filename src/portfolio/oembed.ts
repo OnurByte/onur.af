@@ -1,0 +1,91 @@
+import { notes, projects } from './content';
+import { publicPaths, validSiteUrl } from './seo';
+
+const pageDetails: Record<string, [string, string]> = {
+  '/donate': ['Donate · Onur', 'Donate Monero to Onur.'],
+  '/projects': ['Projects · Onur', 'Projects.'],
+  '/notes': ['Notes · Onur', 'Notes.'],
+  '/reading': ['Reading · Onur', 'Reading list and OPML.'],
+  '/identity': [
+    'Identity · Onur',
+    'Public key, alternate addresses and source code.',
+  ],
+  '/rss': ['RSS · Onur', 'Follow new writing through RSS.'],
+  '/pgp': ['PGP · Onur', 'Onur’s public PGP key.'],
+};
+
+export function oembedResponse(
+  origin: string | undefined,
+  request: URL,
+): Response {
+  const headers = {
+    'Content-Type': 'application/json; charset=utf-8',
+    'X-Robots-Tag': 'noindex',
+    'Cache-Control': 'no-store',
+  };
+  const error = (status: number) =>
+    new Response(JSON.stringify({ error: status }), { status, headers });
+  if (!origin || validSiteUrl(origin) !== origin) return error(503);
+  const format = request.searchParams.get('format');
+  if (format !== null && format !== 'json') return error(501);
+  const value = request.searchParams.get('url');
+  if (!value || /[\u0000-\u0020\u007f\\]/.test(value)) return error(404);
+  let target: URL;
+  try {
+    target = new URL(value);
+  } catch {
+    return error(404);
+  }
+  if (
+    target.origin !== origin ||
+    target.username ||
+    target.password ||
+    target.search ||
+    target.hash ||
+    !publicPaths.includes(target.pathname)
+  )
+    return error(404);
+
+  const limits = ['maxwidth', 'maxheight'].map((key) => {
+    const value = request.searchParams.get(key);
+    return value === null
+      ? Infinity
+      : /^\d+$/.test(value)
+        ? Number(value)
+        : NaN;
+  });
+  if (limits.some((limit) => Number.isNaN(limit) || limit <= 0))
+    return error(404);
+  const size =
+    Math.min(...limits) >= 512 ? 512 : Math.min(...limits) >= 180 ? 180 : 0;
+  const project = projects.find(
+    (entry) => target.pathname === `/projects/${entry.slug}`,
+  );
+  const note = notes.find(
+    (entry) => target.pathname === `/notes/${entry.slug}`,
+  );
+  const [title, description] = project
+    ? [`${project.name} · Onur`, project.summary]
+    : note
+      ? [`${note.title} · Onur`, note.summary]
+      : (pageDetails[target.pathname] ?? ['Onur', 'Onur']);
+  return new Response(
+    JSON.stringify({
+      version: '1.0',
+      type: 'link',
+      provider_name: 'Onur',
+      provider_url: `${origin}/`,
+      author_name: 'Onur',
+      author_url: `${origin}/`,
+      ...(target.pathname === '/' ? {} : { title, description }),
+      ...(size
+        ? {
+            thumbnail_url: `${origin}/brand/${size === 512 ? 'icon.png' : 'apple-touch-icon.png'}`,
+            thumbnail_width: size,
+            thumbnail_height: size,
+          }
+        : {}),
+    }),
+    { headers: { ...headers, 'Cache-Control': 'public, max-age=300' } },
+  );
+}

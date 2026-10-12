@@ -10,10 +10,7 @@ const mottos = [
 const motto = mottos[Math.floor(Math.random() * mottos.length)];
 ---
 
-<Layout
-  title="Onur · Independent software"
-  description="Onur — independent software. Support my work with a private Monero donation."
->
+<Layout title={`Onur · ${motto}`} description={motto}>
   <main aria-label="Portfolio">
     <h1>{motto}</h1>
   </main>
