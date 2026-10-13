@@ -20,51 +20,42 @@ const description = publicPreview('/rss')!.description;
       <p {...stylex.attrs(styles.feedStatus)} data-page-description>
         {description}
       </p>
-      <div {...stylex.attrs(styles.feedRow)}>
+      <div
+        id="feed-field"
+        {...stylex.attrs(styles.keySection, styles.keyInput)}
+      >
+        <div {...stylex.attrs(styles.keyActions)}>
+          <button
+            {...stylex.attrs(styles.button, styles.secondary)}
+            id="copy-feed"
+            type="button"
+          >
+            Copy
+          </button>
+          <a
+            {...stylex.attrs(styles.button, styles.secondary)}
+            href={`feed:${feedUrl}`}
+          >
+            Subscribe
+          </a>
+        </div>
         <span
           {...stylex.attrs(styles.mono, styles.feedAddress)}
           id="feed-address"
         >
           {feedUrl}
         </span>
-        <button
-          {...stylex.attrs(styles.button, styles.secondary, styles.feedButton)}
-          id="copy-feed"
-          type="button"
-          aria-live="polite"
-        >
-          Copy address
-        </button>
       </div>
-      <a
-        {...stylex.attrs(styles.button, styles.primary, styles.feedLink)}
-        href={`feed:${feedUrl}`}
-      >
-        Subscribe
-      </a>
-      <p
-        {...stylex.attrs(styles.feedStatus)}
-        id="copy-status"
-        role="status"
-        hidden
-      ></p>
     </div>
   </main>
 </Layout>
 <script>
   const button = document.querySelector<HTMLButtonElement>('#copy-feed');
   const address = document.querySelector<HTMLElement>('#feed-address');
-  const status = document.querySelector<HTMLElement>('#copy-status');
   button?.addEventListener('click', async () => {
-    if (!address || !status) return;
+    if (!address) return;
     try {
       await navigator.clipboard.writeText(address.textContent?.trim() ?? '');
-      button.textContent = 'Copied';
-      status.textContent = '';
-      status.hidden = true;
-    } catch {
-      status.textContent = 'Select the address above and copy it manually.';
-      status.hidden = false;
-    }
+    } catch {}
   });
 </script>

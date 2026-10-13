@@ -89,11 +89,21 @@ test('Find descriptions match the page intros and metadata', async ({
   }
 });
 
-test('RSS address copies to the clipboard', async ({ page, context }) => {
+test('RSS Copy button matches the PGP copy behavior', async ({
+  page,
+  context,
+}) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/rss');
-  await page.getByRole('button', { name: 'Copy address', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Copied' })).toBeVisible();
+  await expect(page.locator('#feed-field')).toBeVisible();
+  await page.getByRole('button', { name: 'Copy', exact: true }).click();
+  await expect(
+    page.getByRole('button', { name: 'Copy', exact: true }),
+  ).toBeVisible();
+  await expect(page.locator('#copy-status')).toHaveCount(0);
+  await expect(
+    page.locator('#feed-field').getByRole('link', { name: 'Subscribe' }),
+  ).toHaveAttribute('href', 'feed:http://127.0.0.1:14323/rss');
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     'http://127.0.0.1:14323/rss',
   );
