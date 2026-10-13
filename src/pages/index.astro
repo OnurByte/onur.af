@@ -1,4 +1,6 @@
 ---
+import * as stylex from '@stylexjs/stylex';
+import { styles } from '../styles/pages';
 import Layout from '../layouts/Layout.astro';
 import { mottos } from '../portfolio/previews';
 
@@ -7,12 +9,7 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)];
 ---
 
 <Layout title={`${motto} · Onur`} motto={motto}>
-  <main
-    class="mx-auto w-[calc(100%_-_40px)] max-w-[960px] flex-1 pt-10 pb-[104px] min-[621px]:w-[calc(100%_-_48px)] min-[621px]:pt-[72px]"
-    aria-label="Portfolio"
-  >
-    <h1 class="max-w-full text-[clamp(2.25rem,9vw,3rem)] leading-[1.1] font-normal tracking-[-0.03em] [overflow-wrap:anywhere]">
-      {motto}
-    </h1>
+  <main {...stylex.attrs(styles.main)} aria-label="Portfolio">
+    <h1 {...stylex.attrs(styles.heading)}>{motto}</h1>
   </main>
 </Layout>

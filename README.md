@@ -4,7 +4,7 @@ My work, in my own words.
 
 [portfolio-seven-plum-73.vercel.app](https://portfolio-seven-plum-73.vercel.app/)
 
-Built with Astro, TypeScript and Tailwind. Black or white, following the system theme.
+Built with Astro, TypeScript and StyleX. Black or white, following the system theme.
 
 ## Run
 
@@ -38,4 +38,4 @@ bun test
 
 Database tests require an isolated PostgreSQL database through `TEST_DATABASE_URL`. After building, `TEST_CHECKOUT=1 bun test tests/checkout.test.ts` checks checkout against a fake gateway. These checks do not prove live Monero settlement.
 
-[Design](docs/design.md) · [Link previews](docs/link-previews.md) · [Donations](docs/donations.md)
+[StyleX](docs/stylex.md) · [Design](docs/design.md) · [Link previews](docs/link-previews.md) · [Donations](docs/donations.md)

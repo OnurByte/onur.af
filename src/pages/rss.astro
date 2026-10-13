@@ -1,4 +1,6 @@
 ---
+import * as stylex from '@stylexjs/stylex';
+import { styles } from '../styles/pages';
 import { publicPreview } from '../portfolio/previews';
 import Layout from '../layouts/Layout.astro';
 import { siteOrigin } from '../portfolio/seo';
@@ -12,21 +14,21 @@ const description = publicPreview('/rss')!.description;
 ---
 
 <Layout title="RSS · Onur" description={description}>
-  <main class="mx-auto w-[calc(100%_-_40px)] max-w-[960px] flex-1 pt-10 pb-[104px] min-[621px]:w-[calc(100%_-_48px)] min-[621px]:pt-[72px] [&_a]:underline [&_a]:underline-offset-[0.2em] [&_p]:my-4 [&_p]:leading-[1.7]">
-    <h1 class="max-w-full text-[clamp(2.25rem,9vw,3rem)] leading-[1.1] font-normal tracking-[-0.03em] [overflow-wrap:anywhere]">
-      RSS
-    </h1>
-    <div class="max-w-[65ch] leading-[1.8] [&_p]:my-6">
-      <p data-page-description>{description}</p>
-      <div class="my-6 flex flex-wrap items-center gap-x-5 gap-y-3 [&_span]:min-w-0 [&_button]:shrink-0">
+  <main {...stylex.attrs(styles.main)}>
+    <h1 {...stylex.attrs(styles.heading)}>RSS</h1>
+    <div {...stylex.attrs(styles.prose)}>
+      <p {...stylex.attrs(styles.feedStatus)} data-page-description>
+        {description}
+      </p>
+      <div {...stylex.attrs(styles.feedRow)}>
         <span
-          class="font-mono text-[0.9rem] leading-[1.7] font-normal [overflow-wrap:anywhere] select-all"
+          {...stylex.attrs(styles.mono, styles.feedAddress)}
           id="feed-address"
         >
           {feedUrl}
         </span>
         <button
-          class="inline-flex min-h-11 cursor-pointer items-center justify-center whitespace-normal rounded border border-[var(--border)] bg-transparent px-4 py-3 text-base leading-[1.4] font-medium text-[var(--text)] hover:border-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--background)]"
+          {...stylex.attrs(styles.button, styles.secondary, styles.feedButton)}
           id="copy-feed"
           type="button"
           aria-live="polite"
@@ -35,12 +37,17 @@ const description = publicPreview('/rss')!.description;
         </button>
       </div>
       <a
-        class="inline-flex min-h-11 cursor-pointer items-center justify-center whitespace-normal rounded border border-[var(--text)] bg-[var(--text)] px-4 py-3 text-base leading-[1.4] font-medium text-[var(--background)] no-underline hover:border-[var(--border)] hover:bg-[var(--surface)] hover:text-[var(--text)]"
+        {...stylex.attrs(styles.button, styles.primary, styles.feedLink)}
         href={`feed:${feedUrl}`}
       >
         Subscribe
       </a>
-      <p id="copy-status" role="status" hidden></p>
+      <p
+        {...stylex.attrs(styles.feedStatus)}
+        id="copy-status"
+        role="status"
+        hidden
+      ></p>
     </div>
   </main>
 </Layout>

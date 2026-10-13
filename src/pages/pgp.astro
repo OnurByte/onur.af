@@ -1,4 +1,6 @@
 ---
+import * as stylex from '@stylexjs/stylex';
+import { styles } from '../styles/pages';
 import { publicPreview } from '../portfolio/previews';
 import Layout from '../layouts/Layout.astro';
 import publicKey from '../../public/pgp.asc?raw';
@@ -6,23 +8,23 @@ const description = publicPreview('/pgp')!.description;
 ---
 
 <Layout title="PGP · Onur" description={description}>
-  <main class="mx-auto w-[calc(100%_-_40px)] max-w-[960px] flex-1 pt-10 pb-[104px] min-[621px]:w-[calc(100%_-_48px)] min-[621px]:pt-[72px]">
-    <h1 class="max-w-full text-[clamp(2.25rem,9vw,3rem)] leading-[1.1] font-normal tracking-[-0.03em] [overflow-wrap:anywhere]">
-      PGP
-    </h1>
-    <div class="max-w-[65ch] leading-[1.8] [&_p]:my-6">
-      <p data-page-description>{description}</p>
-      <p class="font-mono text-[0.9rem] leading-[1.7] font-normal [overflow-wrap:anywhere] select-all">
+  <main {...stylex.attrs(styles.main)}>
+    <h1 {...stylex.attrs(styles.heading)}>PGP</h1>
+    <div {...stylex.attrs(styles.prose)}>
+      <p {...stylex.attrs(styles.paragraph)} data-page-description>
+        {description}
+      </p>
+      <p {...stylex.attrs(styles.mono, styles.paragraph)}>
         3356 36C1 5D02 326F 9A43 1C98 4103 A3DD C441 9B61
       </p>
       <a
-        class="inline-flex min-h-11 cursor-pointer items-center justify-center whitespace-normal rounded border border-[var(--text)] bg-[var(--text)] px-4 py-3 text-base leading-[1.4] font-medium text-[var(--background)] no-underline hover:border-[var(--border)] hover:bg-[var(--surface)] hover:text-[var(--text)]"
+        {...stylex.attrs(styles.button, styles.primary)}
         href="/pgp.asc"
         download
       >
         Download public key
       </a>
     </div>
-    <pre class="mt-8 overflow-x-auto rounded border border-[var(--border)] p-4 text-[0.85rem] leading-[1.6]"><code>{publicKey.trim()}</code></pre>
+    <pre {...stylex.attrs(styles.key)}><code>{publicKey.trim()}</code></pre>
   </main>
 </Layout>

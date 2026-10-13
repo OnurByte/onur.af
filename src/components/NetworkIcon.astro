@@ -1,4 +1,6 @@
 ---
+import * as stylex from '@stylexjs/stylex';
+import { shell } from '../styles/shell';
 import tor from '../../public/brand/tor.svg?raw';
 import i2p from '../../public/brand/i2p.svg?raw';
 
@@ -6,6 +8,11 @@ interface Props {
   network: 'TOR' | 'I2P';
 }
 const { network } = Astro.props;
+const iconAttrs = stylex.attrs(
+  shell.network,
+  shell.monochrome,
+  network === 'I2P' ? shell.i2p : shell.tor,
+);
 const icon =
   network === 'TOR'
     ? tor
@@ -13,10 +20,7 @@ const icon =
 ---
 
 <span
-  class:list={[
-    'network-icon block h-8 brightness-0 dark:invert [&_svg]:block [&_svg]:size-full',
-    network === 'I2P' ? 'w-16' : 'w-8',
-  ]}
+  class:list={['network-icon', iconAttrs.class]}
   data-network={network}
   aria-hidden="true"
   set:html={icon.slice(icon.indexOf('<svg'))}
