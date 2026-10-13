@@ -54,7 +54,7 @@ describe('public feeds', () => {
     expect(xml).toContain('<title>Onur — RSS</title>');
     expect(xml).toContain('<link>https://example.com/rss</link>');
     expect(xml).toContain(
-      '<description>RSS brings new writing to your feed reader. Add this address to subscribe.</description>',
+      '<description>Follow new writing via RSS.</description>',
     );
     expect(xml).not.toContain('<item>');
     expect(xml).not.toContain('/notes');

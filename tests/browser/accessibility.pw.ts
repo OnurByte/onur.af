@@ -68,6 +68,27 @@ for (const colorScheme of ['light', 'dark'] as const) {
   }
 }
 
+test('Find descriptions match the page intros and metadata', async ({
+  page,
+}) => {
+  for (const path of ['/donate', '/rss', '/pgp']) {
+    await page.goto(path);
+    const description = await page
+      .locator('[data-page-description]')
+      .innerText();
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      'content',
+      description,
+    );
+    await page.getByRole('button', { name: 'Search pages' }).click();
+    await expect(
+      page.locator(
+        `#search-results a[href="${path}"] [data-result-description]`,
+      ),
+    ).toHaveText(description);
+  }
+});
+
 test('RSS address copies to the clipboard', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/rss');
