@@ -66,6 +66,14 @@ export const styles = stylex.create({
     gap: 12,
     justifyItems: 'start',
     width: '100%',
+    position: 'relative',
+  },
+  keyActions: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    display: 'flex',
+    gap: 8,
   },
   keyInput: {
     fontFamily:
@@ -76,10 +84,9 @@ export const styles = stylex.create({
     color: 'var(--text)',
     ':focus-visible': { outline: '2px solid var(--text)', outlineOffset: 3 },
     overflow: 'auto',
-    userSelect: 'text',
     borderRadius: 4,
     border: '1px solid var(--border)',
-    padding: 16,
+    padding: '64px 16px 16px',
     fontSize: '0.85rem',
     lineHeight: 1.6,
   },

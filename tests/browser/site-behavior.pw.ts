@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('site copy restrictions and ASCII signature preserve the PGP exception', async ({
+test('site blocks native copy everywhere while the PGP copy button still works', async ({
   page,
   context,
 }) => {
@@ -54,7 +54,17 @@ test('site copy restrictions and ASCII signature preserve the PGP exception', as
   }
   expect(
     await key.evaluate((element) => getComputedStyle(element).userSelect),
-  ).toBe('text');
+  ).toBe('none');
+  const actions = page.locator('#key-actions');
+  await expect(actions.getByRole('button', { name: 'Copy' })).toBeVisible();
+  await expect(actions.getByRole('link', { name: 'Download' })).toHaveAttribute(
+    'href',
+    '/pgp.asc',
+  );
+  await expect(actions.getByRole('link', { name: 'Download' })).toHaveAttribute(
+    'download',
+    '',
+  );
   await key.focus();
   expect(
     await key.evaluate((element) =>
@@ -62,7 +72,7 @@ test('site copy restrictions and ASCII signature preserve the PGP exception', as
         new ClipboardEvent('copy', { bubbles: true, cancelable: true }),
       ),
     ),
-  ).toBe(true);
+  ).toBe(false);
   expect(
     await key.evaluate((element) =>
       element.dispatchEvent(
@@ -70,7 +80,7 @@ test('site copy restrictions and ASCII signature preserve the PGP exception', as
       ),
     ),
   ).toBe(false);
-  await page.locator('#copy-key').click();
+  await page.getByRole('button', { name: 'Copy', exact: true }).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     await key.inputValue(),
   );
