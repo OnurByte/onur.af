@@ -1,0 +1,68 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { searchStyles } from '../styles/search';
+import { searchPages } from '../portfolio/search';
+---
+
+<button
+  id="open-search"
+  type="button"
+  hidden
+  aria-haspopup="dialog"
+  aria-controls="search-dialog"
+  aria-keyshortcuts="Control+K Meta+K"
+  {...stylex.attrs(searchStyles.trigger)}
+>
+  <span>Search</span>
+  <kbd {...stylex.attrs(searchStyles.shortcut)}>Ctrl K</kbd>
+</button>
+<dialog
+  id="search-dialog"
+  aria-label="Search pages"
+  {...stylex.attrs(searchStyles.dialog)}
+>
+  <div {...stylex.attrs(searchStyles.top)}>
+    <label for="search-query" {...stylex.attrs(searchStyles.label)}>
+      Search
+    </label>
+    <button
+      id="close-search"
+      type="button"
+      aria-label="Close search"
+      {...stylex.attrs(searchStyles.close)}
+    >
+      Esc
+    </button>
+  </div>
+  <input
+    id="search-query"
+    type="search"
+    aria-label="Search pages"
+    placeholder="Where do you want to go?"
+    maxlength="200"
+    autocomplete="off"
+    autofocus
+    {...stylex.attrs(searchStyles.input)}
+  />
+  <p id="search-status" role="status" {...stylex.attrs(searchStyles.status)}>
+    Pages
+  </p>
+  <ul id="search-results" {...stylex.attrs(searchStyles.results)}>
+    {searchPages.map(({ url, meta }) => (
+      <li>
+        <a href={url} {...stylex.attrs(searchStyles.result)}>
+          <span>{meta.title}</span>
+          <small {...stylex.attrs(searchStyles.detail)}>
+            {meta.description}
+          </small>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p {...stylex.attrs(searchStyles.hint)}>
+    ↑ ↓ to navigate · Enter to open · Esc to close
+  </p>
+</dialog>
+<script>
+  import '../client/search';
+</script>

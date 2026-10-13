@@ -126,3 +126,6 @@ button:focus-visible {
     transition: none !important;
   }
 }
+body:has(#search-dialog[open]) {
+  overflow: hidden;
+}

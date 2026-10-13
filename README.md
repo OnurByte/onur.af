@@ -44,7 +44,7 @@ Prettier checks all supported files in the repository, including root configs an
 
 Astro Content Collections validates the public page metadata in `src/content/public-pages.json`. The collection describes existing utility pages; there are no projects or notes pages. The RSS feed stays empty until there is actual published writing.
 
-`bun run build` generates a local Pagefind index before building Astro. `/search` searches only the title and description of Home, Donate, RSS and PGP. Search uses local assets and offers ordinary page links without JavaScript. Checkout URLs, donation IDs, payment addresses and the PGP key body never enter the index. Run `bun run search:index` before development to generate search assets.
+`bun run build` generates a local Pagefind index before building Astro. The header search opens a native dialog with Ctrl+K or ⌘K and searches the public titles and descriptions of Home, Donate, RSS and PGP as you type. Arrow keys select results and Escape closes the dialog. There is no separate search page or footer search link. Search loads local assets only. Checkout URLs, donation IDs, payment addresses and the PGP key body never enter the index. Run `bun run search:index` before development to generate search assets.
 
 ## Browser and link checks
 
@@ -57,7 +57,7 @@ HOST=127.0.0.1 PORT=14324 SITE_URL=http://portfolio.example:14324 bun run test:l
 
 Set `CHROME_PATH` to an installed Chromium executable to use it for browser tests and Lighthouse; otherwise Playwright uses its downloaded browser.
 
-Browser tests run the built server with a synthetic gateway. They check axe accessibility, keyboard focus, both system themes, small screens, clipboard content, local resource requests, search and payment display states. Lighthouse CI measures the five public pages against local fixture URLs and keeps reports locally; it does not upload them. The local HTTP fixture excludes HTTPS and HTTP-to-HTTPS redirect audits; production TLS needs a separate live check. The quality workflow also uses Lychee to check public documentation links, excluding private network, checkout and local-development links. Live external link failures are separate from local browser/build evidence.
+Browser tests run the built server with a synthetic gateway. They check axe accessibility, keyboard focus, both system themes, small screens, clipboard content, local resource requests, search and payment display states. Lighthouse CI measures the four public pages against local fixture URLs and keeps reports locally; it does not upload them. The local HTTP fixture excludes HTTPS and HTTP-to-HTTPS redirect audits; production TLS needs a separate live check. The quality workflow also uses Lychee to check public documentation links, excluding private network, checkout and local-development links. Live external link failures are separate from local browser/build evidence.
 
 Database tests require an isolated PostgreSQL database through `TEST_DATABASE_URL`. After building, `TEST_CHECKOUT=1 bun test tests/checkout.test.ts` checks checkout against a fake gateway. These checks do not prove live Monero settlement.
 

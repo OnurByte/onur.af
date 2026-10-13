@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-const publicPaths = ['/', '/rss', '/pgp', '/donate', '/search'];
+const publicPaths = ['/', '/rss', '/pgp', '/donate', '/404'];
 const states = [
   'waiting',
   'partial',
@@ -78,7 +78,7 @@ test('RSS address copies to the clipboard', async ({ page, context }) => {
   );
 });
 
-for (const path of ['/projects', '/notes']) {
+for (const path of ['/projects', '/notes', '/search']) {
   test(`${path} remains removed`, async ({ request }) => {
     expect((await request.get(path)).status()).toBe(404);
   });
@@ -89,9 +89,9 @@ for (const [query, title, href] of [
   ['signature', 'PGP', '/pgp'],
 ]) {
   test(`Pagefind finds ${query}`, async ({ page }) => {
-    await page.goto('/search');
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Search', exact: false }).click();
     await page.getByRole('searchbox', { name: 'Search pages' }).fill(query!);
-    await page.getByRole('button', { name: 'Search', exact: true }).click();
     await expect(
       page.locator('#search-results').getByRole('link', { name: title! }),
     ).toHaveAttribute('href', href!);
@@ -99,33 +99,106 @@ for (const [query, title, href] of [
 }
 
 test('Pagefind reports a missing match', async ({ page }) => {
-  await page.goto('/search');
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Search', exact: false }).click();
   await page
     .getByRole('searchbox', { name: 'Search pages' })
     .fill('zzzzunfindablezzzz');
-  await page.getByRole('button', { name: 'Search', exact: true }).click();
   await expect(page.locator('#search-status')).toHaveText('No results.');
   await expect(page.locator('#search-results').getByRole('link')).toHaveCount(
     0,
   );
 });
 
-test('search queries stay off the server when JavaScript is disabled', async ({
+test('header search aligns with Donate and supports keyboard navigation', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const trigger = page.locator('header #open-search');
+  await expect(page.locator('footer #open-search')).toHaveCount(0);
+  await expect(page.locator('footer a[href="/search"]')).toHaveCount(0);
+  const headerBox = await trigger.boundingBox();
+  const donateBox = await page
+    .locator('footer a[href="/donate"]')
+    .boundingBox();
+  expect(
+    Math.abs(
+      headerBox!.x + headerBox!.width - (donateBox!.x + donateBox!.width),
+    ),
+  ).toBeLessThan(2);
+  await page.keyboard.press('Control+k');
+  const dialog = page.getByRole('dialog', { name: 'Search pages' });
+  await expect(dialog).toBeVisible();
+  await expect(page.getByRole('searchbox')).toBeFocused();
+  await page.getByRole('searchbox').fill('Monero');
+  await expect(page.locator('#search-results a')).toHaveCount(1);
+  await page.screenshot({
+    path: '/tmp/portfolio-command-search.png',
+    fullPage: true,
+  });
+  await page.keyboard.press('ArrowDown');
+  await expect(page.locator('#search-results a')).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/donate$/);
+  await page.keyboard.press('Meta+k');
+  await expect(dialog).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible();
+  await expect(page.locator('#open-search')).toBeFocused();
+  await page.locator('#open-search').click();
+  await page.mouse.click(1, 1);
+  await expect(dialog).not.toBeVisible();
+});
+
+test('404 has correct status, indexing and reduced-motion behavior', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const response = await page.goto('/this-page-does-not-exist');
+  expect(response!.status()).toBe(404);
+  expect(response!.headers()['x-robots-tag']).toBe('noindex, nofollow');
+  await expect(page.getByRole('heading', { name: '404' })).toBeVisible();
+  await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+  expect(
+    await page
+      .getByRole('heading', { name: '404' })
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe('none');
+  await page.screenshot({
+    path: '/tmp/portfolio-custom-404.png',
+    fullPage: true,
+  });
+  await page.getByRole('link', { name: '404. Nothing here. Go home.' }).click();
+  await expect(page).toHaveURL('http://127.0.0.1:14323/');
+});
+
+test('search stays unavailable without JavaScript and cannot transmit a query', async ({
   browser,
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   try {
     const page = await context.newPage();
-    await page.goto('http://127.0.0.1:14323/search');
-    await page
-      .getByRole('searchbox', { name: 'Search pages' })
-      .fill('private-term');
-    await page.getByRole('button', { name: 'Search', exact: true }).click();
-    await expect(page).toHaveURL(/^http:\/\/127\.0\.0\.1:14323\/search\??$/);
-    await expect(
-      page.getByRole('link', { name: 'Donate', exact: true }).first(),
-    ).toBeVisible();
+    await page.goto('http://127.0.0.1:14323/');
+    await expect(page.locator('#open-search')).toBeHidden();
+    await expect(page.locator('#search-query')).toBeHidden();
+    expect(await page.locator('#search-query').getAttribute('name')).toBeNull();
   } finally {
     await context.close();
   }
+});
+
+test('reopening a search cancelled before debounce completes refreshes the query', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.locator('#open-search').click();
+  await page.getByRole('searchbox').fill('Monero');
+  await page.keyboard.press('Escape');
+  await page.locator('#open-search').click();
+  await expect(page.locator('#search-results a')).toHaveCount(1);
+  await expect(page.locator('#search-results a')).toHaveAttribute(
+    'href',
+    '/donate',
+  );
 });

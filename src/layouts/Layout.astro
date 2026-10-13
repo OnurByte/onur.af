@@ -5,6 +5,7 @@ import '../styles/global.css';
 import { portfolioLinks } from '../portfolio/links';
 import { mottos, publicPreview } from '../portfolio/previews';
 import Brand from '../components/Brand.astro';
+import Search from '../components/Search.astro';
 import Icon from '../components/Icon.astro';
 import { canonicalUrl, siteDescription, siteOrigin } from '../portfolio/seo';
 interface Props {
@@ -210,6 +211,7 @@ const schema =
             <Brand />
           </a>
         )}
+        <Search />
       </nav>
     </header>
     <div id="content" {...stylex.attrs(shell.content)} tabindex="-1">
@@ -224,9 +226,6 @@ const schema =
         aria-label="Alternate sites and contact"
       >
         <span {...stylex.attrs(shell.footerGroup, shell.start)}>
-          <a {...stylex.attrs(shell.footerLink, shell.link)} href="/search">
-            Search
-          </a>
           <a {...stylex.attrs(shell.footerLink, shell.link)} href="/pgp">
             PGP
           </a>

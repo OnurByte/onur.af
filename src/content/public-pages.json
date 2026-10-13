@@ -22,11 +22,5 @@
     "key": "pgp",
     "title": "PGP",
     "description": "My public key for encrypted messages and signature verification."
-  },
-  {
-    "id": "/search",
-    "key": "search",
-    "title": "Search",
-    "description": "Search the public pages on this site."
   }
 ]
