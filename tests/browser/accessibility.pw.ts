@@ -291,6 +291,11 @@ for (const width of [320, 375]) {
     const dialog = page.getByRole('dialog');
     const trigger = page.locator('#open-search');
     await expect(trigger.locator('kbd')).toBeVisible();
+    expect(
+      await trigger
+        .locator('kbd')
+        .evaluate((element) => getComputedStyle(element).whiteSpace),
+    ).toBe('nowrap');
     const findBox = await trigger.locator('span').boundingBox();
     const shortcutBox = await trigger.locator('kbd').boundingBox();
     expect(shortcutBox!.x).toBeGreaterThan(findBox!.x + findBox!.width);

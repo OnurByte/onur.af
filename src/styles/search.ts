@@ -8,7 +8,7 @@ export const searchStyles = stylex.create({
     minWidth: 110,
     gap: 8,
     minHeight: 44,
-    paddingInline: 12,
+    paddingInline: { default: 12, '@media (max-width: 620px)': 8 },
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'var(--border)',
@@ -18,6 +18,8 @@ export const searchStyles = stylex.create({
     fontWeight: 500,
   },
   shortcut: {
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
     fontSize: 12,
     color: 'var(--muted)',
     borderWidth: 1,
