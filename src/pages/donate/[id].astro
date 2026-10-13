@@ -217,7 +217,7 @@ const partialDetails =
               aria-label="Monero payment QR code"
             />
           )}
-          <div>
+          <div {...stylex.attrs(styles.paymentDetails)}>
             <p {...stylex.attrs(styles.kicker, styles.paymentParagraph)}>
               {state === 'partial' ? 'REMAINING AMOUNT' : 'AMOUNT'}
             </p>

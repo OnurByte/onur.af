@@ -291,8 +291,12 @@ for (const width of [320, 375]) {
     const dialog = page.getByRole('dialog');
     const brand = page.locator('header [data-icon="onur"]').locator('..');
     const brandBox = await brand.boundingBox();
+    const navBox = await page.locator('header nav').boundingBox();
+    expect(Math.abs(brandBox!.x - navBox!.x)).toBeLessThan(1);
     expect(
-      Math.abs(brandBox!.x + brandBox!.width / 2 - width / 2),
+      Math.abs(
+        brandBox!.y + brandBox!.height / 2 - (navBox!.y + navBox!.height / 2),
+      ),
     ).toBeLessThan(1);
     const trigger = page.locator('#open-search');
     await expect(trigger.locator('kbd')).toBeVisible();
