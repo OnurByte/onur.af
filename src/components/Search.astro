@@ -27,16 +27,11 @@ import SearchNetworks from './SearchNetworks.astro';
   aria-label="Search pages"
   {...stylex.attrs(searchStyles.dialog)}
 >
-  <div {...stylex.attrs(searchStyles.top)}>
-    <button
-      id="close-search"
-      type="button"
-      aria-label="Close search"
-      {...stylex.attrs(searchStyles.close)}
-    >
-      Esc
+  <form method="dialog">
+    <button type="submit" {...stylex.attrs(searchStyles.accessibleClose)}>
+      Close search
     </button>
-  </div>
+  </form>
   <div {...stylex.attrs(searchStyles.field)}>
     <input
       id="search-query"
@@ -68,9 +63,6 @@ import SearchNetworks from './SearchNetworks.astro';
     ))}
     <SearchNetworks />
   </ul>
-  <p {...stylex.attrs(searchStyles.hint)}>
-    ↑ ↓ navigate · Enter open · Esc close
-  </p>
 </dialog>
 <script>
   import '../client/search';

@@ -4,7 +4,6 @@ const dialog = document.querySelector<HTMLDialogElement>('#search-dialog');
 const input = document.querySelector<HTMLInputElement>('#search-query');
 const status = document.querySelector<HTMLElement>('#search-status');
 const results = document.querySelector<HTMLUListElement>('#search-results');
-const close = document.querySelector<HTMLButtonElement>('#close-search');
 const entries = [...(results?.children ?? [])].map((item) => ({
   text: item.textContent?.toLowerCase() ?? '',
   node: item.cloneNode(true),
@@ -17,7 +16,6 @@ function open() {
   search();
 }
 trigger?.addEventListener('click', open);
-close?.addEventListener('click', () => dialog?.close());
 if (trigger && dialog) trigger.hidden = false;
 document.addEventListener('keydown', (event) => {
   if (
