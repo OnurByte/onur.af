@@ -40,7 +40,7 @@ Mevcut örnekler:
 | ----------------- | ----------------------------------------- |
 | Bağış açıklaması  | “Support my work with Monero.”            |
 | PGP açıklaması    | “Encrypt messages and verify signatures.” |
-| Anahtar indirme   | “Download public key”                     |
+| Anahtar indirme   | “Download”                                |
 | Anahtar kopyalama | “Copy”                                    |
 
 Kurumsal pazarlama dili, abartılı sıfatlar, sahte aciliyet, kullanıcı sayısı veya güvenlik iddiaları ekleme. Henüz bulunmayan projeler, yazılar ve başarılar için boş vitrin oluşturma. Metni, gerçekten sunulan içerik belirler.

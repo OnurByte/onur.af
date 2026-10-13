@@ -55,6 +55,16 @@ test('site blocks native copy everywhere while the PGP copy button still works',
   expect(
     await key.evaluate((element) => getComputedStyle(element).userSelect),
   ).toBe('none');
+  const actions = page.locator('#key-actions');
+  await expect(actions.getByRole('button', { name: 'Copy' })).toBeVisible();
+  await expect(actions.getByRole('link', { name: 'Download' })).toHaveAttribute(
+    'href',
+    '/pgp.asc',
+  );
+  await expect(actions.getByRole('link', { name: 'Download' })).toHaveAttribute(
+    'download',
+    '',
+  );
   await key.focus();
   expect(
     await key.evaluate((element) =>

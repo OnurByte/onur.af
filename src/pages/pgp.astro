@@ -18,13 +18,6 @@ const keyText = publicKey.trim();
       <p {...stylex.attrs(styles.mono, styles.paragraph)}>
         3356 36C1 5D02 326F 9A43 1C98 4103 A3DD C441 9B61
       </p>
-      <a
-        {...stylex.attrs(styles.button, styles.primary)}
-        href="/pgp.asc"
-        download
-      >
-        Download public key
-      </a>
     </div>
     <div {...stylex.attrs(styles.keySection)}>
       <textarea
@@ -35,13 +28,22 @@ const keyText = publicKey.trim();
         rows={keyText.split(/\r?\n/).length}
         spellcheck="false"
       >{keyText}</textarea>
-      <button
-        {...stylex.attrs(styles.button, styles.secondary, styles.keyCopyButton)}
-        type="button"
-        id="copy-key"
-      >
-        Copy
-      </button>
+      <div id="key-actions" {...stylex.attrs(styles.keyActions)}>
+        <button
+          {...stylex.attrs(styles.button, styles.secondary)}
+          type="button"
+          id="copy-key"
+        >
+          Copy
+        </button>
+        <a
+          {...stylex.attrs(styles.button, styles.secondary)}
+          href="/pgp.asc"
+          download
+        >
+          Download
+        </a>
+      </div>
       <p id="key-copy-status" role="status"></p>
     </div>
   </main>

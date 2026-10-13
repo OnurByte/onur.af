@@ -68,10 +68,12 @@ export const styles = stylex.create({
     width: '100%',
     position: 'relative',
   },
-  keyCopyButton: {
+  keyActions: {
     position: 'absolute',
     top: 12,
     right: 12,
+    display: 'flex',
+    gap: 8,
   },
   keyInput: {
     fontFamily:
