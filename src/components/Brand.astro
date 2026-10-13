@@ -1,16 +1,10 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import { shell } from '../styles/shell';
+import Icon from './Icon.astro';
 ---
 
 <span {...stylex.attrs(shell.brand)}>
-  <img
-    src="/brand/onur.svg"
-    width="56"
-    height="56"
-    {...stylex.attrs(shell.brandImage, shell.monochrome)}
-    alt=""
-    aria-hidden="true"
-  />
+  <Icon name="onur" />
   <span>Onur</span>
 </span>

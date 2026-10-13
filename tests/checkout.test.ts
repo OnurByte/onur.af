@@ -88,7 +88,7 @@ test.skipIf(!enabled)(
       expect(css).toMatch(/min-height:\s*100svh/);
       expect(css).toContain(':checked');
       expect(css).toMatch(/prefers-color-scheme:\s*dark/);
-      for (const icon of home.matchAll(/<span[^>]*data-network[^>]*>/g)) {
+      for (const icon of home.matchAll(/<img[^>]*data-icon[^>]*>/g)) {
         expect(icon[0].match(/\bclass="/g)?.length).toBe(1);
       }
 
@@ -100,6 +100,16 @@ test.skipIf(!enabled)(
         ].some((motto) => home.match(/<h1\b[^>]*>(.*?)<\/h1>/s)?.[1] === motto),
       ).toBe(true);
       expect(home).toContain('src="/brand/onur.svg"');
+      for (const name of ['tor', 'i2p', 'rss']) {
+        expect(home).toContain(`src="/brand/${name}.svg"`);
+        const asset = await fetch(`${origin}/brand/${name}.svg`);
+        expect(asset.ok).toBe(true);
+        expect(await asset.text()).toContain('<svg');
+      }
+      expect(home).not.toContain('<svg');
+      expect([
+        ...home.matchAll(/<img[^>]*data-icon="(?:onur|rss|tor|i2p)"/g),
+      ]).toHaveLength(4);
       expect(home).not.toContain('aria-label="Onur home"');
       const discord = JSON.parse(
         home.match(

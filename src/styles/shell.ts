@@ -85,8 +85,7 @@ export const shell = stylex.create({
     whiteSpace: 'nowrap',
     color: 'var(--text)',
   },
-  brandImage: { width: 56, height: 56, flexShrink: 0 },
-  network: { display: 'block', height: 32 },
-  tor: { width: 32 },
-  i2p: { width: 64 },
+  icon: { display: 'block', flexShrink: 0, width: 32, height: 32 },
+  brandIcon: { width: 56, height: 56 },
+  wideIcon: { width: 64 },
 });

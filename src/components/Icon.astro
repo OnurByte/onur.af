@@ -1,0 +1,32 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { shell } from '../styles/shell';
+
+const icons = {
+  onur: { filename: 'onur.svg', width: 56, height: 56 },
+  tor: { filename: 'tor.svg', width: 32, height: 32 },
+  i2p: { filename: 'i2p.svg', width: 64, height: 32 },
+  rss: { filename: 'rss.svg', width: 32, height: 32 },
+} as const;
+
+interface Props {
+  name: keyof typeof icons;
+}
+const { name } = Astro.props;
+const { filename, width, height } = icons[name];
+---
+
+<img
+  src={`/brand/${filename}`}
+  width={width}
+  height={height}
+  {...stylex.attrs(
+    shell.icon,
+    shell.monochrome,
+    name === 'onur' && shell.brandIcon,
+    name === 'i2p' && shell.wideIcon,
+  )}
+  data-icon={name}
+  alt=""
+  aria-hidden="true"
+/>

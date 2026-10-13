@@ -5,7 +5,7 @@ import '../styles/global.css';
 import { portfolioLinks } from '../portfolio/links';
 import { mottos, publicPreview } from '../portfolio/previews';
 import Brand from '../components/Brand.astro';
-import NetworkIcon from '../components/NetworkIcon.astro';
+import Icon from '../components/Icon.astro';
 import { canonicalUrl, siteDescription, siteOrigin } from '../portfolio/seo';
 interface Props {
   title?: string;
@@ -232,23 +232,7 @@ const schema =
             href="/rss"
             aria-label="RSS"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
-              {...stylex.attrs(shell.monochrome)}
-            >
-              <circle cx="5" cy="19" r="2" fill="white" />
-              <path
-                d="M3 11a10 10 0 0 1 10 10M3 3a18 18 0 0 1 18 18"
-                stroke="white"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-            </svg>
+            <Icon name="rss" />
           </a>
         </span>
         <span {...stylex.attrs(shell.footerGroup, shell.center)}>
@@ -259,7 +243,7 @@ const schema =
                 href={href}
                 aria-label={label}
               >
-                <NetworkIcon network={label === 'TOR' ? 'TOR' : 'I2P'} />
+                <Icon name={label === 'TOR' ? 'tor' : 'i2p'} />
               </a>
             ) : (
               <span
@@ -268,7 +252,7 @@ const schema =
                 aria-label={label}
                 title={`${label} address not published`}
               >
-                <NetworkIcon network={label === 'TOR' ? 'TOR' : 'I2P'} />
+                <Icon name={label === 'TOR' ? 'tor' : 'i2p'} />
               </span>
             );
           })}
