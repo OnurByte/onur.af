@@ -70,7 +70,7 @@ export const styles = stylex.create({
   },
   keyActions: {
     position: 'absolute',
-    top: -32,
+    top: 12,
     right: 12,
     display: 'flex',
     gap: 8,
