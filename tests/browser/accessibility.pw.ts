@@ -129,8 +129,10 @@ test('header search aligns with Donate and supports keyboard navigation', async 
   await page.keyboard.press('Control+k');
   const dialog = page.getByRole('dialog', { name: 'Search pages' });
   await expect(dialog).toBeVisible();
+  await expect(dialog.locator('#close-search')).toHaveCount(0);
+  expect(await dialog.innerText()).not.toMatch(/Esc|navigate|Enter open/);
   await expect(page.getByRole('searchbox')).toBeFocused();
-  for (const control of [trigger, dialog, page.getByRole('searchbox')]) {
+  for (const control of [trigger, dialog]) {
     expect(
       await control.evaluate((element) => {
         const style = getComputedStyle(element);
@@ -138,6 +140,16 @@ test('header search aligns with Donate and supports keyboard navigation', async 
       }),
     ).toEqual(['1px', 'solid', '4px']);
   }
+  expect(
+    await page.getByRole('searchbox').evaluate((element) => {
+      const style = getComputedStyle(element);
+      return [
+        style.borderTopWidth,
+        style.borderBottomWidth,
+        style.borderBottomStyle,
+      ];
+    }),
+  ).toEqual(['0px', '2px', 'solid']);
   await page.getByRole('searchbox').fill('Monero');
   await expect(page.locator('#search-results a')).toHaveCount(1);
   await expect(page.locator('#search-status')).toBeHidden();
@@ -170,6 +182,11 @@ test('header search aligns with Donate and supports keyboard navigation', async 
   await expect(page.locator('#open-search')).toBeFocused();
   await page.locator('#open-search').click();
   await page.mouse.click(1, 1);
+  await expect(dialog).not.toBeVisible();
+  await trigger.click();
+  const accessibleClose = dialog.getByRole('button', { name: 'Close search' });
+  await accessibleClose.focus();
+  await page.keyboard.press('Enter');
   await expect(dialog).not.toBeVisible();
 });
 
