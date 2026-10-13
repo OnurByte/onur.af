@@ -1,4 +1,6 @@
 ---
+import * as stylex from '@stylexjs/stylex';
+import { amountMarker, styles } from '../../styles/pages';
 import { publicPreview } from '../../portfolio/previews';
 import Layout from '../../layouts/Layout.astro';
 import { formatXmrAmount, parseXmrAmount } from '../../donations/money';
@@ -29,62 +31,50 @@ const description = publicPreview('/donate')!.description;
 ---
 
 <Layout title="Donate · Onur" description={description}>
-  <main
-    class="mx-auto w-[calc(100%_-_40px)] max-w-[960px] flex-1 pt-10 pb-[104px] min-[621px]:w-[calc(100%_-_48px)] min-[621px]:pt-[72px] [&_form]:max-w-[740px]"
-    aria-label="Monero donation"
-  >
-    <h1 class="max-w-full text-[clamp(2.25rem,9vw,3rem)] leading-[1.1] font-normal tracking-[-0.03em] [overflow-wrap:anywhere]">
-      Donate
-    </h1>
-    <div class="max-w-[65ch] leading-[1.8] [&_p]:my-6">
-      <p data-page-description>{description}</p>
+  <main {...stylex.attrs(styles.main)} aria-label="Monero donation">
+    <h1 {...stylex.attrs(styles.heading)}>Donate</h1>
+    <div {...stylex.attrs(styles.prose)}>
+      <p {...stylex.attrs(styles.paragraph)} data-page-description>
+        {description}
+      </p>
     </div>
     {query.has('error') && (
-      <p
-        class="border-l-2 border-[var(--text)] pl-3 text-[var(--text)]"
-        role="alert"
-      >
+      <p {...stylex.attrs(styles.callout, styles.error)} role="alert">
         {query.get('error') === 'amount'
           ? 'Enter an amount greater than 0 and no more than 100 XMR, with up to 12 decimal places.'
           : 'The donation service is temporarily unavailable. Retry this same donation or try again shortly.'}
       </p>
     )}
-    <form class="mt-9" method="post" action="/donate/create">
-      <fieldset class="m-0 flex flex-wrap gap-3 border-0 p-0">
-        <legend class="mb-4 w-full text-[0.9rem] text-[var(--muted)]">
-          Amount
-        </legend>
+    <form {...stylex.attrs(styles.form)} method="post" action="/donate/create">
+      <fieldset {...stylex.attrs(styles.fieldset)}>
+        <legend {...stylex.attrs(styles.legend)}>Amount</legend>
         {amounts.map((amount) => (
-          <label class="relative cursor-pointer text-base leading-[1.4] font-medium [&_span]:block [&_span]:min-h-11 [&_span]:rounded [&_span]:border [&_span]:border-[var(--border)] [&_span]:bg-[var(--background)] [&_span]:px-4 [&_span]:py-3 hover:[&_span]:border-[var(--muted)]">
+          <label {...stylex.attrs(styles.choice, amountMarker)}>
             <input
-              class="peer absolute inset-0 opacity-0"
+              {...stylex.attrs(styles.radio, amountMarker)}
               type="radio"
               name="amount"
               value={amount}
               checked={!customSelected && selectedAmount === amount}
             />
-            <span class="peer-checked:border-[var(--text)]! peer-checked:bg-[var(--text)]! peer-checked:text-[var(--background)] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-[var(--text)]">
-              {amount} XMR
-            </span>
+            <span {...stylex.attrs(styles.choiceText)}>{amount} XMR</span>
           </label>
         ))}
-        <label class="relative cursor-pointer text-base leading-[1.4] font-medium [&_span]:block [&_span]:min-h-11 [&_span]:rounded [&_span]:border [&_span]:border-[var(--border)] [&_span]:bg-[var(--background)] [&_span]:px-4 [&_span]:py-3 hover:[&_span]:border-[var(--muted)]">
+        <label {...stylex.attrs(styles.choice, amountMarker)}>
           <input
-            class="peer absolute inset-0 opacity-0"
+            {...stylex.attrs(styles.radio, amountMarker)}
             type="radio"
             name="amount"
             value="custom"
             checked={customSelected}
           />
-          <span class="peer-checked:border-[var(--text)]! peer-checked:bg-[var(--text)]! peer-checked:text-[var(--background)] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-[var(--text)]">
-            Custom
-          </span>
+          <span {...stylex.attrs(styles.choiceText)}>Custom</span>
         </label>
       </fieldset>
-      <label class="mt-6 grid max-w-80 gap-2 text-[0.95rem] [&_span]:text-[var(--muted)]">
+      <label {...stylex.attrs(styles.customLabel)}>
         Custom amount in XMR
         <input
-          class="min-h-11 rounded border border-[var(--border)] bg-[var(--surface)] p-3 text-base leading-[1.4] font-medium text-[var(--text)] focus:border-[var(--muted)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--text)]"
+          {...stylex.attrs(styles.customInput)}
           name="customAmount"
           type="text"
           inputmode="decimal"
@@ -93,13 +83,12 @@ const description = publicPreview('/donate')!.description;
           placeholder="e.g. 0.075"
           value={customAmount}
         />
-        <span>More than 0, up to 100 XMR; 12 decimal places maximum.</span>
+        <span {...stylex.attrs(styles.muted)}>
+          More than 0, up to 100 XMR; 12 decimal places maximum.
+        </span>
       </label>
       <input type="hidden" name="id" value={id} />
-      <button
-        class="inline-flex min-h-11 cursor-pointer items-center justify-center whitespace-normal rounded border border-[var(--text)] bg-[var(--text)] px-4 py-3 text-base leading-[1.4] font-medium text-[var(--background)] no-underline hover:border-[var(--border)] hover:bg-[var(--surface)] hover:text-[var(--text)]"
-        type="submit"
-      >
+      <button {...stylex.attrs(styles.button, styles.primary)} type="submit">
         Continue to payment <span aria-hidden="true">↗</span>
       </button>
     </form>

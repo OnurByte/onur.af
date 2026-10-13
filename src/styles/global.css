@@ -1,0 +1,133 @@
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  border: 0 solid;
+}
+html {
+  color-scheme: light;
+  --background: #fff;
+  --text: #0d0d0d;
+  --muted: #333;
+  --border: #b3b3b3;
+  --surface: #f2f2f2;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+}
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+    --background: #000;
+    --text: #fff;
+    --muted: #fff;
+    --border: #404040;
+    --surface: #222;
+  }
+}
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+figure,
+pre,
+dl,
+dd {
+  margin: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+code,
+kbd,
+samp,
+pre {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  font-size: 1em;
+}
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  background: transparent;
+  border-radius: 0;
+}
+button,
+input {
+  padding: 0;
+}
+button,
+[type='button'],
+[type='reset'],
+[type='submit'] {
+  appearance: button;
+}
+ul,
+ol,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+img,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block;
+  vertical-align: middle;
+}
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+[hidden] {
+  display: none !important;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid;
+  outline-offset: 3px;
+}
+[data-payment-qr] svg {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+.network-icon > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}

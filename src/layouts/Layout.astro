@@ -1,4 +1,7 @@
 ---
+import * as stylex from '@stylexjs/stylex';
+import { shell } from '../styles/shell';
+import '../styles/global.css';
 import { portfolioLinks } from '../portfolio/links';
 import { mottos, publicPreview } from '../portfolio/previews';
 import Brand from '../components/Brand.astro';
@@ -87,12 +90,11 @@ const schema =
 ---
 
 <!doctype html>
-<html
-  lang="en"
-  prefix="og: https://ogp.me/ns#"
-  class="[color-scheme:light] [--background:#fff] [--text:#0d0d0d] [--muted:#333] [--border:#b3b3b3] [--surface:#f2f2f2] dark:[color-scheme:dark] dark:[--background:#000] dark:[--text:#fff] dark:[--muted:#fff] dark:[--border:#404040] dark:[--surface:#222]"
->
+<html lang="en" prefix="og: https://ogp.me/ns#">
   <head>
+    {import.meta.env.DEV && (
+      <link rel="stylesheet" href="/virtual:stylex.css" />
+    )}
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
@@ -189,25 +191,19 @@ const schema =
       }
     />
   </head>
-  <body class="m-0 flex min-h-svh min-w-80 flex-col bg-[var(--background)] font-sans text-base leading-[1.6] text-[var(--text)] [font-synthesis:none] [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-3 [&_button:focus-visible]:outline-2 [&_button:focus-visible]:outline-offset-3 motion-reduce:[&_*]:animate-none motion-reduce:[&_*]:scroll-auto motion-reduce:[&_*]:transition-none">
-    <a
-      class="absolute -top-25 left-6 z-10 bg-[var(--background)] p-3 focus:top-3 max-[620px]:left-5"
-      href="#content"
-    >
+  <body {...stylex.attrs(shell.body)}>
+    <a {...stylex.attrs(shell.skip)} href="#content">
       Skip to content
     </a>
-    <header class="mx-auto flex w-[calc(100%-48px)] max-w-240 items-center justify-between gap-5 py-6 max-[620px]:w-[calc(100%-40px)]">
-      <nav
-        class="flex w-full items-center justify-between gap-5"
-        aria-label="Main navigation"
-      >
+    <header {...stylex.attrs(shell.container, shell.header)}>
+      <nav {...stylex.attrs(shell.navigation)} aria-label="Main navigation">
         {Astro.url.pathname === '/' ? (
-          <span class="text-[2.5rem] font-medium leading-[1.15]">
+          <span {...stylex.attrs(shell.title)}>
             <Brand />
           </span>
         ) : (
           <a
-            class="text-[2.5rem] font-medium leading-[1.15] no-underline"
+            {...stylex.attrs(shell.title, shell.link)}
             href="/"
             aria-label="Onur home"
           >
@@ -216,26 +212,23 @@ const schema =
         )}
       </nav>
     </header>
-    <div id="content" class="flex-1" tabindex="-1">
+    <div id="content" {...stylex.attrs(shell.content)} tabindex="-1">
       <slot />
     </div>
     <footer
-      class="mx-auto flex w-[calc(100%-48px)] max-w-240 items-center justify-between gap-5 pt-5 pb-7 text-xl font-bold max-[620px]:w-[calc(100%-40px)] max-[620px]:text-base"
+      {...stylex.attrs(shell.container, shell.footer)}
       aria-label="Contact and donation links"
     >
       <nav
-        class="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-5 max-[620px]:gap-1"
+        {...stylex.attrs(shell.footerNavigation)}
         aria-label="Alternate sites and contact"
       >
-        <span class="flex items-center justify-self-start gap-5 max-[620px]:gap-3">
-          <a
-            class="inline-flex min-h-8 items-center gap-2 no-underline"
-            href="/pgp"
-          >
+        <span {...stylex.attrs(shell.footerGroup, shell.start)}>
+          <a {...stylex.attrs(shell.footerLink, shell.link)} href="/pgp">
             PGP
           </a>
           <a
-            class="inline-flex min-h-8 items-center gap-2 no-underline"
+            {...stylex.attrs(shell.footerLink, shell.link)}
             href="/rss"
             aria-label="RSS"
           >
@@ -246,7 +239,7 @@ const schema =
               viewBox="0 0 24 24"
               fill="none"
               aria-hidden="true"
-              class="brightness-0 dark:invert"
+              {...stylex.attrs(shell.monochrome)}
             >
               <circle cx="5" cy="19" r="2" fill="white" />
               <path
@@ -258,11 +251,11 @@ const schema =
             </svg>
           </a>
         </span>
-        <span class="flex items-center justify-self-center gap-5 max-[620px]:gap-3">
+        <span {...stylex.attrs(shell.footerGroup, shell.center)}>
           {links.map(({ label, href }) => {
             return href ? (
               <a
-                class="inline-flex min-h-8 items-center gap-2 no-underline"
+                {...stylex.attrs(shell.footerLink, shell.link)}
                 href={href}
                 aria-label={label}
               >
@@ -270,7 +263,7 @@ const schema =
               </a>
             ) : (
               <span
-                class="inline-flex min-h-8 cursor-default items-center gap-2 text-[var(--muted)]"
+                {...stylex.attrs(shell.footerLink, shell.unavailable)}
                 role="img"
                 aria-label={label}
                 title={`${label} address not published`}
@@ -281,7 +274,7 @@ const schema =
           })}
         </span>
         <a
-          class="inline-flex min-h-8 items-center justify-self-end gap-2 no-underline"
+          {...stylex.attrs(shell.footerLink, shell.link, shell.end)}
           href="/donate"
         >
           DONATE
@@ -290,10 +283,3 @@ const schema =
     </footer>
   </body>
 </html>
-
-<style is:global>
-  @import 'tailwindcss';
-  @theme {
-    --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  }
-</style>

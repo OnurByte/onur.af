@@ -1,9 +1,14 @@
-<span class="inline-flex items-center gap-[0.24em] whitespace-nowrap text-[var(--text)]">
+---
+import * as stylex from '@stylexjs/stylex';
+import { shell } from '../styles/shell';
+---
+
+<span {...stylex.attrs(shell.brand)}>
   <img
     src="/brand/onur.svg"
     width="56"
     height="56"
-    class="size-14 shrink-0 brightness-0 dark:invert"
+    {...stylex.attrs(shell.brandImage, shell.monochrome)}
     alt=""
     aria-hidden="true"
   />

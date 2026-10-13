@@ -80,6 +80,18 @@ test.skipIf(!enabled)(
         'property="og:url" content="https://portfolio.example/"',
       );
       expect(home).toContain('application/ld+json');
+      const stylesheet = home.match(/href="([^"]+\.css)"/);
+      expect(stylesheet).not.toBeNull();
+      const cssResponse = await fetch(new URL(stylesheet![1]!, origin));
+      expect(cssResponse.ok).toBe(true);
+      const css = await cssResponse.text();
+      expect(css).toMatch(/min-height:\s*100svh/);
+      expect(css).toContain(':checked');
+      expect(css).toMatch(/prefers-color-scheme:\s*dark/);
+      for (const icon of home.matchAll(/<span[^>]*data-network[^>]*>/g)) {
+        expect(icon[0].match(/\bclass="/g)?.length).toBe(1);
+      }
+
       expect(
         [
           'The creator originates.',
