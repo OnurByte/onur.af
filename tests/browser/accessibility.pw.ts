@@ -140,6 +140,22 @@ test('header search aligns with Donate and supports keyboard navigation', async 
   }
   await page.getByRole('searchbox').fill('Monero');
   await expect(page.locator('#search-results a')).toHaveCount(1);
+  await expect(page.locator('#search-status')).toBeHidden();
+  await expect(page.locator('#search-results a img')).toHaveCount(1);
+  const row = page.locator('#search-results a');
+  const iconBox = await row.locator('img').boundingBox();
+  const titleBox = await row.locator('[data-result-title]').boundingBox();
+  const detailBox = await row
+    .locator('[data-result-description]')
+    .boundingBox();
+  const rowBox = await row.boundingBox();
+  expect(iconBox!.x).toBeLessThan(titleBox!.x);
+  expect(detailBox!.x).toBeGreaterThan(titleBox!.x + titleBox!.width);
+  expect(
+    Math.abs(
+      detailBox!.x + detailBox!.width - (rowBox!.x + rowBox!.width - 12),
+    ),
+  ).toBeLessThan(2);
   await page.screenshot({
     path: '/tmp/portfolio-command-search.png',
     fullPage: true,
