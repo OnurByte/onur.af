@@ -36,6 +36,7 @@ test('private checkout and unknown paths have no public preview', () => {
     '/identity',
     '/oembed.json',
     '/unknown',
+    '/search',
     '/projects',
     '/notes',
     '/reading',

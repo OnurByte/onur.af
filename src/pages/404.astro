@@ -1,0 +1,22 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import Layout from '../layouts/Layout.astro';
+import { notFound } from '../styles/not-found';
+Astro.response.status = 404;
+Astro.response.headers.set('Cache-Control', 'no-store');
+Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+---
+
+<Layout title="404 · Onur" description="Nothing here." noindex>
+  <main {...stylex.attrs(notFound.main)}>
+    <a
+      href="/"
+      aria-label="404. Nothing here. Go home."
+      {...stylex.attrs(notFound.scene)}
+    >
+      <h1 {...stylex.attrs(notFound.code)}>404</h1>
+      <p {...stylex.attrs(notFound.message)}>Nothing here.</p>
+      <p {...stylex.attrs(notFound.hint)}>(click to go home)</p>
+    </a>
+  </main>
+</Layout>

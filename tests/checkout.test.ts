@@ -181,6 +181,7 @@ test.skipIf(!enabled)(
       expect(sitemap).not.toContain(id);
       for (const removed of [
         '/identity',
+        '/search',
         '/projects',
         '/notes',
         '/reading',
