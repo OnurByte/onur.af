@@ -4,12 +4,13 @@ import { publicPaths, siteDescription } from '../src/portfolio/seo';
 import pages from '../src/content/public-pages.json';
 import { publicPageSchema } from '../src/content/schema';
 
-test('every public page has descriptive, distinct preview content', () => {
+test('public pages have distinct previews and utility descriptions', () => {
   const keys = new Set<string>();
   for (const path of publicPaths) {
     const preview = publicPreview(path);
     expect(preview).toBeDefined();
-    expect(preview!.description.trim().length).toBeGreaterThan(0);
+    if (path === '/') expect(preview!.description).toBe('');
+    else expect(preview!.description.trim().length).toBeGreaterThan(0);
     expect(preview!.description.length).toBeLessThan(160);
     expect(preview!.title.length).toBeGreaterThan(0);
     expect(keys.has(preview!.key)).toBe(false);
@@ -53,11 +54,15 @@ test('public page collection matches the published routes and validates metadata
     expect(publicPageSchema.safeParse(page).success).toBe(true);
   }
   expect(publicPreview('/')!.description).toBe(siteDescription);
+  expect(siteDescription).toBe('');
+  expect(
+    publicPageSchema.safeParse({ ...pages[1], description: '' }).success,
+  ).toBe(false);
   expect(
     publicPageSchema.safeParse({ ...pages[0], id: '/donate/private' }).success,
   ).toBe(false);
   expect(
-    publicPageSchema.safeParse({ ...pages[0], description: ' ' }).success,
+    publicPageSchema.safeParse({ ...pages[1], description: ' ' }).success,
   ).toBe(false);
   expect(
     publicPageSchema.safeParse({ ...pages[0], description: 'x'.repeat(160) })

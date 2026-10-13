@@ -147,7 +147,9 @@ test.skipIf(!enabled)(
               ?.trim(),
           ).toBe(description);
         }
-        expect(page).toContain(`name="description" content="${description}"`);
+        if (path === '/') expect(page).not.toContain('name="description"');
+        else
+          expect(page).toContain(`name="description" content="${description}"`);
         if (path !== '/')
           expect(
             (
@@ -156,12 +158,17 @@ test.skipIf(!enabled)(
               })
             ).status,
           ).toBe(200);
-        expect(page).toContain(
-          `property="og:description" content="${description}"`,
-        );
-        expect(page).toContain(
-          `name="twitter:description" content="${description}"`,
-        );
+        if (path === '/') {
+          expect(page).not.toContain('property="og:description"');
+          expect(page).not.toContain('name="twitter:description"');
+        } else {
+          expect(page).toContain(
+            `property="og:description" content="${description}"`,
+          );
+          expect(page).toContain(
+            `name="twitter:description" content="${description}"`,
+          );
+        }
       }
       expect(home).toContain('data-network-label="TOR"');
       expect(home).toContain('data-network-label="I2P"');

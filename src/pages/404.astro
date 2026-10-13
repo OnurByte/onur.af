@@ -1,7 +1,12 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import Layout from '../layouts/Layout.astro';
+import { encodeQuote, notFoundQuotes } from '../portfolio/not-found-quotes';
 import { notFound } from '../styles/not-found';
+const quote =
+  notFoundQuotes[Math.floor(Math.random() * notFoundQuotes.length)]!;
+const encoding = Math.random() < 0.5 ? 'binary' : 'base64';
+const encodedQuote = encodeQuote(quote.text, encoding);
 Astro.response.status = 404;
 Astro.response.headers.set('Cache-Control', 'no-store');
 Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
@@ -15,7 +20,13 @@ Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
       {...stylex.attrs(notFound.scene)}
     >
       <h1 {...stylex.attrs(notFound.code)}>404</h1>
-      <p {...stylex.attrs(notFound.message)}>Nothing here.</p>
+      <code
+        data-encoding={encoding}
+        aria-label={`${encoding === 'binary' ? 'Binary' : 'Base64'} quote`}
+        {...stylex.attrs(notFound.message)}
+      >
+        {encodedQuote}
+      </code>
       <p {...stylex.attrs(notFound.hint)}>(click to go home)</p>
     </a>
   </main>
