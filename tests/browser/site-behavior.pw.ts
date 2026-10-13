@@ -65,6 +65,19 @@ test('site blocks native copy everywhere while the PGP copy button still works',
     'download',
     '',
   );
+  const fingerprint = '3356 36C1 5D02 326F 9A43 1C98 4103 A3DD C441 9B61';
+  await expect(page.locator('#fingerprint-field')).toBeVisible();
+  await expect(page.locator('#fingerprint-value')).toHaveAttribute(
+    'readonly',
+    '',
+  );
+  await page
+    .locator('#fingerprint-actions')
+    .getByRole('button', { name: 'Copy' })
+    .click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    fingerprint,
+  );
   await key.focus();
   expect(
     await key.evaluate((element) =>

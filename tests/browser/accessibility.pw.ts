@@ -96,6 +96,8 @@ test('RSS Copy button matches the PGP copy behavior', async ({
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/rss');
   await expect(page.locator('#feed-field')).toBeVisible();
+  await expect(page.locator('#feed-address')).toHaveAttribute('readonly', '');
+  await expect(page.locator('#feed-address')).toHaveAttribute('type', 'text');
   await page.getByRole('button', { name: 'Copy', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Copy', exact: true }),
