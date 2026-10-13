@@ -70,7 +70,7 @@ export const styles = stylex.create({
   },
   keyActions: {
     position: 'absolute',
-    top: 12,
+    top: -32,
     right: 12,
     display: 'flex',
     gap: 8,
@@ -86,7 +86,7 @@ export const styles = stylex.create({
     overflow: 'auto',
     borderRadius: 4,
     border: '1px solid var(--border)',
-    padding: '64px 16px 16px',
+    padding: 16,
     fontSize: '0.85rem',
     lineHeight: 1.6,
   },
