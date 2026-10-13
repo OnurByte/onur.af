@@ -27,7 +27,7 @@ export function wantsFeedHtml(accept: string | null): boolean {
   let html = 0;
   let xml = 0;
   for (const range of (accept ?? '').toLowerCase().split(',')) {
-    const [type, ...parameters] = range.trim().split(';');
+    const [type = '', ...parameters] = range.trim().split(';');
     const quality = parameters.find((parameter) =>
       parameter.trim().startsWith('q='),
     );

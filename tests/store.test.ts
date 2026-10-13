@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, expect, test } from 'bun:test';
+import assert from 'node:assert/strict';
 import {
   createDonationStore,
   DonationCapacityError,
@@ -35,7 +36,9 @@ test.skipIf(!databaseUrl)(
       );
       expect(batch.every((result) => result.created)).toBe(true);
 
-      const readyId = batch[0].donation.id;
+      const first = batch[0];
+      assert.ok(first);
+      const readyId = first.donation.id;
       const address = '8' + '1'.repeat(94);
       await store!.attach(readyId, address);
       const repeat = await store!.reserve(readyId, '0.01');

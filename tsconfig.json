@@ -1,18 +1,14 @@
 {
+  "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "noEmit": true,
-    "types": ["bun"],
-    "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "types": ["bun"]
   },
   "include": [
-    "src/**/*.ts",
+    ".astro/types.d.ts",
+    "src/**/*",
     "tests/**/*.ts",
     "scripts/**/*.ts",
     "astro.config.ts"
-  ]
+  ],
+  "exclude": ["dist", "node_modules"]
 }

@@ -25,6 +25,42 @@ const description = publicPreview('/pgp')!.description;
         Download public key
       </a>
     </div>
-    <pre {...stylex.attrs(styles.key)}><code>{publicKey.trim()}</code></pre>
+    <div {...stylex.attrs(styles.keySection)}>
+      <label for="public-key">Public key</label>
+      <textarea
+        {...stylex.attrs(styles.keyInput)}
+        id="public-key"
+        readonly
+        rows="12"
+        spellcheck="false"
+      >{publicKey.trim()}</textarea>
+      <button
+        {...stylex.attrs(styles.button, styles.secondary)}
+        type="button"
+        id="copy-key"
+      >
+        Copy public key
+      </button>
+      <p id="key-copy-status" role="status"></p>
+    </div>
   </main>
 </Layout>
+
+<script>
+  const key = document.querySelector<HTMLTextAreaElement>('#public-key');
+  const button = document.querySelector<HTMLButtonElement>('#copy-key');
+  const status = document.querySelector<HTMLElement>('#key-copy-status');
+  key?.addEventListener('focus', () => key.select());
+  button?.addEventListener('click', async () => {
+    if (!key || !status) return;
+    try {
+      await navigator.clipboard.writeText(key.value);
+      status.textContent = 'Public key copied.';
+    } catch {
+      key.focus();
+      key.select();
+      status.textContent =
+        'Press Ctrl+C or Command+C to copy the selected key.';
+    }
+  });
+</script>

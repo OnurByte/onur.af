@@ -36,6 +36,8 @@ bun run build
 bun test
 ```
 
+TypeScript uses `astro/tsconfigs/strictest` across Astro templates, source, scripts and tests. `bun run check` runs both Astro diagnostics and TypeScript without emitting files. Keep optional values explicit and validate external data before use; do not suppress errors with `any` or `@ts-ignore`. Prettier covers Astro, TypeScript, CSS, JSON, Markdown and CI YAML; run `bun run format` before checking formatting.
+
 Database tests require an isolated PostgreSQL database through `TEST_DATABASE_URL`. After building, `TEST_CHECKOUT=1 bun test tests/checkout.test.ts` checks checkout against a fake gateway. These checks do not prove live Monero settlement.
 
-[StyleX](docs/stylex.md) · [Design](docs/design.md) · [Link previews](docs/link-previews.md) · [Donations](docs/donations.md)
+[Brand](brand.md) · [StyleX](docs/stylex.md) · [Design](docs/design.md) · [Link previews](docs/link-previews.md) · [Donations](docs/donations.md)

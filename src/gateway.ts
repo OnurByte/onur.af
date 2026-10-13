@@ -107,7 +107,7 @@ export async function startGateway() {
           }
         }
         const match = path.match(/^\/donations\/([^/]+)$/);
-        if (request.method === 'GET' && match && UUID.test(match[1])) {
+        if (request.method === 'GET' && match?.[1] && UUID.test(match[1])) {
           const donation = await store.get(match[1].toLowerCase());
           if (!donation) return json({ error: 'not found' }, 404);
           if (donation.state !== 'ready')

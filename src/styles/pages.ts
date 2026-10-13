@@ -60,10 +60,21 @@ export const styles = stylex.create({
     backgroundColor: { default: 'transparent', ':hover': 'var(--text)' },
     color: { default: 'var(--text)', ':hover': 'var(--background)' },
   },
-  key: {
+  keySection: {
+    marginTop: 32,
+    display: 'grid',
+    gap: 12,
+    justifyItems: 'start',
+    width: '100%',
+  },
+  keyInput: {
     fontFamily:
       'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-    marginTop: 32,
+    width: '100%',
+    resize: 'vertical',
+    backgroundColor: 'var(--surface)',
+    color: 'var(--text)',
+    ':focus-visible': { outline: '2px solid var(--text)', outlineOffset: 3 },
     overflowX: 'auto',
     borderRadius: 4,
     border: '1px solid var(--border)',

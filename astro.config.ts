@@ -14,7 +14,7 @@ export default defineConfig({
   vite: {
     plugins: [stylex.vite({ useCSSLayers: false, runtimeInjection: false })],
   },
-  site,
+  ...(site ? { site } : {}),
   output: 'server',
   adapter: process.env.VERCEL ? vercel() : node({ mode: 'standalone' }),
   security: {

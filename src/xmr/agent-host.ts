@@ -211,7 +211,7 @@ export function createOrderHandler({
       formatXmrAmount(parseXmrAmount(order.amount)) !== amount ||
       typeof order.address !== 'string' ||
       !ADDRESS.test(order.address) ||
-      !prefixes.includes(order.address[0]) ||
+      !prefixes.includes(order.address.charAt(0)) ||
       typeof order.status !== 'string' ||
       !STATUSES.has(order.status) ||
       typeof order.paid !== 'boolean' ||
@@ -249,7 +249,7 @@ export function createOrderHandler({
         !request.headers
           .get('content-type')
           ?.split(';')[0]
-          .trim()
+          ?.trim()
           .toLowerCase()
           .startsWith('application/json')
       ) {
@@ -334,7 +334,7 @@ export function createOrderHandler({
     }
 
     const match = path.match(/^\/order\/([^/]+)$/);
-    if (request.method === 'GET' && match) {
+    if (request.method === 'GET' && match?.[1]) {
       let id: string;
       try {
         id = decodeURIComponent(match[1]).toLowerCase();
@@ -461,7 +461,7 @@ function validStoredOrder(
     formatXmrAmount(parseXmrAmount(order.amount)) !== order.amount ||
     typeof order.address !== 'string' ||
     !ADDRESS.test(order.address) ||
-    !prefix.includes(order.address[0]) ||
+    !prefix.includes(order.address.charAt(0)) ||
     !Number.isSafeInteger(order.index) ||
     Number(order.index) < 0 ||
     (order.birthdayHeight != null &&

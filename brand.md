@@ -1,0 +1,112 @@
+# Onur — Marka ve tasarım dili
+
+Bu belge, Onur'un kişisel sitesinin kimliğini ve tasarım kararlarının arkasındaki yaklaşımı tanımlar. Mevcut siteyi temel alır; yeni bir şirket kimliği veya farklı bir görsel yön önermez. Yeni sayfa, metin ve görsel üretirken bu çizgiyi koru. Uygulama ölçüleri için [tasarım standardına](docs/design.md), StyleX kullanımı için [StyleX rehberine](docs/stylex.md) bak.
+
+## Adı ve kimliği
+
+- **Marka adı:** Onur.
+- **Site türü:** Kişisel site ve portfolyo.
+- **İmza:** Mevcut Onur işareti ile yanında yazan `Onur` adı.
+- **Temel ifade:** “My work, in my own words.”
+- **Arayüz dili:** İngilizce. Bu rehberin dili Türkçe.
+
+Onur, burada bir kişinin adı ve yaptığı işlerin imzasıdır. Marka bir ajans gibi konuşmaz, ekip veya şirket büyüklüğü ima etmez. Metinlerde kişi kendi adına konuşur; İngilizcede `I`, `my` kullanılır.
+
+## Ruh ve karakter
+
+Sitenin karakteri bağımsız, düşünceli, sade ve doğrudandır. Üretmek, düşünmek ve kendi kararının sorumluluğunu almak merkezdedir. Kimlik, büyük iddialarla değil kişinin adı, sözleri ve yaptığı işle görünür olur.
+
+Görsel dil sessizdir. Geniş boşluklar, okunaklı yazı ve az sayıda açık eylem kullanır. Sayfa, ziyaretçiyi sürekli yeni bir şeye tıklamaya zorlamaz. Bir metnin veya işlemin anlaşılması için gereken öğeler görünürdür; dikkat çekmek için eklenen süsler bu karaktere uymaz.
+
+Mahremiyet ve bağımsızlık da bu kişiliğin parçalarıdır. PGP, RSS, TOR, I2P ve Monero bağlantıları somut işlevleriyle yer alır. Bu işlevler mevcut olmadığı hâlde varmış gibi gösterilmez; güvenlik veya anonimlik hakkında doğrulanmamış vaatler yazılmaz.
+
+## Mevcut mottolar
+
+Ana sayfa şu ifadeleri kullanır:
+
+- “The creator originates.”
+- “I am. I think. I will.”
+- “To think is an act of choice.”
+
+Bu ifadeler sitenin düşünsel tonunu taşır. Her yardımcı sayfaya slogan ekleme; PGP, RSS ve bağış sayfalarında ziyaretçinin yapmak istediği işi açıkça anlat.
+
+## Yazı tonu
+
+Kısa, açık ve kişisel yaz. Bir sayfa ne sunuyorsa onu söyle. Düğme metni, tıklanınca gerçekleşecek işi adlandırır. Hata mesajı, sorunu ve mümkün olan sonraki adımı açıklar.
+
+Mevcut örnekler:
+
+| Yer               | Ton ve örnek                                                       |
+| ----------------- | ------------------------------------------------------------------ |
+| Bağış açıklaması  | “Support my work with Monero.”                                     |
+| PGP açıklaması    | “My public key for encrypted messages and signature verification.” |
+| Anahtar indirme   | “Download public key”                                              |
+| Anahtar kopyalama | “Copy public key”                                                  |
+| Başarılı işlem    | “Public key copied.”                                               |
+
+Kurumsal pazarlama dili, abartılı sıfatlar, sahte aciliyet, kullanıcı sayısı veya güvenlik iddiaları ekleme. Henüz bulunmayan projeler, yazılar ve başarılar için boş vitrin oluşturma. Metni, gerçekten sunulan içerik belirler.
+
+## Görsel dil
+
+### Renk ve tema
+
+Site monokromdur. Tema işletim sisteminin açık/koyu tercihinden gelir; ayrı bir tema düğmesi yoktur.
+
+| Token          | Açık tema | Koyu tema | Kullanım               |
+| -------------- | --------- | --------- | ---------------------- |
+| `--background` | `#ffffff` | `#000000` | Sayfa zemini           |
+| `--text`       | `#0d0d0d` | `#ffffff` | Ana yazı, ana eylemler |
+| `--muted`      | `#333333` | `#ffffff` | Yardımcı metin         |
+| `--border`     | `#b3b3b3` | `#404040` | Kontrol kenarları      |
+| `--surface`    | `#f2f2f2` | `#222222` | Girdi ve nötr yüzeyler |
+
+Renkleri sayfa bazında yeniden icat etme. Gölge, gradient, parıltı ve dekoratif vurgu rengi bu dilin parçası değildir. Ödeme QR'ı taranabilirlik için iki temada da beyaz zeminde kalır.
+
+### Tipografi
+
+Ana yazı ailesi `Helvetica Neue`, ardından `Helvetica`, `Arial` ve sistem sans-serif fallback'idir. Gövde metni 16 px, satır yüksekliği 1.6'dır. Başlıklar yalın, normal ağırlıkta ve belirgin hiyerarşiye sahiptir; aşırı büyük pazarlama başlıkları kullanılmaz.
+
+PGP anahtarı, parmak izi ve ödeme adresi gibi makine verileri monospace ile gösterilir. Bu bilgiler rahat seçilebilir ve kopyalanabilir olmalıdır. Sosyal paylaşım kartlarının sunucu tarafındaki üretimi, mevcut paketlenmiş Liberation Sans fontlarını kullanır.
+
+### Yerleşim ve boşluk
+
+Header, ana içerik ve footer aynı hizayı paylaşır. Ortak maksimum genişlik 960 px; yan boşluklar 24 px, 620 px ve altında 20 px'dir. Metin blokları yaklaşık 65 karakter genişliğinde, bağış kontrolleri en fazla 740 px olur.
+
+Boşluklar 4 px'in katlarıyla kurulur. Küçük gruplarda 8–12 px, ilişkili öğelerde 16–24 px, bölümler arasında 32–40 px kullanılır. Mobilde gruplar sarılır; içerik ekranın dışına taşmaz. Her içeriği kart içine almak veya panel eklemek yerine mevcut açık sayfa düzenini kullan.
+
+### Logo ve ikonlar
+
+Mevcut Onur işareti korunur. Logo sabittir; animasyon, rastgele renk veya farklı sayfalarda farklı yorum kullanılmaz.
+
+Bütün sabit SVG dosyaları `public/brand/` altında bulunur. Arayüzde tek `Icon.astro` bileşeni üzerinden yüklenir. Logo 56 × 56 px, TOR ve RSS 32 × 32 px, I2P 64 × 32 px'dir. Kaynak oranları korunur; ikonlar açık temada siyah, koyu temada beyaz görünür.
+
+İkon adları ve ölçüleri ortak bileşende tanımlanır. SVG kodunu sayfaya gömme veya yeni bir ikon için ayrı render yolu kurma. Kaynak ve sahiplik bilgileri [SOURCES.md](public/brand/SOURCES.md) içinde tutulur. Favicon ve sosyal kartlar da mevcut Onur işaretini kullanır.
+
+## Kontroller ve etkileşim
+
+Kontrolün işlevi, görünümünden ve metninden anlaşılır olmalıdır. Ana eylem dolu, yardımcı eylem nötr kenarlıklı olur. Köşeler 4 px; standart kontrol yüksekliği en az 44 px'dir. Düğme metni 16 px ve 500 ağırlıktadır.
+
+Bağlantılar bağlantı, düğmeler düğme, seçimler gerçek form kontrolleri olarak kalır. PGP gibi çok satırlı veriler salt okunur alanda sunulur. Kopyalama başarısı ve hata sonucu kısa bir durum mesajıyla bildirilir. JavaScript kullanılamadığında anahtar indirme ve elle kopyalama gibi temel yollar erişilebilir kalır.
+
+Görünür klavye odağı, açıklayıcı etiketler, ekran okuyucu durum mesajları ve azaltılmış hareket tercihi korunur. Klavye odağı 2 px outline ve 3 px offset kullanır. Sadelik, gerekli açıklamaları veya erişilebilirliği kaldırmak anlamına gelmez.
+
+## Sayfaların ortak yapısı
+
+- **Ana sayfa:** İmza, mevcut motto ve yalın gezinme.
+- **PGP:** Anahtarın amacı, parmak izi, indirme ve kopyalanabilir anahtar.
+- **RSS:** Feed'in amacı, adresi ve abonelik/kopyalama eylemleri.
+- **Donate:** Monero desteğinin amacı, tutar seçimi ve gerçek ödeme durumu.
+
+Yardımcı sayfalar tek bir `h1`, kısa açıklama ve gereken kontrollerle başlar. Yeni sayfalar aynı hizayı, renkleri, fontu ve kontrol dilini kullanır. Yeni içerik yalnızca gerçek bir ihtiyaç veya mevcut bir iş için eklenir.
+
+## Yeni işler için karar ölçütü
+
+Bir değişiklik yapılırken şu soruların cevabı açık olmalıdır:
+
+1. Ziyaretçinin hangi işini kolaylaştırıyor?
+2. Mevcut bileşen, stil ve yerleşimle yapılabiliyor mu?
+3. Onur'un kişisel ve doğrudan sesini koruyor mu?
+4. Mobilde, iki temada ve klavyeyle kullanılabiliyor mu?
+5. Metindeki iddialar mevcut içerik veya doğrulanmış davranışla destekleniyor mu?
+
+Bu marka çizgisini değiştirmek, bir sayfa geliştirmesinin yan etkisi olmamalıdır. Farklı font, renk paleti, animasyon veya yeni kimlik yönü ancak açık bir tasarım kararıyla ele alınır.

@@ -55,7 +55,11 @@ test.skipIf(!Bun.env.TEST_DATABASE_URL)(
     process.env.XMR_NETWORK = 'stagenet';
     process.env.DONATION_GATEWAY_PORT = '0';
     const gateway = await startGateway();
-    const ids = [crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID()];
+    const ids = [
+      crypto.randomUUID(),
+      crypto.randomUUID(),
+      crypto.randomUUID(),
+    ] as const;
     const sql = new Bun.SQL(Bun.env.TEST_DATABASE_URL!);
     async function create(id: string, amount: string, authorized = true) {
       return fetch(`http://127.0.0.1:${gateway.port}/donations`, {

@@ -69,18 +69,18 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     const ids = data.getAll('id');
     const choice = data.getAll('amount');
     const custom = data.getAll('customAmount');
-    if (ids.length !== 1 || !UUID.test(ids[0]))
+    if (ids.length !== 1 || !UUID.test(ids[0]!))
       return new Response('Choose a valid amount.', { status: 400 });
-    const id = ids[0].toLowerCase();
+    const id = ids[0]!.toLowerCase();
     retryId = id;
     if (choice.length !== 1 || custom.length > 1)
       return redirect(retryUrl(retryId, '', '', 'amount'), 303);
-    retryChoice = choice[0];
+    retryChoice = choice[0]!;
     let amount: string;
     try {
       if (AMOUNTS.has(retryChoice)) amount = retryChoice;
       else if (retryChoice === 'custom' && custom.length === 1)
-        amount = formatXmrAmount(parseXmrAmount(custom[0]));
+        amount = formatXmrAmount(parseXmrAmount(custom[0]!));
       else return redirect(retryUrl(retryId, 'custom', '', 'amount'), 303);
     } catch {
       return redirect(retryUrl(retryId, 'custom', '', 'amount'), 303);

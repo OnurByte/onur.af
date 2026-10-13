@@ -98,6 +98,32 @@ describe('donation agent client', () => {
     await expect(duplicate.create('d-3', '0.1')).rejects.toThrow('HTTP 409');
   });
 
+  test('accepts overpayment totals above the invoice limit but rejects malformed totals', async () => {
+    let overpaidXmr = '101';
+    const client = agent(() =>
+      Response.json({
+        id: 'd-overpaid',
+        paid: true,
+        status: 'paid',
+        amount: '100',
+        receivedXmr: 201,
+        shortfallXmr: '0',
+        overpaid: true,
+        overpaidXmr,
+        confirmations: 10,
+      }),
+    );
+    expect(await client.status('d-overpaid')).toMatchObject({
+      paid: true,
+      receivedXmr: 201,
+      overpaidXmr: '101',
+    });
+    for (const invalid of ['-1', '1e3', '1.0000000000001']) {
+      overpaidXmr = invalid;
+      await expect(client.status('d-overpaid')).rejects.toThrow();
+    }
+  });
+
   test('recovers an existing matching order using read-only GET', async () => {
     let creates = 0;
     const client = agent((request) => {

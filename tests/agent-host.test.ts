@@ -1,4 +1,5 @@
 import { expect, test } from 'bun:test';
+import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import {
   createAgentPoller,
@@ -568,8 +569,10 @@ test.skipIf(!Bun.env.TEST_DATABASE_URL)(
       const acquired = await first<
         { acquired: boolean; pid: number }[]
       >`SELECT pg_backend_pid() AS pid, pg_try_advisory_lock(${lockId}::bigint) AS acquired`;
-      expect(acquired[0].acquired).toBe(true);
-      expectedPid = Number(acquired[0].pid);
+      const acquiredRow = acquired[0];
+      assert.ok(acquiredRow);
+      expect(acquiredRow.acquired).toBe(true);
+      expectedPid = Number(acquiredRow.pid);
       guard = createWriterLockGuard({
         backendPid: expectedPid,
         checkOwnership: readOwnership,
@@ -583,7 +586,9 @@ test.skipIf(!Bun.env.TEST_DATABASE_URL)(
       const terminated = await second<
         { terminated: boolean }[]
       >`SELECT pg_terminate_backend(${expectedPid}::int) AS terminated`;
-      expect(terminated[0].terminated).toBe(true);
+      const terminatedRow = terminated[0];
+      assert.ok(terminatedRow);
+      expect(terminatedRow.terminated).toBe(true);
       await expect(guard.assert()).rejects.toBeDefined();
       expect(guard.isHealthy()).toBe(false);
       expect(lost).toBe(1);
@@ -596,7 +601,9 @@ test.skipIf(!Bun.env.TEST_DATABASE_URL)(
       const available = await second<
         { acquired: boolean }[]
       >`SELECT pg_try_advisory_lock(${lockId}::bigint) AS acquired`;
-      expect(available[0].acquired).toBe(true);
+      const availableRow = available[0];
+      assert.ok(availableRow);
+      expect(availableRow.acquired).toBe(true);
       await second`SELECT pg_advisory_unlock(${lockId}::bigint)`;
     } finally {
       try {

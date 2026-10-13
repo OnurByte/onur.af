@@ -163,6 +163,13 @@ test.skipIf(!enabled)(
           `name="twitter:description" content="${description}"`,
         );
       }
+      const pgp = await (await fetch(`${origin}/pgp`)).text();
+      expect(pgp).toMatch(/<textarea[^>]*id="public-key"[^>]*readonly/);
+      expect(pgp.match(/<textarea[^>]*>(.*?)<\/textarea>/s)?.[1]?.trim()).toBe(
+        (await Bun.file('public/pgp.asc').text()).trim(),
+      );
+      expect(pgp).toContain('id="copy-key"');
+      expect(pgp).not.toContain('<pre');
       const sitemap = await (await fetch(`${origin}/sitemap.xml`)).text();
       expect(sitemap.match(/<loc>/g)).toHaveLength(4);
       for (const path of ['/rss', '/pgp']) {

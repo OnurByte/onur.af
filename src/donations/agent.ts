@@ -14,7 +14,7 @@ export interface AgentOrder {
   address: string;
   amount: string;
   status: AgentPaymentStatus;
-  birthdayHeight?: number;
+  birthdayHeight?: number | undefined;
 }
 
 export interface AgentStatus {
@@ -23,15 +23,15 @@ export interface AgentStatus {
   status: AgentPaymentStatus;
   amount: string;
   receivedXmr: number;
-  pendingXmr?: number;
-  lockedXmr?: number;
-  shortfallXmr?: string;
-  overpaid?: boolean;
-  overpaidXmr?: string;
+  pendingXmr?: number | undefined;
+  lockedXmr?: number | undefined;
+  shortfallXmr?: string | undefined;
+  overpaid?: boolean | undefined;
+  overpaidXmr?: string | undefined;
   confirmations: number;
-  minConfirmations?: number;
-  syncing?: boolean;
-  txids?: string[];
+  minConfirmations?: number | undefined;
+  syncing?: boolean | undefined;
+  txids?: string[] | undefined;
 }
 
 export interface DonationAgentClient {
@@ -146,7 +146,7 @@ export function createDonationAgentClient({
 }: {
   baseUrl: string;
   token: string;
-  timeoutMs?: number;
+  timeoutMs?: number | undefined;
 }): DonationAgentClient {
   const base = localHttpUrl(baseUrl);
   if (!token || /[\r\n]/.test(token))

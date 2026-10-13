@@ -100,7 +100,10 @@ export function createDonationStore(databaseUrl: string) {
               UPDATE donations SET state = 'review' WHERE donation_id = ${id}::uuid
               RETURNING donation_id, amount, address, state
             `;
-            return { donation: donation(reviewed[0]), created: false as const };
+            return {
+              donation: donation(reviewed[0]!),
+              created: false as const,
+            };
           }
           return { donation: donation(existing), created: false as const };
         };

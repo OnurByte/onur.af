@@ -8,7 +8,7 @@ function parseAmount(value: string): bigint {
   }
 
   const [whole, fraction = ''] = value.split('.');
-  return BigInt(whole) * PICOS_PER_XMR + BigInt(fraction.padEnd(12, '0'));
+  return BigInt(whole!) * PICOS_PER_XMR + BigInt(fraction.padEnd(12, '0'));
 }
 
 export function parseXmrAmount(value: string): bigint {
@@ -20,11 +20,7 @@ export function parseXmrAmount(value: string): bigint {
 }
 
 export function parseXmrAmountOrZero(value: string): bigint {
-  const piconero = parseAmount(value);
-  if (piconero < 0n || piconero > 100n * PICOS_PER_XMR) {
-    throw new Error('amount must be no more than 100 XMR');
-  }
-  return piconero;
+  return parseAmount(value);
 }
 
 export function formatXmrAmount(piconero: bigint): string {

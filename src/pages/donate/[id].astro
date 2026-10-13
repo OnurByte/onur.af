@@ -21,13 +21,13 @@ let donation:
       id: string;
       amount: string;
       address: string;
-      status?: string;
-      unavailable?: boolean;
-      syncing?: boolean;
-      confirmations?: number;
-      minConfirmations?: number;
-      received?: string;
-      shortfall?: string;
+      status?: string | undefined;
+      unavailable?: boolean | undefined;
+      syncing?: boolean | undefined;
+      confirmations?: number | undefined;
+      minConfirmations?: number | undefined;
+      received?: string | undefined;
+      shortfall?: string | undefined;
     }
   | undefined;
 let unavailable = false;
@@ -87,8 +87,7 @@ if (UUID.test(id)) {
     if (
       typeof status?.receivedXmr === 'number' &&
       Number.isFinite(status.receivedXmr) &&
-      status.receivedXmr >= 0 &&
-      status.receivedXmr <= 100
+      status.receivedXmr >= 0
     ) {
       try {
         received = formatXmrAmount(

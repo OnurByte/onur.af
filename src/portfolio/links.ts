@@ -1,5 +1,5 @@
 type LinkName = 'TOR' | 'I2P';
-type PortfolioLink = { label: LinkName; href?: string };
+type PortfolioLink = { label: LinkName; href: string | undefined };
 
 const env = (key: string) => process.env[key] ?? import.meta.env?.[key];
 
@@ -23,6 +23,7 @@ export function validPortfolioUrl(
   } catch {
     return;
   }
+  return undefined;
 }
 
 export function portfolioLinks(): PortfolioLink[] {

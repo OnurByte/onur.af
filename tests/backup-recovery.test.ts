@@ -158,11 +158,14 @@ async function recover() {
       `SELECT order_id, order_data FROM "${schema}".xmr_agent_orders`,
     );
     assert.equal(rows.length, 1);
+    const row = rows[0];
+    assert.ok(row);
     const donations = await sql!.unsafe<
       { donation_id: string; amount: string; address: string; state: string }[]
     >(`SELECT donation_id, amount, address, state FROM "${schema}".donations`);
     assert.equal(donations.length, 1);
     const donation = donations[0];
+    assert.ok(donation);
     assert.equal(donation.donation_id, donationID);
     assert.equal(donation.amount, amount);
     assert.equal(donation.address, address);
@@ -175,9 +178,9 @@ async function recover() {
     );
     recoveryStage = 'restored order validation';
     const restoredOrder =
-      typeof rows[0].order_data === 'string'
-        ? JSON.parse(rows[0].order_data)
-        : rows[0].order_data;
+      typeof row.order_data === 'string'
+        ? JSON.parse(row.order_data)
+        : row.order_data;
     recoveryStage = 'restored donation ID check';
     assert.equal(restoredOrder.id, donationID);
     recoveryStage = 'restored amount check';
