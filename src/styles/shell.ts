@@ -13,14 +13,6 @@ export const shell = stylex.create({
     lineHeight: 1.6,
     fontSynthesis: 'none',
   },
-  skip: {
-    position: 'absolute',
-    top: { default: -100, ':focus': 12 },
-    left: { default: 24, '@media (max-width: 620px)': 20 },
-    zIndex: 10,
-    backgroundColor: 'var(--background)',
-    padding: 12,
-  },
   container: {
     marginInline: 'auto',
     width: {

@@ -1,5 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { siteSignature } from '../portfolio/signature';
 import { shell } from '../styles/shell';
 import '../styles/global.css';
 import { portfolioLinks } from '../portfolio/links';
@@ -91,6 +92,7 @@ const schema =
 ---
 
 <!doctype html>
+<Fragment set:html={`<!--\n${siteSignature}\n-->`} />
 <html lang="en" prefix="og: https://ogp.me/ns#">
   <head>
     {import.meta.env.DEV && (
@@ -193,9 +195,6 @@ const schema =
     />
   </head>
   <body {...stylex.attrs(shell.body)}>
-    <a {...stylex.attrs(shell.skip)} href="#content">
-      Skip to content
-    </a>
     <header {...stylex.attrs(shell.container, shell.header)}>
       <nav {...stylex.attrs(shell.navigation)} aria-label="Main navigation">
         {Astro.url.pathname === '/' ? (
@@ -269,3 +268,7 @@ const schema =
     </footer>
   </body>
 </html>
+
+<script>
+  import '../client/site';
+</script>

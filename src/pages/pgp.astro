@@ -5,10 +5,11 @@ import { publicPreview } from '../portfolio/previews';
 import Layout from '../layouts/Layout.astro';
 import publicKey from '../../public/pgp.asc?raw';
 const description = publicPreview('/pgp')!.description;
+const keyText = publicKey.trim();
 ---
 
 <Layout title="PGP · Onur" description={description}>
-  <main {...stylex.attrs(styles.main)}>
+  <main {...stylex.attrs(styles.main)} data-copy-allowed>
     <h1 {...stylex.attrs(styles.heading)}>PGP</h1>
     <div {...stylex.attrs(styles.prose)}>
       <p {...stylex.attrs(styles.paragraph)} data-page-description>
@@ -31,9 +32,9 @@ const description = publicPreview('/pgp')!.description;
         {...stylex.attrs(styles.keyInput)}
         id="public-key"
         readonly
-        rows="12"
+        rows={keyText.split(/\r?\n/).length}
         spellcheck="false"
-      >{publicKey.trim()}</textarea>
+      >{keyText}</textarea>
       <button
         {...stylex.attrs(styles.button, styles.secondary)}
         type="button"
@@ -50,6 +51,15 @@ const description = publicPreview('/pgp')!.description;
   const key = document.querySelector<HTMLTextAreaElement>('#public-key');
   const button = document.querySelector<HTMLButtonElement>('#copy-key');
   const status = document.querySelector<HTMLElement>('#key-copy-status');
+  const fitKey = () => {
+    if (!key) return;
+    key.style.height = 'auto';
+    key.style.height = `${key.scrollHeight + key.offsetHeight - key.clientHeight}px`;
+    key.style.overflow = 'hidden';
+  };
+  fitKey();
+  window.addEventListener('resize', fitKey);
+  void document.fonts.ready.then(fitKey);
   key?.addEventListener('focus', () => key.select());
   button?.addEventListener('click', async () => {
     if (!key || !status) return;

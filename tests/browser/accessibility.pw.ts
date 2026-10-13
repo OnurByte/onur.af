@@ -44,11 +44,10 @@ for (const colorScheme of ['light', 'dark'] as const) {
           .evaluate((body) => getComputedStyle(body).backgroundColor),
       ).toBe(colorScheme === 'dark' ? 'rgb(0, 0, 0)' : 'rgb(255, 255, 255)');
       await page.keyboard.press('Tab');
+      await expect(page.locator('a[href="#content"]')).toHaveCount(0);
       await expect(
-        page.getByRole('link', { name: 'Skip to content' }),
+        page.locator('header nav a, header nav button').first(),
       ).toBeFocused();
-      await page.keyboard.press('Enter');
-      await expect(page.locator('#content')).toBeFocused();
       expect(externalRequests).toEqual([]);
       const stateIndex = checkoutPaths.indexOf(path);
       if (stateIndex !== -1) {
