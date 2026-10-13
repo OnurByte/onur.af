@@ -60,15 +60,18 @@ export async function socialImage(page: string, mottoIndex = 0) {
       .png()
       .toBuffer();
   };
+  const isHome = preview.key === 'home';
   const [logo, motto, name, title, description] = await Promise.all([
     sharp(Buffer.from(assets.logo))
       .resize(64, 64, { fit: 'contain' })
       .png()
       .toBuffer(),
-    text(mottos[mottoIndex]!, 19, false, 930),
+    isHome ? undefined : text(mottos[mottoIndex]!, 19, false, 930),
     text('Onur', 28),
-    text(preview.title, 96, true, 1056, 145),
-    text(preview.description, 28, false, 1000),
+    text(isHome ? mottos[mottoIndex]! : preview.title, 96, true, 1056, 145),
+    preview.description
+      ? text(preview.description, 28, false, 1000)
+      : undefined,
   ]);
   return sharp({
     create: { width: 1200, height: 630, channels: 3, background: '#000000' },
@@ -76,7 +79,7 @@ export async function socialImage(page: string, mottoIndex = 0) {
     .composite([
       { input: logo, left: 72, top: 55 },
       { input: name, left: 162, top: 57 },
-      { input: motto, left: 162, top: 99 },
+      ...(motto ? [{ input: motto, left: 162, top: 99 }] : []),
       {
         input: Buffer.from(
           '<svg width="1056" height="1"><path d="M0 .5H1056" stroke="#fff"/></svg>',
@@ -85,7 +88,7 @@ export async function socialImage(page: string, mottoIndex = 0) {
         top: 165,
       },
       { input: title, left: 72, top: 220 },
-      { input: description, left: 76, top: 418 },
+      ...(description ? [{ input: description, left: 76, top: 418 }] : []),
     ])
     .png()
     .toBuffer();

@@ -1,3 +1,4 @@
+import { notFoundQuotes } from '../../src/portfolio/not-found-quotes';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
@@ -197,6 +198,24 @@ test('404 has correct status, indexing and reduced-motion behavior', async ({
   expect(response!.status()).toBe(404);
   expect(response!.headers()['x-robots-tag']).toBe('noindex, nofollow');
   await expect(page.getByRole('heading', { name: '404' })).toBeVisible();
+  const decodedQuote = await page
+    .locator('code[data-encoding]')
+    .evaluate((element) => {
+      const text = element.textContent!.trim();
+      return element.getAttribute('data-encoding') === 'base64'
+        ? atob(text)
+        : String.fromCharCode(
+            ...text.split(/\s+/).map((byte) => parseInt(byte, 2)),
+          );
+    });
+  expect(notFoundQuotes.map(({ text }) => text)).toContain(decodedQuote);
+  expect(
+    await page
+      .getByRole('heading', { name: '404' })
+      .evaluate(
+        (element) => getComputedStyle(element, '::after').backgroundImage,
+      ),
+  ).toContain('repeating-linear-gradient');
   await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
   expect(
     await page

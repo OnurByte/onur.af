@@ -1,5 +1,5 @@
 export const publicPaths: readonly string[] = ['/', '/donate', '/rss', '/pgp'];
-export const siteDescription = 'I am. I think. I will.';
+export const siteDescription = '';
 
 export function validSiteUrl(value: string | undefined): string | undefined {
   if (!value || /[\u0000-\u0020\u007f\\]/.test(value)) return;

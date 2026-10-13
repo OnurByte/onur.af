@@ -1,6 +1,6 @@
 # Link previews
 
-The server renders Open Graph and X Card metadata for public pages. The homepage title is `motto · Onur`, with the same randomly selected motto as its heading and preview image. Utility pages share their visible descriptions with metadata and image cards. The homepage shows only its motto; its selected description, “I am. I think. I will.”, is reserved for metadata and the card. Messaging services cache previews independently; refreshing the page does not refresh an existing message.
+The server renders Open Graph and X Card metadata for public pages. The homepage title is `motto · Onur`, with the same randomly selected motto as its heading and preview image. Utility pages share their visible descriptions with metadata and image cards. The homepage has no description in standard metadata, JSON-LD or its image card; the selected motto appears once as the card’s large title. Messaging services cache previews independently; refreshing the page does not refresh an existing message.
 
 `SITE_URL` must contain the public HTTP(S) origin. Never derive public asset addresses from an incoming Host header. Without that configuration, canonical URLs, oEmbed discovery and the Discord component card are omitted.
 
@@ -8,7 +8,7 @@ The public page set is Home, Donate, RSS and PGP. The redundant Identity page, e
 
 ## Shared preview
 
-- `/social/<public-page-key>.png?m=0|1|2`: page-specific 1200 × 630 PNG. Header: owner logo, larger Onur name, then the smaller motto. Body: large page title and its description, separated by a fine rule. `public/brand/social.png` remains a redesigned home-card fallback for older shared URLs.
+- `/social/<public-page-key>.png?m=0|1|2`: page-specific 1200 × 630 PNG. Header: owner logo and larger Onur name. Body: the homepage’s selected motto, separated by a fine rule. Utility cards retain the smaller header motto, large page title and description. `public/brand/social.png` remains a redesigned home-card fallback for older shared URLs.
 - `public/brand/icon.png`: 512 × 512; `apple-touch-icon.png`: 180 × 180; `/favicon.ico`: 16/32/48 pixels.
 - OG image URL, HTTPS secure URL, MIME type, dimensions and alt text; matching X large-image card.
 - Absolute PNG/touch/icon addresses when the public origin is configured. PNG is the first favicon declaration; the SVG and ICO fallbacks remain available.

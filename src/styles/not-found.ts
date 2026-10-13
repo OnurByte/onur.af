@@ -37,8 +37,9 @@ export const notFound = stylex.create({
     },
   },
   code: {
+    position: 'relative',
     display: 'inline-block',
-    fontSize: 'clamp(4rem,12vw,7rem)',
+    fontSize: 'clamp(5rem,18vw,10rem)',
     lineHeight: 1,
     fontWeight: 500,
     letterSpacing: '-0.06em',
@@ -48,7 +49,22 @@ export const notFound = stylex.create({
     animationName: glitch,
     animationDuration: '6s',
     animationIterationCount: 'infinite',
+    '::after': {
+      content: '""',
+      position: 'absolute',
+      inset: 0,
+      pointerEvents: 'none',
+      opacity: 0.35,
+      backgroundImage:
+        'repeating-linear-gradient(0deg,var(--background) 0px,var(--background) 2px,transparent 2px,transparent 7px)',
+    },
   },
-  message: { fontSize: 20 },
+  message: {
+    fontSize: 12,
+    color: 'var(--muted)',
+    width: '100%',
+    maxWidth: '60ch',
+    overflowWrap: 'anywhere',
+  },
   hint: { fontSize: 14, color: 'var(--muted)' },
 });
