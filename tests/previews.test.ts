@@ -21,13 +21,13 @@ test('public pages have distinct previews and utility descriptions', () => {
 
 test('preview descriptions use the published page intros', () => {
   expect(publicPreview('/rss')!.description).toBe(
-    'RSS brings new writing to your feed reader. Add this address to subscribe.',
+    'Follow new writing via RSS.',
   );
   expect(publicPreview('/donate')!.description).toBe(
     'Support my work with Monero.',
   );
   expect(publicPreview('/pgp')!.description).toBe(
-    'My public key for encrypted messages and signature verification.',
+    'Encrypt messages and verify signatures.',
   );
 });
 

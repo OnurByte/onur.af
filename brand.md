@@ -36,13 +36,13 @@ Kısa, açık ve kişisel yaz. Bir sayfa ne sunuyorsa onu söyle. Düğme metni,
 
 Mevcut örnekler:
 
-| Yer               | Ton ve örnek                                                       |
-| ----------------- | ------------------------------------------------------------------ |
-| Bağış açıklaması  | “Support my work with Monero.”                                     |
-| PGP açıklaması    | “My public key for encrypted messages and signature verification.” |
-| Anahtar indirme   | “Download public key”                                              |
-| Anahtar kopyalama | “Copy public key”                                                  |
-| Başarılı işlem    | “Public key copied.”                                               |
+| Yer               | Ton ve örnek                              |
+| ----------------- | ----------------------------------------- |
+| Bağış açıklaması  | “Support my work with Monero.”            |
+| PGP açıklaması    | “Encrypt messages and verify signatures.” |
+| Anahtar indirme   | “Download public key”                     |
+| Anahtar kopyalama | “Copy public key”                         |
+| Başarılı işlem    | “Public key copied.”                      |
 
 Kurumsal pazarlama dili, abartılı sıfatlar, sahte aciliyet, kullanıcı sayısı veya güvenlik iddiaları ekleme. Henüz bulunmayan projeler, yazılar ve başarılar için boş vitrin oluşturma. Metni, gerçekten sunulan içerik belirler.
 
