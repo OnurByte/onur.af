@@ -1,6 +1,6 @@
 # Link previews
 
-The server renders Open Graph and X Card metadata for public pages. The homepage title is `motto · Onur`, with the same randomly selected motto as its heading and preview image. Utility pages share their visible descriptions with metadata and image cards. The homepage shows only its motto; its selected description, “My work, in my own words.”, is reserved for metadata and the card. Messaging services cache previews independently; refreshing the page does not refresh an existing message.
+The server renders Open Graph and X Card metadata for public pages. The homepage title is `motto · Onur`, with the same randomly selected motto as its heading and preview image. Utility pages share their visible descriptions with metadata and image cards. The homepage shows only its motto; its selected description, “I am. I think. I will.”, is reserved for metadata and the card. Messaging services cache previews independently; refreshing the page does not refresh an existing message.
 
 `SITE_URL` must contain the public HTTP(S) origin. Never derive public asset addresses from an incoming Host header. Without that configuration, canonical URLs, oEmbed discovery and the Discord component card are omitted.
 

@@ -137,9 +137,9 @@ test.skipIf(!enabled)(
         const description = publicPreview(path)!.description;
         if (path === '/') {
           expect(page).not.toContain('data-page-description');
-          expect(
-            page.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1],
-          ).not.toContain(description);
+          const main = page.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1];
+          expect(main).toContain('<h1');
+          expect(main).not.toContain('<p');
         } else {
           expect(
             page

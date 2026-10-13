@@ -1,6 +1,6 @@
 # Onur
 
-My work, in my own words.
+I am. I think. I will.
 
 [portfolio-seven-plum-73.vercel.app](https://portfolio-seven-plum-73.vercel.app/)
 

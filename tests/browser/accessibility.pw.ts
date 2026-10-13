@@ -249,9 +249,7 @@ test('search lists pages and networks without icons, headings or counters', asyn
   await page.locator('#open-search').click();
   const dialog = page.getByRole('dialog');
   expect(await dialog.innerText()).not.toMatch(/Search|results|Pages/);
-  await expect(
-    page.locator('#open-search img[data-icon="search"]'),
-  ).toBeVisible();
+  await expect(page.locator('#open-search img')).toHaveCount(0);
   await expect(page.locator('#open-search')).toContainText('Find');
   await expect(dialog.locator('img')).toHaveCount(0);
   await expect(page.locator('#search-results li')).toHaveCount(6);
@@ -291,6 +289,19 @@ for (const width of [320, 375]) {
     await page.goto('/');
     await page.locator('#open-search').click();
     const dialog = page.getByRole('dialog');
+    const trigger = page.locator('#open-search');
+    await expect(trigger.locator('kbd')).toBeVisible();
+    const findBox = await trigger.locator('span').boundingBox();
+    const shortcutBox = await trigger.locator('kbd').boundingBox();
+    expect(shortcutBox!.x).toBeGreaterThan(findBox!.x + findBox!.width);
+    const firstRow = page.locator('#search-results li').first();
+    const titleBox = await firstRow
+      .locator('[data-result-title]')
+      .boundingBox();
+    const detailBox = await firstRow
+      .locator('[data-result-description]')
+      .boundingBox();
+    expect(detailBox!.x).toBeGreaterThan(titleBox!.x + titleBox!.width);
     const bounds = await dialog.boundingBox();
     expect(bounds!.x).toBeGreaterThanOrEqual(0);
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
