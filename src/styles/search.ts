@@ -1,6 +1,9 @@
 import * as stylex from '@stylexjs/stylex';
 export const searchStyles = stylex.create({
   trigger: {
+    gridColumn: 3,
+    gridRow: { default: 1, '@media (max-width: 620px)': 2 },
+    justifySelf: 'end',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',

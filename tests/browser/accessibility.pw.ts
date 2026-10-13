@@ -289,6 +289,11 @@ for (const width of [320, 375]) {
     await page.goto('/');
     await page.locator('#open-search').click();
     const dialog = page.getByRole('dialog');
+    const brand = page.locator('header [data-icon="onur"]').locator('..');
+    const brandBox = await brand.boundingBox();
+    expect(
+      Math.abs(brandBox!.x + brandBox!.width / 2 - width / 2),
+    ).toBeLessThan(1);
     const trigger = page.locator('#open-search');
     await expect(trigger.locator('kbd')).toBeVisible();
     expect(
