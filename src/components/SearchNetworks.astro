@@ -1,0 +1,32 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { portfolioLinks } from '../portfolio/links';
+import { searchStyles } from '../styles/search';
+import Icon from './Icon.astro';
+---
+
+{portfolioLinks().map(({ label, href }) => (
+  <li data-network-label={label}>
+    {href ? (
+      <a href={href} rel="noreferrer" {...stylex.attrs(searchStyles.result)}>
+        <Icon name={label === 'TOR' ? 'tor' : 'searchI2p'} />
+        <span data-result-title>{label}</span>
+        <small data-result-description {...stylex.attrs(searchStyles.detail)}>
+          {label === 'TOR' ? 'Onion site' : 'I2P site'}
+        </small>
+      </a>
+    ) : (
+      <span
+        role="link"
+        aria-disabled="true"
+        {...stylex.attrs(searchStyles.result, searchStyles.unavailable)}
+      >
+        <Icon name={label === 'TOR' ? 'tor' : 'searchI2p'} />
+        <span data-result-title>{label}</span>
+        <small data-result-description {...stylex.attrs(searchStyles.detail)}>
+          Address not published
+        </small>
+      </span>
+    )}
+  </li>
+))}

@@ -44,7 +44,7 @@ Prettier checks all supported files in the repository, including root configs an
 
 Astro Content Collections validates the public page metadata in `src/content/public-pages.json`. The collection describes existing utility pages; there are no projects or notes pages. The RSS feed stays empty until there is actual published writing.
 
-`bun run build` generates a local Pagefind index before building Astro. The header search opens a native dialog with Ctrl+K or ⌘K and searches the public titles and descriptions of Home, Donate, RSS and PGP as you type. Arrow keys select results and Escape closes the dialog. There is no separate search page or footer search link. Search loads local assets only. Checkout URLs, donation IDs, payment addresses and the PGP key body never enter the index. Run `bun run search:index` before development to generate search assets.
+`bun run build` generates a local Pagefind index before building Astro. The header search opens a native dialog with Ctrl+K or ⌘K and searches the public titles and descriptions of Home, Donate, RSS and PGP as you type. Arrow keys select results and Escape closes the dialog. The menu also lists validated TOR/I2P destinations from the server configuration, or disabled entries when unpublished; these destinations never enter the Pagefind index. There is no separate search page or footer search link. Search loads local assets only. Checkout URLs, donation IDs, payment addresses and the PGP key body never enter the index. Run `bun run search:index` before development to generate search assets.
 
 ## Browser and link checks
 

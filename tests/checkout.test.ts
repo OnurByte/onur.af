@@ -109,7 +109,7 @@ test.skipIf(!enabled)(
       expect(home).not.toContain('<svg');
       expect([
         ...home.matchAll(/<img[^>]*data-icon="(?:onur|rss|tor|i2p)"/g),
-      ]).toHaveLength(5);
+      ]).toHaveLength(6);
       expect(home).not.toContain('aria-label="Onur home"');
       const discord = JSON.parse(
         home.match(
@@ -163,6 +163,12 @@ test.skipIf(!enabled)(
           `name="twitter:description" content="${description}"`,
         );
       }
+      expect(home).toContain('data-network-label="TOR"');
+      expect(home).toContain('data-network-label="I2P"');
+      expect(home).toMatch(
+        /<a[^>]*href="http:\/\/example\.onion\/"[^>]*rel="noreferrer"/,
+      );
+      expect(home).not.toContain('javascript:alert(1)');
       const pgp = await (await fetch(`${origin}/pgp`)).text();
       expect(pgp).toMatch(/<textarea[^>]*id="public-key"[^>]*readonly/);
       expect(pgp.match(/<textarea[^>]*>(.*?)<\/textarea>/s)?.[1]?.trim()).toBe(
