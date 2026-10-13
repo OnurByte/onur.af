@@ -104,7 +104,7 @@ test('Pagefind reports a missing match', async ({ page }) => {
   await page
     .getByRole('searchbox', { name: 'Search pages' })
     .fill('zzzzunfindablezzzz');
-  await expect(page.locator('#search-status')).toHaveText('No results.');
+  await expect(page.locator('#search-status')).toHaveText('Nothing found.');
   await expect(page.locator('#search-results').getByRole('link')).toHaveCount(
     0,
   );
@@ -225,4 +225,39 @@ test('reopening a search cancelled before debounce completes refreshes the query
     'href',
     '/donate',
   );
+});
+
+test('icon-only search lists page and network icons without headings or counters', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.locator('#open-search').click();
+  const dialog = page.getByRole('dialog');
+  expect(await dialog.innerText()).not.toMatch(/Search|results|Pages/);
+  await expect(
+    page.locator('#open-search img[data-icon="search"]'),
+  ).toBeVisible();
+  await expect(dialog.locator('img[data-icon="search"]')).toBeVisible();
+  await expect(page.locator('#search-results li')).toHaveCount(6);
+  await expect(page.locator('#search-results li img')).toHaveCount(6);
+  await page.getByRole('searchbox').fill('TOR');
+  await expect(
+    page.locator('#search-results [data-network-label]'),
+  ).toHaveCount(1);
+  await expect(
+    page.locator('[data-network-label="TOR"] [aria-disabled="true"]'),
+  ).toBeVisible();
+  await page.getByRole('searchbox').fill('I2P');
+  await expect(
+    page.locator('#search-results [data-network-label]'),
+  ).toHaveCount(1);
+  await expect(
+    page.locator('[data-network-label="I2P"] [aria-disabled="true"]'),
+  ).toBeVisible();
+  await page.getByRole('searchbox').fill('');
+  await expect(page.locator('#search-results li')).toHaveCount(6);
+  await page.screenshot({
+    path: '/tmp/portfolio-icon-search.png',
+    fullPage: true,
+  });
 });

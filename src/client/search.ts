@@ -24,6 +24,12 @@ const templates = new Map(
     link.cloneNode(true) as HTMLAnchorElement,
   ]),
 );
+const networks = [
+  ...(results?.querySelectorAll<HTMLElement>('[data-network-label]') ?? []),
+].map((item) => ({
+  text: item.textContent?.toLowerCase() ?? '',
+  node: item.cloneNode(true),
+}));
 let pagefind: Promise<Pagefind> | undefined;
 let revision = 0;
 let timer: ReturnType<typeof setTimeout> | undefined;
@@ -91,12 +97,12 @@ async function search(current: number) {
   const query = input.value.trim().slice(0, 200);
   if (!query) {
     results.replaceChildren(...defaults.map((item) => item.cloneNode(true)));
-    status.hidden = false;
-    status.textContent = 'Pages';
+    status.hidden = true;
+    status.textContent = '';
     return;
   }
   status.hidden = false;
-  status.textContent = 'Searching…';
+  status.textContent = 'Loading…';
   try {
     const moduleUrl = '/pagefind/pagefind.js';
     pagefind ??= import(/* @vite-ignore */ moduleUrl) as Promise<Pagefind>;
@@ -125,14 +131,18 @@ async function search(current: number) {
       item.append(link);
       results.append(item);
     }
+    for (const network of networks) {
+      if (network.text.includes(query.toLowerCase()))
+        results.append(network.node.cloneNode(true));
+    }
     status.hidden = results.children.length > 0;
-    status.textContent = results.children.length ? '' : 'No results.';
+    status.textContent = results.children.length ? '' : 'Nothing found.';
   } catch {
     pagefind = undefined;
     if (current === revision) {
       results.replaceChildren(...defaults.map((item) => item.cloneNode(true)));
       status.hidden = false;
-      status.textContent = 'Search is unavailable. Choose a page below.';
+      status.textContent = 'Unavailable. Choose a page below.';
     }
   }
 }

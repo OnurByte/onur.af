@@ -1,6 +1,7 @@
 # SVG sources
 
 - `rss.svg`: existing portfolio RSS glyph extracted from the layout; loaded as a local image.
+- `search.svg`: original magnifying-glass outline glyph authored for this portfolio; loaded as a local image.
 - `search-home.svg`, `search-donate.svg`, `search-key.svg`: original outline glyphs authored for this portfolio's search results; loaded as local images.
 
 - `onur.svg`: owner-supplied `/home/yargc/Downloads/logo (4).svg`, unchanged.

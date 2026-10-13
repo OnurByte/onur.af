@@ -3,6 +3,7 @@ import * as stylex from '@stylexjs/stylex';
 import { searchStyles } from '../styles/search';
 import { searchPages } from '../portfolio/search';
 import Icon from './Icon.astro';
+import SearchNetworks from './SearchNetworks.astro';
 const resultIcons = {
   '/': 'searchHome',
   '/donate': 'searchDonate',
@@ -15,12 +16,13 @@ const resultIcons = {
   id="open-search"
   type="button"
   hidden
+  aria-label="Search pages"
   aria-haspopup="dialog"
   aria-controls="search-dialog"
   aria-keyshortcuts="Control+K Meta+K"
   {...stylex.attrs(searchStyles.trigger)}
 >
-  <span>Search</span>
+  <Icon name="search" />
   <kbd {...stylex.attrs(searchStyles.shortcut)}>Ctrl K</kbd>
 </button>
 <dialog
@@ -29,9 +31,6 @@ const resultIcons = {
   {...stylex.attrs(searchStyles.dialog)}
 >
   <div {...stylex.attrs(searchStyles.top)}>
-    <label for="search-query" {...stylex.attrs(searchStyles.label)}>
-      Search
-    </label>
     <button
       id="close-search"
       type="button"
@@ -41,19 +40,27 @@ const resultIcons = {
       Esc
     </button>
   </div>
-  <input
-    id="search-query"
-    type="search"
-    aria-label="Search pages"
-    placeholder="Where do you want to go?"
-    maxlength="200"
-    autocomplete="off"
-    autofocus
-    {...stylex.attrs(searchStyles.input)}
-  />
-  <p id="search-status" role="status" {...stylex.attrs(searchStyles.status)}>
-    Pages
-  </p>
+  <div {...stylex.attrs(searchStyles.field)}>
+    <span {...stylex.attrs(searchStyles.fieldIcon)}>
+      <Icon name="search" />
+    </span>
+    <input
+      id="search-query"
+      type="search"
+      aria-label="Search pages"
+      placeholder="Where do you want to go?"
+      maxlength="200"
+      autocomplete="off"
+      autofocus
+      {...stylex.attrs(searchStyles.input)}
+    />
+  </div>
+  <p
+    id="search-status"
+    role="status"
+    hidden
+    {...stylex.attrs(searchStyles.status)}
+  ></p>
   <ul id="search-results" {...stylex.attrs(searchStyles.results)}>
     {searchPages.map(({ url, meta }) => (
       <li>
@@ -66,6 +73,7 @@ const resultIcons = {
         </a>
       </li>
     ))}
+    <SearchNetworks />
   </ul>
   <p {...stylex.attrs(searchStyles.hint)}>
     ↑ ↓ to navigate · Enter to open · Esc to close
