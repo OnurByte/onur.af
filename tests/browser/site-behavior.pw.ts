@@ -93,7 +93,7 @@ test('site blocks native copy everywhere while the PGP copy button still works',
       ),
     ),
   ).toBe(false);
-  await page.getByRole('button', { name: 'Copy', exact: true }).click();
+  await page.locator('#copy-key').click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     await key.inputValue(),
   );
