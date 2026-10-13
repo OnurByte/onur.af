@@ -232,7 +232,10 @@ test('search lists pages and networks without icons, headings or counters', asyn
   await page.locator('#open-search').click();
   const dialog = page.getByRole('dialog');
   expect(await dialog.innerText()).not.toMatch(/Search|results|Pages/);
-  await expect(page.locator('#open-search img')).toHaveCount(0);
+  await expect(
+    page.locator('#open-search img[data-icon="search"]'),
+  ).toBeVisible();
+  await expect(page.locator('#open-search')).toContainText('Find');
   await expect(dialog.locator('img')).toHaveCount(0);
   await expect(page.locator('#search-results li')).toHaveCount(6);
   await expect(page.locator('#search-results li img')).toHaveCount(0);
