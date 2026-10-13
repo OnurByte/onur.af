@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "test": "bun test",
-    "build": "bun run search:index && astro build",
+    "build": "astro build",
     "gateway": "bun src/gateway.ts",
     "preview": "astro preview",
     "start": "node --env-file-if-exists=.env ./dist/server/entry.mjs",
@@ -14,7 +14,6 @@
     "agent": "bun src/xmr/agent-host.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "search:index": "bun scripts/build-search.ts",
     "test:browser": "playwright test",
     "test:lighthouse": "lhci autorun --config=lighthouserc.json",
     "verify": "bun run format:check && bun run check && bun run build && bun test"
@@ -35,7 +34,6 @@
     "@playwright/test": "1.64.0",
     "@stylexjs/unplugin": "^0.19.1",
     "@types/bun": "latest",
-    "pagefind": "1.5.2",
     "prettier": "3.9.10",
     "prettier-plugin-astro": "^1.1.1",
     "typescript": "^5.9.3"

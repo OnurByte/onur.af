@@ -109,7 +109,7 @@ test.skipIf(!enabled)(
       expect(home).not.toContain('<svg');
       expect([
         ...home.matchAll(/<img[^>]*data-icon="(?:onur|rss|tor|i2p)"/g),
-      ]).toHaveLength(6);
+      ]).toHaveLength(4);
       expect(home).not.toContain('aria-label="Onur home"');
       const discord = JSON.parse(
         home.match(

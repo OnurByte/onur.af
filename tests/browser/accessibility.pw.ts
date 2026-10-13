@@ -88,7 +88,7 @@ for (const [query, title, href] of [
   ['Monero', 'Donate', '/donate'],
   ['signature', 'PGP', '/pgp'],
 ]) {
-  test(`Pagefind finds ${query}`, async ({ page }) => {
+  test(`Local search finds ${query}`, async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Search', exact: false }).click();
     await page.getByRole('searchbox', { name: 'Search pages' }).fill(query!);
@@ -98,7 +98,7 @@ for (const [query, title, href] of [
   });
 }
 
-test('Pagefind reports a missing match', async ({ page }) => {
+test('Local search reports a missing match', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Search', exact: false }).click();
   await page
@@ -141,15 +141,13 @@ test('header search aligns with Donate and supports keyboard navigation', async 
   await page.getByRole('searchbox').fill('Monero');
   await expect(page.locator('#search-results a')).toHaveCount(1);
   await expect(page.locator('#search-status')).toBeHidden();
-  await expect(page.locator('#search-results a img')).toHaveCount(1);
+  await expect(page.locator('#search-results a img')).toHaveCount(0);
   const row = page.locator('#search-results a');
-  const iconBox = await row.locator('img').boundingBox();
   const titleBox = await row.locator('[data-result-title]').boundingBox();
   const detailBox = await row
     .locator('[data-result-description]')
     .boundingBox();
   const rowBox = await row.boundingBox();
-  expect(iconBox!.x).toBeLessThan(titleBox!.x);
   expect(detailBox!.x).toBeGreaterThan(titleBox!.x + titleBox!.width);
   expect(
     Math.abs(
@@ -212,7 +210,7 @@ test('search stays unavailable without JavaScript and cannot transmit a query', 
   }
 });
 
-test('reopening a search cancelled before debounce completes refreshes the query', async ({
+test('reopening search preserves the immediately filtered query', async ({
   page,
 }) => {
   await page.goto('/');
@@ -227,19 +225,17 @@ test('reopening a search cancelled before debounce completes refreshes the query
   );
 });
 
-test('icon-only search lists page and network icons without headings or counters', async ({
+test('search lists pages and networks without icons, headings or counters', async ({
   page,
 }) => {
   await page.goto('/');
   await page.locator('#open-search').click();
   const dialog = page.getByRole('dialog');
   expect(await dialog.innerText()).not.toMatch(/Search|results|Pages/);
-  await expect(
-    page.locator('#open-search img[data-icon="search"]'),
-  ).toBeVisible();
-  await expect(dialog.locator('img[data-icon="search"]')).toBeVisible();
+  await expect(page.locator('#open-search img')).toHaveCount(0);
+  await expect(dialog.locator('img')).toHaveCount(0);
   await expect(page.locator('#search-results li')).toHaveCount(6);
-  await expect(page.locator('#search-results li img')).toHaveCount(6);
+  await expect(page.locator('#search-results li img')).toHaveCount(0);
   await page.getByRole('searchbox').fill('TOR');
   await expect(
     page.locator('#search-results [data-network-label]'),
@@ -261,3 +257,55 @@ test('icon-only search lists page and network icons without headings or counters
     fullPage: true,
   });
 });
+
+for (const width of [320, 375]) {
+  test(`search fits a ${width}px mobile viewport and filters synchronously`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 640 });
+    const indexRequests: string[] = [];
+    await page.route('**/pagefind/**', async (route) => {
+      indexRequests.push(route.request().url());
+      await route.abort();
+    });
+    await page.goto('/');
+    await page.locator('#open-search').click();
+    const dialog = page.getByRole('dialog');
+    const bounds = await dialog.boundingBox();
+    expect(bounds!.x).toBeGreaterThanOrEqual(0);
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
+    expect(
+      await dialog.evaluate(
+        (element) => element.scrollWidth <= element.clientWidth,
+      ),
+    ).toBe(true);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    const immediate = await page
+      .locator('#search-query')
+      .evaluate((element) => {
+        const input = element as HTMLInputElement;
+        input.value = 'Monero';
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        return {
+          hrefs: [...document.querySelectorAll('#search-results a')].map(
+            (link) => link.getAttribute('href'),
+          ),
+          status: document.querySelector('#search-status')?.textContent,
+        };
+      });
+    expect(immediate.hrefs).toEqual(['/donate']);
+    expect(immediate.status).not.toMatch(/Loading/i);
+    expect(indexRequests).toEqual([]);
+    await expect(dialog.locator('img')).toHaveCount(0);
+    await page.getByRole('searchbox').fill('');
+    await expect(page.locator('#search-results li')).toHaveCount(6);
+    await page.screenshot({
+      path: `/tmp/portfolio-search-mobile-${width}.png`,
+      fullPage: true,
+    });
+  });
+}
