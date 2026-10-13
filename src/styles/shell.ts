@@ -35,13 +35,21 @@ export const shell = stylex.create({
   },
   header: { paddingBlock: 24 },
   navigation: {
-    display: 'flex',
+    display: 'grid',
+    gridTemplateColumns: '1fr auto 1fr',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 20,
   },
-  title: { fontSize: '2.5rem', fontWeight: 500, lineHeight: 1.15 },
+  title: {
+    gridColumn: { default: 2, '@media (max-width: 620px)': '1 / -1' },
+    gridRow: 1,
+    justifySelf: 'center',
+    fontSize: '2.5rem',
+    fontWeight: 500,
+    lineHeight: 1.15,
+  },
   link: { textDecoration: 'none' },
   content: { flex: 1 },
   footer: {
