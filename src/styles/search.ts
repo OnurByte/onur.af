@@ -1,11 +1,14 @@
 import * as stylex from '@stylexjs/stylex';
 export const searchStyles = stylex.create({
   trigger: {
-    display: 'inline-flex',
+    display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    width: 'clamp(110px, 20vw, 200px)',
+    minWidth: 110,
     gap: 8,
     minHeight: 44,
-    paddingInline: 12,
+    paddingInline: { default: 12, '@media (max-width: 620px)': 8 },
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'var(--border)',
@@ -14,8 +17,9 @@ export const searchStyles = stylex.create({
     fontSize: { default: 20, '@media (max-width: 620px)': 16 },
     fontWeight: 500,
   },
-  triggerIcon: { display: 'flex', width: 32, height: 32 },
   shortcut: {
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
     fontSize: 12,
     color: 'var(--muted)',
     borderWidth: 1,
@@ -23,7 +27,6 @@ export const searchStyles = stylex.create({
     borderColor: 'var(--border)',
     borderRadius: 4,
     padding: '2px 6px',
-    '@media (max-width: 620px)': { display: 'none' },
   },
   dialog: {
     margin: {
@@ -34,7 +37,7 @@ export const searchStyles = stylex.create({
       default: 'calc(100% - 40px)',
       '@media (max-width: 620px)': 'calc(100% - 24px)',
     },
-    maxWidth: 560,
+    maxWidth: 640,
     maxHeight: { default: '72svh', '@media (max-width: 620px)': '84svh' },
     padding: 0,
     borderWidth: 1,
@@ -90,13 +93,9 @@ export const searchStyles = stylex.create({
   results: { padding: '0 8px 8px', lineHeight: 1.5 },
   result: {
     display: 'flex',
-    flexDirection: { default: 'row', '@media (max-width: 620px)': 'column' },
-    alignItems: {
-      default: 'center',
-      '@media (max-width: 620px)': 'flex-start',
-    },
+    alignItems: 'center',
     minHeight: 44,
-    gap: { default: 12, '@media (max-width: 620px)': 2 },
+    gap: 12,
     padding: 12,
     borderRadius: 4,
     textDecoration: 'none',
@@ -106,9 +105,9 @@ export const searchStyles = stylex.create({
   detail: {
     fontSize: 13,
     color: 'var(--muted)',
-    marginLeft: { default: 'auto', '@media (max-width: 620px)': 0 },
-    textAlign: { default: 'right', '@media (max-width: 620px)': 'left' },
-    maxWidth: { default: '65%', '@media (max-width: 620px)': '100%' },
+    marginLeft: 'auto',
+    textAlign: 'right',
+    maxWidth: '65%',
     overflowWrap: 'anywhere',
   },
 });

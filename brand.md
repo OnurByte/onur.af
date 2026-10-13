@@ -7,7 +7,7 @@ Bu belge, Onur'un kişisel sitesinin kimliğini ve tasarım kararlarının arkas
 - **Marka adı:** Onur.
 - **Site türü:** Kişisel site ve portfolyo.
 - **İmza:** Mevcut Onur işareti ile yanında yazan `Onur` adı.
-- **Temel ifade:** “My work, in my own words.”
+- **Ana sayfa metni:** Mevcut üç mottodan biri; ayrıca slogan eklenmez.
 - **Arayüz dili:** İngilizce. Bu rehberin dili Türkçe.
 
 Onur, burada bir kişinin adı ve yaptığı işlerin imzasıdır. Marka bir ajans gibi konuşmaz, ekip veya şirket büyüklüğü ima etmez. Metinlerde kişi kendi adına konuşur; İngilizcede `I`, `my` kullanılır.

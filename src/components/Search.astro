@@ -2,7 +2,6 @@
 import * as stylex from '@stylexjs/stylex';
 import { searchStyles } from '../styles/search';
 import { searchPages } from '../portfolio/search';
-import Icon from './Icon.astro';
 import SearchNetworks from './SearchNetworks.astro';
 ---
 
@@ -16,9 +15,6 @@ import SearchNetworks from './SearchNetworks.astro';
   aria-keyshortcuts="Control+K Meta+K"
   {...stylex.attrs(searchStyles.trigger)}
 >
-  <span {...stylex.attrs(searchStyles.triggerIcon)}>
-    <Icon name="search" />
-  </span>
   <span>Find</span>
   <kbd {...stylex.attrs(searchStyles.shortcut)}>Ctrl K</kbd>
 </button>
