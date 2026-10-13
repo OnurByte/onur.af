@@ -1,6 +1,7 @@
 # SVG sources
 
 - `rss.svg`: existing portfolio RSS glyph extracted from the layout; loaded as a local image.
+- `search-home.svg`, `search-donate.svg`, `search-key.svg`: original outline glyphs authored for this portfolio's search results; loaded as local images.
 
 - `onur.svg`: owner-supplied `/home/yargc/Downloads/logo (4).svg`, unchanged.
 - `icon.png`, `apple-touch-icon.png`: raster versions of `onur.svg`, pure white mark on black; icon 512 × 512, touch icon 180 × 180.

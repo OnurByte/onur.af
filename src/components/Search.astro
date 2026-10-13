@@ -2,6 +2,13 @@
 import * as stylex from '@stylexjs/stylex';
 import { searchStyles } from '../styles/search';
 import { searchPages } from '../portfolio/search';
+import Icon from './Icon.astro';
+const resultIcons = {
+  '/': 'searchHome',
+  '/donate': 'searchDonate',
+  '/rss': 'rss',
+  '/pgp': 'searchKey',
+} as const;
 ---
 
 <button
@@ -51,8 +58,9 @@ import { searchPages } from '../portfolio/search';
     {searchPages.map(({ url, meta }) => (
       <li>
         <a href={url} {...stylex.attrs(searchStyles.result)}>
-          <span>{meta.title}</span>
-          <small {...stylex.attrs(searchStyles.detail)}>
+          <Icon name={resultIcons[url as keyof typeof resultIcons]} />
+          <span data-result-title>{meta.title}</span>
+          <small data-result-description {...stylex.attrs(searchStyles.detail)}>
             {meta.description}
           </small>
         </a>

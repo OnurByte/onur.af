@@ -18,8 +18,12 @@ const close = document.querySelector<HTMLButtonElement>('#close-search');
 const defaults = [...(results?.children ?? [])].map((item) =>
   item.cloneNode(true),
 );
-const resultClass = results?.querySelector('a')?.className ?? '';
-const detailClass = results?.querySelector('small')?.className ?? '';
+const templates = new Map(
+  [...(results?.querySelectorAll<HTMLAnchorElement>('a') ?? [])].map((link) => [
+    link.getAttribute('href') ?? '',
+    link.cloneNode(true) as HTMLAnchorElement,
+  ]),
+);
 let pagefind: Promise<Pagefind> | undefined;
 let revision = 0;
 let timer: ReturnType<typeof setTimeout> | undefined;
@@ -87,9 +91,11 @@ async function search(current: number) {
   const query = input.value.trim().slice(0, 200);
   if (!query) {
     results.replaceChildren(...defaults.map((item) => item.cloneNode(true)));
+    status.hidden = false;
     status.textContent = 'Pages';
     return;
   }
+  status.hidden = false;
   status.textContent = 'Searching…';
   try {
     const moduleUrl = '/pagefind/pagefind.js';
@@ -107,26 +113,25 @@ async function search(current: number) {
         !['/', '/donate', '/rss', '/pgp'].includes(url.pathname)
       )
         continue;
+      const template = templates.get(url.pathname);
+      if (!template) continue;
       const item = document.createElement('li');
-      const link = document.createElement('a');
-      const title = document.createElement('span');
-      const detail = document.createElement('small');
+      const link = template.cloneNode(true) as HTMLAnchorElement;
       link.href = url.pathname;
-      link.className = resultClass;
-      title.textContent = page.meta.title ?? url.pathname;
-      detail.textContent = page.meta.description ?? '';
-      detail.className = detailClass;
-      link.append(title, detail);
+      const title = link.querySelector('[data-result-title]');
+      const detail = link.querySelector('[data-result-description]');
+      if (title) title.textContent = page.meta.title ?? url.pathname;
+      if (detail) detail.textContent = page.meta.description ?? '';
       item.append(link);
       results.append(item);
     }
-    status.textContent = results.children.length
-      ? `${results.children.length} result${results.children.length === 1 ? '' : 's'}.`
-      : 'No results.';
+    status.hidden = results.children.length > 0;
+    status.textContent = results.children.length ? '' : 'No results.';
   } catch {
     pagefind = undefined;
     if (current === revision) {
       results.replaceChildren(...defaults.map((item) => item.cloneNode(true)));
+      status.hidden = false;
       status.textContent = 'Search is unavailable. Choose a page below.';
     }
   }

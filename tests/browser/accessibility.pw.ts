@@ -130,8 +130,32 @@ test('header search aligns with Donate and supports keyboard navigation', async 
   const dialog = page.getByRole('dialog', { name: 'Search pages' });
   await expect(dialog).toBeVisible();
   await expect(page.getByRole('searchbox')).toBeFocused();
+  for (const control of [trigger, dialog, page.getByRole('searchbox')]) {
+    expect(
+      await control.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return [style.borderTopWidth, style.borderTopStyle, style.borderRadius];
+      }),
+    ).toEqual(['1px', 'solid', '4px']);
+  }
   await page.getByRole('searchbox').fill('Monero');
   await expect(page.locator('#search-results a')).toHaveCount(1);
+  await expect(page.locator('#search-status')).toBeHidden();
+  await expect(page.locator('#search-results a img')).toHaveCount(1);
+  const row = page.locator('#search-results a');
+  const iconBox = await row.locator('img').boundingBox();
+  const titleBox = await row.locator('[data-result-title]').boundingBox();
+  const detailBox = await row
+    .locator('[data-result-description]')
+    .boundingBox();
+  const rowBox = await row.boundingBox();
+  expect(iconBox!.x).toBeLessThan(titleBox!.x);
+  expect(detailBox!.x).toBeGreaterThan(titleBox!.x + titleBox!.width);
+  expect(
+    Math.abs(
+      detailBox!.x + detailBox!.width - (rowBox!.x + rowBox!.width - 12),
+    ),
+  ).toBeLessThan(2);
   await page.screenshot({
     path: '/tmp/portfolio-command-search.png',
     fullPage: true,
