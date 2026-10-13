@@ -2,14 +2,7 @@
 import * as stylex from '@stylexjs/stylex';
 import { searchStyles } from '../styles/search';
 import { searchPages } from '../portfolio/search';
-import Icon from './Icon.astro';
 import SearchNetworks from './SearchNetworks.astro';
-const resultIcons = {
-  '/': 'searchHome',
-  '/donate': 'searchDonate',
-  '/rss': 'rss',
-  '/pgp': 'searchKey',
-} as const;
 ---
 
 <button
@@ -22,7 +15,6 @@ const resultIcons = {
   aria-keyshortcuts="Control+K Meta+K"
   {...stylex.attrs(searchStyles.trigger)}
 >
-  <Icon name="search" />
   <kbd {...stylex.attrs(searchStyles.shortcut)}>Ctrl K</kbd>
 </button>
 <dialog
@@ -41,9 +33,6 @@ const resultIcons = {
     </button>
   </div>
   <div {...stylex.attrs(searchStyles.field)}>
-    <span {...stylex.attrs(searchStyles.fieldIcon)}>
-      <Icon name="search" />
-    </span>
     <input
       id="search-query"
       type="search"
@@ -65,7 +54,6 @@ const resultIcons = {
     {searchPages.map(({ url, meta }) => (
       <li>
         <a href={url} {...stylex.attrs(searchStyles.result)}>
-          <Icon name={resultIcons[url as keyof typeof resultIcons]} />
           <span data-result-title>{meta.title}</span>
           <small data-result-description {...stylex.attrs(searchStyles.detail)}>
             {meta.description}
