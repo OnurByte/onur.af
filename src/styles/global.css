@@ -135,8 +135,3 @@ body * {
   -webkit-user-select: none !important;
   user-select: none !important;
 }
-[data-copy-allowed],
-[data-copy-allowed] * {
-  -webkit-user-select: text !important;
-  user-select: text !important;
-}
