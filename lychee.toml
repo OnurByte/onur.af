@@ -1,0 +1,4 @@
+# Never resolve private network, payment or local-development links.
+exclude = ['(?i)\.onion(?:[:/]|$)', '(?i)\.i2p(?:[:/]|$)', '^monero:', '^feed:', '^https?://(?:localhost|127\.0\.0\.1)(?:[:/]|$)', '^https?://[^/]+/donate/']
+max_retries = 2
+timeout = 20

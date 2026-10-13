@@ -1,6 +1,12 @@
 node_modules/
 dist/
 .astro/
+.vercel/
+.lighthouseci/
+lychee/
+playwright-report/
+test-results/
+public/pagefind/
 .env
 .env.*
 bun.lock

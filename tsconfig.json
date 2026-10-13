@@ -8,7 +8,8 @@
     "src/**/*",
     "tests/**/*.ts",
     "scripts/**/*.ts",
-    "astro.config.ts"
+    "astro.config.ts",
+    "playwright.config.ts"
   ],
   "exclude": ["dist", "node_modules"]
 }

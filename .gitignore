@@ -9,3 +9,8 @@ dist/
 work/
 
 .vercel
+.lighthouseci/
+lychee/
+playwright-report/
+test-results/
+public/pagefind/

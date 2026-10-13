@@ -1,6 +1,8 @@
 import { expect, test } from 'bun:test';
 import { mottos, publicPreview } from '../src/portfolio/previews';
-import { publicPaths } from '../src/portfolio/seo';
+import { publicPaths, siteDescription } from '../src/portfolio/seo';
+import pages from '../src/content/public-pages.json';
+import { publicPageSchema } from '../src/content/schema';
 
 test('every public page has descriptive, distinct preview content', () => {
   const keys = new Set<string>();
@@ -42,4 +44,22 @@ test('private checkout and unknown paths have no public preview', () => {
   ]) {
     expect(publicPreview(path)).toBeUndefined();
   }
+});
+
+test('public page collection matches the published routes and validates metadata', () => {
+  expect(pages.map((page) => page.id)).toEqual([...publicPaths]);
+  for (const page of pages) {
+    expect(publicPageSchema.safeParse(page).success).toBe(true);
+  }
+  expect(publicPreview('/')!.description).toBe(siteDescription);
+  expect(
+    publicPageSchema.safeParse({ ...pages[0], id: '/donate/private' }).success,
+  ).toBe(false);
+  expect(
+    publicPageSchema.safeParse({ ...pages[0], description: ' ' }).success,
+  ).toBe(false);
+  expect(
+    publicPageSchema.safeParse({ ...pages[0], description: 'x'.repeat(160) })
+      .success,
+  ).toBe(false);
 });
