@@ -130,6 +130,14 @@ test('header search aligns with Donate and supports keyboard navigation', async 
   const dialog = page.getByRole('dialog', { name: 'Search pages' });
   await expect(dialog).toBeVisible();
   await expect(page.getByRole('searchbox')).toBeFocused();
+  for (const control of [trigger, dialog, page.getByRole('searchbox')]) {
+    expect(
+      await control.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return [style.borderTopWidth, style.borderTopStyle, style.borderRadius];
+      }),
+    ).toEqual(['1px', 'solid', '4px']);
+  }
   await page.getByRole('searchbox').fill('Monero');
   await expect(page.locator('#search-results a')).toHaveCount(1);
   await page.screenshot({
