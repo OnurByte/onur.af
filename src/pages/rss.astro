@@ -20,10 +20,7 @@ const description = publicPreview('/rss')!.description;
       <p {...stylex.attrs(styles.feedStatus)} data-page-description>
         {description}
       </p>
-      <div
-        id="feed-field"
-        {...stylex.attrs(styles.keySection, styles.keyInput)}
-      >
+      <div id="feed-field" {...stylex.attrs(styles.keySection)}>
         <div {...stylex.attrs(styles.keyActions)}>
           <button
             {...stylex.attrs(styles.button, styles.secondary)}
@@ -39,23 +36,26 @@ const description = publicPreview('/rss')!.description;
             Subscribe
           </a>
         </div>
-        <span
-          {...stylex.attrs(styles.mono, styles.feedAddress)}
+        <input
+          {...stylex.attrs(styles.keyInput, styles.copyableInput)}
+          type="text"
           id="feed-address"
-        >
-          {feedUrl}
-        </span>
+          aria-label="RSS feed URL"
+          value={feedUrl}
+          readonly
+          spellcheck="false"
+        />
       </div>
     </div>
   </main>
 </Layout>
 <script>
   const button = document.querySelector<HTMLButtonElement>('#copy-feed');
-  const address = document.querySelector<HTMLElement>('#feed-address');
+  const address = document.querySelector<HTMLInputElement>('#feed-address');
   button?.addEventListener('click', async () => {
     if (!address) return;
     try {
-      await navigator.clipboard.writeText(address.textContent?.trim() ?? '');
+      await navigator.clipboard.writeText(address.value);
     } catch {}
   });
 </script>

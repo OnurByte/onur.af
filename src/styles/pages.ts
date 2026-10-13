@@ -90,11 +90,8 @@ export const styles = stylex.create({
     fontSize: '0.85rem',
     lineHeight: 1.6,
   },
-  feedAddress: {
-    display: 'block',
-    width: '100%',
+  copyableInput: {
     paddingRight: 170,
-    overflowWrap: 'anywhere',
   },
   feedStatus: { marginBlock: 24, lineHeight: 1.7 },
   kicker: {
