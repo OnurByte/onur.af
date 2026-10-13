@@ -132,6 +132,7 @@ export const styles = stylex.create({
     padding: 8,
     color: 'black',
   },
+  paymentDetails: { ':only-child': { gridColumn: '1 / -1' } },
   paymentParagraph: { marginTop: 0, marginBottom: 16 },
   amount: { fontSize: '1.5rem', fontWeight: 400 },
   note: {
@@ -225,6 +226,7 @@ export const styles = stylex.create({
   },
   customLabel: {
     marginTop: 24,
+    marginBottom: 24,
     display: 'grid',
     maxWidth: 320,
     gap: 8,
