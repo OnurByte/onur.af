@@ -73,17 +73,10 @@ export const searchStyles = stylex.create({
     width: '100%',
     minWidth: 0,
     padding: '0 0 12px',
-    borderBottomWidth: 1,
-    borderBottomStyle: 'solid',
-    borderBottomColor: 'var(--border)',
+    borderWidth: 0,
     fontSize: { default: 20, '@media (max-width: 620px)': 16 },
     backgroundColor: 'transparent',
     outlineStyle: 'none',
-    ':focus': {
-      borderBottomWidth: 2,
-      borderBottomColor: 'var(--text)',
-      paddingBottom: 11,
-    },
   },
   status: {
     fontSize: 12,
