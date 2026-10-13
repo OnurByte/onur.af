@@ -90,17 +90,12 @@ export const styles = stylex.create({
     fontSize: '0.85rem',
     lineHeight: 1.6,
   },
-  feedRow: {
-    marginBlock: 24,
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    columnGap: 20,
-    rowGap: 12,
+  feedAddress: {
+    display: 'block',
+    width: '100%',
+    paddingRight: 170,
+    overflowWrap: 'anywhere',
   },
-  feedAddress: { minWidth: 0 },
-  feedButton: { flexShrink: 0 },
-  feedLink: { textDecoration: 'underline', textUnderlineOffset: '0.2em' },
   feedStatus: { marginBlock: 24, lineHeight: 1.7 },
   kicker: {
     marginBottom: 12,
