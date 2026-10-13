@@ -3,7 +3,7 @@ export const searchStyles = stylex.create({
   trigger: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 12,
+    gap: 8,
     minHeight: 44,
     paddingInline: 12,
     borderWidth: 1,
@@ -14,6 +14,7 @@ export const searchStyles = stylex.create({
     fontSize: { default: 20, '@media (max-width: 620px)': 16 },
     fontWeight: 500,
   },
+  triggerIcon: { display: 'flex', width: 32, height: 32 },
   shortcut: {
     fontSize: 12,
     color: 'var(--muted)',
@@ -22,6 +23,7 @@ export const searchStyles = stylex.create({
     borderColor: 'var(--border)',
     borderRadius: 4,
     padding: '2px 6px',
+    '@media (max-width: 620px)': { display: 'none' },
   },
   dialog: {
     margin: {

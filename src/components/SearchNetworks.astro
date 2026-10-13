@@ -10,7 +10,7 @@ import { searchStyles } from '../styles/search';
       <a href={href} rel="noreferrer" {...stylex.attrs(searchStyles.result)}>
         <span data-result-title>{label}</span>
         <small data-result-description {...stylex.attrs(searchStyles.detail)}>
-          {label === 'TOR' ? 'Onion site' : 'I2P site'}
+          {label === 'TOR' ? 'Browse via Tor.' : 'Browse via I2P.'}
         </small>
       </a>
     ) : (
@@ -21,7 +21,7 @@ import { searchStyles } from '../styles/search';
       >
         <span data-result-title>{label}</span>
         <small data-result-description {...stylex.attrs(searchStyles.detail)}>
-          Address not published
+          Not published yet.
         </small>
       </span>
     )}
