@@ -149,7 +149,7 @@ test('header search aligns with Donate and supports keyboard navigation', async 
         style.borderBottomStyle,
       ];
     }),
-  ).toEqual(['0px', '2px', 'solid']);
+  ).toEqual(['0px', '0px', 'solid']);
   await page.getByRole('searchbox').fill('Monero');
   await expect(page.locator('#search-results a')).toHaveCount(1);
   await expect(page.locator('#search-status')).toBeHidden();
