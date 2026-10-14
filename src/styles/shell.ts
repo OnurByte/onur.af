@@ -15,11 +15,8 @@ export const shell = stylex.create({
   },
   container: {
     marginInline: 'auto',
-    width: {
-      default: 'calc(100% - 48px)',
-      '@media (max-width: 620px)': 'calc(100% - 40px)',
-    },
-    maxWidth: 960,
+    width: 'calc(100% - var(--page-gutter) * 2)',
+    maxWidth: 'var(--page-max-width)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -31,7 +28,7 @@ export const shell = stylex.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: { default: 20, '@media (max-width: 620px)': 16 },
+    gap: { default: 16, '@media (min-width: 621px)': 20 },
   },
   title: {
     display: 'flex',
@@ -46,20 +43,24 @@ export const shell = stylex.create({
   footer: {
     paddingTop: 20,
     paddingBottom: 28,
-    fontSize: { default: 20, '@media (max-width: 620px)': 16 },
+    fontSize: { default: 16, '@media (min-width: 621px)': 20 },
     fontWeight: 700,
   },
   footerNavigation: {
     display: 'grid',
     width: '100%',
-    gridTemplateColumns: '1fr auto 1fr',
+    gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)',
     alignItems: 'center',
-    gap: { default: 20, '@media (max-width: 620px)': 4 },
+    gap: { default: 4, '@media (min-width: 621px)': 20 },
   },
   footerGroup: {
     display: 'flex',
     alignItems: 'center',
-    gap: { default: 20, '@media (max-width: 620px)': 12 },
+    gap: {
+      default: 0,
+      '@media (min-width: 361px)': 4,
+      '@media (min-width: 621px)': 12,
+    },
   },
   start: { justifySelf: 'start' },
   center: { justifySelf: 'center' },
@@ -67,10 +68,13 @@ export const shell = stylex.create({
   footerLink: {
     display: 'inline-flex',
     minHeight: 44,
+    minWidth: 44,
     alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 4,
     gap: 8,
   },
-  unavailable: { cursor: 'default', color: 'var(--muted)' },
+  unavailable: { cursor: 'default', color: 'var(--muted)', opacity: 0.45 },
   monochrome: {
     filter: {
       default: 'brightness(0)',
@@ -86,5 +90,8 @@ export const shell = stylex.create({
   },
   icon: { display: 'block', flexShrink: 0, width: 32, height: 32 },
   brandIcon: { width: 56, height: 56 },
-  wideIcon: { width: 64 },
+  wideIcon: {
+    width: { default: 44, '@media (min-width: 361px)': 64 },
+    objectFit: 'contain',
+  },
 });

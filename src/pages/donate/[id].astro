@@ -309,22 +309,4 @@ const partialDetails =
       </p>
     </noscript>
   </main>
-  <script>
-    document
-      .querySelectorAll<HTMLButtonElement>('[data-copy]')
-      .forEach((button) =>
-        button.addEventListener('click', async () => {
-          const target = document.getElementById(button.dataset.copy ?? '');
-          if (!target) return;
-          try {
-            await navigator.clipboard.writeText(
-              target.textContent?.trim() ?? '',
-            );
-            button.textContent = 'Copied';
-          } catch {
-            button.textContent = 'Select and copy manually';
-          }
-        }),
-      );
-  </script>
 </Layout>

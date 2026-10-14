@@ -13,7 +13,7 @@ const paths = [
 ];
 
 for (const colorScheme of ['light', 'dark'] as const) {
-  for (const width of [320, 375, 620, 621, 768, 1280]) {
+  for (const width of [320, 375, 620, 621, 768, 1280, 1440]) {
     test(`${colorScheme} ${width}px page geometry`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });

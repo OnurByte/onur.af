@@ -16,20 +16,22 @@ const keyText = publicKey.trim();
         {description}
       </p>
       <div id="fingerprint-field" {...stylex.attrs(styles.keySection)}>
-        <div
-          id="fingerprint-actions"
-          {...stylex.attrs(styles.keyActions, styles.inputActions)}
-        >
+        <div id="fingerprint-actions" {...stylex.attrs(styles.keyActions)}>
           <button
-            {...stylex.attrs(styles.button, styles.secondary)}
+            {...stylex.attrs(
+              styles.button,
+              styles.secondary,
+              styles.compactAction,
+            )}
             id="copy-fingerprint"
+            data-copy="fingerprint-value"
             type="button"
           >
             Copy
           </button>
         </div>
         <input
-          {...stylex.attrs(styles.keyInput, styles.copyableInput)}
+          {...stylex.attrs(styles.keyInput, styles.singleLineInput)}
           type="text"
           id="fingerprint-value"
           aria-label="PGP fingerprint"
@@ -50,14 +52,24 @@ const keyText = publicKey.trim();
       >{keyText}</textarea>
       <div id="key-actions" {...stylex.attrs(styles.keyActions)}>
         <button
-          {...stylex.attrs(styles.button, styles.secondary)}
+          {...stylex.attrs(
+            styles.button,
+            styles.secondary,
+            styles.compactAction,
+          )}
           type="button"
           id="copy-key"
+          data-copy="public-key"
+          data-copy-status="key-copy-status"
         >
           Copy
         </button>
         <a
-          {...stylex.attrs(styles.button, styles.secondary)}
+          {...stylex.attrs(
+            styles.button,
+            styles.secondary,
+            styles.compactAction,
+          )}
           href="/pgp.asc"
           download
         >
@@ -71,18 +83,6 @@ const keyText = publicKey.trim();
 
 <script>
   const key = document.querySelector<HTMLTextAreaElement>('#public-key');
-  const button = document.querySelector<HTMLButtonElement>('#copy-key');
-  const status = document.querySelector<HTMLElement>('#key-copy-status');
-  const fingerprint =
-    document.querySelector<HTMLInputElement>('#fingerprint-value');
-  document
-    .querySelector<HTMLButtonElement>('#copy-fingerprint')
-    ?.addEventListener('click', async () => {
-      if (!fingerprint) return;
-      try {
-        await navigator.clipboard.writeText(fingerprint.value);
-      } catch {}
-    });
   const fitKey = () => {
     if (!key) return;
     key.style.height = 'auto';
@@ -92,12 +92,13 @@ const keyText = publicKey.trim();
   fitKey();
   window.addEventListener('resize', fitKey);
   void document.fonts.ready.then(fitKey);
-  button?.addEventListener('click', async () => {
-    if (!key || !status) return;
-    try {
-      await navigator.clipboard.writeText(key.value);
-    } catch {
-      status.textContent = 'Copy failed. Download the public key instead.';
-    }
-  });
+  if (key) {
+    let width = key.getBoundingClientRect().width;
+    new ResizeObserver(() => {
+      const nextWidth = key.getBoundingClientRect().width;
+      if (nextWidth === width) return;
+      width = nextWidth;
+      fitKey();
+    }).observe(key);
+  }
 </script>

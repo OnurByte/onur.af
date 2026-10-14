@@ -11,8 +11,17 @@ html {
   --muted: #333;
   --border: #b3b3b3;
   --surface: #f2f2f2;
+  --page-gutter: 20px;
+  --page-max-width: 960px;
+  --reading-width: 592px;
+  --control-height: 48px;
   -webkit-text-size-adjust: 100%;
   tab-size: 4;
+}
+@media (min-width: 621px) {
+  html {
+    --page-gutter: 24px;
+  }
 }
 @media (prefers-color-scheme: dark) {
   html {
