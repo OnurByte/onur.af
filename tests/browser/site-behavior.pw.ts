@@ -71,6 +71,15 @@ test('site blocks native copy everywhere while the PGP copy button still works',
     'readonly',
     '',
   );
+  expect(
+    await page.locator('#fingerprint-actions button').evaluate((button) => {
+      const field = document
+        .querySelector('#fingerprint-field')!
+        .getBoundingClientRect();
+      const bounds = button.getBoundingClientRect();
+      return bounds.top >= field.top && bounds.bottom <= field.bottom;
+    }),
+  ).toBe(true);
   await page
     .locator('#fingerprint-actions')
     .getByRole('button', { name: 'Copy' })

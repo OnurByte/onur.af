@@ -98,6 +98,15 @@ test('RSS Copy button matches the PGP copy behavior', async ({
   await expect(page.locator('#feed-field')).toBeVisible();
   await expect(page.locator('#feed-address')).toHaveAttribute('readonly', '');
   await expect(page.locator('#feed-address')).toHaveAttribute('type', 'text');
+  expect(
+    await page.locator('#feed-field > div').evaluate((actions) => {
+      const field = document
+        .querySelector('#feed-address')!
+        .getBoundingClientRect();
+      const bounds = actions.getBoundingClientRect();
+      return bounds.top >= field.top && bounds.bottom <= field.bottom;
+    }),
+  ).toBe(true);
   await page.getByRole('button', { name: 'Copy', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'Copy', exact: true }),

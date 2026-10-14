@@ -21,7 +21,7 @@ const description = publicPreview('/rss')!.description;
         {description}
       </p>
       <div id="feed-field" {...stylex.attrs(styles.keySection)}>
-        <div {...stylex.attrs(styles.keyActions)}>
+        <div {...stylex.attrs(styles.keyActions, styles.inputActions)}>
           <button
             {...stylex.attrs(styles.button, styles.secondary)}
             id="copy-feed"
@@ -37,7 +37,11 @@ const description = publicPreview('/rss')!.description;
           </a>
         </div>
         <input
-          {...stylex.attrs(styles.keyInput, styles.copyableInput)}
+          {...stylex.attrs(
+            styles.keyInput,
+            styles.copyableInput,
+            styles.feedInput,
+          )}
           type="text"
           id="feed-address"
           aria-label="RSS feed URL"

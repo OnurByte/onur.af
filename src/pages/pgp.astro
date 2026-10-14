@@ -16,7 +16,10 @@ const keyText = publicKey.trim();
         {description}
       </p>
       <div id="fingerprint-field" {...stylex.attrs(styles.keySection)}>
-        <div id="fingerprint-actions" {...stylex.attrs(styles.keyActions)}>
+        <div
+          id="fingerprint-actions"
+          {...stylex.attrs(styles.keyActions, styles.inputActions)}
+        >
           <button
             {...stylex.attrs(styles.button, styles.secondary)}
             id="copy-fingerprint"

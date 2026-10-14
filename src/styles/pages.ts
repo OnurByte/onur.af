@@ -75,6 +75,7 @@ export const styles = stylex.create({
     display: 'flex',
     gap: 8,
   },
+  inputActions: { top: '50%', transform: 'translateY(-50%)' },
   keyInput: {
     fontFamily:
       'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
@@ -91,8 +92,9 @@ export const styles = stylex.create({
     lineHeight: 1.6,
   },
   copyableInput: {
-    paddingRight: 170,
+    paddingRight: 100,
   },
+  feedInput: { paddingRight: 170 },
   feedStatus: { marginBlock: 24, lineHeight: 1.7 },
   kicker: {
     marginBottom: 12,
