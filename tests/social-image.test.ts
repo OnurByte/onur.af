@@ -56,3 +56,28 @@ test('public image route accepts only known pages and motto indices', async () =
     await socialImage('home', 1),
   );
 });
+
+test('home brand name matches the visible icon height and vertical alignment', async () => {
+  const image = await socialImage('home');
+  const bounds = async (left: number, width: number) => {
+    const { data, info } = await sharp(image)
+      .extract({ left, top: 55, width, height: 64 })
+      .removeAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const rows: number[] = [];
+    for (let y = 0; y < info.height; y++) {
+      for (let x = 0; x < info.width; x++) {
+        if (data[(y * info.width + x) * info.channels]! > 32) {
+          rows.push(y);
+          break;
+        }
+      }
+    }
+    return { top: Math.min(...rows), bottom: Math.max(...rows) };
+  };
+  const icon = await bounds(72, 64);
+  const name = await bounds(162, 300);
+  expect(Math.abs(name.top - icon.top)).toBeLessThanOrEqual(1);
+  expect(Math.abs(name.bottom - icon.bottom)).toBeLessThanOrEqual(1);
+});

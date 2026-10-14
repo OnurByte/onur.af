@@ -4,7 +4,11 @@ import { siteSignature } from '../portfolio/signature';
 import { shell } from '../styles/shell';
 import '../styles/global.css';
 import { portfolioLinks } from '../portfolio/links';
-import { mottos, publicPreview } from '../portfolio/previews';
+import {
+  mottos,
+  publicPreview,
+  socialImageVersion,
+} from '../portfolio/previews';
 import Brand from '../components/Brand.astro';
 import Search from '../components/Search.astro';
 import Icon from '../components/Icon.astro';
@@ -30,7 +34,7 @@ const indexable =
   Boolean(canonical) && !noindex && Astro.response.status === 200;
 const socialImage =
   indexable && preview
-    ? `${origin}/social/${preview.key}.png?m=${mottos.indexOf(motto as (typeof mottos)[number])}`
+    ? `${origin}/social/${preview.key}.png?v=${socialImageVersion}&m=${mottos.indexOf(motto as (typeof mottos)[number])}`
     : undefined;
 const imageAlt =
   preview?.key === 'home'
