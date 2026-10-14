@@ -109,7 +109,7 @@ test('RSS Copy button matches the PGP copy behavior', async ({
   ).toBe(true);
   await page.getByRole('button', { name: 'Copy', exact: true }).click();
   await expect(
-    page.getByRole('button', { name: 'Copy', exact: true }),
+    page.getByRole('button', { name: 'Copied', exact: true }),
   ).toBeVisible();
   await expect(page.locator('#copy-status')).toHaveCount(0);
   await expect(
