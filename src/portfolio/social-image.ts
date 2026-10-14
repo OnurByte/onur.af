@@ -67,18 +67,28 @@ export async function socialImage(page: string, mottoIndex = 0) {
       .png()
       .toBuffer(),
     isHome ? undefined : text(mottos[mottoIndex]!, 19, false, 930),
-    text('Onur', 28),
+    text('Onur', isHome ? 64 : 28),
     text(isHome ? mottos[mottoIndex]! : preview.title, 96, true, 1056, 145),
     preview.description
       ? text(preview.description, 28, false, 1000)
       : undefined,
   ]);
+  const logoBounds = isHome
+    ? (await sharp(logo).trim().toBuffer({ resolveWithObject: true })).info
+    : undefined;
+  const brandName = logoBounds
+    ? await sharp(name).resize({ height: logoBounds.height }).png().toBuffer()
+    : name;
   return sharp({
     create: { width: 1200, height: 630, channels: 3, background: '#000000' },
   })
     .composite([
       { input: logo, left: 72, top: 55 },
-      { input: name, left: 162, top: 57 },
+      {
+        input: brandName,
+        left: 162,
+        top: logoBounds ? 55 - (logoBounds.trimOffsetTop ?? 0) : 57,
+      },
       ...(motto ? [{ input: motto, left: 162, top: 99 }] : []),
       {
         input: Buffer.from(

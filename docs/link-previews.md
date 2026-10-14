@@ -8,12 +8,14 @@ The public page set is Home, Donate, RSS and PGP. The redundant Identity page, e
 
 ## Shared preview
 
-- `/social/<public-page-key>.png?m=0|1|2`: page-specific 1200 × 630 PNG. Header: owner logo and larger Onur name. Body: the homepage’s selected motto, separated by a fine rule. Utility cards retain the smaller header motto, large page title and description. `public/brand/social.png` remains a redesigned home-card fallback for older shared URLs.
+- `/social/<public-page-key>.png?v=<revision>&m=0|1|2`: page-specific 1200 × 630 PNG. Header: owner logo and larger Onur name. On the homepage, the name matches the icon's visible height and vertical position. Body: the homepage’s selected motto, separated by a fine rule. Utility cards retain the smaller header motto, large page title and description. `public/brand/social.png` remains a redesigned home-card fallback for older shared URLs.
 - `public/brand/icon.png`: 512 × 512; `apple-touch-icon.png`: 180 × 180; `/favicon.ico`: 16/32/48 pixels.
 - OG image URL, HTTPS secure URL, MIME type, dimensions and alt text; matching X large-image card.
 - Absolute PNG/touch/icon addresses when the public origin is configured. PNG is the first favicon declaration; the SVG and ICO fallbacks remain available.
 
 The server renders PNGs using Sharp and bundled Liberation Sans font bytes, so card typography does not depend on host fonts. Fonts are initialized once per process in writable temporary storage. The public image route accepts only the public page keys and the three motto indices. It never fetches URLs or uses private payment records. Successful images are cached for one day; changing card content may require a preview cache refresh.
+
+`socialImageVersion` versions the image URLs shared by OG, X Cards and the Discord component payload. Increment it when changing the card design so newly fetched pages reference a fresh image cache key. This does not invalidate previews already cached for existing Discord messages.
 
 Apple recommends both a large OG image and a high-resolution square icon, with metadata available in the initial HTML: [TN3156](https://developer.apple.com/documentation/technotes/tn3156-create-rich-previews-for-messages). Icons need not appear alongside an image in every layout.
 
