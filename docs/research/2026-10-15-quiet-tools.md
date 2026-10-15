@@ -31,7 +31,7 @@ Bu nedenle en kuvvetli eklemeler yeni kütüphaneler değil, gerçek içerik bul
 
 ## Repo kaynakları ve ölçüm yöntemi
 
-Metadata alanları 2026-10-15’te https://api.github.com/repos/{owner}/{repo} üzerinden okundu (stars, license.spdx_id, pushed_at); README/kaynaklar GitHub connector ile varsayılan branch’ten alındı. Favo02 reposunda GitHub API lisans alanı boş döndü. anc ve Favo02/favo02.dev 0★ olduğu için yıldız üst sınırına uyuyor, ancak yıldız sayısı kalite garantisi sayılmaz. Repo değerlendirmeleri kod örneklerinin proje uyumuna dair çıkarımdır; yerel entegrasyon veya bakım devamlılığı garantisi değildir.
+Metadata alanları 2026-10-15’te GitHub REST `GET /repos/{owner}/{repo}` uç noktası üzerinden okundu (stars, license.spdx_id, pushed_at); README/kaynaklar GitHub connector ile varsayılan branch’ten alındı. Favo02 reposunda GitHub API lisans alanı boş döndü. anc ve Favo02/favo02.dev 0★ olduğu için yıldız üst sınırına uyuyor, ancak yıldız sayısı kalite garantisi sayılmaz. Repo değerlendirmeleri kod örneklerinin proje uyumuna dair çıkarımdır; yerel entegrasyon veya bakım devamlılığı garantisi değildir.
 
 ## Son öneri
 
