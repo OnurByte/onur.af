@@ -2,7 +2,12 @@
 import * as stylex from '@stylexjs/stylex';
 import { styles } from '../styles/pages';
 import { logStyles } from '../styles/log';
-import { readingTime, type LogEntry } from '../portfolio/log';
+import {
+  logProofUrl,
+  logUrl,
+  readingTime,
+  type LogEntry,
+} from '../portfolio/log';
 import { getLogSignatures } from '../portfolio/verified-proofs';
 import LogRevision from './LogRevision.astro';
 import ProofBadge from './ProofBadge.astro';
@@ -15,9 +20,9 @@ const latest = entry.revisions.at(-1)!;
 const date = (value: string) => new Date(value).toISOString().slice(0, 10);
 ---
 
-<article id={entry.id} class="h-entry" {...stylex.attrs(logStyles.article)}>
+<article id={entry.slug} class="h-entry" {...stylex.attrs(logStyles.article)}>
   <h1 {...stylex.attrs(logStyles.title, styles.heading)}>
-    <a class="u-url p-name" href={`/log/${entry.id}`}>
+    <a class="u-url p-name" href={logUrl(entry)}>
       {entry.title}
     </a>
   </h1>
@@ -30,7 +35,7 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
       {date(entry.revisions[0]!.publishedAt)}
     </time>
     {signatures[`${entry.id}-v${latest.version}`] && (
-      <ProofBadge target="log" href={`/pgp/log/${entry.id}`} label="Verified" />
+      <ProofBadge target="log" href={logProofUrl(entry)} label="Verified" />
     )}
     <span>{readingTime(latest.body)}</span>
     {latest.version > 1 && (
@@ -56,7 +61,7 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
         .toReversed()
         .map((revision) => (
           <section
-            id={`${entry.id}-v${revision.version}`}
+            id={`${entry.slug}-v${revision.version}`}
             {...stylex.attrs(logStyles.proof)}
           >
             <h2>

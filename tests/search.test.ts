@@ -29,6 +29,7 @@ test('Log entries are searchable by title, summary and the latest published body
   const entries = logSearchEntries([
     {
       id: 'a-note',
+      slug: 'sealed-council-convenes',
       title: 'My note',
       summary: 'A summary',
       revisions: [
@@ -45,7 +46,7 @@ test('Log entries are searchable by title, summary and the latest published body
       ],
     },
   ]);
-  expect(entries[0]!.url).toBe('/log/a-note');
+  expect(entries[0]!.url).toBe('/log/sealed-council-convenes');
   expect(entries[0]!.searchText).toContain('My note');
   expect(entries[0]!.searchText).toContain('A summary');
   expect(entries[0]!.searchText).toContain('Unique searchable sentence');

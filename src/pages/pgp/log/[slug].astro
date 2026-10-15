@@ -3,14 +3,21 @@ import * as stylex from '@stylexjs/stylex';
 import Layout from '../../../layouts/Layout.astro';
 import { styles } from '../../../styles/pages';
 import { logStyles } from '../../../styles/log';
-import { logEntries } from '../../../portfolio/log';
+import {
+  logEntryForPath,
+  logProofUrl,
+  logRevisionUrl,
+  logUrl,
+} from '../../../portfolio/log';
 import {
   getLogSignatures,
   getLogTimestampProofs,
 } from '../../../portfolio/verified-proofs';
 import SignedMessage from '../../../components/SignedMessage.astro';
-const entry = logEntries.find((entry) => entry.id === Astro.params.slug);
+const entry = logEntryForPath(Astro.params.slug);
 if (!entry) return Astro.rewrite('/404');
+if (entry.slug !== Astro.params.slug)
+  return Astro.redirect(`${logProofUrl(entry)}${Astro.url.search}`, 308);
 const version = Astro.url.searchParams.has('v')
   ? Number(Astro.url.searchParams.get('v'))
   : entry.revisions.at(-1)!.version;
@@ -22,7 +29,7 @@ const key = `${entry.id}-v${version}`;
 const signature = (await getLogSignatures())[key];
 if (!signature) return Astro.rewrite('/404');
 const timestamp = (await getLogTimestampProofs())[key];
-const file = `/proofs/${entry.id}-v${version}.md`;
+const file = logRevisionUrl(entry, version);
 ---
 
 <Layout title={`${entry.title} · PGP · Onur`} description="Verified by PGP.">
@@ -35,7 +42,7 @@ const file = `/proofs/${entry.id}-v${version}.md`;
           {revision.publishedAt.slice(0, 10)}
         </time>
         <span>v{version}</span>
-        <a {...stylex.attrs(styles.walletLink)} href={`/log/${entry.id}`}>
+        <a {...stylex.attrs(styles.walletLink)} href={logUrl(entry)}>
           Log
         </a>
       </div>
@@ -90,7 +97,7 @@ const file = `/proofs/${entry.id}-v${version}.md`;
           {entry.revisions.map((item) => (
             <a
               {...stylex.attrs(styles.walletLink)}
-              href={`/pgp/log/${entry.id}?v=${item.version}`}
+              href={logProofUrl(entry, item.version)}
               aria-current={item.version === version ? 'page' : undefined}
             >
               v{item.version}
