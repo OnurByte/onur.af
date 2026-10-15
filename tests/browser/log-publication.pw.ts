@@ -292,12 +292,14 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       const button = snippet.locator('..').getByRole('button');
       await expect(button).toBeVisible();
       const buttonBox = await button.boundingBox();
+      const buttonWidth = buttonBox!.width;
       const snippetBox = await snippet.boundingBox();
       expect(buttonBox!.x).toBeGreaterThanOrEqual(
         snippetBox!.x + snippetBox!.width,
       );
       await button.click();
       await expect(button).toHaveText('Copied');
+      expect((await button.boundingBox())!.width).toBe(buttonWidth);
       expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
         code,
       );
