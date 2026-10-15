@@ -11,7 +11,10 @@ const { target, href, label } = Astro.props;
 ---
 
 <a
-  {...stylex.attrs(logStyles.badge, label ? logStyles.badgeWithLabel : undefined)}
+  {...stylex.attrs(
+    logStyles.badge,
+    label ? logStyles.badgeWithLabel : undefined,
+  )}
   href={href ?? `/pgp/${target}`}
   aria-label={`${target === 'log' ? 'Publication' : target === 'x' ? 'X identity' : 'GitHub identity'} PGP proof`}
 >

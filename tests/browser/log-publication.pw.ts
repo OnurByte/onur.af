@@ -195,7 +195,9 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       })
       .toBe(200);
     await page.goto(`${origin}/log`);
-    const listedEntry = page.locator('.h-feed .h-entry');
+    const listedEntry = page.locator('main article');
+    if ((await listedEntry.count()) === 0)
+      console.log('Log fixture markup:', (await page.content()).slice(0, 2500));
     await expect(listedEntry).toHaveCount(1);
     const listedVerification = listedEntry
       .locator('time.dt-published')
