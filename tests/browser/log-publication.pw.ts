@@ -57,7 +57,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
           {
             version: 1,
             publishedAt: '2026-10-13T09:00:00Z',
-            body: 'Original **fixture** content.',
+            body: 'Original **fixture** content.\n\n```html\n<iframe src="https://example.com/embed"></iframe>\n```',
           },
           {
             version: 2,
@@ -282,6 +282,31 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     await expect(page.getByText(/sec read/)).toBeVisible();
     await page.getByText('History', { exact: true }).click();
     await expect(page.getByText('Original fixture content.')).toBeVisible();
+    await page
+      .context()
+      .grantPermissions(['clipboard-read', 'clipboard-write']);
+    const snippets = page.locator('.log-body pre');
+    await expect(snippets).toHaveCount(2);
+    for (const snippet of await snippets.all()) {
+      const code = await snippet.locator('code').textContent();
+      const button = snippet.locator('..').getByRole('button');
+      await expect(button).toBeVisible();
+      await button.click();
+      await expect(button).toHaveText('Copied');
+      expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+        code,
+      );
+    }
+    await page.evaluate(() => {
+      Object.defineProperty(navigator.clipboard, 'writeText', {
+        configurable: true,
+        value: () => Promise.reject(new Error('Clipboard denied')),
+      });
+    });
+    const retry = snippets.first().locator('..').getByRole('button');
+    await retry.click();
+    await expect(retry).toHaveText('Copy failed');
+
     for (const scheme of ['light', 'dark'] as const) {
       await page.emulateMedia({ colorScheme: scheme });
       await page.setViewportSize({ width: 320, height: 900 });
