@@ -89,6 +89,13 @@ export const shell = stylex.create({
     color: 'var(--text)',
   },
   icon: { display: 'block', flexShrink: 0, width: 32, height: 32 },
+  providerIcon: {
+    width: 'calc(1.125rem * 1.4 + 4px + 0.875rem * 1.6)',
+    height: 'calc(1.125rem * 1.4 + 4px + 0.875rem * 1.6)',
+    objectFit: 'contain',
+    boxSizing: 'border-box',
+  },
+  smallIcon: { width: 16, height: 16 },
   brandIcon: { width: 56, height: 56 },
   wideIcon: {
     width: { default: 44, '@media (min-width: 361px)': 64 },

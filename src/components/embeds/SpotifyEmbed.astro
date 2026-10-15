@@ -1,0 +1,288 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import Icon from '../Icon.astro';
+import { embeds as styles, recentMarker } from '../../styles/embeds';
+import type { Embed } from '../../portfolio/embeds';
+interface Props {
+  embed: Embed;
+}
+const { embed } = Astro.props;
+const recent = embed.recentTracks ?? [];
+const track = embed.items.find((item) => item.kind === 'track');
+const playback = track?.playback;
+const duration = playback ? playback.endsAt - playback.startedAt : 1;
+const elapsed = playback
+  ? Math.max(0, Math.min(duration, Date.now() - playback.startedAt))
+  : 0;
+const time = (ms: number) =>
+  `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
+---
+
+<section
+  id="spotify-embed"
+  {...stylex.attrs(styles.section, styles.spotifySection)}
+  aria-labelledby="embed-spotify"
+>
+  <div {...stylex.attrs(styles.spotifyTop)}>
+    <header {...stylex.attrs(styles.header)}>
+      <div {...stylex.attrs(styles.identity)}>
+        <Icon name="spotify" />
+        <div {...stylex.attrs(styles.headingGroup)}>
+          <h2 id="embed-spotify" {...stylex.attrs(styles.title)}>
+            {track
+              ? 'Listening'
+              : embed.playbackState === 'idle'
+                ? 'Playing nothing'
+                : 'Spotify'}
+          </h2>
+          <span
+            data-spotify-label
+            {...stylex.attrs(styles.sourceLink)}
+            hidden={!track && embed.playbackState !== 'idle'}
+          >
+            Spotify
+          </span>
+        </div>
+      </div>
+    </header>
+    <div
+      data-spotify-current
+      {...stylex.attrs(styles.spotifyContent)}
+      hidden={!embed.items.length}
+    >
+      <ul {...stylex.attrs(styles.list)} hidden={!embed.items.length}>
+        {embed.items.map((track) => (
+          <li {...stylex.attrs(styles.recentItem)}>
+            <a
+              {...stylex.attrs(styles.link)}
+              href={track.href}
+              rel="noreferrer"
+            >
+              {track.title}
+            </a>
+            {track.detail && (
+              <span {...stylex.attrs(styles.detail)}>{track.detail}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+      <div
+        data-spotify-progress
+        {...stylex.attrs(styles.spotifyProgress)}
+        data-start={playback?.startedAt}
+        data-end={playback?.endsAt}
+        hidden={!playback}
+      >
+        <progress
+          {...stylex.attrs(styles.progressBar)}
+          max={duration}
+          value={elapsed}
+          aria-label="Track progress"
+          aria-valuetext={`${time(elapsed)} of ${time(duration)}`}
+        ></progress>
+        <div {...stylex.attrs(styles.progressTimes)}>
+          <span data-spotify-elapsed>{time(elapsed)}</span>
+          <span data-spotify-duration>{time(duration)}</span>
+        </div>
+      </div>
+    </div>
+    <button
+      type="button"
+      data-spotify-toggle
+      {...stylex.attrs(styles.spotifyToggle, recentMarker)}
+      aria-label="Show recent tracks"
+      aria-expanded="false"
+      aria-controls="spotify-recent"
+      hidden={!recent.length}
+    >
+      <span {...stylex.attrs(styles.recentArrow)}>
+        <Icon name="chevronDown" />
+      </span>
+    </button>
+  </div>
+  <div
+    id="spotify-recent"
+    data-spotify-recent
+    {...stylex.attrs(styles.spotifyRecent)}
+    hidden
+  >
+    <h3 {...stylex.attrs(styles.recentHeading)}>Recent</h3>
+    <ol {...stylex.attrs(styles.list, styles.recentList)}>
+      {recent.map((track) => (
+        <li {...stylex.attrs(styles.recentItem)}>
+          <a {...stylex.attrs(styles.link)} href={track.href} rel="noreferrer">
+            {track.title}
+          </a>
+          {track.detail && (
+            <span {...stylex.attrs(styles.detail)}>{track.detail}</span>
+          )}
+        </li>
+      ))}
+    </ol>
+  </div>
+  <template data-spotify-track-template>
+    <li {...stylex.attrs(styles.recentItem)}>
+      <a {...stylex.attrs(styles.link)} rel="noreferrer"></a>
+      <span {...stylex.attrs(styles.detail)}></span>
+    </li>
+  </template>
+</section>
+<script>
+  import type { Embed } from '../../portfolio/embeds';
+  const section = document.querySelector<HTMLElement>('#spotify-embed');
+  if (section) {
+    const current = section.querySelector<HTMLElement>(
+      '[data-spotify-current]',
+    )!;
+    const recent = section.querySelector<HTMLElement>('[data-spotify-recent]')!;
+    const template = section.querySelector<HTMLTemplateElement>(
+      '[data-spotify-track-template]',
+    )!;
+    const toggle = section.querySelector<HTMLButtonElement>(
+      '[data-spotify-toggle]',
+    )!;
+    const heading = section.querySelector<HTMLElement>('#embed-spotify')!;
+    const label = section.querySelector<HTMLElement>('[data-spotify-label]')!;
+    const progress = current.querySelector<HTMLElement>(
+      '[data-spotify-progress]',
+    )!;
+    const bar = progress.querySelector('progress')!;
+    const elapsedLabel = progress.querySelector<HTMLElement>(
+      '[data-spotify-elapsed]',
+    )!;
+    const durationLabel = progress.querySelector<HTMLElement>(
+      '[data-spotify-duration]',
+    )!;
+    const formatTime = (ms: number) =>
+      `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
+    function tick() {
+      if (progress.hidden || document.hidden) return;
+      const start = Number(progress.dataset.start);
+      const end = Number(progress.dataset.end);
+      const total = end - start;
+      if (!Number.isFinite(total) || total <= 0) {
+        progress.hidden = true;
+        return;
+      }
+      const elapsed = Math.max(0, Math.min(total, Date.now() - start));
+      bar.max = total;
+      bar.value = elapsed;
+      elapsedLabel.textContent = formatTime(elapsed);
+      durationLabel.textContent = formatTime(total);
+      bar.setAttribute(
+        'aria-valuetext',
+        `${formatTime(elapsed)} of ${formatTime(total)}`,
+      );
+    }
+    tick();
+    let progressTimer = setInterval(tick, 1000);
+    let hasRecent = Boolean(recent.querySelector('li'));
+    function updateDisclosure() {
+      const open = toggle.getAttribute('aria-expanded') === 'true';
+      recent.hidden = !hasRecent || !open;
+      toggle.hidden = !hasRecent;
+      toggle.setAttribute(
+        'aria-label',
+        open ? 'Hide recent tracks' : 'Show recent tracks',
+      );
+    }
+    section.addEventListener('click', (event) => {
+      if (!hasRecent || !(event.target instanceof Element)) return;
+      if (event.target.closest('a')) return;
+      toggle.setAttribute(
+        'aria-expanded',
+        String(toggle.getAttribute('aria-expanded') !== 'true'),
+      );
+      updateDisclosure();
+    });
+    let lastPayload = '';
+    let timer: ReturnType<typeof setTimeout>;
+    let refreshing = false;
+    function fill(container: HTMLElement, tracks: Embed['items']) {
+      const list = container.querySelector('ul, ol')!;
+      const nodes = tracks.map((track) => {
+        const fragment = template.content.cloneNode(true) as DocumentFragment;
+        const link = fragment.querySelector('a')!;
+        link.href = track.href;
+        link.textContent = track.title;
+        const detail = fragment.querySelector('span')!;
+        detail.textContent = track.detail ?? '';
+        detail.hidden = !track.detail;
+        return fragment;
+      });
+      list.replaceChildren(...nodes);
+      if (container === current) {
+        list.toggleAttribute('hidden', !tracks.length);
+        current.hidden = !tracks.length;
+        const playing = tracks.find((track) => track.kind === 'track');
+        const playback =
+          playing?.kind === 'track' ? playing.playback : undefined;
+        progress.hidden = !playback;
+        if (playback) {
+          progress.dataset.start = String(playback.startedAt);
+          progress.dataset.end = String(playback.endsAt);
+          tick();
+        }
+      } else {
+        hasRecent = Boolean(tracks.length);
+        if (!hasRecent) toggle.setAttribute('aria-expanded', 'false');
+        updateDisclosure();
+      }
+    }
+    async function refresh() {
+      clearTimeout(timer);
+      if (document.hidden || refreshing) return;
+      refreshing = true;
+      try {
+        const response = await fetch('/spotify.json', {
+          cache: 'no-store',
+          signal: AbortSignal.timeout(7000),
+        });
+        if (!response.ok) throw new Error('Spotify refresh failed');
+        const embed: Embed = await response.json();
+        const payload = JSON.stringify([
+          embed.items,
+          embed.recentTracks,
+          embed.playbackState,
+        ]);
+        if (payload !== lastPayload) {
+          fill(current, embed.items);
+          fill(recent, embed.recentTracks ?? []);
+          const playing = Boolean(embed.items.length);
+          heading.textContent = playing
+            ? 'Listening'
+            : embed.playbackState === 'idle'
+              ? 'Playing nothing'
+              : 'Spotify';
+          label.hidden = !playing && embed.playbackState !== 'idle';
+          lastPayload = payload;
+        }
+      } catch {
+        // Keep the observed history, but never leave an unverified song labelled current.
+        fill(current, []);
+        heading.textContent = 'Spotify';
+        label.hidden = true;
+        lastPayload = '';
+      } finally {
+        refreshing = false;
+        timer = setTimeout(refresh, 5000);
+      }
+    }
+    timer = setTimeout(refresh, 5000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) clearTimeout(timer);
+      else void refresh();
+    });
+    window.addEventListener('pagehide', () => {
+      clearTimeout(timer);
+      clearInterval(progressTimer);
+    });
+    window.addEventListener('pageshow', (event) => {
+      if (!event.persisted) return;
+      clearInterval(progressTimer);
+      tick();
+      progressTimer = setInterval(tick, 1000);
+      void refresh();
+    });
+  }
+</script>

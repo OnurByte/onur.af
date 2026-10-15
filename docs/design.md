@@ -23,3 +23,21 @@ All static SVG assets live in `public/brand/`, with lowercase filenames and thei
 The shared StyleX icon rule controls monochrome system-theme rendering. Icons are decorative (`alt=""`, `aria-hidden="true"`); the containing link or text provides the accessible name. Preserve source proportions: Onur 56 × 56 px, TOR and RSS 32 × 32 px, I2P 64 × 32 px. New icons follow this same registry and asset convention.
 
 Favicons remain document metadata links. Payment QR codes are generated per donation and are not static icons.
+
+## Native home embeds
+
+Home source sections follow the [native embed contract](home-embeds.md). Providers supply normalized data only; all typography, layout, status text and links are rendered by the portfolio. No iframe, provider UI, raw HTML or provider scripts. Use sections with a 1 px outer border in the shared border color, 4 px corners, 16 px mobile / 24 px desktop padding, local monochrome provider icons, normal-weight 18 px section heading, 14 px secondary text and 32 px column gaps. Start 40 px below the motto, one column through 900 px and two above. Empty registry renders nothing. Keep every provider-independent state accessible in the existing system themes.
+
+Embed provider icons share a non-shrinking square sized to the combined title line height, 4 px gap and profile line height (51.6 px at the default font size), with contained SVG artwork and no inner padding. Header titles and 14 px profile links stack together beside that box so profile length cannot change icon sizing or header alignment. Entries use 24 px spacing; secondary text uses 14 px / 1.6 line height. All colors inherit shared theme tokens.
+
+The Spotify source appears below the two home columns as a full-width native section. Its provider heading and track information form a horizontal row that wraps on narrow screens; use the same border, 4 px corners, padding, type scale and monochrome icon registry as the other embeds.
+
+Limit X post previews to two visible lines, keeping the full text accessible through the native post link and preserving keyboard focus without hover underlines. Repository names use weight 500, with 4 px before their 14 px descriptions. Spotify remains visible with Playing nothing replacing the Listening heading only for confirmed idle playback; otherwise it shows the current track and up to five distinct recent tracks in a responsive grid below it.
+
+Spotify Recent is initially collapsed. Clicking the card’s non-link area or its 44 px arrow button at the far right of the provider/current-track row toggles the history. Native profile and track links retain their navigation behavior; keyboard users can use the arrow button. The button has `aria-expanded`, `aria-controls` and visible keyboard focus. Its local 16 px chevron rotates when expanded. Recent tracks form a single vertical list at every screen width. Refreshes replace list contents without resetting the disclosure state.
+
+X like/repost counters use local decorative SVG icons with visible counts and accessible counter labels; the words are not repeated visually.
+
+The native Spotify player uses validated Lanyard start/end timestamps to show a monochrome progress bar and elapsed/total time, updated every second while visible. It displays playback status and position, with no simulated play/pause or seeking controls. Confirmed idle playback replaces the Listening heading with Playing nothing and hides the timeline while retaining recent history; the empty message is never duplicated in the track area.
+
+X and GitHub share 5 rem activity rows with 24 px gaps. X previews use two lines with collapsed whitespace; repository titles and descriptions each use one ellipsized line. Counter/language/commit footers align to the bottom of each row. Both desktop cards stretch to the same grid-row height. Full content remains available through the native links.

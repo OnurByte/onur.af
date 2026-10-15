@@ -38,14 +38,16 @@ for (const colorScheme of ['light', 'dark'] as const) {
               ...document.querySelectorAll(
                 'footer a, main button, main input:not([type="hidden"]):not([type="radio"]), main textarea, main [data-payment-qr]',
               ),
-            ].map((element) => {
-              const rect = element.getBoundingClientRect();
-              return {
-                left: rect.left,
-                right: rect.right,
-                height: rect.height,
-              };
-            }),
+            ]
+              .filter((element) => element.getClientRects().length > 0)
+              .map((element) => {
+                const rect = element.getBoundingClientRect();
+                return {
+                  left: rect.left,
+                  right: rect.right,
+                  height: rect.height,
+                };
+              }),
           };
         });
         if (path === '/donate') {
