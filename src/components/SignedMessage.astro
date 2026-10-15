@@ -1,0 +1,58 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { styles } from '../styles/pages';
+interface Props {
+  message: string;
+  download: string;
+  label?: string;
+}
+const { message, download, label = 'PGP signed URL' } = Astro.props;
+---
+
+<div {...stylex.attrs(styles.keySection)}>
+  <textarea
+    {...stylex.attrs(styles.keyInput)}
+    id="signed-message"
+    data-signed-message
+    aria-label={label}
+    readonly
+    rows={message.split(/\r?\n/).length}
+    spellcheck="false"
+  >{message}</textarea>
+  <div {...stylex.attrs(styles.keyActions)}>
+    <button
+      {...stylex.attrs(styles.button, styles.secondary, styles.compactAction)}
+      type="button"
+      data-copy="signed-message"
+    >
+      Copy
+    </button>
+    <a
+      {...stylex.attrs(styles.button, styles.secondary, styles.compactAction)}
+      href={download}
+      download
+    >
+      Download
+    </a>
+  </div>
+</div>
+<script>
+  const field = document.querySelector<HTMLTextAreaElement>(
+    '[data-signed-message]',
+  );
+  if (field) {
+    const fit = () => {
+      field.style.height = 'auto';
+      field.style.height = `${field.scrollHeight + field.offsetHeight - field.clientHeight}px`;
+      field.style.overflow = 'hidden';
+    };
+    fit();
+    let width = field.clientWidth;
+    new ResizeObserver(() => {
+      if (width === field.clientWidth) return;
+      width = field.clientWidth;
+      fit();
+    }).observe(field);
+    void document.fonts.ready.then(fit);
+  }
+</script>

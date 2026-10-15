@@ -1,0 +1,13 @@
+diff --git a/package.json b/package.json
+index 9342b66e9f929a97b310f945ddfa07052c66e8a7..721b47b77aad812fb9566ee66993630fe03ad909 100644
+--- a/package.json
++++ b/package.json
+@@ -2,7 +2,7 @@
+   "name": "opentimestamps",
+   "version": "0.4.9",
+   "description": "JS Porting of OpenTimestamps",
+-  "main": "open-timestamps.js",
++  "main": "index.js",
+   "dependencies": {
+     "bitcore-lib": "^8.14.4",
+     "bytebuffer": "^5.0.1",

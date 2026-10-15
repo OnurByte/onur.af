@@ -1,0 +1,81 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { styles } from '../styles/pages';
+import { logStyles } from '../styles/log';
+import { readingTime, type LogEntry } from '../portfolio/log';
+import { getLogSignatures } from '../portfolio/verified-proofs';
+import LogRevision from './LogRevision.astro';
+import ProofBadge from './ProofBadge.astro';
+interface Props {
+  entry: LogEntry;
+}
+const { entry } = Astro.props;
+const signatures = await getLogSignatures();
+const latest = entry.revisions.at(-1)!;
+const date = (value: string) => new Date(value).toISOString().slice(0, 10);
+---
+
+<article id={entry.id} class="h-entry" {...stylex.attrs(logStyles.article)}>
+  <h1 {...stylex.attrs(logStyles.title, styles.heading)}>
+    <a class="u-url p-name" href={`/log/${entry.id}`}>
+      {entry.title}
+    </a>
+    {signatures[`${entry.id}-v${latest.version}`] && (
+      <ProofBadge target="log" href={`/pgp/log/${entry.id}`} />
+    )}
+  </h1>
+  <div {...stylex.attrs(logStyles.meta)}>
+    <time
+      class="dt-published"
+      datetime={entry.revisions[0]!.publishedAt}
+      title={entry.revisions[0]!.publishedAt}
+    >
+      {date(entry.revisions[0]!.publishedAt)}
+    </time>
+    <span>{readingTime(latest.body)}</span>
+    {latest.version > 1 && (
+      <time
+        class="dt-updated"
+        datetime={latest.publishedAt}
+        title={`Updated ${latest.publishedAt}`}
+      >
+        v{latest.version} · {date(latest.publishedAt)}
+      </time>
+    )}
+  </div>
+  <LogRevision
+    entry={entry}
+    version={latest.version}
+    signed={Boolean(signatures[`${entry.id}-v${latest.version}`])}
+  />
+  {latest.version > 1 && (
+    <details {...stylex.attrs(logStyles.details)}>
+      <summary {...stylex.attrs(logStyles.summary)}>History</summary>
+      {entry.revisions
+        .slice(0, -1)
+        .toReversed()
+        .map((revision) => (
+          <section
+            id={`${entry.id}-v${revision.version}`}
+            {...stylex.attrs(logStyles.proof)}
+          >
+            <h2>
+              v{revision.version} ·{' '}
+              <time
+                datetime={revision.publishedAt}
+                title={revision.publishedAt}
+              >
+                {date(revision.publishedAt)}
+              </time>
+            </h2>
+            <LogRevision
+              entry={entry}
+              version={revision.version}
+              archived
+              signed={Boolean(signatures[`${entry.id}-v${revision.version}`])}
+            />
+          </section>
+        ))}
+    </details>
+  )}
+</article>

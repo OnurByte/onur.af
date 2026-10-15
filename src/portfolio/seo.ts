@@ -1,4 +1,14 @@
-export const publicPaths: readonly string[] = ['/', '/donate', '/rss', '/pgp'];
+import { logEntries } from './log';
+export const publicPaths: readonly string[] = [
+  '/',
+  '/donate',
+  '/rss',
+  '/pgp',
+  '/log',
+];
+export const proofPaths = ['/pgp/x', '/pgp/github', '/pgp/log'] as const;
+export const logPaths = () =>
+  logEntries.flatMap((entry) => [`/log/${entry.id}`, `/pgp/log/${entry.id}`]);
 export const siteDescription = '';
 
 export function validSiteUrl(value: string | undefined): string | undefined {
@@ -39,7 +49,9 @@ export function canonicalUrl(
 ): string | undefined {
   if (
     !origin ||
-    !publicPaths.includes(pathname as (typeof publicPaths)[number])
+    (!publicPaths.includes(pathname) &&
+      !proofPaths.some((path) => path === pathname) &&
+      !logPaths().includes(pathname))
   )
     return;
   return new URL(pathname, origin).href;
@@ -54,7 +66,7 @@ export function sitemapXml(origin: string | undefined): string {
       .replaceAll('<', '&lt;')
       .replaceAll('>', '&gt;');
   const urls = origin
-    ? publicPaths
+    ? [...publicPaths, ...proofPaths, ...logPaths()]
         .map(
           (path) =>
             `<url><loc>${escape(new URL(path, origin).href)}</loc></url>`,

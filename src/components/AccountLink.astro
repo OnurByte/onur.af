@@ -1,0 +1,20 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import type { HTMLAttributes } from 'astro/types';
+import { identityAccounts } from '../portfolio/proofs';
+import { logStyles } from '../styles/log';
+import ProofBadge from './ProofBadge.astro';
+interface Props extends HTMLAttributes<'a'> {
+  account: keyof typeof identityAccounts;
+  label?: string;
+}
+const { account, label, ...attributes } = Astro.props;
+const identity = identityAccounts[account];
+---
+
+<span {...stylex.attrs(logStyles.identity)}>
+  <a {...attributes} href={`/pgp/${account}`}>
+    {label ?? identity.name}
+  </a>
+  <ProofBadge target={account} />
+</span>

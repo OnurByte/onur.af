@@ -4,6 +4,7 @@ const paths = [
   '/',
   '/rss',
   '/pgp',
+  '/log',
   '/donate',
   '/404',
   ...Array.from(

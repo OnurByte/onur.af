@@ -27,7 +27,7 @@ test('preview descriptions use the published page intros', () => {
     'Support my work with Monero.',
   );
   expect(publicPreview('/pgp')!.description).toBe(
-    'Encrypt messages and verify signatures.',
+    'Accounts and signatures verified by PGP.',
   );
 });
 

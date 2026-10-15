@@ -2,6 +2,7 @@
 import * as stylex from '@stylexjs/stylex';
 import { embeds as styles } from '../../styles/embeds';
 import Icon from '../Icon.astro';
+import AccountLink from '../AccountLink.astro';
 import SpotifyEmbed from './SpotifyEmbed.astro';
 import type { Embed } from '../../portfolio/embeds';
 interface Props {
@@ -46,13 +47,22 @@ const timestamp = (value: string) =>
                 <h2 id={`embed-${embed.id}`} {...stylex.attrs(styles.title)}>
                   {embed.title}
                 </h2>
-                <a
-                  {...stylex.attrs(styles.link, styles.sourceLink)}
-                  href={embed.href}
-                  rel="noreferrer"
-                >
-                  {embed.source}
-                </a>
+                {embed.id === 'x' || embed.id === 'github' ? (
+                  <AccountLink
+                    account={embed.id}
+                    label={embed.source}
+                    {...stylex.attrs(styles.link, styles.sourceLink)}
+                    rel="noreferrer"
+                  />
+                ) : (
+                  <a
+                    {...stylex.attrs(styles.link, styles.sourceLink)}
+                    href={embed.href}
+                    rel="noreferrer"
+                  >
+                    {embed.source}
+                  </a>
+                )}
               </div>
             </div>
           </header>

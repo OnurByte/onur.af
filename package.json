@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "test": "bun test",
-    "build": "astro build",
+    "build": "bun run proofs:verify && bun run rss:verify && bun run timestamps:verify && astro build",
     "gateway": "bun src/gateway.ts",
     "preview": "astro preview",
     "start": "node --env-file-if-exists=.env ./dist/server/entry.mjs",
@@ -16,14 +16,25 @@
     "format:check": "prettier --check .",
     "test:browser": "playwright test",
     "test:lighthouse": "lhci autorun --config=lighthouserc.json",
-    "verify": "bun run format:check && bun run check && bun run build && bun test"
+    "verify": "bun run format:check && bun run check && bun run build && bun test",
+    "rss:sign": "bun scripts/rss-sign.ts",
+    "rss:verify": "bun scripts/rss-sign.ts --check",
+    "proofs:sign": "bun scripts/proofs.ts",
+    "proofs:verify": "bun scripts/proofs.ts --check",
+    "timestamps:stamp": "bun scripts/log-timestamps.ts stamp",
+    "timestamps:upgrade": "bun scripts/log-timestamps.ts upgrade",
+    "timestamps:verify": "bun scripts/log-timestamps.ts --check",
+    "log:publish": "bun scripts/publish-log.ts"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.7",
     "@astrojs/vercel": "^11.0.14",
     "@stylexjs/stylex": "^0.19.1",
     "astro": "^7.3.8",
+    "micromark": "^4.0.3",
     "monero-ts": "0.11.20",
+    "openpgp": "6.3.2",
+    "opentimestamps": "^0.4.9",
     "sharp": "0.35.5",
     "xmr-pay": "github:SlowBearDigger/xmr-pay#26d25eea800b831c6a90d180c698a4ac6426502c"
   },
@@ -46,5 +57,9 @@
     "node": ">=22.12.0",
     "bun": "1.4.0"
   },
-  "packageManager": "bun@1.4.0"
+  "packageManager": "bun@1.4.0",
+  "patchedDependencies": {
+    "request@2.88.2": "patches/request@2.88.2.patch",
+    "opentimestamps@0.4.9": "patches/opentimestamps@0.4.9.patch"
+  }
 }

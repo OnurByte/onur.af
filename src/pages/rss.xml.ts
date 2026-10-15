@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { rssResponse } from '../portfolio/feeds';
-import { siteOrigin } from '../portfolio/seo';
+import { getRssPublication } from '../portfolio/rss';
 
-export const GET: APIRoute = ({ url }) => rssResponse(siteOrigin(), url);
+export const GET: APIRoute = async ({ url }) =>
+  (await getRssPublication(url)).response;

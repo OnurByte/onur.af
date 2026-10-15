@@ -1,0 +1,100 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { logStyles } from '../styles/log';
+import { styles } from '../styles/pages';
+import { revisionMarkdown, type LogEntry } from '../portfolio/log';
+import { getLogTimestampProofs } from '../portfolio/verified-proofs';
+import { digest } from '../portfolio/log-signatures';
+import { renderLogMarkdown } from '../portfolio/log-markdown';
+interface Props {
+  entry: LogEntry;
+  version: number;
+  signed: boolean;
+  archived?: boolean;
+}
+const { entry, version, signed, archived = false } = Astro.props;
+const revision = entry.revisions[version - 1]!;
+const timestamp = (await getLogTimestampProofs())[`${entry.id}-v${version}`];
+const path = `/proofs/${entry.id}-v${version}.md`;
+---
+
+<div
+  class:list={['log-body', !archived && 'e-content']}
+  set:html={renderLogMarkdown(revision.body)}
+/>
+<details
+  id={archived ? `proof-v${version}` : 'proof'}
+  {...stylex.attrs(logStyles.details)}
+>
+  <summary {...stylex.attrs(logStyles.summary)}>Proof</summary>
+  <div {...stylex.attrs(logStyles.links)}>
+    <a {...stylex.attrs(styles.walletLink)} href={path} download>
+      Markdown
+    </a>
+    {signed && (
+      <a {...stylex.attrs(styles.walletLink)} href={`${path}.asc`} download>
+        Signature
+      </a>
+    )}
+  </div>
+  {timestamp && (
+    <div {...stylex.attrs(logStyles.links)}>
+      <a {...stylex.attrs(styles.walletLink)} href={`${path}.ots`} download>
+        Timestamp
+      </a>
+      <a
+        {...stylex.attrs(styles.walletLink)}
+        href={`/pgp/log/${entry.id}?v=${version}`}
+      >
+        PGP
+      </a>
+    </div>
+  )}
+  <p {...stylex.attrs(logStyles.hash)}>
+    SHA-256 {digest(revisionMarkdown(entry, version))}
+  </p>
+</details>
+<style is:global>
+  .log-body {
+    margin-top: 20px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+  }
+  .log-body > * + * {
+    margin-top: 16px;
+  }
+  .log-body h2,
+  .log-body h3 {
+    font-size: 1.125rem;
+    margin-top: 24px;
+  }
+  .log-body a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .log-body ul,
+  .log-body ol {
+    padding-left: 24px;
+  }
+  .log-body ul {
+    list-style: disc;
+  }
+  .log-body ol {
+    list-style: decimal;
+  }
+  .log-body pre {
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 0.875rem;
+  }
+  .log-body blockquote {
+    border-left: 1px solid var(--border);
+    padding-left: 16px;
+  }
+  .log-body img {
+    max-width: 100%;
+  }
+</style>

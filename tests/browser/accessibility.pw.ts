@@ -1,3 +1,4 @@
+import { searchEntries } from '../../src/portfolio/search';
 import { notFoundQuotes } from '../../src/portfolio/not-found-quotes';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
@@ -312,7 +313,9 @@ test('search lists pages and networks without icons, headings or counters', asyn
   await expect(page.locator('#open-search img')).toHaveCount(0);
   await expect(page.locator('#open-search')).toContainText('Find');
   await expect(dialog.locator('img')).toHaveCount(0);
-  await expect(page.locator('#search-results li')).toHaveCount(6);
+  await expect(page.locator('#search-results li')).toHaveCount(
+    searchEntries.length + 2,
+  );
   await expect(page.locator('#search-results li img')).toHaveCount(0);
   await page.getByRole('searchbox').fill('TOR');
   await expect(
@@ -329,7 +332,9 @@ test('search lists pages and networks without icons, headings or counters', asyn
     page.locator('[data-network-label="I2P"] [aria-disabled="true"]'),
   ).toBeVisible();
   await page.getByRole('searchbox').fill('');
-  await expect(page.locator('#search-results li')).toHaveCount(6);
+  await expect(page.locator('#search-results li')).toHaveCount(
+    searchEntries.length + 2,
+  );
   await page.screenshot({
     path: '/tmp/portfolio-icon-search.png',
     fullPage: true,
@@ -407,7 +412,9 @@ for (const width of [320, 375]) {
     expect(indexRequests).toEqual([]);
     await expect(dialog.locator('img')).toHaveCount(0);
     await page.getByRole('searchbox').fill('');
-    await expect(page.locator('#search-results li')).toHaveCount(6);
+    await expect(page.locator('#search-results li')).toHaveCount(
+      searchEntries.length + 2,
+    );
     await page.screenshot({
       path: `/tmp/portfolio-search-mobile-${width}.png`,
       fullPage: true,

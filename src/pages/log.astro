@@ -1,0 +1,43 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import Layout from '../layouts/Layout.astro';
+import { styles } from '../styles/pages';
+import { logStyles } from '../styles/log';
+import { logEntries, readingTime } from '../portfolio/log';
+import { publicPreview } from '../portfolio/previews';
+import ProofBadge from '../components/ProofBadge.astro';
+---
+
+<Layout title="Log · Onur" description={publicPreview('/log')!.description}>
+  <main {...stylex.attrs(styles.main)}>
+    <h1 {...stylex.attrs(styles.heading)}>Log</h1>
+    <div {...stylex.attrs(logStyles.list)} class="h-feed">
+      {logEntries.map((entry) => (
+        <article
+          {...stylex.attrs(logStyles.entry)}
+          class="h-entry"
+          id={entry.id}
+        >
+          <h2 {...stylex.attrs(logStyles.title)}>
+            <a class="u-url p-name" href={`/log/${entry.id}`}>
+              {entry.title}
+            </a>
+            <ProofBadge target="log" href={`/pgp/log/${entry.id}`} />
+          </h2>
+          <div {...stylex.attrs(logStyles.meta)}>
+            <time
+              class="dt-published"
+              datetime={entry.revisions[0]!.publishedAt}
+            >
+              {entry.revisions[0]!.publishedAt.slice(0, 10)}
+            </time>
+            <span>{readingTime(entry.revisions.at(-1)!.body)}</span>
+          </div>
+          <p {...stylex.attrs(logStyles.excerpt)} class="p-summary">
+            {entry.summary}
+          </p>
+        </article>
+      ))}
+    </div>
+  </main>
+</Layout>

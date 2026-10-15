@@ -12,6 +12,7 @@ const site = validSiteUrl(
 
 export default defineConfig({
   vite: {
+    ssr: { external: ['opentimestamps'] },
     plugins: [stylex.vite({ useCSSLayers: false, runtimeInjection: false })],
   },
   ...(site ? { site } : {}),

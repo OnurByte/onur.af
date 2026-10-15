@@ -1,4 +1,4 @@
-import pages from '../content/public-pages.json';
+import pages from '../content/public-pages.json' with { type: 'json' };
 
 export const socialImageVersion = '2';
 
