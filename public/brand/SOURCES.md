@@ -12,3 +12,11 @@
 - `i2p.svg`: user-selected I2P logo 2019, https://upload.wikimedia.org/wikipedia/commons/4/4e/I2P_logo_2019.svg ; source and public-domain designation: https://tr.wikipedia.org/wiki/Dosya:I2P_logo_2019.svg . Original vector preserved, displayed white with CSS.
 
 Site typography: system sans-serif. Social cards bundle Liberation Sans regular and bold under the license in `src/portfolio/fonts/LICENSE`; the renderer does not depend on fonts installed on the deployment host. Bleed theme removed at owner request.
+
+- `x.svg`, `github.svg`, `rust.svg`, `typescript.svg`, `javascript.svg`: Simple Icons SVG paths from https://github.com/simple-icons/simple-icons/tree/develop/icons (CC0). Original paths and viewboxes preserved; title elements removed for decorative use and fill set to white. Shared theme filtering follows the site icon standard.
+
+- `spotify.svg`: Simple Icons Spotify mark from https://github.com/simple-icons/simple-icons/blob/develop/icons/spotify.svg (CC0); original paths preserved with white fill and decorative title removed.
+
+- `chevron-down.svg`: original 16 px white outline chevron authored for the native Spotify Recent disclosure; rendered through the common icon registry.
+
+- `heart.svg`, `repost.svg`: original 16 px white outline glyphs authored for native post counters; rendered through the common icon registry.
