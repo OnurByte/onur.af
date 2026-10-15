@@ -51,7 +51,9 @@ test('rejects duplicate IDs, missing or reordered revisions and backwards timest
   expect(() => parseLog([{ ...entry, id: 'two-words' }])).toThrow();
   expect(() => parseLog([{ ...entry, id: 'four-words-are-here' }])).toThrow();
   expect(() => parseLog([{ ...entry, id: 'Upper-Case-Words' }])).toThrow();
-  expect(() => parseLog([{ ...entry, slug: 'secret-council-gathers' }])).toThrow();
+  expect(() =>
+    parseLog([{ ...entry, slug: 'secret-council-gathers' }]),
+  ).toThrow();
   expect(() => parseLog([{ ...entry, revisions: [] }])).toThrow();
   expect(() =>
     parseLog([{ ...entry, revisions: [{ ...revision, version: 2 }] }]),

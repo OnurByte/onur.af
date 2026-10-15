@@ -1,9 +1,5 @@
 import { expect, test } from 'bun:test';
-import {
-  adjectives,
-  generateLogId,
-  subjects,
-} from '../src/portfolio/log-id';
+import { adjectives, generateLogId, subjects } from '../src/portfolio/log-id';
 
 test('generates three-word grammatical Masonic permalinks', () => {
   const slug = generateLogId(new Set(), () => 0);
