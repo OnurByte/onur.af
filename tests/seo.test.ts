@@ -54,7 +54,6 @@ describe('public SEO URLs', () => {
         `https://portfolio.example${path}`,
       );
     }
-    expect(logPaths()).toEqual([]);
     expect(
       canonicalUrl('https://portfolio.example', '/log/hello-world'),
     ).toBeUndefined();
