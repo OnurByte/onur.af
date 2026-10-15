@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex';
 export const logStyles = stylex.create({
   article: { maxWidth: 'var(--reading-width)' },
   excerpt: { marginTop: 16, lineHeight: 1.8 },
-  list: { maxWidth: 'var(--reading-width)', marginTop: 40 },
+  list: { maxWidth: 'var(--page-max-width)', marginTop: 40 },
   entry: {
     marginTop: 40,
     paddingTop: 24,
