@@ -40,11 +40,16 @@ const homeEmbedEntries = [
   },
 ];
 
+const searchPageEntries = searchPages.map((page) => ({
+  ...page,
+  searchText: `${page.meta.title} ${page.meta.description}`,
+}));
+
+export const searchLogEntries = logSearchEntries(logEntries);
+export const searchPrimaryEntries = [...searchPageEntries, ...homeEmbedEntries];
+// Keep the complete index for consumers that need all searchable entries.
 export const searchEntries = [
-  ...searchPages.map((page) => ({
-    ...page,
-    searchText: `${page.meta.title} ${page.meta.description}`,
-  })),
+  ...searchPageEntries,
+  ...searchLogEntries,
   ...homeEmbedEntries,
-  ...logSearchEntries(logEntries),
 ];
