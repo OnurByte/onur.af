@@ -28,8 +28,7 @@ test('Log entries are searchable by title, summary and the latest published body
   const { logSearchEntries } = await import('../src/portfolio/search');
   const entries = logSearchEntries([
     {
-      id: 'a-note',
-      slug: 'sealed-council-convenes',
+      id: 'sealed-council-convenes',
       title: 'My note',
       summary: 'A summary',
       revisions: [

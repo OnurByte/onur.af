@@ -18,7 +18,7 @@ const signatures = await getLogSignatures();
         <article
           {...stylex.attrs(logStyles.entry)}
           class="h-entry"
-          id={entry.slug}
+          id={entry.id}
         >
           <h2 {...stylex.attrs(logStyles.title)}>
             <a class="u-url p-name" href={logUrl(entry)}>

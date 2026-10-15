@@ -50,8 +50,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     );
     const entries = parseLog([
       {
-        id: 'fixture-note',
-        slug: 'silent-lodge-convenes',
+        id: 'silent-lodge-convenes',
         title: 'Fixture note',
         summary: 'Test publication',
         revisions: [
@@ -77,7 +76,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     const artifacts: Record<string, { sha256: string; signature: string }> = {};
     for (const revision of entries[0]!.revisions) {
       const body = revisionMarkdown(entries[0]!, revision.version);
-      artifacts[`fixture-note-v${revision.version}`] = {
+      artifacts[`silent-lodge-convenes-v${revision.version}`] = {
         sha256: digest(body),
         signature: await sign({
           message: await createMessage({
@@ -303,7 +302,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       `${origin}/proofs/silent-lodge-convenes-v1.md.asc`,
     );
     expect(await signature.text()).toBe(
-      artifacts['fixture-note-v1']!.signature,
+      artifacts['silent-lodge-convenes-v1']!.signature,
     );
     const feed = await fetch(`${origin}/rss.xml`).then((response) =>
       response.text(),
@@ -311,7 +310,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     expect(feed).toContain(`${origin}/log/silent-lodge-convenes`);
     expect(feed).toContain('<title>Fixture note</title>');
     expect(feed.match(/<item>/g)).toHaveLength(1);
-    expect(feed).toContain('urn:onur:post:log-fixture-note');
+    expect(feed).toContain('urn:onur:post:log-silent-lodge-convenes');
     const feedPage = await fetch(`${origin}/rss`, {
       headers: { Accept: 'text/html' },
     }).then((response) => response.text());
@@ -320,27 +319,20 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     await expect(page).toHaveURL(`${origin}/pgp/log/silent-lodge-convenes`);
     await expect(
       page.getByRole('textbox', { name: 'PGP signature' }),
-    ).toHaveValue(artifacts['fixture-note-v2']!.signature);
+    ).toHaveValue(artifacts['silent-lodge-convenes-v2']!.signature);
     await page.getByRole('link', { name: 'v1', exact: true }).click();
     await expect(page).toHaveURL(`${origin}/pgp/log/silent-lodge-convenes?v=1`);
     await expect(
       page.getByRole('textbox', { name: 'PGP signature' }),
-    ).toHaveValue(artifacts['fixture-note-v1']!.signature);
-    for (const [oldPath, newPath] of [
-      ['/log/fixture-note', '/log/silent-lodge-convenes'],
-      ['/pgp/log/fixture-note?v=1', '/pgp/log/silent-lodge-convenes?v=1'],
-      ['/proofs/fixture-note-v1.md', '/proofs/silent-lodge-convenes-v1.md'],
-      [
-        '/proofs/fixture-note-v1.md.asc',
-        '/proofs/silent-lodge-convenes-v1.md.asc',
-      ],
+    ).toHaveValue(artifacts['silent-lodge-convenes-v1']!.signature);
+    for (const path of [
+      '/log/fixture-note',
+      '/pgp/log/fixture-note?v=1',
+      '/proofs/fixture-note-v1.md',
+      '/proofs/fixture-note-v1.md.asc',
     ]) {
-      const response = await fetch(`${origin}${oldPath}`, {
-        redirect: 'manual',
-      });
-      expect(response.status).toBe(308);
-      const location = new URL(response.headers.get('location')!, origin);
-      expect(`${location.pathname}${location.search}`).toBe(newPath);
+      const response = await fetch(`${origin}${path}`, { redirect: 'manual' });
+      expect(response.status).toBe(404);
     }
     expect((await fetch(`${origin}/log/not-a-post`)).status).toBe(404);
     expect(
@@ -352,7 +344,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     );
     await writeFile(
       join(directory, 'entry.md.asc'),
-      artifacts['fixture-note-v1']!.signature,
+      artifacts['silent-lodge-convenes-v1']!.signature,
     );
     const gpgHome = await mkdtemp(join(directory, 'gpg-'));
     await execute('gpg', [
@@ -385,7 +377,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
 
     expect(
       await readFile(join(directory, 'src/content/log.json'), 'utf8'),
-    ).toContain('fixture-note');
+    ).toContain('silent-lodge-convenes');
   } finally {
     if (server && server.exitCode === null) {
       server.kill();

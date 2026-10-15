@@ -1,15 +1,1 @@
-[
-  {
-    "id": "hello-world",
-    "title": "Hello, world.",
-    "summary": "A small place for notes, ideas, and things I build.",
-    "revisions": [
-      {
-        "version": 1,
-        "publishedAt": "2026-10-15T15:47:35Z",
-        "body": "A small place for notes, ideas, and things I build.\n\n## Small by design\n\nWrite in **Markdown**. Keep the page simple.\n\n- Notes worth keeping.\n- Things I’m working on.\n- Changes worth recording.\n\n```ts\nconst hello = 'world';\n```\n\n[Source](https://github.com/onurbyte/portfolio)\n"
-      }
-    ],
-    "slug": "midnight-lodge-convenes"
-  }
-]
+[]

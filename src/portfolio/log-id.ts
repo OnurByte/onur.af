@@ -74,7 +74,7 @@ export const subjects = [
   ['watchtower', ['watches', 'stands', 'falls']],
 ] as const;
 
-export function generateLogSlug(
+export function generateLogId(
   reserved: ReadonlySet<string>,
   pick: (max: number) => number = randomInt,
 ): string {
@@ -82,8 +82,8 @@ export function generateLogSlug(
     const adjective = adjectives[pick(adjectives.length)];
     const [subject, verbs] = subjects[pick(subjects.length)]!;
     const verb = verbs[pick(verbs.length)];
-    const slug = `${adjective}-${subject}-${verb}`;
-    if (!reserved.has(slug)) return slug;
+    const id = `${adjective}-${subject}-${verb}`;
+    if (!reserved.has(id)) return id;
   }
-  throw new Error('Unable to generate an unused Log permalink');
+  throw new Error('Unable to generate an unused Log ID');
 }

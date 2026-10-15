@@ -1,7 +1,7 @@
 import { readFile, writeFile, rename, rm } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { generateLogSlug } from '../src/portfolio/log-slug';
+import { generateLogId } from '../src/portfolio/log-id';
 import { parseLog } from '../src/portfolio/log';
 
 const [title, summary, markdownFile, ...extra] = process.argv.slice(2);
@@ -16,13 +16,12 @@ const target = fileURLToPath(
 );
 const current = JSON.parse(await readFile(target, 'utf8'));
 const entries = parseLog(current);
-const reserved = new Set(entries.flatMap((entry) => [entry.id, entry.slug]));
-const slug = generateLogSlug(reserved);
+const reserved = new Set(entries.map((entry) => entry.id));
+const id = generateLogId(reserved);
 const next = [
   ...entries,
   {
-    id: slug,
-    slug,
+    id,
     title: title.trim(),
     summary: summary.trim(),
     revisions: [{ version: 1, publishedAt: new Date().toISOString(), body }],
@@ -40,5 +39,5 @@ try {
   await rm(temporary, { force: true });
 }
 console.log(
-  `Created draft /log/${slug}. Sign before deploying: bun run log:publish ${slug}`,
+  `Created draft /log/${id}. Sign before deploying: bun run log:publish ${id}`,
 );
