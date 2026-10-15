@@ -1,0 +1,35 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { styles } from '../styles/pages';
+import { logStyles } from '../styles/log';
+import AccountLink from './AccountLink.astro';
+import { identityAccounts } from '../portfolio/proofs';
+---
+
+<div {...stylex.attrs(styles.prose)}>
+  {(Object.keys(identityAccounts) as Array<keyof typeof identityAccounts>)
+    .map((id) => [id, identityAccounts[id]] as const)
+    .map(([id, account]) => (
+      <section
+        id={id}
+        {...stylex.attrs(logStyles.proof)}
+        aria-labelledby={`${id}-title`}
+      >
+        <h2 id={`${id}-title`} {...stylex.attrs(logStyles.proofTitle)}>
+          <a href={`/pgp/${id}`}>{account.label}</a>
+        </h2>
+        <div {...stylex.attrs(logStyles.links)}>
+          <AccountLink account={id} {...stylex.attrs(styles.walletLink)} />
+        </div>
+      </section>
+    ))}
+  <section
+    id="log"
+    {...stylex.attrs(logStyles.proof)}
+    aria-labelledby="log-title"
+  >
+    <h2 id="log-title" {...stylex.attrs(logStyles.proofTitle)}>
+      <a href="/pgp/log">Log</a>
+    </h2>
+  </section>
+</div>

@@ -20,3 +20,5 @@ Site typography: system sans-serif. Social cards bundle Liberation Sans regular 
 - `chevron-down.svg`: original 16 px white outline chevron authored for the native Spotify Recent disclosure; rendered through the common icon registry.
 
 - `heart.svg`, `repost.svg`: original 16 px white outline glyphs authored for native post counters; rendered through the common icon registry.
+
+- `proof.svg`: original monochrome 16 px identity-proof check authored for this portfolio.

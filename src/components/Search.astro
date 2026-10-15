@@ -1,7 +1,7 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import { searchStyles } from '../styles/search';
-import { searchPages } from '../portfolio/search';
+import { searchEntries } from '../portfolio/search';
 import SearchNetworks from './SearchNetworks.astro';
 ---
 
@@ -47,8 +47,8 @@ import SearchNetworks from './SearchNetworks.astro';
     {...stylex.attrs(searchStyles.status)}
   ></p>
   <ul id="search-results" {...stylex.attrs(searchStyles.results)}>
-    {searchPages.map(({ url, meta }) => (
-      <li>
+    {searchEntries.map(({ url, meta, searchText }) => (
+      <li data-search-text={searchText}>
         <a href={url} {...stylex.attrs(searchStyles.result)}>
           <span data-result-title>{meta.title}</span>
           <small data-result-description {...stylex.attrs(searchStyles.detail)}>

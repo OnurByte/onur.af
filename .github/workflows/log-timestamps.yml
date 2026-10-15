@@ -1,0 +1,35 @@
+name: Upgrade Log Bitcoin timestamps
+on:
+  schedule:
+    - cron: '19 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: log-timestamps
+  cancel-in-progress: false
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.0'
+      - run: bun install --frozen-lockfile
+      - name: Upgrade existing receipts and inspect Bitcoin attestations
+        continue-on-error: true
+        run: bun scripts/log-timestamps-watch.ts --once
+      - name: Validate signed revision bindings
+        run: bun scripts/log-timestamps.ts --check
+      - name: Commit upgraded receipts
+        run: |
+          if git diff --quiet -- src/content/log-timestamps.json; then
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- src/content/log-timestamps.json
+          git commit -m 'Upgrade Log Bitcoin timestamp receipts' --only -- src/content/log-timestamps.json
+          git push

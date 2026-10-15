@@ -1,0 +1,88 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import Layout from '../../layouts/Layout.astro';
+import { styles } from '../../styles/pages';
+import { logStyles } from '../../styles/log';
+import { logEntries } from '../../portfolio/log';
+import { identityAccounts } from '../../portfolio/proofs';
+import { getSignedIdentities } from '../../portfolio/verified-proofs';
+import AccountLink from '../../components/AccountLink.astro';
+import SignedMessage from '../../components/SignedMessage.astro';
+const id = Astro.params.proof;
+if (id !== 'x' && id !== 'github' && id !== 'log') {
+  return Astro.rewrite('/404');
+}
+const account = id === 'log' ? undefined : identityAccounts[id];
+const proof = account
+  ? (await getSignedIdentities()).find(
+      (proof) => proof.id === id && proof.profile === account.profile,
+    )
+  : undefined;
+const label = account?.label ?? 'Log';
+const description = account
+  ? proof
+    ? 'Verified by PGP.'
+    : 'OpenPGP signature.'
+  : 'OpenPGP signatures for Log publications.';
+---
+
+<Layout title={`${label} · PGP · Onur`} description={description}>
+  <main {...stylex.attrs(styles.main)}>
+    <h1 {...stylex.attrs(styles.heading)}>{label}</h1>
+    <div {...stylex.attrs(styles.prose)}>
+      {account ? (
+        <>
+          {proof && (
+            <p {...stylex.attrs(styles.paragraph)} data-page-description>
+              Verified by PGP.
+            </p>
+          )}
+          <p {...stylex.attrs(styles.paragraph)}>
+            {id !== 'log' && (
+              <AccountLink
+                account={id}
+                label={account.profile}
+                {...stylex.attrs(styles.walletLink)}
+              />
+            )}
+          </p>
+          {proof && (
+            <>
+              <SignedMessage
+                message={proof.signedMessage}
+                download={`/pgp/${id}.asc`}
+              />
+              {proof.proofUrl && (
+                <div {...stylex.attrs(logStyles.links)}>
+                  <a {...stylex.attrs(styles.walletLink)} href={proof.proofUrl}>
+                    Proof
+                  </a>
+                </div>
+              )}
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          <p {...stylex.attrs(styles.paragraph)}>
+            <a {...stylex.attrs(styles.walletLink)} href="/log">
+              Log
+            </a>
+          </p>
+          <ul {...stylex.attrs(logStyles.list)}>
+            {logEntries.map((entry) => (
+              <li {...stylex.attrs(logStyles.entry)}>
+                <a
+                  {...stylex.attrs(styles.walletLink)}
+                  href={`/pgp/log/${entry.id}`}
+                >
+                  {entry.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  </main>
+</Layout>

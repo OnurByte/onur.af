@@ -1,5 +1,6 @@
 import { publicPreview } from './previews';
 import { validSiteUrl } from './seo';
+import { parseRssEntries, type RssEntry } from './rss-entries';
 
 export function escapeXml(value: string): string {
   return value
@@ -10,7 +11,10 @@ export function escapeXml(value: string): string {
     .replaceAll("'", '&apos;');
 }
 
-export function rssXml(origin: string | undefined): string | undefined {
+export function rssXml(
+  origin: string | undefined,
+  entries: readonly RssEntry[] = [],
+): string | undefined {
   const validOrigin =
     validSiteUrl(origin) ??
     (origin &&
@@ -20,7 +24,13 @@ export function rssXml(origin: string | undefined): string | undefined {
       : undefined);
   if (!validOrigin) return;
   const description = escapeXml(publicPreview('/rss')!.description);
-  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Onur — RSS</title><link>${escapeXml(validOrigin)}/rss</link><description>${description}</description><language>en</language></channel></rss>`;
+  const items = parseRssEntries(entries)
+    .map(
+      (entry) =>
+        `<item><title>${escapeXml(entry.title)}</title><link>${escapeXml(new URL(entry.url, validOrigin).href)}</link><guid isPermaLink="false">urn:onur:post:${entry.id}</guid><description>${escapeXml(entry.summary)}</description><pubDate>${new Date(entry.publishedAt).toUTCString()}</pubDate></item>`,
+    )
+    .join('');
+  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Onur — RSS</title><link>${escapeXml(validOrigin)}/rss</link><description>${description}</description><language>en</language>${items}</channel></rss>`;
 }
 
 export function wantsFeedHtml(accept: string | null): boolean {
@@ -48,13 +58,14 @@ export function wantsFeedHtml(accept: string | null): boolean {
 export function rssResponse(
   origin: string | undefined,
   requestUrl?: URL,
+  entries: readonly RssEntry[] = [],
 ): Response {
   const localOrigin =
     requestUrl &&
     ['localhost', '127.0.0.1', '[::1]'].includes(requestUrl.hostname)
       ? requestUrl.origin
       : undefined;
-  const xml = rssXml(origin ?? localOrigin);
+  const xml = rssXml(origin ?? localOrigin, entries);
   return new Response(
     xml ??
       'The feed is unavailable until the public site address is configured.',

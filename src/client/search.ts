@@ -5,7 +5,11 @@ const input = document.querySelector<HTMLInputElement>('#search-query');
 const status = document.querySelector<HTMLElement>('#search-status');
 const results = document.querySelector<HTMLUListElement>('#search-results');
 const entries = [...(results?.children ?? [])].map((item) => ({
-  text: item.textContent?.toLowerCase() ?? '',
+  text: (
+    (item as HTMLElement).dataset.searchText ??
+    item.textContent ??
+    ''
+  ).toLowerCase(),
   node: item.cloneNode(true),
 }));
 function open() {

@@ -3,9 +3,17 @@ import * as stylex from '@stylexjs/stylex';
 import { styles } from '../styles/pages';
 import { publicPreview } from '../portfolio/previews';
 import Layout from '../layouts/Layout.astro';
+import ProofRegistry from '../components/ProofRegistry.astro';
 import publicKey from '../../public/pgp.asc?raw';
+import { readKey } from 'openpgp';
 const description = publicPreview('/pgp')!.description;
 const keyText = publicKey.trim();
+const fingerprint =
+  (await readKey({ armoredKey: publicKey }))
+    .getFingerprint()
+    .toUpperCase()
+    .match(/.{1,4}/g)
+    ?.join(' ') ?? '';
 ---
 
 <Layout title="PGP · Onur" description={description}>
@@ -35,7 +43,7 @@ const keyText = publicKey.trim();
           type="text"
           id="fingerprint-value"
           aria-label="PGP fingerprint"
-          value="3356 36C1 5D02 326F 9A43 1C98 4103 A3DD C441 9B61"
+          value={fingerprint}
           readonly
           spellcheck="false"
         />
@@ -78,6 +86,7 @@ const keyText = publicKey.trim();
       </div>
       <p id="key-copy-status" role="status"></p>
     </div>
+    <ProofRegistry />
   </main>
 </Layout>
 

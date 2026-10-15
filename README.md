@@ -42,9 +42,9 @@ Prettier checks all supported files in the repository, including root configs an
 
 ## Public content and search
 
-Astro Content Collections validates the public page metadata in `src/content/public-pages.json`. The collection describes existing utility pages; there are no projects or notes pages. The RSS feed stays empty until there is actual published writing.
+Astro Content Collections validates the public page metadata in `src/content/public-pages.json`. The collection describes existing utility pages; there are no projects or notes pages. The RSS feed and `/rss` list combine the validated entries in `src/content/rss-entries.json` with publications from `src/content/log.json`; both stay empty until there is actual published writing. `/log` lists the entries. Each `/log/<slug>` page shows the full Markdown, dates, reading estimate and previous versions; `/pgp/log/<slug>` provides that entry’s individual PGP signature and Bitcoin timestamp receipt. Publish with `bun run log:publish <slug>`. Local signing and the account proof workflow are described in [Log and identity proofs](docs/log-and-proofs.md). Direct detached PGP signing, verification and publication are described in [RSS signing](docs/rss-signing.md). Run `bun run rss:sign` locally with the published key available to GnuPG; builds verify any configured signature before publishing.
 
-The header search opens a native dialog with Ctrl+K or ⌘K and immediately filters the titles and descriptions already rendered for Home, Donate, RSS, PGP, TOR and I2P. It makes no search requests or downloads. Arrow keys select results and Escape closes the dialog. TOR/I2P destinations use validated server configuration, or disabled entries when unpublished. There is no separate search page or footer search link. Checkout URLs, donation IDs, payment addresses and the PGP key body are never searched.
+The header search opens a native dialog with Ctrl+K or ⌘K and immediately filters the titles and descriptions already rendered for Home, Donate, RSS, PGP, Log, TOR and I2P. Log entries are also searchable by title, summary and latest body, with results linking directly to the entry. The navbar places Log to the left of Find. Search makes no requests or downloads. Arrow keys select results and Escape closes the dialog. TOR/I2P destinations use validated server configuration, or disabled entries when unpublished. There is no separate search page or footer search link. Checkout URLs, donation IDs, payment addresses and the PGP key body are never searched.
 
 ## Browser and link checks
 
@@ -61,4 +61,4 @@ Browser tests run the built server with a synthetic gateway. They check axe acce
 
 Database tests require an isolated PostgreSQL database through `TEST_DATABASE_URL`. After building, `TEST_CHECKOUT=1 bun test tests/checkout.test.ts` checks checkout against a fake gateway. These checks do not prove live Monero settlement.
 
-[Brand](brand.md) · [StyleX](docs/stylex.md) · [Design](docs/design.md) · [Link previews](docs/link-previews.md) · [Donations](docs/donations.md)
+[Brand](brand.md) · [StyleX](docs/stylex.md) · [Design](docs/design.md) · [Native home embeds](docs/home-embeds.md) · [Link previews](docs/link-previews.md) · [Donations](docs/donations.md)

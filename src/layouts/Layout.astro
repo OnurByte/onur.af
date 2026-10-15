@@ -41,7 +41,7 @@ const imageAlt =
     ? motto
     : [preview?.title ?? title, description].filter(Boolean).join(' — ');
 const oembedUrl =
-  indexable && canonical
+  indexable && preview && canonical
     ? `${origin}/oembed.json?url=${encodeURIComponent(canonical)}&format=json`
     : undefined;
 const iconUrl = origin ? `${origin}/brand/icon.png` : '/brand/icon.png';
@@ -217,7 +217,16 @@ const schema =
             <Brand />
           </a>
         )}
-        <Search />
+        <div {...stylex.attrs(shell.navigationActions)}>
+          <a
+            {...stylex.attrs(shell.navigationLink)}
+            href="/log"
+            aria-current={Astro.url.pathname === '/log' ? 'page' : undefined}
+          >
+            Log
+          </a>
+          <Search />
+        </div>
       </nav>
     </header>
     <div id="content" {...stylex.attrs(shell.content)} tabindex="-1">

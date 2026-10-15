@@ -3,6 +3,7 @@ import * as stylex from '@stylexjs/stylex';
 import { shell } from '../styles/shell';
 
 const icons = {
+  proof: { filename: 'proof.svg', width: 16, height: 16 },
   onur: { filename: 'onur.svg', width: 56, height: 56 },
   tor: { filename: 'tor.svg', width: 32, height: 32 },
   i2p: { filename: 'i2p.svg', width: 64, height: 32 },
@@ -39,7 +40,8 @@ const { filename, width, height } = icons[name];
     shell.monochrome,
     (name === 'x' || name === 'github' || name === 'spotify') &&
       shell.providerIcon,
-    (name === 'rust' ||
+    (name === 'proof' ||
+      name === 'rust' ||
       name === 'typescript' ||
       name === 'javascript' ||
       name === 'chevronDown' ||

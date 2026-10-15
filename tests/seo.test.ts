@@ -4,6 +4,8 @@ import {
   sitemapXml,
   validSiteUrl,
   publicPaths,
+  proofPaths,
+  logPaths,
 } from '../src/portfolio/seo';
 
 describe('public SEO URLs', () => {
@@ -47,7 +49,7 @@ describe('public SEO URLs', () => {
     ]) {
       expect(canonicalUrl('https://portfolio.example', path)).toBeUndefined();
     }
-    for (const path of publicPaths) {
+    for (const path of [...publicPaths, ...proofPaths, ...logPaths()]) {
       expect(canonicalUrl('https://portfolio.example', path)).toBe(
         `https://portfolio.example${path}`,
       );
@@ -56,7 +58,7 @@ describe('public SEO URLs', () => {
     expect(sitemapXml(undefined)).not.toContain('<loc>');
     expect(
       sitemapXml('https://portfolio.example').match(/<loc>/g),
-    ).toHaveLength(publicPaths.length);
+    ).toHaveLength(publicPaths.length + proofPaths.length + logPaths().length);
     expect(sitemapXml('https://portfolio.example')).not.toContain('private-id');
     expect(sitemapXml('https://portfolio.example')).not.toContain('/identity');
   });

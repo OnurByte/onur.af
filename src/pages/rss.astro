@@ -4,11 +4,17 @@ import { styles } from '../styles/pages';
 import { publicPreview } from '../portfolio/previews';
 import Layout from '../layouts/Layout.astro';
 import { siteOrigin } from '../portfolio/seo';
-import { rssResponse, wantsFeedHtml } from '../portfolio/feeds';
+import { wantsFeedHtml } from '../portfolio/feeds';
+import { getRssPublication } from '../portfolio/rss';
+import { rssEntries } from '../portfolio/rss-entries';
+import { feedStyles } from '../styles/feed';
+const publication = await getRssPublication(Astro.url);
+const verification = publication.verification;
 if (!wantsFeedHtml(Astro.request.headers.get('accept'))) {
-  return rssResponse(siteOrigin(), Astro.url);
+  return publication.response;
 }
 Astro.response.headers.set('Vary', 'Accept');
+Astro.response.headers.set('Cache-Control', 'no-cache');
 const feedUrl = new URL('/rss', siteOrigin() ?? Astro.url.origin).href;
 const description = publicPreview('/rss')!.description;
 ---
@@ -55,6 +61,89 @@ const description = publicPreview('/rss')!.description;
           spellcheck="false"
         />
       </div>
+      <section
+        {...stylex.attrs(feedStyles.section)}
+        aria-labelledby="feed-verification-title"
+      >
+        <h2 id="feed-verification-title" {...stylex.attrs(feedStyles.heading)}>
+          Verification
+        </h2>
+        <p {...stylex.attrs(feedStyles.paragraph)}>
+          {verification.status === 'signed'
+            ? 'This feed has a verified PGP signature.'
+            : verification.status === 'invalid'
+              ? 'Feed publication is paused until its signature is refreshed.'
+              : verification.status === 'unavailable'
+                ? 'The feed is unavailable until the public site address is configured.'
+                : 'This feed is not signed yet.'}
+        </p>
+        <div {...stylex.attrs(feedStyles.links)}>
+          <a {...stylex.attrs(styles.walletLink)} href="/rss.xml">
+            XML feed
+          </a>
+          {verification.status === 'signed' && (
+            <a
+              {...stylex.attrs(styles.walletLink)}
+              href="/rss.xml.asc"
+              download
+            >
+              Signature
+            </a>
+          )}
+          <a {...stylex.attrs(styles.walletLink)} href="/pgp">
+            PGP key
+          </a>
+        </div>
+        {verification.status === 'signed' && (
+          <Fragment>
+            <p {...stylex.attrs(feedStyles.paragraph)}>
+              Download the XML feed, signature and{' '}
+              <a {...stylex.attrs(styles.walletLink)} href="/pgp.asc" download>
+                public key
+              </a>
+              , then verify locally:
+            </p>
+            <pre
+              {...stylex.attrs(feedStyles.command)}
+            ><code>{'gpg --import pgp.asc\ngpg --verify rss.xml.asc rss.xml'}</code></pre>
+            <p {...stylex.attrs(styles.note)}>
+              Check the key fingerprint against a source you trust. A valid
+              signature establishes integrity and signing-key control; it does
+              not prove that a feed is the latest version.
+            </p>
+          </Fragment>
+        )}
+      </section>
+      <section
+        {...stylex.attrs(feedStyles.section)}
+        aria-labelledby="rss-posts-title"
+      >
+        <h2 id="rss-posts-title" {...stylex.attrs(feedStyles.heading)}>
+          Posts
+        </h2>
+        {rssEntries.length === 0 ? (
+          <p {...stylex.attrs(feedStyles.paragraph)}>No posts published yet.</p>
+        ) : (
+          <ul {...stylex.attrs(feedStyles.list)}>
+            {rssEntries.map((entry) => (
+              <li {...stylex.attrs(feedStyles.entry)} data-rss-entry>
+                <h3 {...stylex.attrs(feedStyles.entryTitle)}>
+                  <a {...stylex.attrs(styles.walletLink)} href={entry.url}>
+                    {entry.title}
+                  </a>
+                </h3>
+                <time
+                  {...stylex.attrs(feedStyles.date)}
+                  datetime={entry.publishedAt}
+                >
+                  {new Date(entry.publishedAt).toISOString().slice(0, 10)}
+                </time>
+                <p {...stylex.attrs(feedStyles.summary)}>{entry.summary}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   </main>
 </Layout>
