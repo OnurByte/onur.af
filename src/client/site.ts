@@ -27,12 +27,12 @@ document
   .querySelectorAll<HTMLButtonElement>('[data-copy]')
   .forEach((button) => {
     const originalWidth = button.getBoundingClientRect().width;
+    button.style.width = `${originalWidth}px`;
     button.setAttribute('aria-live', 'polite');
     button.addEventListener('click', async () => {
       const target = document.getElementById(button.dataset.copy ?? '');
       if (!target) return;
       const status = document.getElementById(button.dataset.copyStatus ?? '');
-      button.style.minWidth = `${originalWidth}px`;
       try {
         await navigator.clipboard.writeText(
           target instanceof HTMLInputElement ||
