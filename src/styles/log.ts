@@ -9,6 +9,15 @@ export const logStyles = stylex.create({
     borderTop: '1px solid var(--border)',
     scrollMarginTop: 24,
   },
+  entryCard: {
+    marginTop: 40,
+    padding: 24,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'var(--border)',
+    borderRadius: 4,
+    scrollMarginTop: 24,
+  },
   title: {
     display: 'flex',
     alignItems: 'center',

@@ -62,7 +62,7 @@ import SearchNetworks from './SearchNetworks.astro';
       <li data-search-text={searchText}>
         <a
           href={url}
-          {...stylex.attrs(searchStyles.result, searchStyles.logResult)}
+          {...stylex.attrs(searchStyles.result)}
         >
           <span data-result-title>{meta.title}</span>
           <small data-result-description {...stylex.attrs(searchStyles.detail)}>

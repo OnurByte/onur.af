@@ -16,7 +16,7 @@ const signatures = await getLogSignatures();
     <div {...stylex.attrs(logStyles.list)} class="h-feed">
       {logEntries.map((entry) => (
         <article
-          {...stylex.attrs(logStyles.entry)}
+          {...stylex.attrs(logStyles.entryCard)}
           class="h-entry"
           id={entry.id}
         >
