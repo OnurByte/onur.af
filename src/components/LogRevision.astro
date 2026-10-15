@@ -72,10 +72,24 @@ const path = logRevisionUrl(entry, version);
   </div>
 </template>
 <style is:global>
+  .log-code-block {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 8px;
+  }
+  .log-code-block > div {
+    grid-column: 2;
+    grid-row: 1;
+    margin-top: 8px;
+  }
   .log-code-block button {
     width: fit-content;
   }
   .log-code-block pre {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
     margin-top: 8px;
   }
 
