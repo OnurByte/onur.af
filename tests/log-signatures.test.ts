@@ -43,7 +43,9 @@ test('only advertises exact signed Log revision bytes', async () => {
   const artifacts = { 'note-v1': { sha256: digest(body), signature } };
   const verified = await verifyLogSignatures(entries, artifacts, publicKey);
   expect(verified['note-v1']?.signature).toBe(signature);
-  const renamedUrl = parseLog([{ ...entries[0]!, slug: 'veiled-compass-turns' }]);
+  const renamedUrl = parseLog([
+    { ...entries[0]!, slug: 'veiled-compass-turns' },
+  ]);
   expect(
     (await verifyLogSignatures(renamedUrl, artifacts, publicKey))['note-v1']
       ?.signature,

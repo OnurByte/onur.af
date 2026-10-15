@@ -60,9 +60,13 @@ export function parseLog(input: unknown): LogEntry[] {
 export const logUrl = (entry: Pick<LogEntry, 'slug'>) => `/log/${entry.slug}`;
 export const logProofUrl = (entry: Pick<LogEntry, 'slug'>, version?: number) =>
   `/pgp/log/${entry.slug}${version === undefined ? '' : `?v=${version}`}`;
-export const logRevisionUrl = (entry: Pick<LogEntry, 'slug'>, version: number) =>
-  `/proofs/${entry.slug}-v${version}.md`;
-export const logEntryForPath = (path: string | undefined): LogEntry | undefined =>
+export const logRevisionUrl = (
+  entry: Pick<LogEntry, 'slug'>,
+  version: number,
+) => `/proofs/${entry.slug}-v${version}.md`;
+export const logEntryForPath = (
+  path: string | undefined,
+): LogEntry | undefined =>
   logEntries.find((entry) => entry.slug === path || entry.id === path);
 
 /** Exact, downloadable signed bytes. Existing revisions must never be edited. */

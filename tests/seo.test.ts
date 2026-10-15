@@ -57,7 +57,9 @@ describe('public SEO URLs', () => {
     expect(logPaths()).toContain('/log/midnight-lodge-convenes');
     expect(logPaths()).toContain('/pgp/log/midnight-lodge-convenes');
     expect(logPaths()).not.toContain('/log/hello-world');
-    expect(canonicalUrl('https://portfolio.example', '/log/hello-world')).toBeUndefined();
+    expect(
+      canonicalUrl('https://portfolio.example', '/log/hello-world'),
+    ).toBeUndefined();
     expect(canonicalUrl(undefined, '/')).toBeUndefined();
     expect(sitemapXml(undefined)).not.toContain('<loc>');
     expect(

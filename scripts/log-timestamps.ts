@@ -93,7 +93,8 @@ async function main() {
   } else if (command === 'upgrade' && !versionArg) {
     const matchingId = (id && logEntryForPath(id)?.id) || id;
     const keys = Object.keys(stored).filter(
-      (key) => !matchingId || key === matchingId || key.startsWith(`${matchingId}-v`),
+      (key) =>
+        !matchingId || key === matchingId || key.startsWith(`${matchingId}-v`),
     );
     if (id && !keys.length) throw new Error('No matching receipt');
     const failed = await upgradeReceipts(

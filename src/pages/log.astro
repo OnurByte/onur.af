@@ -3,12 +3,7 @@ import * as stylex from '@stylexjs/stylex';
 import Layout from '../layouts/Layout.astro';
 import { styles } from '../styles/pages';
 import { logStyles } from '../styles/log';
-import {
-  logEntries,
-  logProofUrl,
-  logUrl,
-  readingTime,
-} from '../portfolio/log';
+import { logEntries, logProofUrl, logUrl, readingTime } from '../portfolio/log';
 import { publicPreview } from '../portfolio/previews';
 import ProofBadge from '../components/ProofBadge.astro';
 import { getLogSignatures } from '../portfolio/verified-proofs';
@@ -38,7 +33,11 @@ const signatures = await getLogSignatures();
               {entry.revisions[0]!.publishedAt.slice(0, 10)}
             </time>
             {signatures[`${entry.id}-v${entry.revisions.at(-1)!.version}`] && (
-              <ProofBadge target="log" href={logProofUrl(entry)} label="Verified" />
+              <ProofBadge
+                target="log"
+                href={logProofUrl(entry)}
+                label="Verified"
+              />
             )}
             <span>{readingTime(entry.revisions.at(-1)!.body)}</span>
           </div>

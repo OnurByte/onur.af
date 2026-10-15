@@ -11,7 +11,9 @@ if (!title?.trim() || !summary?.trim() || !markdownFile || extra.length)
 const body = await readFile(markdownFile, 'utf8');
 if (!body.trim()) throw new Error('Cannot create an empty Log entry');
 
-const target = fileURLToPath(new URL('../src/content/log.json', import.meta.url));
+const target = fileURLToPath(
+  new URL('../src/content/log.json', import.meta.url),
+);
 const current = JSON.parse(await readFile(target, 'utf8'));
 const entries = parseLog(current);
 const reserved = new Set(entries.flatMap((entry) => [entry.id, entry.slug]));
@@ -37,4 +39,6 @@ try {
 } finally {
   await rm(temporary, { force: true });
 }
-console.log(`Created draft /log/${slug}. Sign before deploying: bun run log:publish ${slug}`);
+console.log(
+  `Created draft /log/${slug}. Sign before deploying: bun run log:publish ${slug}`,
+);

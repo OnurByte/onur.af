@@ -196,7 +196,9 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       .toBe(200);
     await page.goto(`${origin}/log`);
     const listedEntry = page.locator('.h-feed .h-entry');
-    await expect(listedEntry.locator('.dt-published + a')).toContainText('Verified');
+    await expect(listedEntry.locator('.dt-published + a')).toContainText(
+      'Verified',
+    );
     await expect(listedEntry.locator('h2 a[href^="/pgp/log/"]')).toHaveCount(0);
     await page.goto(origin);
     for (const claim of claims) {
@@ -250,10 +252,15 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     await found.click();
     await expect(page).toHaveURL(`${origin}/log/silent-lodge-convenes`);
     await expect(page.locator('article')).toHaveCount(1);
-    await expect(page.locator('article h1 a[href^="/pgp/log/"]')).toHaveCount(0);
+    await expect(page.locator('article h1 a[href^="/pgp/log/"]')).toHaveCount(
+      0,
+    );
     const verifiedLink = page.locator('article .dt-published + a');
     await expect(verifiedLink).toContainText('Verified');
-    await expect(verifiedLink).toHaveAttribute('href', '/pgp/log/silent-lodge-convenes');
+    await expect(verifiedLink).toHaveAttribute(
+      'href',
+      '/pgp/log/silent-lodge-convenes',
+    );
     await expect(page.locator('article .e-content')).toHaveCount(1);
     await expect(page.getByText('Revised fixture content.')).toBeVisible();
     await expect(page.locator('time.dt-published')).toHaveAttribute(
@@ -284,7 +291,9 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     });
     const raw = await fetch(`${origin}/proofs/silent-lodge-convenes-v1.md`);
     expect(await raw.text()).toBe(revisionMarkdown(entries[0]!, 1));
-    const signature = await fetch(`${origin}/proofs/silent-lodge-convenes-v1.md.asc`);
+    const signature = await fetch(
+      `${origin}/proofs/silent-lodge-convenes-v1.md.asc`,
+    );
     expect(await signature.text()).toBe(
       artifacts['fixture-note-v1']!.signature,
     );
@@ -313,17 +322,22 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       ['/log/fixture-note', '/log/silent-lodge-convenes'],
       ['/pgp/log/fixture-note?v=1', '/pgp/log/silent-lodge-convenes?v=1'],
       ['/proofs/fixture-note-v1.md', '/proofs/silent-lodge-convenes-v1.md'],
-      ['/proofs/fixture-note-v1.md.asc', '/proofs/silent-lodge-convenes-v1.md.asc'],
+      [
+        '/proofs/fixture-note-v1.md.asc',
+        '/proofs/silent-lodge-convenes-v1.md.asc',
+      ],
     ]) {
-      const response = await fetch(`${origin}${oldPath}`, { redirect: 'manual' });
+      const response = await fetch(`${origin}${oldPath}`, {
+        redirect: 'manual',
+      });
       expect(response.status).toBe(308);
       const location = new URL(response.headers.get('location')!, origin);
       expect(`${location.pathname}${location.search}`).toBe(newPath);
     }
     expect((await fetch(`${origin}/log/not-a-post`)).status).toBe(404);
-    expect((await fetch(`${origin}/pgp/log/silent-lodge-convenes?v=99`)).status).toBe(
-      404,
-    );
+    expect(
+      (await fetch(`${origin}/pgp/log/silent-lodge-convenes?v=99`)).status,
+    ).toBe(404);
     await writeFile(
       join(directory, 'entry.md'),
       revisionMarkdown(entries[0]!, 1),

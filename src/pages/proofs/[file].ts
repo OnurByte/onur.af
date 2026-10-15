@@ -20,7 +20,10 @@ export const GET: APIRoute = async ({ params, request }) => {
     if (entry?.revisions.some((revision) => revision.version === version)) {
       if (match[1] !== entry.slug)
         return Response.redirect(
-          new URL(`${logRevisionUrl(entry, version)}${match[3] ?? ''}`, request.url),
+          new URL(
+            `${logRevisionUrl(entry, version)}${match[3] ?? ''}`,
+            request.url,
+          ),
           308,
         );
       const key = `${entry.id}-v${version}`;
