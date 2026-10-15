@@ -20,9 +20,6 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
     <a class="u-url p-name" href={`/log/${entry.id}`}>
       {entry.title}
     </a>
-    {signatures[`${entry.id}-v${latest.version}`] && (
-      <ProofBadge target="log" href={`/pgp/log/${entry.id}`} />
-    )}
   </h1>
   <div {...stylex.attrs(logStyles.meta)}>
     <time
@@ -32,6 +29,9 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
     >
       {date(entry.revisions[0]!.publishedAt)}
     </time>
+    {signatures[`${entry.id}-v${latest.version}`] && (
+      <ProofBadge target="log" href={`/pgp/log/${entry.id}`} label="Verified" />
+    )}
     <span>{readingTime(latest.body)}</span>
     {latest.version > 1 && (
       <time

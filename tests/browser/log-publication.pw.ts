@@ -193,6 +193,10 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
         }
       })
       .toBe(200);
+    await page.goto(`${origin}/log`);
+    const listedEntry = page.locator('.h-feed .h-entry');
+    await expect(listedEntry.locator('.dt-published + a')).toContainText('Verified');
+    await expect(listedEntry.locator('h2 a[href^="/pgp/log/"]')).toHaveCount(0);
     await page.goto(origin);
     for (const claim of claims) {
       const name =
@@ -245,6 +249,10 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     await found.click();
     await expect(page).toHaveURL(`${origin}/log/fixture-note`);
     await expect(page.locator('article')).toHaveCount(1);
+    await expect(page.locator('article h1 a[href^="/pgp/log/"]')).toHaveCount(0);
+    const verifiedLink = page.locator('article .dt-published + a');
+    await expect(verifiedLink).toContainText('Verified');
+    await expect(verifiedLink).toHaveAttribute('href', '/pgp/log/fixture-note');
     await expect(page.locator('article .e-content')).toHaveCount(1);
     await expect(page.getByText('Revised fixture content.')).toBeVisible();
     await expect(page.locator('time.dt-published')).toHaveAttribute(

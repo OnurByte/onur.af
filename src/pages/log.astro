@@ -6,6 +6,8 @@ import { logStyles } from '../styles/log';
 import { logEntries, readingTime } from '../portfolio/log';
 import { publicPreview } from '../portfolio/previews';
 import ProofBadge from '../components/ProofBadge.astro';
+import { getLogSignatures } from '../portfolio/verified-proofs';
+const signatures = await getLogSignatures();
 ---
 
 <Layout title="Log · Onur" description={publicPreview('/log')!.description}>
@@ -22,7 +24,6 @@ import ProofBadge from '../components/ProofBadge.astro';
             <a class="u-url p-name" href={`/log/${entry.id}`}>
               {entry.title}
             </a>
-            <ProofBadge target="log" href={`/pgp/log/${entry.id}`} />
           </h2>
           <div {...stylex.attrs(logStyles.meta)}>
             <time
@@ -31,6 +32,9 @@ import ProofBadge from '../components/ProofBadge.astro';
             >
               {entry.revisions[0]!.publishedAt.slice(0, 10)}
             </time>
+            {signatures[`${entry.id}-v${entry.revisions.at(-1)!.version}`] && (
+              <ProofBadge target="log" href={`/pgp/log/${entry.id}`} label="Verified" />
+            )}
             <span>{readingTime(entry.revisions.at(-1)!.body)}</span>
           </div>
           <p {...stylex.attrs(logStyles.excerpt)} class="p-summary">

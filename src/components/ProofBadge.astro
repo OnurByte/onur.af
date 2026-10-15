@@ -5,14 +5,16 @@ import Icon from './Icon.astro';
 interface Props {
   target: 'x' | 'github' | 'log';
   href?: string;
+  label?: string;
 }
-const { target, href } = Astro.props;
+const { target, href, label } = Astro.props;
 ---
 
 <a
-  {...stylex.attrs(logStyles.badge)}
+  {...stylex.attrs(logStyles.badge, label && logStyles.badgeWithLabel)}
   href={href ?? `/pgp/${target}`}
   aria-label={`${target === 'log' ? 'Publication' : target === 'x' ? 'X identity' : 'GitHub identity'} PGP proof`}
 >
   <Icon name="proof" />
+  {label && <span>{label}</span>}
 </a>

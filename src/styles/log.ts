@@ -54,5 +54,6 @@ export const logStyles = stylex.create({
     verticalAlign: 'middle',
     borderRadius: 4,
   },
+  badgeWithLabel: { gap: 4, width: 'auto', whiteSpace: 'nowrap' },
   identity: { display: 'inline-flex', alignItems: 'center', gap: 4 },
 });
