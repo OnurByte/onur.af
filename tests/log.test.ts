@@ -14,6 +14,7 @@ const revision = {
 };
 const entry = {
   id: 'small-note',
+  slug: 'ancient-archive-opens',
   title: 'Small note',
   summary: 'A public note.',
   revisions: [revision],
@@ -37,7 +38,7 @@ test('log retains immutable revisions, sorts publications, and uses stable fragm
   expect(entries[0]!.revisions).toHaveLength(2);
   expect(logFeedEntries(entries)[0]).toMatchObject({
     id: 'log-small-note',
-    url: '/log/small-note',
+    url: '/log/ancient-archive-opens',
     publishedAt: revision.publishedAt,
   });
   expect(revisionMarkdown(entries[0]!, 1)).toContain('A small public note.');
@@ -48,6 +49,15 @@ test('log retains immutable revisions, sorts publications, and uses stable fragm
 
 test('rejects duplicate IDs, missing or reordered revisions and backwards timestamps', () => {
   expect(() => parseLog([entry, entry])).toThrow();
+  expect(() => parseLog([{ ...entry, slug: 'two-words' }])).toThrow();
+  expect(() => parseLog([{ ...entry, slug: 'four-words-are-here' }])).toThrow();
+  expect(() => parseLog([{ ...entry, slug: 'Upper-Case-Words' }])).toThrow();
+  expect(() =>
+    parseLog([
+      entry,
+      { ...entry, id: entry.slug, slug: 'silent-lodge-convenes' },
+    ]),
+  ).toThrow('Duplicate Log route');
   expect(() => parseLog([{ ...entry, revisions: [] }])).toThrow();
   expect(() =>
     parseLog([{ ...entry, revisions: [{ ...revision, version: 2 }] }]),

@@ -11,6 +11,7 @@ import {
 const logEntries = parseLog([
   {
     id: 'timestamp-fixture',
+    slug: 'hidden-watchtower-watches',
     title: 'Fixture',
     summary: 'A timestamp fixture',
     revisions: [

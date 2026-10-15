@@ -51,6 +51,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     const entries = parseLog([
       {
         id: 'fixture-note',
+        slug: 'silent-lodge-convenes',
         title: 'Fixture note',
         summary: 'Test publication',
         revisions: [
@@ -245,14 +246,14 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       .locator('#search-results')
       .getByRole('link', { name: /Fixture note/ });
     await expect(found).toBeVisible();
-    await expect(found).toHaveAttribute('href', '/log/fixture-note');
+    await expect(found).toHaveAttribute('href', '/log/silent-lodge-convenes');
     await found.click();
-    await expect(page).toHaveURL(`${origin}/log/fixture-note`);
+    await expect(page).toHaveURL(`${origin}/log/silent-lodge-convenes`);
     await expect(page.locator('article')).toHaveCount(1);
     await expect(page.locator('article h1 a[href^="/pgp/log/"]')).toHaveCount(0);
     const verifiedLink = page.locator('article .dt-published + a');
     await expect(verifiedLink).toContainText('Verified');
-    await expect(verifiedLink).toHaveAttribute('href', '/pgp/log/fixture-note');
+    await expect(verifiedLink).toHaveAttribute('href', '/pgp/log/silent-lodge-convenes');
     await expect(page.locator('article .e-content')).toHaveCount(1);
     await expect(page.getByText('Revised fixture content.')).toBeVisible();
     await expect(page.locator('time.dt-published')).toHaveAttribute(
@@ -281,34 +282,46 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       path: '/tmp/portfolio-log-mobile.png',
       fullPage: true,
     });
-    const raw = await fetch(`${origin}/proofs/fixture-note-v1.md`);
+    const raw = await fetch(`${origin}/proofs/silent-lodge-convenes-v1.md`);
     expect(await raw.text()).toBe(revisionMarkdown(entries[0]!, 1));
-    const signature = await fetch(`${origin}/proofs/fixture-note-v1.md.asc`);
+    const signature = await fetch(`${origin}/proofs/silent-lodge-convenes-v1.md.asc`);
     expect(await signature.text()).toBe(
       artifacts['fixture-note-v1']!.signature,
     );
     const feed = await fetch(`${origin}/rss.xml`).then((response) =>
       response.text(),
     );
-    expect(feed).toContain(`${origin}/log/fixture-note`);
+    expect(feed).toContain(`${origin}/log/silent-lodge-convenes`);
     expect(feed).toContain('<title>Fixture note</title>');
     expect(feed.match(/<item>/g)).toHaveLength(1);
+    expect(feed).toContain('urn:onur:post:log-fixture-note');
     const feedPage = await fetch(`${origin}/rss`, {
       headers: { Accept: 'text/html' },
     }).then((response) => response.text());
     expect(feedPage).toContain('Fixture note');
     await page.getByRole('link', { name: 'Publication PGP proof' }).click();
-    await expect(page).toHaveURL(`${origin}/pgp/log/fixture-note`);
+    await expect(page).toHaveURL(`${origin}/pgp/log/silent-lodge-convenes`);
     await expect(
       page.getByRole('textbox', { name: 'PGP signature' }),
     ).toHaveValue(artifacts['fixture-note-v2']!.signature);
     await page.getByRole('link', { name: 'v1', exact: true }).click();
-    await expect(page).toHaveURL(`${origin}/pgp/log/fixture-note?v=1`);
+    await expect(page).toHaveURL(`${origin}/pgp/log/silent-lodge-convenes?v=1`);
     await expect(
       page.getByRole('textbox', { name: 'PGP signature' }),
     ).toHaveValue(artifacts['fixture-note-v1']!.signature);
+    for (const [oldPath, newPath] of [
+      ['/log/fixture-note', '/log/silent-lodge-convenes'],
+      ['/pgp/log/fixture-note?v=1', '/pgp/log/silent-lodge-convenes?v=1'],
+      ['/proofs/fixture-note-v1.md', '/proofs/silent-lodge-convenes-v1.md'],
+      ['/proofs/fixture-note-v1.md.asc', '/proofs/silent-lodge-convenes-v1.md.asc'],
+    ]) {
+      const response = await fetch(`${origin}${oldPath}`, { redirect: 'manual' });
+      expect(response.status).toBe(308);
+      const location = new URL(response.headers.get('location')!, origin);
+      expect(`${location.pathname}${location.search}`).toBe(newPath);
+    }
     expect((await fetch(`${origin}/log/not-a-post`)).status).toBe(404);
-    expect((await fetch(`${origin}/pgp/log/fixture-note?v=99`)).status).toBe(
+    expect((await fetch(`${origin}/pgp/log/silent-lodge-convenes?v=99`)).status).toBe(
       404,
     );
     await writeFile(

@@ -1,7 +1,7 @@
 import ots from 'opentimestamps';
 import { readFile, writeFile, rename, rm } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
-import { logEntries } from '../src/portfolio/log';
+import { logEntries, logEntryForPath } from '../src/portfolio/log';
 import { digest, verifyLogSignatures } from '../src/portfolio/log-signatures';
 import {
   detachedLogRevision,
@@ -72,13 +72,13 @@ async function main() {
       `Validated ${Object.keys(stored).length} signed revision receipts (offline; no confirmation implied).`,
     );
   } else if (command === 'stamp' && id) {
-    const entry = logEntries.find((item) => item.id === id);
+    const entry = logEntryForPath(id);
     if (!entry) throw new Error('Unknown Log entry');
     const version =
       versionArg === undefined
         ? entry.revisions.at(-1)!.version
         : Number(versionArg);
-    const key = `${id}-v${version}`;
+    const key = `${entry.id}-v${version}`;
     const signature = signed[key];
     if (!signature) throw new Error(`Sign revision first: ${key}`);
     if (stored[key])
@@ -91,8 +91,9 @@ async function main() {
       proof: Buffer.from(detached.serializeToBytes()).toString('base64'),
     };
   } else if (command === 'upgrade' && !versionArg) {
+    const matchingId = (id && logEntryForPath(id)?.id) || id;
     const keys = Object.keys(stored).filter(
-      (key) => !id || key === id || key.startsWith(`${id}-v`),
+      (key) => !matchingId || key === matchingId || key.startsWith(`${matchingId}-v`),
     );
     if (id && !keys.length) throw new Error('No matching receipt');
     const failed = await upgradeReceipts(

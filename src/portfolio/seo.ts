@@ -1,4 +1,4 @@
-import { logEntries } from './log';
+import { logEntries, logProofUrl, logUrl } from './log';
 export const publicPaths: readonly string[] = [
   '/',
   '/donate',
@@ -8,7 +8,7 @@ export const publicPaths: readonly string[] = [
 ];
 export const proofPaths = ['/pgp/x', '/pgp/github', '/pgp/log'] as const;
 export const logPaths = () =>
-  logEntries.flatMap((entry) => [`/log/${entry.id}`, `/pgp/log/${entry.id}`]);
+  logEntries.flatMap((entry) => [logUrl(entry), logProofUrl(entry)]);
 export const siteDescription = '';
 
 export function validSiteUrl(value: string | undefined): string | undefined {

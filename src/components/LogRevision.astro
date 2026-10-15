@@ -2,7 +2,12 @@
 import * as stylex from '@stylexjs/stylex';
 import { logStyles } from '../styles/log';
 import { styles } from '../styles/pages';
-import { revisionMarkdown, type LogEntry } from '../portfolio/log';
+import {
+  logProofUrl,
+  logRevisionUrl,
+  revisionMarkdown,
+  type LogEntry,
+} from '../portfolio/log';
 import { getLogTimestampProofs } from '../portfolio/verified-proofs';
 import { digest } from '../portfolio/log-signatures';
 import { renderLogMarkdown } from '../portfolio/log-markdown';
@@ -15,7 +20,7 @@ interface Props {
 const { entry, version, signed, archived = false } = Astro.props;
 const revision = entry.revisions[version - 1]!;
 const timestamp = (await getLogTimestampProofs())[`${entry.id}-v${version}`];
-const path = `/proofs/${entry.id}-v${version}.md`;
+const path = logRevisionUrl(entry, version);
 ---
 
 <div
@@ -44,7 +49,7 @@ const path = `/proofs/${entry.id}-v${version}.md`;
       </a>
       <a
         {...stylex.attrs(styles.walletLink)}
-        href={`/pgp/log/${entry.id}?v=${version}`}
+        href={logProofUrl(entry, version)}
       >
         PGP
       </a>

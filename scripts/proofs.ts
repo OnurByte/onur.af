@@ -2,7 +2,11 @@ import { readFile, writeFile, rename, rm } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { readKey } from 'openpgp';
-import { logEntries, revisionMarkdown } from '../src/portfolio/log';
+import {
+  logEntries,
+  logEntryForPath,
+  revisionMarkdown,
+} from '../src/portfolio/log';
 import {
   digest,
   verifyLogSignatures,
@@ -64,11 +68,11 @@ async function main() {
     return;
   }
   if (command === 'log' && id) {
-    const entry = logEntries.find((entry) => entry.id === id);
+    const entry = logEntryForPath(id);
     if (!entry) throw new Error(`Unknown Log entry: ${id}`);
     const version = value ? Number(value) : entry.revisions.at(-1)!.version;
     const body = revisionMarkdown(entry, version);
-    const name = `${id}-v${version}`;
+    const name = `${entry.id}-v${version}`;
     if (artifacts[name]) {
       console.log(`${name} is already signed and verified.`);
       return;

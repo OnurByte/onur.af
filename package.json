@@ -24,7 +24,8 @@
     "timestamps:stamp": "bun scripts/log-timestamps.ts stamp",
     "timestamps:upgrade": "bun scripts/log-timestamps.ts upgrade",
     "timestamps:verify": "bun scripts/log-timestamps.ts --check",
-    "log:publish": "bun scripts/publish-log.ts"
+    "log:publish": "bun scripts/publish-log.ts",
+    "log:new": "bun scripts/log-new.ts"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.7",

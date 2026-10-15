@@ -14,6 +14,7 @@ const entrySchema = z
       .string()
       .regex(/^[a-z0-9][a-z0-9-]*$/)
       .max(120),
+    slug: z.string().regex(/^[a-z]+-[a-z]+-[a-z]+$/),
     title: z
       .string()
       .trim()
@@ -28,9 +29,15 @@ export type LogEntry = z.infer<typeof entrySchema>;
 export function parseLog(input: unknown): LogEntry[] {
   const entries = z.array(entrySchema).parse(input);
   const ids = new Set<string>();
+  const routes = new Set<string>();
   for (const entry of entries) {
     if (ids.has(entry.id)) throw new Error(`Duplicate Log id: ${entry.id}`);
     ids.add(entry.id);
+    // Reserve both the public slug and legacy signed ID to keep redirects unambiguous.
+    for (const route of new Set([entry.slug, entry.id])) {
+      if (routes.has(route)) throw new Error(`Duplicate Log route: ${route}`);
+      routes.add(route);
+    }
     entry.revisions.forEach((revision, index) => {
       if (revision.version !== index + 1)
         throw new Error('Log revisions must be consecutive and start at 1');
@@ -49,6 +56,15 @@ export function parseLog(input: unknown): LogEntry[] {
       a.id.localeCompare(b.id, 'en'),
   );
 }
+/** Public URLs use the three-word slug; the signed ID never changes. */
+export const logUrl = (entry: Pick<LogEntry, 'slug'>) => `/log/${entry.slug}`;
+export const logProofUrl = (entry: Pick<LogEntry, 'slug'>, version?: number) =>
+  `/pgp/log/${entry.slug}${version === undefined ? '' : `?v=${version}`}`;
+export const logRevisionUrl = (entry: Pick<LogEntry, 'slug'>, version: number) =>
+  `/proofs/${entry.slug}-v${version}.md`;
+export const logEntryForPath = (path: string | undefined): LogEntry | undefined =>
+  logEntries.find((entry) => entry.slug === path || entry.id === path);
+
 /** Exact, downloadable signed bytes. Existing revisions must never be edited. */
 export function revisionMarkdown(entry: LogEntry, version: number): string {
   const revision = entry.revisions.find((item) => item.version === version);
@@ -80,7 +96,7 @@ export function logFeedEntries(entries: readonly LogEntry[]) {
     title: entry.title,
     summary: entry.summary,
     publishedAt: entry.revisions[0]!.publishedAt,
-    url: `/log/${entry.id}`,
+    url: logUrl(entry),
   }));
 }
 export const logEntries = parseLog(rawEntries);
