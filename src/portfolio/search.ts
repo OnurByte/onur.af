@@ -45,6 +45,6 @@ export const searchEntries = [
     ...page,
     searchText: `${page.meta.title} ${page.meta.description}`,
   })),
-  ...logSearchEntries(logEntries),
   ...homeEmbedEntries,
+  ...logSearchEntries(logEntries),
 ];
