@@ -112,6 +112,11 @@ export const searchStyles = stylex.create({
     ':hover': { backgroundColor: 'var(--surface)' },
     ':focus': { backgroundColor: 'var(--surface)', outlineOffset: -2 },
   },
+  logResult: {
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'var(--border)',
+  },
   detail: {
     fontSize: 13,
     color: 'var(--muted)',
