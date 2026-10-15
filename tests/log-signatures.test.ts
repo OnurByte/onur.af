@@ -10,8 +10,7 @@ let publicKey: string;
 let signature: string;
 const entries = parseLog([
   {
-    id: 'note',
-    slug: 'silent-lantern-glows',
+    id: 'silent-lantern-glows',
     title: 'A note',
     summary: 'Summary',
     revisions: [
@@ -40,35 +39,39 @@ beforeAll(async () => {
   });
 });
 test('only advertises exact signed Log revision bytes', async () => {
-  const artifacts = { 'note-v1': { sha256: digest(body), signature } };
+  const artifacts = {
+    'silent-lantern-glows-v1': { sha256: digest(body), signature },
+  };
   const verified = await verifyLogSignatures(entries, artifacts, publicKey);
-  expect(verified['note-v1']?.signature).toBe(signature);
-  const renamedUrl = parseLog([
-    { ...entries[0]!, slug: 'veiled-compass-turns' },
-  ]);
+  expect(verified['silent-lantern-glows-v1']?.signature).toBe(signature);
+  const renamedId = parseLog([{ ...entries[0]!, id: 'veiled-compass-turns' }]);
   expect(
-    (await verifyLogSignatures(renamedUrl, artifacts, publicKey))['note-v1']
-      ?.signature,
-  ).toBe(signature);
+    verifyLogSignatures(renamedId, artifacts, publicKey),
+  ).rejects.toThrow();
   expect(await verifyLogSignatures(entries, {}, publicKey)).toEqual({});
   const changed = parseLog([{ ...entries[0]!, title: 'A forged title' }]);
   expect(verifyLogSignatures(changed, artifacts, publicKey)).rejects.toThrow();
   const forged = {
-    'note-v1': { sha256: digest(revisionMarkdown(changed[0]!, 1)), signature },
+    'silent-lantern-glows-v1': {
+      sha256: digest(revisionMarkdown(changed[0]!, 1)),
+      signature,
+    },
   };
   expect(verifyLogSignatures(changed, forged, publicKey)).rejects.toThrow();
   expect(
     verifyLogSignatures(
       entries,
-      { 'note-v2': artifacts['note-v1'] },
+      { 'silent-lantern-glows-v2': artifacts['silent-lantern-glows-v1'] },
       publicKey,
     ),
   ).rejects.toThrow();
 });
 
 test('publication requires an individual signature for every revision of every Log entry', () => {
-  expect(() => assertAllLogRevisionsSigned(entries, {})).toThrow('note-v1');
+  expect(() => assertAllLogRevisionsSigned(entries, {})).toThrow(
+    'silent-lantern-glows-v1',
+  );
   expect(() =>
-    assertAllLogRevisionsSigned(entries, { 'note-v1': {} }),
+    assertAllLogRevisionsSigned(entries, { 'silent-lantern-glows-v1': {} }),
   ).not.toThrow();
 });

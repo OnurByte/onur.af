@@ -1,10 +1,10 @@
 import { readFile } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { logEntryForPath } from '../src/portfolio/log';
+import { getLogEntryById } from '../src/portfolio/log';
 const execute = promisify(execFile);
 const [id, ...extra] = process.argv.slice(2);
-const entry = logEntryForPath(id);
+const entry = getLogEntryById(id);
 if (!entry || extra.length)
   throw new Error('Usage: bun run log:publish <slug>');
 for (const revision of entry.revisions) {
@@ -38,5 +38,5 @@ await execute('bun', ['scripts/log-timestamps.ts', '--check'], {
   timeout: 15000,
 });
 console.log(
-  `Published /log/${entry.slug} with separate signatures and timestamp receipts for every revision.`,
+  `Published /log/${entry.id} with separate signatures and timestamp receipts for every revision.`,
 );

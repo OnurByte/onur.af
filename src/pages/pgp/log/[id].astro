@@ -4,7 +4,7 @@ import Layout from '../../../layouts/Layout.astro';
 import { styles } from '../../../styles/pages';
 import { logStyles } from '../../../styles/log';
 import {
-  logEntryForPath,
+  getLogEntryById,
   logProofUrl,
   logRevisionUrl,
   logUrl,
@@ -14,10 +14,8 @@ import {
   getLogTimestampProofs,
 } from '../../../portfolio/verified-proofs';
 import SignedMessage from '../../../components/SignedMessage.astro';
-const entry = logEntryForPath(Astro.params.slug);
+const entry = getLogEntryById(Astro.params.id);
 if (!entry) return Astro.rewrite('/404');
-if (entry.slug !== Astro.params.slug)
-  return Astro.redirect(`${logProofUrl(entry)}${Astro.url.search}`, 308);
 const version = Astro.url.searchParams.has('v')
   ? Number(Astro.url.searchParams.get('v'))
   : entry.revisions.at(-1)!.version;

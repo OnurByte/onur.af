@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { readKey } from 'openpgp';
 import {
   logEntries,
-  logEntryForPath,
+  getLogEntryById,
   revisionMarkdown,
 } from '../src/portfolio/log';
 import {
@@ -68,7 +68,7 @@ async function main() {
     return;
   }
   if (command === 'log' && id) {
-    const entry = logEntryForPath(id);
+    const entry = getLogEntryById(id);
     if (!entry) throw new Error(`Unknown Log entry: ${id}`);
     const version = value ? Number(value) : entry.revisions.at(-1)!.version;
     const body = revisionMarkdown(entry, version);

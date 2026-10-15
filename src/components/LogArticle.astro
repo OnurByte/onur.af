@@ -20,7 +20,7 @@ const latest = entry.revisions.at(-1)!;
 const date = (value: string) => new Date(value).toISOString().slice(0, 10);
 ---
 
-<article id={entry.slug} class="h-entry" {...stylex.attrs(logStyles.article)}>
+<article id={entry.id} class="h-entry" {...stylex.attrs(logStyles.article)}>
   <h1 {...stylex.attrs(logStyles.title, styles.heading)}>
     <a class="u-url p-name" href={logUrl(entry)}>
       {entry.title}
@@ -61,7 +61,7 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
         .toReversed()
         .map((revision) => (
           <section
-            id={`${entry.slug}-v${revision.version}`}
+            id={`${entry.id}-v${revision.version}`}
             {...stylex.attrs(logStyles.proof)}
           >
             <h2>

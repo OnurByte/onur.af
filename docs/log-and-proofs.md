@@ -1,10 +1,10 @@
 # Log and identity proofs
 
-`/log` is the chronological index, linked to the left of Find. Each entry has a stable, three-word esoteric permalink at `/log/<slug>` and a signature page at `/pgp/log/<slug>`, with `?v=1` selecting an immutable revision. The signed `id` is an independent, permanent cryptographic identity and must not be rewritten when a permalink changes. Find and RSS use the same entry URLs. `/pgp/log` lists the signed entries. Account names and their monochrome ticks both open the corresponding PGP page. The signed account pages use the short description “Verified by PGP.”
+`/log` is the chronological index, linked to the left of Find. Each entry uses a single, randomly generated three-word ID at `/log/<id>` with its signature at `/pgp/log/<id>`. The ID is part of the signed bytes and never changes. `?v=1` selects an immutable revision. Find and RSS use the same entry URLs. `/pgp/log` lists the signed entries. Account names and their monochrome ticks both open the corresponding PGP page. The signed account pages use the short description “Verified by PGP.”
 
 ## Publish a Log entry
 
-Create a new entry using a Markdown file. A cryptographically random generator combines a curated esoteric adjective, noun and grammatically suitable verb; it checks both current slugs and signed IDs for collisions:
+Create a new entry using a Markdown file. A cryptographically random generator combines a curated esoteric adjective, noun and grammatically suitable verb; it checks existing IDs for collisions:
 
 ```sh
 bun run log:new "A title" "Short summary" article.md
@@ -15,7 +15,6 @@ The command writes an **unsigned** entry to `src/content/log.json`. Sign it loca
 ```json
 {
   "id": "veiled-compass-turns",
-  "slug": "veiled-compass-turns",
   "title": "Your title",
   "summary": "Your RSS summary.",
   "revisions": [
@@ -34,9 +33,9 @@ The example is a schema guide, not a published post. Sign locally with the priva
 bun run log:publish veiled-compass-turns
 ```
 
-The publish command signs every revision separately and obtains an individual OpenTimestamps calendar receipt for each one. It stores detached PGP signatures, SHA-256 digests and standard `.ots` receipts. The canonical signed Markdown includes the entry ID, title, summary, version, first publication date, revision date and body. The site serves those exact bytes at `/proofs/veiled-compass-turns-v1.md`, with its signature at `/proofs/veiled-compass-turns-v1.md.asc`. The existing `hello-world` post keeps its original signed `id` and signature files internally while its public permalink is `/log/midnight-lodge-convenes`; legacy `/log/hello-world`, `/pgp/log/hello-world` and original proof-file URLs permanently redirect to the new public paths.
+The publish command signs every revision separately and obtains an individual OpenTimestamps calendar receipt for each one. It stores detached PGP signatures, SHA-256 digests and standard `.ots` receipts. The canonical signed Markdown includes the entry ID, title, summary, version, first publication date, revision date and body. The site serves those exact bytes at `/proofs/veiled-compass-turns-v1.md`, with its signature at `/proofs/veiled-compass-turns-v1.md.asc`. Entries with invalid IDs and unknown publication URLs return 404; there is no compatibility layer.
 
-Keep the signed entry ID, title, summary, slug and existing revisions immutable after signing. To correct the body, append version 2 with a later timestamp, then publish again. Previous versions remain downloadable and readable under History. Changing signed bytes fails verification and the build. Reading times are estimates (240 prose words/minute, two seconds per code line), calculated without tracking readers. Publication and revision dates are included in the exact signed and timestamped bytes. The Bitcoin proof establishes existence no later than its confirmed block time; it does not establish the exact moment the author created the file.
+Keep the signed entry ID, title, summary and existing revisions immutable after signing. To correct the body, append version 2 with a later timestamp, then publish again. Previous versions remain downloadable and readable under History. Changing signed bytes fails verification and the build. Reading times are estimates (240 prose words/minute, two seconds per code line), calculated without tracking readers. Publication and revision dates are included in the exact signed and timestamped bytes. The Bitcoin proof establishes existence no later than its confirmed block time; it does not establish the exact moment the author created the file.
 
 If the RSS feed is already signed, refresh its signature after changing Log entries:
 
@@ -104,7 +103,7 @@ The active key was created on 2026-10-15 with an Ed25519 signing key and Curve25
 
 ## Bitcoin timestamps
 
-`src/content/log-timestamps.json` holds one real OpenTimestamps receipt for each signed revision. The receipt binds the canonical Markdown digest and is accepted only alongside its matching verified PGP signature. The downloadable proof is `/proofs/<slug>-v1.md.ots`; verify it against the corresponding `.md` using a standard OpenTimestamps client.
+`src/content/log-timestamps.json` holds one real OpenTimestamps receipt for each signed revision. The receipt binds the canonical Markdown digest and is accepted only alongside its matching verified PGP signature. The downloadable proof is `/proofs/<id>-v1.md.ots`; verify it against the corresponding `.md` using a standard OpenTimestamps client.
 
 Calendar acceptance is pending, not Bitcoin confirmation. After the calendar anchors the commitment, upgrading the receipt adds Bitcoin block attestations. The site only shows Bitcoin block/time after successful cryptographic verification; merely inserting a block height in JSON or a receipt cannot confer that status.
 

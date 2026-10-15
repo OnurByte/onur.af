@@ -143,7 +143,7 @@ test.skipIf(!enabled)(
           expect(main).toContain('aria-labelledby="embed-github"');
         } else if (path === '/log') {
           expect(page).toContain('class="h-feed"');
-          expect(page).toContain('href="/log/midnight-lodge-convenes"');
+          expect(page).not.toContain('class="h-entry"');
         } else {
           expect(
             page

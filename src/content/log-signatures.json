@@ -1,6 +1,1 @@
-{
-  "hello-world-v1": {
-    "sha256": "09f26bc65a2508d2d9356945cf7f23b44c8b674d1059bbba09187e1053eefae8",
-    "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatD1mAAKCRDNHqyHSkMK\nVoDuAP9/hWp7MKgvvbm6Am79kYk4kzrc3u2lO3OWsQySDpIS1AD/ba/2j4xSNJbd\nOX8o/t/8fGSmZmHCgKeo5L+06222VA8=\n=XORh\n-----END PGP SIGNATURE-----\n"
-  }
-}
+{}

@@ -10,8 +10,7 @@ import {
 } from '../src/portfolio/log-timestamps';
 const logEntries = parseLog([
   {
-    id: 'timestamp-fixture',
-    slug: 'hidden-watchtower-watches',
+    id: 'hidden-watchtower-watches',
     title: 'Fixture',
     summary: 'A timestamp fixture',
     revisions: [
@@ -23,7 +22,7 @@ const logEntries = parseLog([
     ],
   },
 ]);
-const key = 'timestamp-fixture-v1';
+const key = 'hidden-watchtower-watches-v1';
 let publicKey: string;
 let signatures: Record<typeof key, { sha256: string; signature: string }>;
 beforeAll(async () => {
@@ -45,7 +44,7 @@ beforeAll(async () => {
 });
 function receipt(bitcoin = false) {
   const detached = detachedLogRevision(
-    logEntries.find((entry) => entry.id === 'timestamp-fixture')!,
+    logEntries.find((entry) => entry.id === 'hidden-watchtower-watches')!,
     1,
   );
   detached.timestamp.attestations.push(
@@ -116,7 +115,7 @@ describe('Log timestamp binding', () => {
     ).rejects.toThrow();
     const changed = structuredClone(logEntries);
     changed.find(
-      (entry) => entry.id === 'timestamp-fixture',
+      (entry) => entry.id === 'hidden-watchtower-watches',
     )!.revisions[0]!.body += '\nchanged';
     await expect(
       validateLogTimestamps(changed, receipt(), signatures, publicKey),
