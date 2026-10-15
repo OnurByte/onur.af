@@ -54,8 +54,12 @@ test('PGP reports a clipboard failure without claiming it copied', async ({
       },
     });
   });
+  await page.setViewportSize({ width: 320, height: 900 });
   await page.goto('/pgp');
   const button = page.locator('#copy-key');
+  const key = page.locator('#public-key');
+  const keyWidth = (await key.boundingBox())!.width;
+  expect(keyWidth).toBeGreaterThanOrEqual(176);
   const before = await button.boundingBox();
   await button.click();
   await expect(button).toHaveText('Copy failed');
@@ -64,6 +68,28 @@ test('PGP reports a clipboard failure without claiming it copied', async ({
   expect(after!.height).toBe(before!.height);
   expect(after!.x).toBe(before!.x);
   expect(after!.y).toBe(before!.y);
+  expect((await key.boundingBox())!.width).toBe(keyWidth);
+  const labelMetrics = await button.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d')!;
+    context.font = style.font;
+    const available =
+      element.clientWidth -
+      parseFloat(style.paddingLeft) -
+      parseFloat(style.paddingRight);
+    return {
+      text: context.measureText(element.textContent ?? '').width,
+      available,
+      font: style.font,
+      fontSize: style.fontSize,
+      box: element.clientWidth,
+      padding: [style.paddingLeft, style.paddingRight],
+    };
+  });
+  expect(labelMetrics.text, JSON.stringify(labelMetrics)).toBeLessThanOrEqual(
+    labelMetrics.available,
+  );
   await expect(page.locator('#key-copy-status')).toContainText('Copy failed');
 });
 

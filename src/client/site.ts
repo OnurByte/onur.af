@@ -32,15 +32,21 @@ document
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     if (context) context.font = computed.font;
+    const fontSize = parseFloat(computed.fontSize);
     const horizontalSpace =
       parseFloat(computed.paddingLeft) +
       parseFloat(computed.paddingRight) +
       parseFloat(computed.borderLeftWidth) +
       parseFloat(computed.borderRightWidth);
-    const statusWidth = context
-      ? Math.ceil(context.measureText('Copy failed').width + horizontalSpace)
-      : originalWidth;
-    button.style.width = `${Math.max(originalWidth, statusWidth)}px`;
+    const failureTextWidth = context
+      ? context.measureText('Copy failed').width
+      : 0;
+    const availableTextWidth = originalWidth - horizontalSpace;
+    const failureFontSize =
+      context && failureTextWidth > availableTextWidth
+        ? `${(fontSize * Math.max(0, availableTextWidth - 1)) / failureTextWidth}px`
+        : computed.fontSize;
+    button.style.width = `${originalWidth}px`;
     button.style.height = `${bounds.height}px`;
     button.style.whiteSpace = 'nowrap';
     button.setAttribute('aria-live', 'polite');
@@ -57,9 +63,11 @@ document
               ? (target.textContent ?? '')
               : (target.textContent?.trim() ?? ''),
         );
+        button.style.fontSize = computed.fontSize;
         button.textContent = 'Copied';
         if (status) status.textContent = '';
       } catch {
+        button.style.fontSize = failureFontSize;
         button.textContent = 'Copy failed';
         if (status)
           status.textContent = 'Copy failed. Download the public key instead.';
