@@ -33,10 +33,10 @@ const homeEmbedEntries = [
   {
     url: '/#spotify-embed',
     meta: {
-      title: 'Spotify listening',
-      description: 'Current and recent listening.',
+      title: 'Spotify recents',
+      description: 'Recent tracks and current listening.',
     },
-    searchText: 'Spotify music listening tracks embed',
+    searchText: 'Spotify recents recent tracks history music listening embed',
   },
 ];
 
