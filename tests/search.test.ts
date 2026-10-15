@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { searchPages } from '../src/portfolio/search';
+import { searchEntries, searchPages } from '../src/portfolio/search';
 import { publicPreview } from '../src/portfolio/previews';
 import pages from '../src/content/public-pages.json';
 
@@ -22,6 +22,17 @@ test('search menu uses canonical public page descriptions', () => {
   expect(searchPages.map(({ meta }) => meta.description)).toEqual(
     pages.map(({ description }) => description),
   );
+});
+
+test('home embed shortcuts use platform names after regular search results', () => {
+  expect(
+    searchEntries.slice(0, searchPages.length).map(({ url }) => url),
+  ).toEqual(searchPages.map(({ url }) => url));
+  expect(searchEntries.slice(-3).map(({ meta }) => meta.title)).toEqual([
+    '𝕏',
+    'GitHub',
+    'Spotify',
+  ]);
 });
 
 test('Log entries are searchable by title, summary and the latest published body', async () => {

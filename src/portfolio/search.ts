@@ -19,13 +19,13 @@ export function logSearchEntries(entries: readonly LogEntry[]) {
 const homeEmbedEntries = [
   {
     url: '/#embed-x',
-    meta: { title: 'X posts', description: 'Recent posts from @onurstirner.' },
+    meta: { title: '𝕏', description: 'Recent posts from @onurstirner.' },
     searchText: 'X posts Twitter @onurstirner embed',
   },
   {
     url: '/#embed-github',
     meta: {
-      title: 'GitHub repositories',
+      title: 'GitHub',
       description: 'Recent repositories from onurbyte.',
     },
     searchText: 'GitHub repositories projects onurbyte embed',
@@ -33,7 +33,7 @@ const homeEmbedEntries = [
   {
     url: '/#spotify-embed',
     meta: {
-      title: 'Spotify recents',
+      title: 'Spotify',
       description: 'Recent tracks and current listening.',
     },
     searchText: 'Spotify recents recent tracks history music listening embed',
@@ -41,10 +41,10 @@ const homeEmbedEntries = [
 ];
 
 export const searchEntries = [
-  ...homeEmbedEntries,
   ...searchPages.map((page) => ({
     ...page,
     searchText: `${page.meta.title} ${page.meta.description}`,
   })),
   ...logSearchEntries(logEntries),
+  ...homeEmbedEntries,
 ];

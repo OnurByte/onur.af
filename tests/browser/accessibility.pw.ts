@@ -307,19 +307,22 @@ test('Find links directly to the X, GitHub and Spotify embeds', async ({
   page,
 }) => {
   for (const item of [
-    { query: 'X posts', url: '/#embed-x', heading: 'Posts' },
+    { query: 'X posts', title: '𝕏', url: '/#embed-x', heading: 'Posts' },
     {
       query: 'GitHub repositories',
+      title: 'GitHub',
       url: '/#embed-github',
       heading: 'Repositories',
     },
     {
       query: 'Spotify recents',
+      title: 'Spotify',
       url: '/#spotify-embed',
       heading: /Spotify|Recents|Listening|Playing nothing/,
     },
     {
       query: 'recent tracks',
+      title: 'Spotify',
       url: '/#spotify-embed',
       heading: /Spotify|Recents|Listening|Playing nothing/,
     },
@@ -331,6 +334,7 @@ test('Find links directly to the X, GitHub and Spotify embeds', async ({
       .fill(item.query);
     const result = page.locator(`#search-results a[href="${item.url}"]`);
     await expect(result).toBeVisible();
+    await expect(result.locator('[data-result-title]')).toHaveText(item.title);
     await result.click();
     await expect(page).toHaveURL(item.url);
     await expect(page.locator(`#${item.url.split('#')[1]}`)).toContainText(
