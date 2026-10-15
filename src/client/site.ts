@@ -26,8 +26,29 @@ if (codeCopyTemplate) {
 document
   .querySelectorAll<HTMLButtonElement>('[data-copy]')
   .forEach((button) => {
-    const originalWidth = button.getBoundingClientRect().width;
+    const bounds = button.getBoundingClientRect();
+    const originalWidth = bounds.width;
+    const computed = getComputedStyle(button);
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (context) context.font = computed.font;
+    const fontSize = parseFloat(computed.fontSize);
+    const horizontalSpace =
+      parseFloat(computed.paddingLeft) +
+      parseFloat(computed.paddingRight) +
+      parseFloat(computed.borderLeftWidth) +
+      parseFloat(computed.borderRightWidth);
+    const failureTextWidth = context
+      ? context.measureText('Copy failed').width
+      : 0;
+    const availableTextWidth = originalWidth - horizontalSpace;
+    const failureFontSize =
+      context && failureTextWidth > availableTextWidth
+        ? `${(fontSize * Math.max(0, availableTextWidth - 1)) / failureTextWidth}px`
+        : computed.fontSize;
     button.style.width = `${originalWidth}px`;
+    button.style.height = `${bounds.height}px`;
+    button.style.whiteSpace = 'nowrap';
     button.setAttribute('aria-live', 'polite');
     button.addEventListener('click', async () => {
       const target = document.getElementById(button.dataset.copy ?? '');
@@ -42,9 +63,11 @@ document
               ? (target.textContent ?? '')
               : (target.textContent?.trim() ?? ''),
         );
+        button.style.fontSize = computed.fontSize;
         button.textContent = 'Copied';
         if (status) status.textContent = '';
       } catch {
+        button.style.fontSize = failureFontSize;
         button.textContent = 'Copy failed';
         if (status)
           status.textContent = 'Copy failed. Download the public key instead.';

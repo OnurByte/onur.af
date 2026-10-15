@@ -314,9 +314,14 @@ test('Find links directly to the X, GitHub and Spotify embeds', async ({
       heading: 'Repositories',
     },
     {
-      query: 'Spotify listening',
+      query: 'Spotify recents',
       url: '/#spotify-embed',
-      heading: /Spotify|Listening|Playing nothing/,
+      heading: /Spotify|Recents|Listening|Playing nothing/,
+    },
+    {
+      query: 'recent tracks',
+      url: '/#spotify-embed',
+      heading: /Spotify|Recents|Listening|Playing nothing/,
     },
   ]) {
     await page.goto('/');

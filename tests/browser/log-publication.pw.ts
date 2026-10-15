@@ -293,6 +293,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       await expect(button).toBeVisible();
       const buttonBox = await button.boundingBox();
       const buttonWidth = buttonBox!.width;
+      const buttonHeight = buttonBox!.height;
       const snippetBox = await snippet.boundingBox();
       expect(buttonBox!.x).toBeGreaterThanOrEqual(
         snippetBox!.x + snippetBox!.width,
@@ -300,6 +301,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       await button.click();
       await expect(button).toHaveText('Copied');
       expect((await button.boundingBox())!.width).toBe(buttonWidth);
+      expect((await button.boundingBox())!.height).toBe(buttonHeight);
       expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
         code,
       );
