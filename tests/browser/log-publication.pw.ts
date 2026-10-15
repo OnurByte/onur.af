@@ -196,9 +196,12 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       .toBe(200);
     await page.goto(`${origin}/log`);
     const listedEntry = page.locator('.h-feed .h-entry');
-    await expect(listedEntry.locator('.dt-published + a')).toContainText(
-      'Verified',
-    );
+    await expect(listedEntry).toHaveCount(1);
+    const listedVerification = listedEntry
+      .locator('time.dt-published')
+      .locator('..')
+      .getByRole('link', { name: 'Publication PGP proof' });
+    await expect(listedVerification).toContainText('Verified');
     await expect(listedEntry.locator('h2 a[href^="/pgp/log/"]')).toHaveCount(0);
     await page.goto(origin);
     for (const claim of claims) {
@@ -255,7 +258,10 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     await expect(page.locator('article h1 a[href^="/pgp/log/"]')).toHaveCount(
       0,
     );
-    const verifiedLink = page.locator('article .dt-published + a');
+    const verifiedLink = page
+      .locator('article time.dt-published')
+      .locator('..')
+      .getByRole('link', { name: 'Publication PGP proof' });
     await expect(verifiedLink).toContainText('Verified');
     await expect(verifiedLink).toHaveAttribute(
       'href',
