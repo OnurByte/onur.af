@@ -14,7 +14,7 @@ import {
   getLogTimestampProofs,
 } from '../../../portfolio/verified-proofs';
 import SignedMessage from '../../../components/SignedMessage.astro';
-const entry = logEntryForPath(Astro.params.slug);
+const entry = getLogEntryById(Astro.params.id);
 if (!entry) return Astro.rewrite('/404');
 const version = Astro.url.searchParams.has('v')
   ? Number(Astro.url.searchParams.get('v'))
