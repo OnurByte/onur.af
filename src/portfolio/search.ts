@@ -16,7 +16,32 @@ export function logSearchEntries(entries: readonly LogEntry[]) {
     ),
   }));
 }
+const homeEmbedEntries = [
+  {
+    url: '/#embed-x',
+    meta: { title: 'X posts', description: 'Recent posts from @onurstirner.' },
+    searchText: 'X posts Twitter @onurstirner embed',
+  },
+  {
+    url: '/#embed-github',
+    meta: {
+      title: 'GitHub repositories',
+      description: 'Recent repositories from onurbyte.',
+    },
+    searchText: 'GitHub repositories projects onurbyte embed',
+  },
+  {
+    url: '/#spotify-embed',
+    meta: {
+      title: 'Spotify listening',
+      description: 'Current and recent listening.',
+    },
+    searchText: 'Spotify music listening tracks embed',
+  },
+];
+
 export const searchEntries = [
+  ...homeEmbedEntries,
   ...searchPages.map((page) => ({
     ...page,
     searchText: `${page.meta.title} ${page.meta.description}`,

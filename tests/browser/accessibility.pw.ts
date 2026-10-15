@@ -303,6 +303,37 @@ test('reopening search preserves the immediately filtered query', async ({
   );
 });
 
+test('Find links directly to the X, GitHub and Spotify embeds', async ({
+  page,
+}) => {
+  for (const item of [
+    { query: 'X posts', url: '/#embed-x', heading: 'Posts' },
+    {
+      query: 'GitHub repositories',
+      url: '/#embed-github',
+      heading: 'Repositories',
+    },
+    {
+      query: 'Spotify listening',
+      url: '/#spotify-embed',
+      heading: /Spotify|Listening|Playing nothing/,
+    },
+  ]) {
+    await page.goto('/');
+    await page.locator('#open-search').click();
+    await page
+      .getByRole('searchbox', { name: 'Search pages' })
+      .fill(item.query);
+    const result = page.locator(`#search-results a[href="${item.url}"]`);
+    await expect(result).toBeVisible();
+    await result.click();
+    await expect(page).toHaveURL(item.url);
+    await expect(page.locator(`#${item.url.split('#')[1]}`)).toContainText(
+      item.heading,
+    );
+  }
+});
+
 test('search lists pages and networks without icons, headings or counters', async ({
   page,
 }) => {
