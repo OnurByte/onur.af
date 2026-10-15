@@ -26,8 +26,23 @@ if (codeCopyTemplate) {
 document
   .querySelectorAll<HTMLButtonElement>('[data-copy]')
   .forEach((button) => {
-    const originalWidth = button.getBoundingClientRect().width;
-    button.style.width = `${originalWidth}px`;
+    const bounds = button.getBoundingClientRect();
+    const originalWidth = bounds.width;
+    const computed = getComputedStyle(button);
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (context) context.font = computed.font;
+    const horizontalSpace =
+      parseFloat(computed.paddingLeft) +
+      parseFloat(computed.paddingRight) +
+      parseFloat(computed.borderLeftWidth) +
+      parseFloat(computed.borderRightWidth);
+    const statusWidth = context
+      ? Math.ceil(context.measureText('Copy failed').width + horizontalSpace)
+      : originalWidth;
+    button.style.width = `${Math.max(originalWidth, statusWidth)}px`;
+    button.style.height = `${bounds.height}px`;
+    button.style.whiteSpace = 'nowrap';
     button.setAttribute('aria-live', 'polite');
     button.addEventListener('click', async () => {
       const target = document.getElementById(button.dataset.copy ?? '');

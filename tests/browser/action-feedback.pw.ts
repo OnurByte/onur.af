@@ -29,8 +29,15 @@ test('all copy actions confirm only after copying the correct value', async ({
           ? element.value
           : element.textContent!.trim(),
       );
-    await page.locator(action.button).click();
-    await expect(page.locator(action.button)).toHaveText('Copied');
+    const button = page.locator(action.button);
+    const before = await button.boundingBox();
+    await button.click();
+    await expect(button).toHaveText('Copied');
+    const after = await button.boundingBox();
+    expect(after!.width).toBe(before!.width);
+    expect(after!.height).toBe(before!.height);
+    expect(after!.x).toBe(before!.x);
+    expect(after!.y).toBe(before!.y);
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
       value,
     );
@@ -48,8 +55,15 @@ test('PGP reports a clipboard failure without claiming it copied', async ({
     });
   });
   await page.goto('/pgp');
-  await page.locator('#copy-key').click();
-  await expect(page.locator('#copy-key')).toHaveText('Copy failed');
+  const button = page.locator('#copy-key');
+  const before = await button.boundingBox();
+  await button.click();
+  await expect(button).toHaveText('Copy failed');
+  const after = await button.boundingBox();
+  expect(after!.width).toBe(before!.width);
+  expect(after!.height).toBe(before!.height);
+  expect(after!.x).toBe(before!.x);
+  expect(after!.y).toBe(before!.y);
   await expect(page.locator('#key-copy-status')).toContainText('Copy failed');
 });
 
