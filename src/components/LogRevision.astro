@@ -59,7 +59,26 @@ const path = logRevisionUrl(entry, version);
     SHA-256 {digest(revisionMarkdown(entry, version))}
   </p>
 </details>
+<template data-log-code-copy>
+  <div class="log-code-block">
+    <div {...stylex.attrs(styles.keyActions)}>
+      <button
+        {...stylex.attrs(styles.button, styles.secondary, styles.compactAction)}
+        type="button"
+      >
+        Copy
+      </button>
+    </div>
+  </div>
+</template>
 <style is:global>
+  .log-code-block button {
+    width: fit-content;
+  }
+  .log-code-block pre {
+    margin-top: 8px;
+  }
+
   .log-body {
     margin-top: 20px;
     line-height: 1.8;

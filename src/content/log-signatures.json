@@ -1,1 +1,6 @@
-{}
+{
+  "sealed-lodge-waits-v1": {
+    "sha256": "5ea22197836773e99068837147510546c11dbd243bc5c3be553646808122ea46",
+    "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatESswAKCRDNHqyHSkMK\nVpeyAQCZ6kcQVFD1C8B4DBakBJaf3PW1WvoVGOdWroH7sjTKJAD/XyRJc/h7C2Km\nXDQio8gpgUHY6DR77pgi2uc0DMHpmAU=\n=4TVy\n-----END PGP SIGNATURE-----\n"
+  }
+}

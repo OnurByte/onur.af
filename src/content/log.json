@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": "sealed-lodge-waits",
+    "title": "Example: copying embed snippets",
+    "summary": "A sample Log post with embed and command snippets to try the copy buttons.",
+    "revisions": [
+      {
+        "version": 1,
+        "publishedAt": "2026-10-15T17:51:44.164Z",
+        "body": "A small example post to try the Log's code-copy buttons. Each button copies only the snippet below it, including indentation and line breaks.\n\n## Embed snippet\n\nThis iframe is shown as code, so it can be copied without loading any external content.\n\n```html\n<iframe\n  src=\"https://example.com/embed\"\n  title=\"Example embed\"\n  width=\"560\"\n  height=\"315\"\n  loading=\"lazy\"\n></iframe>\n```\n\n## Command snippet\n\nEach code block has its own copy button.\n\n```sh\nprintf 'Hello from the Log!\\n'\n```\n\nThis is an example post for testing the copy buttons.\n"
+      }
+    ]
+  }
+]
