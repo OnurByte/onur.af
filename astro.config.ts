@@ -1,3 +1,4 @@
+import logImages from './integrations/log-images';
 import { defineConfig } from 'astro/config';
 import node from '@astrojs/node';
 import vercel from '@astrojs/vercel';
@@ -11,6 +12,7 @@ const site = validSiteUrl(
 );
 
 export default defineConfig({
+  integrations: [logImages()],
   vite: {
     ssr: { external: ['opentimestamps'] },
     plugins: [stylex.vite({ useCSSLayers: false, runtimeInjection: false })],

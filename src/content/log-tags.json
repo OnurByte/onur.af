@@ -1,0 +1,32 @@
+{
+  "cryptography": {
+    "title": "Cryptography",
+    "description": "Notes on cryptographic tools, signatures and verification.",
+    "indexable": false
+  },
+  "privacy": {
+    "title": "Privacy",
+    "description": "Notes on privacy and control over personal information.",
+    "indexable": false
+  },
+  "pgp": {
+    "title": "PGP",
+    "description": "Public-key signatures, identity proofs and PGP workflows.",
+    "indexable": false
+  },
+  "identity": {
+    "title": "Identity",
+    "description": "Notes on digital identity and authorship.",
+    "indexable": false
+  },
+  "web": {
+    "title": "Web",
+    "description": "Building and understanding the web.",
+    "indexable": false
+  },
+  "development": {
+    "title": "Development",
+    "description": "Implementation notes and lessons from building software.",
+    "indexable": false
+  }
+}

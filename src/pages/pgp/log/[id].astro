@@ -4,6 +4,7 @@ import Layout from '../../../layouts/Layout.astro';
 import { styles } from '../../../styles/pages';
 import { logStyles } from '../../../styles/log';
 import {
+  logMetadata,
   getLogEntryById,
   logProofUrl,
   logRevisionUrl,
@@ -25,6 +26,7 @@ const revision = entry.revisions.find(
   (revision) => revision.version === version,
 );
 if (!revision) return Astro.rewrite('/404');
+const metadata = logMetadata(entry, version);
 const key = `${entry.id}-v${version}`;
 const signature = (await getLogSignatures())[key];
 if (!signature) return Astro.rewrite('/404');
@@ -41,11 +43,11 @@ const publicationEntry = publication?.manifest.entries.find(
 ---
 
 <Layout
-  title={`${entry.title} · Verified · Onur`}
+  title={`${metadata.title} · Verified · Onur`}
   description="Verified by PGP."
 >
   <main {...stylex.attrs(styles.main)}>
-    <h1 {...stylex.attrs(styles.heading)}>{entry.title}</h1>
+    <h1 {...stylex.attrs(styles.heading)}>{metadata.title}</h1>
     <div {...stylex.attrs(styles.prose)}>
       <p {...stylex.attrs(styles.paragraph)}>Verified by PGP.</p>
       <div {...stylex.attrs(logStyles.meta)}>

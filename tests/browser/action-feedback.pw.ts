@@ -104,9 +104,11 @@ for (const width of [320, 1280]) {
     await page.locator('#copy-key').click();
     await expect(page.locator('#copy-key')).toHaveText('Copied');
     const download = page.waitForEvent('download');
-    await page.locator('a[download]').click();
+    await page.locator('#key-actions a[download][href="/pgp.asc"]').click();
     expect((await download).suggestedFilename()).toBe('pgp.asc');
-    await expect(page.locator('a[download]')).toHaveText('Downloading');
+    await expect(
+      page.locator('#key-actions a[download][href="/pgp.asc"]'),
+    ).toHaveText('Downloading');
     await expect
       .poll(() =>
         page.locator('#public-key').evaluate((key) => {
@@ -127,6 +129,8 @@ for (const width of [320, 1280]) {
         fullPage: true,
       });
     }
-    await expect(page.locator('a[download]')).toHaveText('Download');
+    await expect(
+      page.locator('#key-actions a[download][href="/pgp.asc"]'),
+    ).toHaveText('Download');
   });
 }

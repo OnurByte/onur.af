@@ -1,7 +1,14 @@
 import { siteSignature } from '../portfolio/signature';
 
-document.addEventListener('contextmenu', (event) => event.preventDefault());
-document.addEventListener('copy', (event) => event.preventDefault());
+document.addEventListener('contextmenu', (event) => {
+  if (!(event.target instanceof Element && event.target.closest('.h-entry')))
+    event.preventDefault();
+});
+document.addEventListener('copy', (event) => {
+  const anchor = window.getSelection()?.anchorNode;
+  const element = anchor instanceof Element ? anchor : anchor?.parentElement;
+  if (!element?.closest('.h-entry')) event.preventDefault();
+});
 
 const codeCopyTemplate = document.querySelector<HTMLTemplateElement>(
   'template[data-log-code-copy]',

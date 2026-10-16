@@ -144,3 +144,11 @@ body * {
   -webkit-user-select: none !important;
   user-select: none !important;
 }
+
+.h-entry,
+.h-entry *,
+.log-body,
+.log-body * {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}

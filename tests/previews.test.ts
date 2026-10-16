@@ -9,8 +9,7 @@ test('public pages have distinct previews and utility descriptions', () => {
   for (const path of publicPaths) {
     const preview = publicPreview(path);
     expect(preview).toBeDefined();
-    if (path === '/') expect(preview!.description).toBe('');
-    else expect(preview!.description.trim().length).toBeGreaterThan(0);
+    expect(preview!.description.trim().length).toBeGreaterThan(0);
     expect(preview!.description.length).toBeLessThan(160);
     expect(preview!.title.length).toBeGreaterThan(0);
     expect(keys.has(preview!.key)).toBe(false);
@@ -54,7 +53,7 @@ test('public page collection matches the published routes and validates metadata
     expect(publicPageSchema.safeParse(page).success).toBe(true);
   }
   expect(publicPreview('/')!.description).toBe(siteDescription);
-  expect(siteDescription).toBe('');
+  expect(siteDescription.length).toBeGreaterThan(0);
   expect(
     publicPageSchema.safeParse({ ...pages[1], description: '' }).success,
   ).toBe(false);

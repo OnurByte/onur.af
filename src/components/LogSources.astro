@@ -1,0 +1,83 @@
+---
+import type { LogEntry } from '../portfolio/log';
+interface Props {
+  sources: NonNullable<LogEntry['revisions'][number]['sources']>;
+  references: { source: number; id: string }[];
+  prefix: string;
+}
+const { sources, references, prefix } = Astro.props;
+---
+
+{sources.length > 0 && (
+  <details class="log-sources" id={`${prefix}log-sources`}>
+    <summary>
+      Sources <span>({sources.length})</span>
+    </summary>
+    <ol>
+      {sources.map((source, index) => (
+        <li id={`${prefix}source-${index + 1}`}>
+          <a href={source.url}>{source.title}</a>
+          {references
+            .filter((reference) => reference.source === index + 1)
+            .map((reference) => (
+              <a
+                class="log-source-backlink"
+                href={`#${reference.id}`}
+                aria-label={`Back to citation for source ${index + 1}`}
+              >
+                ↩
+              </a>
+            ))}
+        </li>
+      ))}
+    </ol>
+  </details>
+)}
+<style>
+  .log-sources {
+    margin-top: 24px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    line-height: 1.8;
+  }
+  summary {
+    cursor: pointer;
+    width: fit-content;
+    padding-block: 8px;
+  }
+  summary span {
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  ol {
+    list-style: decimal;
+    padding-left: 24px;
+    margin-top: 8px;
+  }
+  li + li {
+    margin-top: 8px;
+  }
+  a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    overflow-wrap: anywhere;
+  }
+  .log-source-backlink {
+    margin-inline-start: 8px;
+    text-decoration: none;
+  }
+</style>
+<script>
+  const openLinkedSource = () => {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    const target = document.getElementById(id);
+    if (!(target instanceof HTMLElement)) return;
+    const details = target.closest('details.log-sources');
+    if (!(details instanceof HTMLDetailsElement)) return;
+    details.open = true;
+    requestAnimationFrame(() => target.scrollIntoView());
+  };
+
+  openLinkedSource();
+  window.addEventListener('hashchange', openLinkedSource);
+</script>

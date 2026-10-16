@@ -3,27 +3,41 @@ import * as stylex from '@stylexjs/stylex';
 import { styles } from '../styles/pages';
 import { logStyles } from '../styles/log';
 import {
+  logMetadata,
   logProofUrl,
   logUrl,
   readingTime,
   type LogEntry,
 } from '../portfolio/log';
 import { getLogSignatures } from '../portfolio/verified-proofs';
+import { logConnections } from '../portfolio/log-connections';
+import { siteOrigin } from '../portfolio/seo';
+import LogContents from './LogContents.astro';
+import { renderLogContent } from '../portfolio/log-markdown';
+import LogDiff from './LogDiff.astro';
 import LogRevision from './LogRevision.astro';
+import LogTags from './LogTags.astro';
 import ProofBadge from './ProofBadge.astro';
 interface Props {
   entry: LogEntry;
 }
 const { entry } = Astro.props;
+const metadata = logMetadata(entry);
 const signatures = await getLogSignatures();
 const latest = entry.revisions.at(-1)!;
+const headings = renderLogContent(
+  latest.body,
+  '',
+  metadata.sources.length,
+).headings;
+const connections = logConnections(entry, undefined, siteOrigin());
 const date = (value: string) => new Date(value).toISOString().slice(0, 10);
 ---
 
-<article id={entry.id} class="h-entry" {...stylex.attrs(logStyles.article)}>
+<article id={entry.id} class="h-entry">
   <h1 {...stylex.attrs(logStyles.title, styles.heading)}>
     <a class="u-url p-name" href={logUrl(entry)}>
-      {entry.title}
+      {metadata.title}
     </a>
   </h1>
   <div {...stylex.attrs(logStyles.meta)}>
@@ -48,10 +62,13 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
       </time>
     )}
   </div>
+  <LogTags tags={metadata.tags} />
+  <LogContents headings={headings} sources={metadata.sources.length > 0} />
   <LogRevision entry={entry} version={latest.version} />
   {latest.version > 1 && (
     <details {...stylex.attrs(logStyles.details)}>
       <summary {...stylex.attrs(logStyles.summary)}>History</summary>
+      <LogDiff entry={entry} version={latest.version} />
       {entry.revisions
         .slice(0, -1)
         .toReversed()
@@ -69,6 +86,7 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
                 {date(revision.publishedAt)}
               </time>
             </h2>
+            <LogDiff entry={entry} version={revision.version} />
             <LogRevision entry={entry} version={revision.version} archived />
             {signatures[`${entry.id}-v${revision.version}`] && (
               <div {...stylex.attrs(logStyles.links)}>
@@ -83,4 +101,44 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
         ))}
     </details>
   )}
+  {[
+    { title: 'Related logs', entries: connections.related },
+    { title: 'Referenced by', entries: connections.referencedBy },
+  ].map(
+    (group) =>
+      group.entries.length > 0 && (
+        <nav class="log-connections" aria-label={group.title}>
+          <h2>{group.title}</h2>
+          <ul>
+            {group.entries.map((related) => (
+              <li>
+                <a href={logUrl(related)}>{logMetadata(related).title}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ),
+  )}
 </article>
+<style>
+  .h-entry {
+    max-width: var(--reading-width);
+  }
+  .log-connections {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    line-height: 1.8;
+  }
+  .log-connections h2 {
+    margin-bottom: 8px;
+    font-size: 1.125rem;
+  }
+  .log-connections a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .log-connections li + li {
+    margin-top: 8px;
+  }
+</style>

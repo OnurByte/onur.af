@@ -5,7 +5,7 @@ import { logStyles } from '../styles/log';
 import AccountLink from './AccountLink.astro';
 import ProofBadge from './ProofBadge.astro';
 import { identityAccounts } from '../portfolio/proofs';
-import { logEntries, logProofUrl } from '../portfolio/log';
+import { logEntries, logProofUrl, logMetadata } from '../portfolio/log';
 import { getLogSignatures } from '../portfolio/verified-proofs';
 const signatures = await getLogSignatures();
 ---
@@ -43,7 +43,7 @@ const signatures = await getLogSignatures();
           return (
             <li {...stylex.attrs(logStyles.registryEntry)}>
               <a {...stylex.attrs(logStyles.registryTitle)} href={proofUrl}>
-                {entry.title}
+                {logMetadata(entry).title}
               </a>
               <div {...stylex.attrs(logStyles.registryMeta)}>
                 <time datetime={entry.revisions[0]!.publishedAt}>

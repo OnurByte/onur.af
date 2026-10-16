@@ -4,10 +4,25 @@ import { fileURLToPath } from 'node:url';
 import { generateLogId } from '../src/portfolio/log-id';
 import { parseLog } from '../src/portfolio/log';
 
-const [title, summary, markdownFile, ...extra] = process.argv.slice(2);
+const [title, summary, markdownFile, metadataFile, ...extra] =
+  process.argv.slice(2);
 if (!title?.trim() || !summary?.trim() || !markdownFile || extra.length)
-  throw new Error('Usage: bun run log:new "Title" "Summary" article.md');
+  throw new Error(
+    'Usage: bun run log:new "Title" "Summary" article.md [metadata.json]',
+  );
 
+const metadata: unknown = metadataFile
+  ? JSON.parse(await readFile(metadataFile, 'utf8'))
+  : {};
+if (
+  !metadata ||
+  typeof metadata !== 'object' ||
+  Array.isArray(metadata) ||
+  Object.keys(metadata).some(
+    (key) => !['language', 'tags', 'cover', 'sources'].includes(key),
+  )
+)
+  throw new Error('Metadata accepts only language, tags, cover and sources');
 const body = await readFile(markdownFile, 'utf8');
 if (!body.trim()) throw new Error('Cannot create an empty Log entry');
 
@@ -24,7 +39,18 @@ const next = [
     id,
     title: title.trim(),
     summary: summary.trim(),
-    revisions: [{ version: 1, publishedAt: new Date().toISOString(), body }],
+    revisions: [
+      {
+        version: 1,
+        publishedAt: new Date().toISOString(),
+        title: title.trim(),
+        summary: summary.trim(),
+        language: 'en',
+        tags: [],
+        ...metadata,
+        body,
+      },
+    ],
   },
 ];
 parseLog(next);

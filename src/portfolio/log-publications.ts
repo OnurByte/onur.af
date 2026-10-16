@@ -40,7 +40,7 @@ const publicationStoreSchema = z
 export type LogPublicationEntry = z.infer<typeof publicationEntrySchema>;
 export type LogPublicationManifest = z.infer<typeof publicationManifestSchema>;
 
-export type VerifiedLogPublicationEdition = {
+type VerifiedLogPublicationEdition = {
   manifest: LogPublicationManifest;
   bytes: string;
   signature: string;
