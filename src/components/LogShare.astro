@@ -53,22 +53,25 @@ const rows = [
 ] as const;
 ---
 
-<button
-  id="open-share"
-  hidden
-  type="button"
-  aria-label="Share log"
-  aria-haspopup="dialog"
-  aria-controls="share-dialog"
-  aria-keyshortcuts="Control+Shift"
-  {...stylex.attrs(shareStyles.trigger)}
->
-  <Icon name="shareMark" />
-  <span>Share</span>
-  <kbd data-share-shortcut {...stylex.attrs(searchStyles.shortcut)}>
-    Ctrl Shift
-  </kbd>
-</button>
+<div {...stylex.attrs(shareStyles.triggerRow)}>
+  <button
+    id="open-share"
+    hidden
+    type="button"
+    aria-label="Share log"
+    aria-haspopup="dialog"
+    aria-controls="share-dialog"
+    aria-keyshortcuts="Control+Shift"
+    {...stylex.attrs(shareStyles.trigger)}
+  >
+    <Icon name="shareMark" />
+    <span>Share</span>
+    <kbd data-share-shortcut {...stylex.attrs(searchStyles.shortcut)}>
+      Ctrl
+      <Icon name="shift" />
+    </kbd>
+  </button>
+</div>
 <dialog
   id="share-dialog"
   aria-label="Share log"

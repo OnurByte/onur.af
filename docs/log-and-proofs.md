@@ -143,6 +143,10 @@ The `request` dependency patch changes legacy `uuid/v4` imports to `require('uui
 
 ## Rich Markdown, tags and SEO
 
+For a detailed authoring reference covering the supported Markdown syntax,
+images, callouts, mathematics, citations, and revision rules, see the
+[Log Markdown writing guide](log-markdown-guide.md).
+
 Log bodies support CommonMark plus GFM tables, task lists, strikethrough,
 autolinks and footnotes (`[^1]` / `[^1]: Source`). Headings receive stable,
 Unicode-aware fragment links; longer entries expose a Contents navigation.
