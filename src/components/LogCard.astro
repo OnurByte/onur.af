@@ -1,0 +1,57 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { logStyles } from '../styles/log';
+import {
+  logMetadata,
+  logProofUrl,
+  logUrl,
+  readingTime,
+  type LogEntry,
+} from '../portfolio/log';
+import LogTags from './LogTags.astro';
+import ProofBadge from './ProofBadge.astro';
+import LogSigil from './LogSigil.astro';
+interface Props {
+  entry: LogEntry;
+  verified: boolean;
+}
+const { entry, verified } = Astro.props;
+const metadata = logMetadata(entry);
+---
+
+<article {...stylex.attrs(logStyles.entryCard)} class="h-entry" id={entry.id}>
+  <a
+    {...stylex.attrs(logStyles.cardLink)}
+    class="u-url"
+    href={logUrl(entry)}
+    aria-labelledby={`${entry.id}-title`}
+  />
+  <h2
+    {...stylex.attrs(logStyles.title)}
+    class="p-name"
+    id={`${entry.id}-title`}
+  >
+    {metadata.title}
+  </h2>
+  <div {...stylex.attrs(logStyles.meta)}>
+    <time class="dt-published" datetime={entry.revisions[0]!.publishedAt}>
+      {entry.revisions[0]!.publishedAt.slice(0, 10)}
+    </time>
+    {verified && (
+      <ProofBadge
+        target="log"
+        href={logProofUrl(entry)}
+        label="Verified"
+        aboveCardLink
+      />
+    )}
+    <span>{readingTime(entry.revisions.at(-1)!.body)}</span>
+  </div>
+  <p {...stylex.attrs(logStyles.excerpt)} class="p-summary">
+    {metadata.summary}
+  </p>
+  <LogTags tags={metadata.tags} />
+  <div {...stylex.attrs(logStyles.sigil)}>
+    <LogSigil id={entry.id} />
+  </div>
+</article>

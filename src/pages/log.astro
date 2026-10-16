@@ -3,10 +3,10 @@ import * as stylex from '@stylexjs/stylex';
 import Layout from '../layouts/Layout.astro';
 import { styles } from '../styles/pages';
 import { logStyles } from '../styles/log';
-import { logEntries, logProofUrl, logUrl, readingTime } from '../portfolio/log';
+import { logEntries } from '../portfolio/log';
 import { publicPreview } from '../portfolio/previews';
-import ProofBadge from '../components/ProofBadge.astro';
-import LogSigil from '../components/LogSigil.astro';
+import { logTags, logTagUrl } from '../portfolio/log-tags';
+import LogCard from '../components/LogCard.astro';
 import { getLogSignatures } from '../portfolio/verified-proofs';
 const signatures = await getLogSignatures();
 ---
@@ -14,50 +14,21 @@ const signatures = await getLogSignatures();
 <Layout title="Log · Onur" description={publicPreview('/log')!.description}>
   <main {...stylex.attrs(styles.main)}>
     <h1 {...stylex.attrs(styles.heading)}>Log</h1>
+    {logTags().length > 0 && (
+      <nav aria-label="Topics" {...stylex.attrs(logStyles.links)}>
+        {logTags().map((tag) => (
+          <a href={logTagUrl(tag.slug)}>#{tag.title}</a>
+        ))}
+      </nav>
+    )}
     <div {...stylex.attrs(logStyles.list)} class="h-feed">
       {logEntries.map((entry) => (
-        <article
-          {...stylex.attrs(logStyles.entryCard)}
-          class="h-entry"
-          id={entry.id}
-        >
-          <a
-            {...stylex.attrs(logStyles.cardLink)}
-            class="u-url"
-            href={logUrl(entry)}
-            aria-labelledby={`${entry.id}-title`}
-          />
-          <h2
-            {...stylex.attrs(logStyles.title)}
-            class="p-name"
-            id={`${entry.id}-title`}
-          >
-            {entry.title}
-          </h2>
-          <div {...stylex.attrs(logStyles.meta)}>
-            <time
-              class="dt-published"
-              datetime={entry.revisions[0]!.publishedAt}
-            >
-              {entry.revisions[0]!.publishedAt.slice(0, 10)}
-            </time>
-            {signatures[`${entry.id}-v${entry.revisions.at(-1)!.version}`] && (
-              <ProofBadge
-                target="log"
-                href={logProofUrl(entry)}
-                label="Verified"
-                aboveCardLink
-              />
-            )}
-            <span>{readingTime(entry.revisions.at(-1)!.body)}</span>
-          </div>
-          <p {...stylex.attrs(logStyles.excerpt)} class="p-summary">
-            {entry.summary}
-          </p>
-          <div {...stylex.attrs(logStyles.sigil)}>
-            <LogSigil id={entry.id} />
-          </div>
-        </article>
+        <LogCard
+          entry={entry}
+          verified={Boolean(
+            signatures[`${entry.id}-v${entry.revisions.at(-1)!.version}`],
+          )}
+        />
       ))}
     </div>
   </main>

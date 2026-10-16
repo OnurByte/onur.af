@@ -1,0 +1,265 @@
+---
+interface Props {
+  headings: { id: string; text: string; depth: number }[];
+  sources?: boolean;
+}
+const { headings, sources = false } = Astro.props;
+const entries = [
+  ...headings,
+  ...(sources ? [{ id: 'log-sources', text: 'Sources', depth: 2 }] : []),
+];
+const baseDepth = Math.min(...entries.map((entry) => entry.depth));
+---
+
+{headings.length > 1 && (
+  <nav class="log-contents" data-log-contents aria-label="Contents">
+    <div class="contents-rail">
+      {entries.map((entry) => (
+        <a
+          href={`#${entry.id}`}
+          data-section={entry.id}
+          aria-label={entry.text}
+        >
+          <span aria-hidden="true" />
+        </a>
+      ))}
+    </div>
+    <ol class="contents-panel">
+      {entries.map((entry, index) => (
+        <li
+          style={`--level: ${Math.min(3, Math.max(0, entry.depth - baseDepth))}`}
+        >
+          <a href={`#${entry.id}`} data-section={entry.id}>
+            <span class="contents-number" aria-hidden="true">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <span>{entry.text}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}
+<style>
+  .log-contents {
+    position: relative;
+    width: fit-content;
+    margin-top: 16px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .contents-rail {
+    display: flex;
+    width: fit-content;
+  }
+  .contents-rail a {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+  }
+  .contents-rail a > span {
+    position: relative;
+    display: block;
+    width: 8px;
+    height: 2px;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--text) 25%, transparent);
+    overflow: hidden;
+    transition: width 160ms ease;
+  }
+  .contents-rail a > span::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--text);
+    transform: scaleX(var(--section-progress, 0));
+    transform-origin: left;
+  }
+  .contents-rail a[aria-current='location'] > span {
+    width: 16px;
+    background: color-mix(in srgb, var(--text) 55%, transparent);
+  }
+  .contents-rail a:hover > span,
+  .contents-rail a:focus-visible > span {
+    width: 16px;
+  }
+  .contents-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 20;
+    display: grid;
+    gap: 2px;
+    width: min(264px, calc(100vw - 40px));
+    max-height: min(560px, calc(100dvh - 48px));
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--background);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 120ms ease,
+      visibility 120ms;
+  }
+  .log-contents:not([data-dismissed]):is(:hover, :focus-within)
+    .contents-panel {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .contents-panel li {
+    padding-left: calc(var(--level) * 12px);
+  }
+  .contents-panel a {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    align-items: baseline;
+    gap: 12px;
+    padding: 8px 12px;
+    border-left: 1px solid transparent;
+    opacity: 0.6;
+    overflow-wrap: anywhere;
+    transition: opacity 160ms ease;
+  }
+  .contents-panel a:is(:hover, :focus-visible, [aria-current='location']) {
+    opacity: 1;
+  }
+  .contents-panel a[aria-current='location'] {
+    border-left-color: var(--text);
+  }
+  .contents-number {
+    font-family: ui-monospace, monospace;
+    font-size: 0.6875rem;
+  }
+  @media (min-width: 1024px) {
+    .log-contents {
+      position: fixed;
+      top: 50%;
+      right: max(var(--page-gutter), calc((100vw - var(--page-max-width)) / 2));
+      z-index: 20;
+      margin: 0;
+      transform: translateY(-50%);
+    }
+    .contents-rail {
+      flex-direction: column;
+      max-height: 60dvh;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .contents-rail a {
+      flex: 0 0 24px;
+      width: 40px;
+      height: 24px;
+      justify-content: flex-end;
+      padding-right: 12px;
+    }
+    .contents-panel {
+      top: 50%;
+      right: 40px;
+      left: auto;
+      transform: translateY(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .contents-rail a > span,
+    .contents-panel,
+    .contents-panel a {
+      transition: none;
+    }
+  }
+</style>
+<script>
+  document
+    .querySelectorAll<HTMLElement>('[data-log-contents]')
+    .forEach((menu) => {
+      const links = [
+        ...menu.querySelectorAll<HTMLAnchorElement>('a[data-section]'),
+      ];
+      const railLinks = [
+        ...menu.querySelectorAll<HTMLAnchorElement>('.contents-rail a'),
+      ];
+      const sections = railLinks
+        .map((link) => document.getElementById(link.dataset.section!))
+        .filter((section): section is HTMLElement => section !== null);
+      let frame = 0;
+      menu.addEventListener('pointerleave', () =>
+        menu.removeAttribute('data-dismissed'),
+      );
+      menu.addEventListener('focusin', () =>
+        menu.removeAttribute('data-dismissed'),
+      );
+      menu.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          menu.setAttribute('data-dismissed', '');
+          const active = menu.querySelector<HTMLAnchorElement>(
+            '.contents-rail [aria-current="location"]',
+          );
+          active?.focus();
+          menu.setAttribute('data-dismissed', '');
+        }
+      });
+      links.forEach((link) =>
+        link.addEventListener('click', () => {
+          const target = document.getElementById(link.dataset.section!);
+          if (target instanceof HTMLDetailsElement) target.open = true;
+          menu.setAttribute('data-dismissed', '');
+        }),
+      );
+      const updateSection = () => {
+        frame = 0;
+        const scroll = window.scrollY;
+        const maxScroll = Math.max(
+          0,
+          document.documentElement.scrollHeight - window.innerHeight,
+        );
+        const readingLine = Math.min(160, window.innerHeight * 0.25);
+        const starts = sections.map((section) =>
+          Math.max(
+            0,
+            Math.min(
+              maxScroll,
+              section.getBoundingClientRect().top + scroll - readingLine,
+            ),
+          ),
+        );
+        let activeIndex = 0;
+        if (maxScroll > 0)
+          starts.forEach((start, index) => {
+            if (scroll + 1 >= start) activeIndex = index;
+          });
+        const active = sections[activeIndex]?.id;
+        links.forEach((link) => {
+          const index = sections.findIndex(
+            (section) => section.id === link.dataset.section,
+          );
+          const selected = link.dataset.section === active;
+          if (selected) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+          const start = starts[index] ?? 0;
+          const end = starts[index + 1] ?? maxScroll;
+          const progress =
+            index < activeIndex
+              ? 1
+              : index > activeIndex || maxScroll === 0
+                ? 0
+                : end <= start
+                  ? 1
+                  : Math.max(0, Math.min(1, (scroll - start) / (end - start)));
+          link.style.setProperty('--section-progress', String(progress));
+        });
+      };
+      const scheduleUpdate = () => {
+        if (!frame) frame = requestAnimationFrame(updateSection);
+      };
+      window.addEventListener('scroll', scheduleUpdate, { passive: true });
+      window.addEventListener('resize', scheduleUpdate);
+      new ResizeObserver(scheduleUpdate).observe(document.body);
+      updateSection();
+    });
+</script>

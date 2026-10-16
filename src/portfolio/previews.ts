@@ -1,5 +1,5 @@
 import pages from '../content/public-pages.json' with { type: 'json' };
-import { logEntries, logProofUrl, logUrl } from './log';
+import { logEntries, logProofUrl, logUrl, logMetadata } from './log';
 
 export const socialImageVersion = '3';
 
@@ -20,9 +20,13 @@ function logPreview(entry: (typeof logEntries)[number], verified = false) {
   return {
     id: verified ? logProofUrl(entry) : logUrl(entry),
     key: `${verified ? 'verified' : 'log'}-${entry.id}`,
-    title: verified ? `${entry.title} · Verified` : entry.title,
+    title: verified
+      ? `${logMetadata(entry).title} · Verified`
+      : logMetadata(entry).title,
     description: truncateDescription(
-      verified ? `PGP-verified Log revision. ${entry.summary}` : entry.summary,
+      verified
+        ? `PGP-verified Log revision. ${logMetadata(entry).summary}`
+        : logMetadata(entry).summary,
     ),
   };
 }

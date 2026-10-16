@@ -1,6 +1,6 @@
 # Log and identity proofs
 
-`/log` is the chronological index, linked to the left of Find. Each entry uses a single, randomly generated three-word ID at `/log/<id>`. The ID is part of the signed bytes and never changes. `?v=1` selects an immutable revision. Find and RSS use the same entry URLs. Each revision's Verified link opens `/pgp/log/<id>?v=<version>`, which contains its exact signed Markdown and cryptographic proof details. Log pages keep the authored content and History navigation without an inline Proof disclosure. Account names and their monochrome ticks open the corresponding PGP page.
+`/log` is the chronological index, linked to the left of Find. Each entry uses a single, randomly generated three-word ID at `/log/<id>`. The ID is part of the signed bytes and never changes. `/pgp/log/<id>?v=1` selects an immutable proof revision; the article exposes old versions through History. Find and RSS use the same entry URLs. Each revision's Verified link opens `/pgp/log/<id>?v=<version>`, which contains its exact signed Markdown and cryptographic proof details. Log pages keep the authored content and History navigation without an inline Proof disclosure. Account names and their monochrome ticks open the corresponding PGP page.
 
 ## Publish a Log entry
 
@@ -140,3 +140,160 @@ The local watcher rereads the receipts, retries calendar outages and stops once 
 The official OpenTimestamps library verifies Merkle commitments against Bitcoin block data. This site's lightweight verifier uses the library's Blockstream explorer lookup for the canonical block, rather than running a local Bitcoin node; that canonical-chain lookup is a trust assumption. Visitors can independently verify the downloaded receipt with their own Bitcoin node. No file body or private signing key is sent to timestamp calendars.
 
 The `request` dependency patch changes legacy `uuid/v4` imports to `require('uuid').v4`, preserving the repository's modern UUID override while allowing the official OpenTimestamps client to run.
+
+## Rich Markdown, tags and SEO
+
+Log bodies support CommonMark plus GFM tables, task lists, strikethrough,
+autolinks and footnotes (`[^1]` / `[^1]: Source`). Headings receive stable,
+Unicode-aware fragment links; longer entries expose a Contents navigation.
+On desktop, a compact rail follows the current section and reveals the outline
+on hover or keyboard focus, without moving the article. Each bar is a direct
+section link, and its fill follows reading progress. Narrow screens use an inline
+row of the same links. The outline includes Sources when present.
+Raw HTML remains escaped, including in archived revisions.
+
+New revisions can include `title`, `summary`, `language`, `tags`, `cover`, and `sources`.
+These fields are included in the signed Markdown. Old revisions without the
+fields retain their exact signed bytes. Never edit a signed revision or the
+original entry-level title/summary: append a revision instead. Metadata is a
+snapshot: repeat tags/language/cover in a new revision to retain them.
+
+Create a draft with optional metadata:
+
+```sh
+bun run log:new "Understanding PGP" "How signatures establish authorship." article.md metadata.json
+```
+
+```json
+{
+  "language": "en",
+  "tags": ["cryptography", "pgp"],
+  "cover": {
+    "src": "/media/verification.webp",
+    "alt": "Diagram showing a public key verifying a signed message",
+    "caption": "Public-key verification",
+    "width": 1200,
+    "height": 800
+  }
+}
+```
+
+Cover dimensions must match the actual displayed image dimensions (after EXIF
+orientation). Store local originals under `public/media/`. The Astro integration
+validates every local body/cover image at build time, reads its dimensions and
+generates content-addressed WebP variants up to 1920px under `public/log-media/`.
+That generated directory is ignored by Git and copied into the deployment.
+The rendered HTML includes intrinsic dimensions, `srcset` and `sizes`, so the
+browser chooses a suitable image without changing signed source URLs. Editing
+a local image during development regenerates the variants and reloads the page.
+Missing local files, escaping symlinks and incorrect cover dimensions fail the
+build. SVG and GIF/animated images retain their original format and dimensions;
+small raster images are never enlarged. External HTTPS images remain external
+and are not fetched by the optimizer. Their covers still require explicit
+width/height. Image URLs and metadata are signed; image file bytes are not part
+of the Markdown signature. Body images require meaningful alt text, including reference
+images. Explicitly decorative images use `![](/media/decoration.webp "decorative")`.
+Only local absolute paths and HTTPS image sources are allowed. Body images use
+lazy loading and asynchronous decoding; covers reserve layout space through
+width/height and load eagerly on the active revision.
+
+The controlled vocabulary lives in `src/content/log-tags.json`. Add a slug,
+display title and useful topic description there before using a new tag. Used
+tags appear on cards, articles, Find, and `/log/tag/<slug>` archives. Keep
+`indexable: false` until an archive has useful topic coverage; set it to `true`
+after editorial review to include it in the sitemap. No automatic post-count
+threshold is imposed. Unused/unknown tag routes return 404. Tag labels are
+editorial navigation; the signed identity is the tag slug.
+
+Article pages derive their language, Open Graph article metadata, BlogPosting
+and BreadcrumbList JSON-LD from the latest revision. The sitemap uses actual
+revision timestamps for `lastmod`. Configure the public `SITE_URL` for canonical
+URLs and indexable structured data; local unconfigured previews stay noindex.
+The existing generated social cards remain in use. No meta keywords are emitted.
+
+Reference documentation:
+
+- https://github.com/micromark/micromark-extension-gfm
+- https://developers.google.com/search/docs/appearance/structured-data/article
+- https://developers.google.com/search/docs/appearance/google-images
+
+## LaTeX and source blocks
+
+Use `$...$` for inline math and `$$` fences for display math:
+
+```markdown
+The identity $E = mc^2$ is rendered inline.
+
+$$
+\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}
+$$
+```
+
+KaTeX renders HTML plus accessible MathML on the server. CSS/fonts are bundled
+locally; no client-side math renderer or CDN is required. Code spans and fenced
+code blocks remain literal. Escape currency dollar signs as `\$` when they
+could be mistaken for delimiters. Supported LaTeX is KaTeX's math syntax, not a
+full `.tex` document compiler. Invalid math fails content validation. External
+resource/HTML commands are untrusted, macro expansion is bounded, and authored
+size commands are capped. Math remains unchanged in signed/downloaded Markdown.
+
+Use a blockquote marker to label evidence or explanations:
+
+```markdown
+> [!SOURCE]
+> [Protocol specification](https://example.com/specification)
+
+> [!NOTE]
+> This claim was corrected in v2; see History.
+```
+
+`NOTE`, `TIP`, `IMPORTANT`, `WARNING`, `CAUTION`, and `SOURCE` labels are supported.
+Ordinary blockquotes still work. Raw HTML remains escaped in both.
+
+## Connections and revision changes
+
+The article footer lists up to three Related logs, ordered by shared tag count,
+then original publication recency. Referenced by lists current articles that
+link to this log. Repeated links count once; links in old revisions/code or on
+other websites do not create backlinks. With `SITE_URL` configured, absolute
+links to the same site count too. Nothing appears when there are no matches.
+
+History includes Changes in vN disclosures. They compare the exact signed
+Markdown against the preceding revision, including metadata, and display added
+and removed lines with three surrounding context lines. They are derived views;
+original Markdown, individual PGP signatures and timestamp receipts remain the
+source of verification. No old revision or proof is rewritten.
+
+## Optional Sources section
+
+Add an optional `sources` list to a revision, or to `metadata.json` when using
+`log:new`:
+
+```json
+{
+  "sources": [
+    { "title": "Protocol specification", "url": "https://example.com/spec" },
+    { "title": "An earlier note", "url": "/log/veiled-compass-turns" }
+  ]
+}
+```
+
+Each item requires a nonempty title and a local absolute path or HTTP(S) URL.
+There is no mandatory source count. Omit `sources` or use `"sources": []` to show
+nothing: no heading, empty list or placeholder. With sources present, a native
+Sources disclosure appears below the revision body, closed initially and
+expandable with mouse or keyboard, including without JavaScript. History shows
+only the sources belonging to each archived revision.
+
+Sources are revision snapshots and included in the exact signed Markdown;
+adding/removing/changing them on a published log requires a new revision.
+Older revisions that omit the field retain their signed bytes. Citations to
+other local logs contribute to Referenced by and current local log references
+are validated before publishing. Existing inline `[!SOURCE]` blockquotes and
+Markdown footnotes remain available separately.
+
+In prose, use a one-based marker such as `The protocol defines this behavior [1].`
+It links to the matching numbered source, opens the Sources disclosure
+and scrolls to the entry. A return arrow beside each source jumps back to its
+citation. Numbers follow the order in `sources`; markers without a matching
+entry remain ordinary text. Markers inside code or existing links are ignored.

@@ -1,8 +1,12 @@
 ---
+import LogSources from './LogSources.astro';
+import 'katex/dist/katex.min.css';
+import images from 'virtual:log-images';
+import { applyLogImages } from '../portfolio/log-images';
 import * as stylex from '@stylexjs/stylex';
 import { styles } from '../styles/pages';
-import { type LogEntry } from '../portfolio/log';
-import { renderLogMarkdown } from '../portfolio/log-markdown';
+import { logMetadata, type LogEntry } from '../portfolio/log';
+import { renderLogContent } from '../portfolio/log-markdown';
 interface Props {
   entry: LogEntry;
   version: number;
@@ -10,11 +14,42 @@ interface Props {
 }
 const { entry, version, archived = false } = Astro.props;
 const revision = entry.revisions[version - 1]!;
+const metadata = logMetadata(entry, version);
+const content = renderLogContent(
+  revision.body,
+  archived ? `${entry.id}-v${version}-` : '',
+  metadata.sources.length,
+);
+const coverImage = metadata.cover ? images[metadata.cover.src] : undefined;
 ---
 
+{metadata.cover && (
+  <figure class="log-cover">
+    <img
+      src={coverImage?.src ?? metadata.cover.src}
+      srcset={coverImage?.srcset}
+      sizes={coverImage?.sizes}
+      alt={metadata.cover.alt}
+      width={metadata.cover.width}
+      height={metadata.cover.height}
+      decoding="async"
+      loading={archived ? 'lazy' : 'eager'}
+    />
+    {metadata.cover.caption && (
+      <figcaption>{metadata.cover.caption}</figcaption>
+    )}
+  </figure>
+)}
+
 <div
+  lang={metadata.language}
   class:list={['log-body', !archived && 'e-content']}
-  set:html={renderLogMarkdown(revision.body)}
+  set:html={applyLogImages(content.html, images)}
+/>
+<LogSources
+  sources={metadata.sources}
+  references={content.sourceReferences}
+  prefix={archived ? `${entry.id}-v${version}-` : ''}
 />
 <template data-log-code-copy>
   <div class="log-code-block">
@@ -50,6 +85,68 @@ const revision = entry.revisions[version - 1]!;
     margin-top: 8px;
   }
 
+  .log-cover {
+    margin-top: 24px;
+  }
+  .log-cover figcaption {
+    margin-top: 8px;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .log-body .math-display {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block: 4px;
+  }
+  .log-body .katex-display {
+    margin: 0.75em 0;
+  }
+  .log-body .log-callout-title {
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .log-body blockquote[data-callout] {
+    padding: 12px 16px;
+    background: var(--surface);
+  }
+  .log-body table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+  }
+  .log-body th,
+  .log-body td {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    text-align: start;
+  }
+  .log-body th,
+  .log-body strong {
+    font-weight: 700;
+  }
+  .log-body em {
+    font-style: italic;
+  }
+  .log-body h2,
+  .log-body h3,
+  .log-body h4,
+  .log-body h5,
+  .log-body h6 {
+    scroll-margin-top: 24px;
+  }
+  .log-body .contains-task-list {
+    list-style: none;
+  }
+  .log-body input[type='checkbox'] {
+    margin-right: 8px;
+  }
+  .log-body [data-footnotes] {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    font-size: 0.875rem;
+  }
   .log-body {
     margin-top: 20px;
     line-height: 1.8;

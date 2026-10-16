@@ -3,7 +3,7 @@
     "id": "/",
     "key": "home",
     "title": "Home",
-    "description": ""
+    "description": "Onur’s projects, signed technical notes, and public identity proofs."
   },
   {
     "id": "/donate",
@@ -21,7 +21,7 @@
     "id": "/pgp",
     "key": "pgp",
     "title": "PGP",
-    "description": "Public key and signed identity statement."
+    "description": "Accounts and signatures verified by PGP."
   },
   {
     "id": "/log",

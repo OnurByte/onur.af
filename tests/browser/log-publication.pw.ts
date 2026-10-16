@@ -21,7 +21,10 @@ import {
   sign,
 } from 'openpgp';
 import { parseLog, revisionMarkdown } from '../../src/portfolio/log';
+import { canonicalLogPublication } from '../../src/portfolio/log-publications';
 import { digest } from '../../src/portfolio/log-signatures';
+import sharp from 'sharp';
+import { mkdir } from 'node:fs/promises';
 import AxeBuilder from '@axe-core/playwright';
 import { type IdentityClaim } from '../../src/portfolio/proofs';
 const execute = promisify(execFile);
@@ -36,6 +39,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     for (const file of [
       'src',
       'public',
+      'integrations',
       'astro.config.ts',
       'tsconfig.json',
       'package.json',
@@ -48,6 +52,12 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       join(directory, 'node_modules'),
       'dir',
     );
+    await mkdir(join(directory, 'public/media'), { recursive: true });
+    await sharp({
+      create: { width: 1200, height: 800, channels: 3, background: '#888' },
+    })
+      .png()
+      .toFile(join(directory, 'public/media/test-chart.png'));
     const entries = parseLog([
       {
         id: 'silent-lodge-convenes',
@@ -62,7 +72,54 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
           {
             version: 2,
             publishedAt: '2026-10-14T10:30:00Z',
-            body: 'Revised **fixture** content.\n\n```ts\nconst value = 1;\n```',
+            language: 'tr',
+            tags: ['pgp', 'cryptography'],
+            sources: [
+              {
+                title: 'Protocol specification',
+                url: 'https://example.com/spec',
+              },
+              {
+                title: 'Related <script>note</script>',
+                url: '/log/ancient-archive-opens',
+              },
+            ],
+            cover: {
+              src: '/media/test-chart.png',
+              alt: 'A monochrome test chart',
+              caption: 'A test chart',
+              width: 1200,
+              height: 800,
+            },
+            body:
+              'Revised **fixture** content.\n\n## Details\n\n~~Old~~ and *new*.\n\n| A | B |\n| - | - |\n| 1 | 2 |\n\n## Sources\n\nEvidence[^1]\n\n[^1]: A source.\n\n```ts\nconst value = 1;\n```' +
+              String.raw`
+
+Inline $E=mc^2$.
+
+$$
+\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}
+$$
+
+![A monochrome test chart](/media/test-chart.png)
+
+> [!SOURCE]
+> [Related research](/log/ancient-archive-opens)
+`,
+          },
+        ],
+      },
+      {
+        id: 'ancient-archive-opens',
+        title: 'Linked note',
+        summary: 'A related note',
+        revisions: [
+          {
+            version: 1,
+            publishedAt: '2026-10-12T09:00:00Z',
+            tags: ['pgp'],
+            sources: [],
+            body: '[Main note](/log/silent-lodge-convenes#details)',
           },
         ],
       },
@@ -74,20 +131,55 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       format: 'armored',
     });
     const artifacts: Record<string, { sha256: string; signature: string }> = {};
-    for (const revision of entries[0]!.revisions) {
-      const body = revisionMarkdown(entries[0]!, revision.version);
-      artifacts[`silent-lodge-convenes-v${revision.version}`] = {
-        sha256: digest(body),
-        signature: await sign({
-          message: await createMessage({
-            binary: new TextEncoder().encode(body),
+    for (const entry of entries)
+      for (const revision of entry.revisions) {
+        const body = revisionMarkdown(entry, revision.version);
+        artifacts[`${entry.id}-v${revision.version}`] = {
+          sha256: digest(body),
+          signature: await sign({
+            message: await createMessage({
+              binary: new TextEncoder().encode(body),
+            }),
+            signingKeys: await readPrivateKey({ armoredKey: keys.privateKey }),
+            detached: true,
+            format: 'armored',
           }),
-          signingKeys: await readPrivateKey({ armoredKey: keys.privateKey }),
-          detached: true,
-          format: 'armored',
-        }),
-      };
-    }
+        };
+      }
+    const manifest = canonicalLogPublication({
+      format: 1,
+      sequence: 1,
+      previousSha256: null,
+      entries: entries
+        .flatMap((entry) =>
+          entry.revisions.map((revision) => ({
+            id: entry.id,
+            version: revision.version,
+            sha256: artifacts[`${entry.id}-v${revision.version}`]!.sha256,
+          })),
+        )
+        .sort((a, b) => a.id.localeCompare(b.id) || a.version - b.version),
+    });
+    await writeFile(
+      join(directory, 'src/content/log-publications.json'),
+      JSON.stringify({
+        editions: [
+          {
+            manifest,
+            signature: await sign({
+              message: await createMessage({
+                binary: new TextEncoder().encode(manifest),
+              }),
+              signingKeys: await readPrivateKey({
+                armoredKey: keys.privateKey,
+              }),
+              detached: true,
+              format: 'armored',
+            }),
+          },
+        ],
+      }),
+    );
     await writeFile(
       join(directory, 'src/content/log.json'),
       JSON.stringify(entries),
@@ -178,7 +270,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
           ...process.env,
           HOST: '127.0.0.1',
           PORT: String(port),
-          SITE_URL: '',
+          SITE_URL: 'https://portfolio.example',
         },
         stdio: 'ignore',
       },
@@ -194,7 +286,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       })
       .toBe(200);
     await page.goto(`${origin}/log`);
-    const listedEntry = page.locator('main article');
+    const listedEntry = page.locator('main article#silent-lodge-convenes');
     if ((await listedEntry.count()) === 0)
       console.log('Log fixture markup:', (await page.content()).slice(0, 2500));
     await expect(listedEntry).toHaveCount(1);
@@ -269,6 +361,109 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
       '/pgp/log/silent-lodge-convenes',
     );
     await expect(page.locator('article .e-content')).toHaveCount(1);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'tr');
+    await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
+      'content',
+      'article',
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://portfolio.example/log/silent-lodge-convenes',
+    );
+    const schema = JSON.parse(
+      (await page
+        .locator('script[type="application/ld+json"]')
+        .textContent()) ?? '{}',
+    );
+    expect(schema['@graph'][0]).toMatchObject({
+      '@type': 'BlogPosting',
+      inLanguage: 'tr',
+      keywords: ['pgp', 'cryptography'],
+    });
+    const contents = page.locator('[data-log-contents]');
+    const rail = contents.locator('.contents-rail');
+    const panel = contents.locator('.contents-panel');
+    const firstSection = rail.locator('a[data-section="details"]');
+    const secondSection = rail.locator('a[data-section="sources"]');
+    const articlePosition = await page
+      .locator('.log-body.e-content')
+      .boundingBox();
+    await expect(panel).not.toBeVisible();
+    await expect(contents.getByRole('button')).toHaveCount(0);
+    await expect(contents.locator('a[href="/log"]')).toHaveCount(0);
+    await firstSection.hover();
+    await expect(panel).toBeVisible();
+    expect((await page.locator('.log-body.e-content').boundingBox())?.x).toBe(
+      articlePosition?.x,
+    );
+    expect(
+      (await page.locator('.log-body.e-content').boundingBox())?.width,
+    ).toBe(articlePosition?.width);
+    await page.mouse.move(0, 0);
+    await expect(panel).not.toBeVisible();
+    await secondSection.click();
+    await expect(page).toHaveURL(/#sources$/);
+    await expect(secondSection).toHaveAttribute('aria-current', 'location');
+    await expect
+      .poll(() =>
+        firstSection.evaluate((link) =>
+          link.style.getPropertyValue('--section-progress'),
+        ),
+      )
+      .toBe('1');
+    await firstSection.click();
+    await expect(page).toHaveURL(/#details$/);
+    await expect(firstSection).toHaveAttribute('aria-current', 'location');
+    await firstSection.focus();
+    await expect(panel).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(panel).not.toBeVisible();
+    await page.evaluate(() =>
+      window.scrollTo(0, document.documentElement.scrollHeight),
+    );
+    await expect(rail.locator('a[data-section="log-sources"]')).toHaveAttribute(
+      'aria-current',
+      'location',
+    );
+    await page.setViewportSize({ width: 390, height: 900 });
+    await firstSection.click();
+    await expect(firstSection).toHaveAttribute('aria-current', 'location');
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await expect(page.locator('.log-body table')).toHaveCount(1);
+    await expect(page.locator('.log-body del')).toHaveText('Old');
+    expect(
+      await page
+        .locator('.log-body strong')
+        .first()
+        .evaluate((node) => getComputedStyle(node).userSelect),
+    ).toBe('text');
+    await page
+      .context()
+      .grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.locator('.e-content strong').evaluate((node) => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      const selection = window.getSelection()!;
+      selection.removeAllRanges();
+      selection.addRange(range);
+    });
+    await page.keyboard.press('Control+c');
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      'fixture',
+    );
+    const topic = await fetch(`${origin}/log/tag/pgp`).then((response) =>
+      response.text(),
+    );
+    expect(topic).toContain('Fixture note');
+    expect(topic).toContain('noindex, follow');
+    expect(topic).toContain('https://portfolio.example/log/tag/pgp');
+    expect((await fetch(`${origin}/log/tag/unknown`)).status).toBe(404);
+
     await expect(page.getByText('Revised fixture content.')).toBeVisible();
     await expect(page.locator('time.dt-published')).toHaveAttribute(
       'datetime',
@@ -280,7 +475,78 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     );
     await expect(page.locator('time.dt-updated')).toHaveText('v2 · 2026-10-14');
     await expect(page.getByText(/sec read/)).toBeVisible();
+    await expect(page.locator('.e-content .katex')).toHaveCount(2);
+    await expect(page.locator('.e-content math')).toHaveCount(2);
+    const bodyImage = page.locator('.e-content img');
+    await expect(bodyImage).toHaveAttribute(
+      'src',
+      /\/log-media\/[a-f0-9]{64}-960.webp/,
+    );
+    await expect(bodyImage).toHaveAttribute('srcset', /480w/);
+    await expect(bodyImage).toHaveAttribute('width', '1200');
+    await expect(page.locator('.log-cover img')).toHaveAttribute(
+      'height',
+      '800',
+    );
+    expect(
+      await bodyImage.evaluate(
+        (image) =>
+          (image as HTMLImageElement).complete &&
+          (image as HTMLImageElement).naturalWidth > 0,
+      ),
+    ).toBe(true);
+    const imageResponse = await fetch(
+      `${origin}${await bodyImage.getAttribute('src')}`,
+    );
+    expect(imageResponse.status).toBe(200);
+    expect(imageResponse.headers.get('content-type')).toContain('image/webp');
+    expect(imageResponse.headers.get('x-robots-tag') ?? '').not.toContain(
+      'noindex',
+    );
+    for (const name of ['Related logs', 'Referenced by'])
+      await expect(
+        page
+          .getByRole('navigation', { name })
+          .getByRole('link', { name: 'Linked note' }),
+      ).toBeVisible();
+    await expect(page.locator('[data-callout="source"]')).toContainText(
+      'Related research',
+    );
+    const sources = page.locator('details.log-sources');
+    await expect(sources).toHaveCount(1);
+    await expect(sources).not.toHaveAttribute('open');
+    const specification = sources.getByRole('link', {
+      name: 'Protocol specification',
+    });
+    await expect(specification).toBeHidden();
+    await sources.locator('summary').click();
+    await expect(specification).toBeVisible();
+    await expect(specification).toHaveAttribute(
+      'href',
+      'https://example.com/spec',
+    );
+    await expect(sources.locator('script')).toHaveCount(0);
+    await expect(
+      sources.getByRole('link', {
+        name: 'Related <script>note</script>',
+        exact: true,
+      }),
+    ).toBeVisible();
+    await sources.locator('summary').click();
+    await expect(specification).toBeHidden();
+    await page.goto(`${origin}/log/ancient-archive-opens`);
+    await expect(page.locator('details.log-sources')).toHaveCount(0);
+    await page.goto(`${origin}/log/silent-lodge-convenes`);
     await page.getByText('History', { exact: true }).click();
+    await expect(page.locator('details.log-sources')).toHaveCount(1);
+    await page.getByText(/^Changes in v2/).click();
+    await expect(page.getByLabel('Changes from version 1 to 2')).toContainText(
+      '-Original **fixture** content.',
+    );
+    await expect(page.getByLabel('Changes from version 1 to 2')).toContainText(
+      '+Revised **fixture** content.',
+    );
+
     await expect(page.getByText('Original fixture content.')).toBeVisible();
     await page
       .context()
@@ -341,15 +607,17 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     const feed = await fetch(`${origin}/rss.xml`).then((response) =>
       response.text(),
     );
-    expect(feed).toContain(`${origin}/log/silent-lodge-convenes`);
+    expect(feed).toContain(
+      'https://portfolio.example/log/silent-lodge-convenes',
+    );
     expect(feed).toContain('<title>Fixture note</title>');
-    expect(feed.match(/<item>/g)).toHaveLength(1);
+    expect(feed.match(/<item>/g)).toHaveLength(2);
     expect(feed).toContain('urn:onur:post:log-silent-lodge-convenes');
     const feedPage = await fetch(`${origin}/rss`, {
       headers: { Accept: 'text/html' },
     }).then((response) => response.text());
     expect(feedPage).toContain('Fixture note');
-    await page.getByRole('link', { name: 'Publication PGP proof' }).click();
+    await verifiedLink.click();
     await expect(page).toHaveURL(`${origin}/pgp/log/silent-lodge-convenes`);
     await expect(
       page.getByRole('textbox', { name: 'PGP signature' }),
@@ -412,6 +680,70 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
     expect(
       await readFile(join(directory, 'src/content/log.json'), 'utf8'),
     ).toContain('silent-lodge-convenes');
+    // The same image pipeline must refresh in dev without editing signed text.
+    server.kill();
+    await new Promise((resolve) => server!.once('exit', resolve));
+    server = spawn(
+      'node',
+      [
+        '--import',
+        './proof-fixtures.mjs',
+        join(process.cwd(), 'node_modules/astro/bin/astro.mjs'),
+        'dev',
+        '--ignore-lock',
+        '--host',
+        '127.0.0.1',
+        '--port',
+        String(port),
+      ],
+      {
+        cwd: directory,
+        env: {
+          ...process.env,
+          VERCEL: '',
+          SITE_URL: 'https://portfolio.example',
+        },
+        stdio: 'ignore',
+      },
+    );
+    await expect
+      .poll(
+        async () => {
+          try {
+            return (await fetch(`${origin}/log/silent-lodge-convenes`)).status;
+          } catch {
+            return 0;
+          }
+        },
+        { timeout: 15000 },
+      )
+      .toBe(200);
+    await page.goto(`${origin}/log/silent-lodge-convenes`);
+    const originalImage = await page
+      .locator('.e-content img')
+      .getAttribute('src');
+    await sharp({
+      create: { width: 1200, height: 800, channels: 3, background: '#111' },
+    })
+      .png()
+      .toFile(join(directory, 'public/media/test-chart.png'));
+    await expect
+      .poll(
+        async () => {
+          const html = await fetch(`${origin}/log/silent-lodge-convenes`).then(
+            (response) => response.text(),
+          );
+          return !html.includes(originalImage!);
+        },
+        { timeout: 15000 },
+      )
+      .toBe(true);
+    await page.reload();
+    expect(await page.locator('.e-content img').getAttribute('src')).not.toBe(
+      originalImage,
+    );
+    // The test must own the live process; an auto-backgrounded child would leak.
+    expect(server.exitCode).toBeNull();
   } finally {
     if (server && server.exitCode === null) {
       server.kill();

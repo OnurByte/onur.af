@@ -18,17 +18,25 @@ interface Props {
   description?: string;
   noindex?: boolean;
   motto?: string;
+  language?: string;
+  article?: { publishedAt: string; modifiedAt: string; tags: string[] };
+  structuredData?: object | undefined;
 }
 const {
   title = 'Onur',
   description: suppliedDescription = siteDescription,
   motto = mottos[0],
   noindex = false,
+  language = 'en',
+  article,
+  structuredData,
 } = Astro.props;
 const links = portfolioLinks();
 const origin = siteOrigin();
 const preview = publicPreview(Astro.url.pathname);
-const description = preview?.description ?? suppliedDescription;
+const description = article
+  ? suppliedDescription
+  : (preview?.description ?? suppliedDescription);
 const canonical = canonicalUrl(origin, Astro.url.pathname);
 const indexable =
   Boolean(canonical) && !noindex && Astro.response.status === 200;
@@ -100,7 +108,7 @@ const schema =
 
 <!doctype html>
 <Fragment set:html={`<!--\n${siteSignature}\n-->`} />
-<html lang="en" prefix="og: https://ogp.me/ns#">
+<html lang={language} prefix="og: https://ogp.me/ns#">
   <head>
     {import.meta.env.DEV && (
       <link rel="stylesheet" href="/virtual:stylex.css" />
@@ -122,14 +130,38 @@ const schema =
     {description && <meta name="description" content={description} />}
     <meta
       name="robots"
-      content={indexable ? 'index, follow' : 'noindex, nofollow'}
+      content={
+        indexable
+          ? 'index, follow'
+          : canonical && noindex
+            ? 'noindex, follow'
+            : 'noindex, nofollow'
+      }
     />
-    {indexable && <link rel="canonical" href={canonical} />}
-    <meta property="og:type" content="website" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    {article && (
+      <>
+        <meta property="article:published_time" content={article.publishedAt} />
+        <meta property="article:modified_time" content={article.modifiedAt} />
+        {article.tags.map((tag) => (
+          <meta property="article:tag" content={tag} />
+        ))}
+      </>
+    )}
     <meta property="og:site_name" content="Onur" />
     <meta property="og:title" content={title} />
     {description && <meta property="og:description" content={description} />}
-    <meta property="og:locale" content="en_US" />
+    <meta
+      property="og:locale"
+      content={
+        language === 'tr'
+          ? 'tr_TR'
+          : language === 'en'
+            ? 'en_US'
+            : language.replace('-', '_')
+      }
+    />
     {indexable && <meta property="og:url" content={canonical} />}
     {socialImage && (
       <>
@@ -167,10 +199,13 @@ const schema =
         <meta name="twitter:image:alt" content={imageAlt} />
       </>
     )}
-    {schema && (
+    {indexable && (structuredData ?? schema) && (
       <script
         type="application/ld+json"
-        set:html={JSON.stringify(schema).replaceAll('<', '\\u003c')}
+        set:html={JSON.stringify(structuredData ?? schema).replaceAll(
+          '<',
+          '\\u003c',
+        )}
       />
     )}
     <link

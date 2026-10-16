@@ -5,16 +5,33 @@ import Layout from '../layouts/Layout.astro';
 import HomeEmbeds from '../components/embeds/HomeEmbeds.astro';
 import { homeEmbedSources } from '../content/home-embeds';
 import { loadEmbeds } from '../portfolio/embed-sources';
+import LogCard from '../components/LogCard.astro';
+import { logEntries } from '../portfolio/log';
+import { getLogSignatures } from '../portfolio/verified-proofs';
 import { mottos } from '../portfolio/previews';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 const homeEmbeds = await loadEmbeds(homeEmbedSources, { timeoutMs: 15_000 });
+const signatures = await getLogSignatures();
+const recentLogs = logEntries.slice(0, 3);
 const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
 ---
 
 <Layout title={`${motto} · Onur`} motto={motto}>
   <main {...stylex.attrs(styles.main)} aria-label="Portfolio">
     <h1 {...stylex.attrs(styles.heading)}>{motto}</h1>
+    {recentLogs.length > 0 && (
+      <section aria-label="Recent Log entries" class="h-feed">
+        {recentLogs.map((entry) => (
+          <LogCard
+            entry={entry}
+            verified={Boolean(
+              signatures[`${entry.id}-v${entry.revisions.at(-1)!.version}`],
+            )}
+          />
+        ))}
+      </section>
+    )}
     <HomeEmbeds embeds={homeEmbeds} />
   </main>
 </Layout>

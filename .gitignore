@@ -14,3 +14,6 @@ lychee/
 playwright-report/
 test-results/
 public/pagefind/
+
+# Build-time Log image variants
+public/log-media/
