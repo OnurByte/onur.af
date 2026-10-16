@@ -21,7 +21,7 @@
     "id": "/pgp",
     "key": "pgp",
     "title": "PGP",
-    "description": "Accounts and signatures verified by PGP."
+    "description": "Public key and signed identity statement."
   },
   {
     "id": "/log",

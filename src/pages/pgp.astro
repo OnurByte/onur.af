@@ -5,10 +5,8 @@ import { publicPreview } from '../portfolio/previews';
 import Layout from '../layouts/Layout.astro';
 import ProofRegistry from '../components/ProofRegistry.astro';
 import SignedMessage from '../components/SignedMessage.astro';
-import AccountLink from '../components/AccountLink.astro';
 import publicKey from '../../public/pgp.asc?raw';
 import { readKey } from 'openpgp';
-import { identityAccounts } from '../portfolio/proofs';
 import { getSignedIdentityStatement } from '../portfolio/verified-proofs';
 const description = publicPreview('/pgp')!.description;
 const identityStatement = await getSignedIdentityStatement();
@@ -31,19 +29,6 @@ const fingerprint =
       <h2 {...stylex.attrs(styles.kicker)}>Account ownership</h2>
       <p {...stylex.attrs(styles.paragraph)}>
         I confirm that the X and GitHub accounts listed here are mine.
-      </p>
-      <p {...stylex.attrs(styles.paragraph)}>
-        <AccountLink
-          account="x"
-          label={identityAccounts.x.profile}
-          {...stylex.attrs(styles.walletLink)}
-        />
-        <br />
-        <AccountLink
-          account="github"
-          label={identityAccounts.github.profile}
-          {...stylex.attrs(styles.walletLink)}
-        />
       </p>
       <SignedMessage
         message={identityStatement.signedMessage}

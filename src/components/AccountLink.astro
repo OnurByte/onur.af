@@ -7,8 +7,9 @@ import ProofBadge from './ProofBadge.astro';
 interface Props extends HTMLAttributes<'a'> {
   account: keyof typeof identityAccounts;
   label?: string;
+  showProofBadge?: boolean;
 }
-const { account, label, ...attributes } = Astro.props;
+const { account, label, showProofBadge = true, ...attributes } = Astro.props;
 const identity = identityAccounts[account];
 ---
 
@@ -16,5 +17,5 @@ const identity = identityAccounts[account];
   <a {...attributes} href={`/pgp/${account}`}>
     {label ?? identity.name}
   </a>
-  <ProofBadge target={account} />
+  {showProofBadge && <ProofBadge target={account} />}
 </span>
