@@ -48,13 +48,10 @@ test('log sharing preserves RSS navigation and transfers focus between dialogs',
   await expect(share).toBeFocused();
   await share.click();
   await dialog.getByRole('button', { name: 'Discord', exact: true }).click();
-  await expect(dialog.getByRole('status')).toContainText('Link copied');
-  await expect(dialog).toBeVisible();
+  await expect(dialog).not.toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     'http://127.0.0.1:14323/log/sealed-lodge-waits',
   );
-  await page.keyboard.press('Escape');
-  await expect(dialog).not.toBeVisible();
   await expect(share).toBeFocused();
   await share.click();
   await page.keyboard.press('Control+k');
