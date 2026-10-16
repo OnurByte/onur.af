@@ -99,8 +99,7 @@ dialog?.addEventListener('click', async (event) => {
       window.open('discord://-/channels/@me', '_blank', 'noopener,noreferrer');
       if (!copy) throw new Error('Clipboard unavailable');
       await copy;
-      status.hidden = false;
-      status.textContent = 'Link copied.';
+      closeDialog(dialog);
       return;
     }
     await navigator.clipboard.writeText(url);
