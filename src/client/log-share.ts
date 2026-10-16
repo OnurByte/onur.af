@@ -100,7 +100,7 @@ dialog?.addEventListener('click', async (event) => {
       if (!copy) throw new Error('Clipboard unavailable');
       await copy;
       status.hidden = false;
-      status.textContent = 'Link copied. Paste it into a Discord message.';
+      status.textContent = 'Link copied.';
       return;
     }
     await navigator.clipboard.writeText(url);
