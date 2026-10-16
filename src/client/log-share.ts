@@ -62,6 +62,10 @@ dialog?.addEventListener('click', async (event) => {
       closeDialog(dialog);
     return;
   }
+  if ((event.target as Element).closest('a[href]')) {
+    closeDialog(dialog);
+    return;
+  }
   const action = (event.target as Element).closest<HTMLElement>(
     '[data-share-action]',
   )?.dataset.shareAction;
@@ -72,11 +76,11 @@ dialog?.addEventListener('click', async (event) => {
   try {
     if (action === 'native') {
       await navigator.share({ title: dialog.dataset.title!, url });
+      closeDialog(dialog);
       return;
     }
-    await navigator.clipboard.writeText(
-      action === 'citation' ? dialog.dataset.citation! : url,
-    );
+    await navigator.clipboard.writeText(url);
+    closeDialog(dialog);
   } catch (error) {
     if (
       action === 'native' &&

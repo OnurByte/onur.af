@@ -42,22 +42,32 @@ const baseDepth = Math.min(...entries.map((entry) => entry.depth));
 )}
 <style>
   .log-contents {
-    position: relative;
+    position: fixed;
+    top: 50%;
+    right: var(--page-gutter);
+    z-index: 20;
     width: fit-content;
-    margin-top: 16px;
+    margin: 0;
+    transform: translateY(-50%);
     font-size: 0.875rem;
     line-height: 1.5;
   }
   .contents-rail {
     display: flex;
+    flex-direction: column;
     width: fit-content;
+    max-height: 60dvh;
+    overflow-y: auto;
+    scrollbar-width: none;
   }
   .contents-rail a {
     display: flex;
-    width: 32px;
+    flex: 0 0 32px;
+    width: 20px;
     height: 32px;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
+    padding-right: 2px;
   }
   .contents-rail a > span {
     position: relative;
@@ -87,8 +97,10 @@ const baseDepth = Math.min(...entries.map((entry) => entry.depth));
   }
   .contents-panel {
     position: absolute;
-    top: 100%;
-    left: 0;
+    top: 50%;
+    right: 20px;
+    left: auto;
+    transform: translateY(-50%);
     z-index: 20;
     display: grid;
     gap: 2px;
@@ -139,18 +151,7 @@ const baseDepth = Math.min(...entries.map((entry) => entry.depth));
   }
   @media (min-width: 1024px) {
     .log-contents {
-      position: fixed;
-      top: 50%;
       right: max(var(--page-gutter), calc((100vw - var(--page-max-width)) / 2));
-      z-index: 20;
-      margin: 0;
-      transform: translateY(-50%);
-    }
-    .contents-rail {
-      flex-direction: column;
-      max-height: 60dvh;
-      overflow-y: auto;
-      scrollbar-width: none;
     }
     .contents-rail a {
       flex: 0 0 24px;
@@ -205,10 +206,30 @@ const baseDepth = Math.min(...entries.map((entry) => entry.depth));
         }
       });
       links.forEach((link) =>
-        link.addEventListener('click', () => {
+        link.addEventListener('click', (event) => {
+          if (
+            event.defaultPrevented ||
+            event.button !== 0 ||
+            event.ctrlKey ||
+            event.metaKey ||
+            event.shiftKey ||
+            event.altKey
+          )
+            return;
           const target = document.getElementById(link.dataset.section!);
+          if (!target) return;
+          event.preventDefault();
           if (target instanceof HTMLDetailsElement) target.open = true;
           menu.setAttribute('data-dismissed', '');
+          const readingLine = Math.min(160, window.innerHeight * 0.25);
+          const top =
+            target.getBoundingClientRect().top + window.scrollY - readingLine;
+          if (window.location.hash !== link.hash)
+            history.pushState(null, '', link.hash);
+          window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+          if (!target.hasAttribute('tabindex')) target.tabIndex = -1;
+          target.focus({ preventScroll: true });
+          scheduleUpdate();
         }),
       );
       const updateSection = () => {
