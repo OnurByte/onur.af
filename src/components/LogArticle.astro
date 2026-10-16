@@ -48,11 +48,7 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
       </time>
     )}
   </div>
-  <LogRevision
-    entry={entry}
-    version={latest.version}
-    signed={Boolean(signatures[`${entry.id}-v${latest.version}`])}
-  />
+  <LogRevision entry={entry} version={latest.version} />
   {latest.version > 1 && (
     <details {...stylex.attrs(logStyles.details)}>
       <summary {...stylex.attrs(logStyles.summary)}>History</summary>
@@ -73,12 +69,16 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
                 {date(revision.publishedAt)}
               </time>
             </h2>
-            <LogRevision
-              entry={entry}
-              version={revision.version}
-              archived
-              signed={Boolean(signatures[`${entry.id}-v${revision.version}`])}
-            />
+            <LogRevision entry={entry} version={revision.version} archived />
+            {signatures[`${entry.id}-v${revision.version}`] && (
+              <div {...stylex.attrs(logStyles.links)}>
+                <ProofBadge
+                  target="log"
+                  href={logProofUrl(entry, revision.version)}
+                  label="Verified"
+                />
+              </div>
+            )}
           </section>
         ))}
     </details>
