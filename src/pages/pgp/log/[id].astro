@@ -38,16 +38,6 @@ const publicationFile = publication
 const publicationEntry = publication?.manifest.entries.find(
   (item) => item.id === entry.id && item.version === version,
 );
-const commands = [
-  'gpg --import pgp.asc',
-  `gpg --verify ${entry.id}-v${version}.md.asc ${entry.id}-v${version}.md`,
-  `sha256sum ${entry.id}-v${version}.md`,
-];
-if (timestamp) commands.push(`ots verify ${entry.id}-v${version}.md.ots`);
-if (publicationFile)
-  commands.push(
-    `gpg --verify ${publicationFile.split('/').at(-1)}.asc ${publicationFile.split('/').at(-1)}`,
-  );
 ---
 
 <Layout
@@ -182,9 +172,6 @@ if (publicationFile)
           </p>
         </>
       )}
-
-      <h2>Verify independently</h2>
-      <pre><code>{commands.join('\n')}</code></pre>
 
       {entry.revisions.length > 1 && (
         <nav {...stylex.attrs(logStyles.links)} aria-label="Signed revisions">
