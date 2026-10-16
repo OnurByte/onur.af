@@ -498,7 +498,7 @@ export async function validateWalletLedger(
   }
 }
 
-export async function startXmrAgent(): Promise<{
+async function startXmrAgent(): Promise<{
   port: number;
   stop(force?: boolean): Promise<void>;
 }> {

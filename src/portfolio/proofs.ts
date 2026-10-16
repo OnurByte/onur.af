@@ -24,7 +24,7 @@ const claimSchema = z.object({
   proofUrl: z.url().optional(),
   publishedAt: z.iso.datetime({ offset: true }),
 });
-export const identityProofSchema = claimSchema
+const identityProofSchema = claimSchema
   .extend({
     signedMessage: z
       .string()
@@ -33,7 +33,7 @@ export const identityProofSchema = claimSchema
   })
   .strict();
 export type IdentityClaim = z.infer<typeof claimSchema>;
-export type IdentityProof = z.infer<typeof identityProofSchema>;
+type IdentityProof = z.infer<typeof identityProofSchema>;
 export type VerifiedIdentity = IdentityProof & {
   fingerprint: string;
   statement: string;
