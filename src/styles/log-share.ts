@@ -1,5 +1,6 @@
 import * as stylex from '@stylexjs/stylex';
 export const shareStyles = stylex.create({
+  triggerRow: { flexBasis: '100%', display: 'flex' },
   trigger: {
     display: 'inline-flex',
     alignItems: 'center',
