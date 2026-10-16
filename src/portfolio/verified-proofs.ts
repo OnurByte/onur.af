@@ -1,6 +1,11 @@
 import { getLogTimestamps } from './log-timestamps';
 import publicKey from '../../public/pgp.asc?raw';
-import { identityProofs, verifyIdentitySignature } from './proofs';
+import {
+  identityProofs,
+  identityStatement,
+  verifyIdentitySignature,
+  verifyIdentityStatement,
+} from './proofs';
 import artifacts from '../content/log-signatures.json';
 import {
   verifyLogSignatures,
@@ -41,6 +46,15 @@ let signedIdentityCache:
 export function getSignedIdentities() {
   return (signedIdentityCache ??= Promise.all(
     identityProofs.map((proof) => verifyIdentitySignature(proof, publicKey)),
+  ));
+}
+
+let identityStatementCache:
+  ReturnType<typeof verifyIdentityStatement> | undefined;
+export function getSignedIdentityStatement() {
+  return (identityStatementCache ??= verifyIdentityStatement(
+    identityStatement,
+    publicKey,
   ));
 }
 
