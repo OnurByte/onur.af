@@ -385,6 +385,8 @@ $$
     const panel = contents.locator('.contents-panel');
     const firstSection = rail.locator('a[data-section="details"]');
     const secondSection = rail.locator('a[data-section="sources"]');
+    const firstPanelSection = panel.locator('a[data-section="details"]');
+    const secondPanelSection = panel.locator('a[data-section="sources"]');
     const articlePosition = await page
       .locator('.log-body.e-content')
       .boundingBox();
@@ -411,6 +413,13 @@ $$
         ),
       )
       .toBe('1');
+    await firstSection.hover();
+    await expect(panel).toBeVisible();
+    await secondPanelSection.click();
+    await expect(page).toHaveURL(/#sources$/);
+    await expect(panel).toBeVisible();
+    await firstPanelSection.click();
+    await expect(page).toHaveURL(/#details$/);
     await firstSection.click();
     await expect(page).toHaveURL(/#details$/);
     await expect(firstSection).toHaveAttribute('aria-current', 'location');
@@ -426,6 +435,11 @@ $$
       'location',
     );
     await page.setViewportSize({ width: 390, height: 900 });
+    await secondSection.click();
+    await expect(page).toHaveURL(/#sources$/);
+    await expect(secondSection).toHaveAttribute('aria-current', 'location');
+    await firstSection.click();
+    await expect(page).toHaveURL(/#details$/);
     await firstSection.click();
     await expect(firstSection).toHaveAttribute('aria-current', 'location');
     expect(
