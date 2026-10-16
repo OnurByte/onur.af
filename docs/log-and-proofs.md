@@ -1,6 +1,6 @@
 # Log and identity proofs
 
-`/log` is the chronological index, linked to the left of Find. Each entry uses a single, randomly generated three-word ID at `/log/<id>` with its signature at `/pgp/log/<id>`. The ID is part of the signed bytes and never changes. `?v=1` selects an immutable revision. Find and RSS use the same entry URLs. `/pgp/log` lists the signed entries. Account names and their monochrome ticks both open the corresponding PGP page. The signed account pages use the short description “Verified by PGP.”
+`/log` is the chronological index, linked to the left of Find. Each entry uses a single, randomly generated three-word ID at `/log/<id>` with its signature at `/pgp/log/<id>`. The ID is part of the signed bytes and never changes. `?v=1` selects an immutable revision. Find and RSS use the same entry URLs. `/pgp` lists signed Log entries directly and links each title to its proof; there is no separate `/pgp/log` index. Account names and their monochrome ticks both open the corresponding PGP page. The signed account pages use the short description “Verified by PGP.”
 
 ## Publish a Log entry
 
