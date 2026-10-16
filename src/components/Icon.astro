@@ -7,6 +7,7 @@ const icons = {
   shareX: { filename: 'x.svg', width: 24, height: 24 },
   shareRss: { filename: 'rss.svg', width: 24, height: 24 },
   discord: { filename: 'discord.svg', width: 24, height: 24 },
+  reddit: { filename: 'reddit.svg', width: 24, height: 24 },
   telegram: { filename: 'telegram.svg', width: 24, height: 24 },
   share: { filename: 'share.svg', width: 24, height: 24 },
   shareLink: { filename: 'share-link.svg', width: 24, height: 24 },
@@ -46,7 +47,10 @@ const { filename, width, height } = icons[name];
   {...stylex.attrs(
     shell.icon,
     shell.monochrome,
-    (name.startsWith('share') || name === 'discord' || name === 'telegram') &&
+    (name.startsWith('share') ||
+      name === 'discord' ||
+      name === 'reddit' ||
+      name === 'telegram') &&
       shell.shareIcon,
     (name === 'x' || name === 'github' || name === 'spotify') &&
       shell.providerIcon,

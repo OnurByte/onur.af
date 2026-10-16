@@ -31,6 +31,11 @@ const rows = [
     action: 'discord',
   },
   {
+    label: 'Reddit',
+    icon: 'reddit',
+    href: `https://www.reddit.com/submit?${new URLSearchParams({ title, url })}`,
+  },
+  {
     label: 'Telegram',
     icon: 'telegram',
     href: `https://t.me/share/url?${new URLSearchParams({ url, text: title })}`,
@@ -129,7 +134,8 @@ const rows = [
 <noscript>
   <div {...stylex.attrs(shareStyles.fallback)}>
     <a href="/rss">RSS</a> · <a href={rows[2].href}>Share on X</a> ·{' '}
-    <a href={rows[4].href}>Share on Telegram</a>
+    <a href={rows[4].href}>Share on Reddit</a> ·{' '}
+    <a href={rows[5].href}>Share on Telegram</a>
   </div>
 </noscript>
 <script>
