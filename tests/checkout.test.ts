@@ -106,7 +106,11 @@ test.skipIf(!enabled)(
         expect(asset.ok).toBe(true);
         expect(await asset.text()).toContain('<svg');
       }
-      expect(home).not.toContain('<svg');
+      const inlineSvgs = [...home.matchAll(/<svg\b[^>]*>/g)];
+      expect(inlineSvgs.length).toBeGreaterThan(0);
+      expect(
+        inlineSvgs.every((svg) => svg[0].includes('class="log-sigil"')),
+      ).toBe(true);
       expect([
         ...home.matchAll(/<img[^>]*data-icon="(?:onur|rss|tor|i2p)"/g),
       ]).toHaveLength(4);
@@ -151,9 +155,7 @@ test.skipIf(!enabled)(
               ?.trim(),
           ).toBe(description);
         }
-        if (path === '/') expect(page).not.toContain('name="description"');
-        else
-          expect(page).toContain(`name="description" content="${description}"`);
+        expect(page).toContain(`name="description" content="${description}"`);
         if (path !== '/')
           expect(
             (
@@ -162,17 +164,12 @@ test.skipIf(!enabled)(
               })
             ).status,
           ).toBe(200);
-        if (path === '/') {
-          expect(page).not.toContain('property="og:description"');
-          expect(page).not.toContain('name="twitter:description"');
-        } else {
-          expect(page).toContain(
-            `property="og:description" content="${description}"`,
-          );
-          expect(page).toContain(
-            `name="twitter:description" content="${description}"`,
-          );
-        }
+        expect(page).toContain(
+          `property="og:description" content="${description}"`,
+        );
+        expect(page).toContain(
+          `name="twitter:description" content="${description}"`,
+        );
       }
       expect(home).toContain('data-network-label="TOR"');
       expect(home).toContain('data-network-label="I2P"');
