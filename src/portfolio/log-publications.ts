@@ -76,10 +76,8 @@ export function canonicalLogPublication(
   )}\n`;
 }
 
-/** Verify signatures, chain continuity, append-only history, and the live Log set. */
-export async function verifyLogPublications(
-  entries: readonly LogEntry[],
-  revisionDigests: Readonly<Record<string, { sha256: string }>>,
+/** Verify signatures, chain continuity, and append-only history without a live-set comparison. */
+export async function verifyLogPublicationChain(
   input: unknown,
   publicKey: string,
 ): Promise<VerifiedLogPublications> {
@@ -137,6 +135,18 @@ export async function verifyLogPublications(
   }
 
   const latest = editions.at(-1);
+  return latest ? { editions, latest } : { editions };
+}
+
+/** Verify the signed chain and require its head to match the current Log set. */
+export async function verifyLogPublications(
+  entries: readonly LogEntry[],
+  revisionDigests: Readonly<Record<string, { sha256: string }>>,
+  input: unknown,
+  publicKey: string,
+): Promise<VerifiedLogPublications> {
+  const publications = await verifyLogPublicationChain(input, publicKey);
+  const latest = publications.latest;
   if (latest) {
     const expected = entries
       .flatMap((entry) =>
@@ -167,5 +177,5 @@ export async function verifyLogPublications(
     }
   }
 
-  return latest ? { editions, latest } : { editions };
+  return publications;
 }

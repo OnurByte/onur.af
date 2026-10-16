@@ -1,3 +1,8 @@
 {
-  "editions": []
+  "editions": [
+    {
+      "manifest": "{\n  \"format\": 1,\n  \"sequence\": 1,\n  \"previousSha256\": null,\n  \"entries\": [\n    {\n      \"id\": \"sealed-lodge-waits\",\n      \"version\": 1,\n      \"sha256\": \"5ea22197836773e99068837147510546c11dbd243bc5c3be553646808122ea46\"\n    }\n  ]\n}\n",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatILoQAKCRDNHqyHSkMK\nVqjEAP9aa68MX4/kf+xXW1mAo2eUtma5o946uk9Cy3plHY8fhgD+MoBiDwiutaVa\nRk5GsJyssqB2Z3RgDdkjZOrCwW8JZA0=\n=P8PX\n-----END PGP SIGNATURE-----\n"
+    }
+  ]
 }

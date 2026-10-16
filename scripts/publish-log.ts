@@ -37,6 +37,12 @@ for (const revision of entry.revisions) {
 await execute('bun', ['scripts/log-timestamps.ts', '--check'], {
   timeout: 15000,
 });
+const publication = await execute(
+  'bun',
+  ['scripts/log-publications.ts', 'append'],
+  { timeout: 120000 },
+);
+process.stdout.write(publication.stdout);
 console.log(
   `Published /log/${entry.id} with separate signatures and timestamp receipts for every revision.`,
 );
