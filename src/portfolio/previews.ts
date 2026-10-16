@@ -1,7 +1,7 @@
 import pages from '../content/public-pages.json' with { type: 'json' };
 import { logEntries, logProofUrl, logUrl, logMetadata } from './log';
 
-export const socialImageVersion = '3';
+export const socialImageVersion = '4';
 
 export const mottos = [
   'The creator originates.',

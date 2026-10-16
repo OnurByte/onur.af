@@ -1,0 +1,134 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import Icon from './Icon.astro';
+import { dialogStyles } from '../styles/dialog';
+import { searchStyles } from '../styles/search';
+import { shareStyles } from '../styles/log-share';
+import {
+  logUrl,
+  logProofUrl,
+  logMetadata,
+  type LogEntry,
+} from '../portfolio/log';
+import { siteOrigin } from '../portfolio/seo';
+interface Props {
+  entry: LogEntry;
+  verified: boolean;
+}
+const { entry, verified } = Astro.props;
+const title = logMetadata(entry).title;
+const origin = siteOrigin() ?? Astro.url.origin;
+const url = new URL(logUrl(entry), origin).href;
+const version = entry.revisions.at(-1)!.version;
+const escapedTitle = title.replace(/[\\[\]]/g, '\\$&');
+const citation = `[${escapedTitle}](${url})\n\nv${version}${verified ? ` · [Verified revision](${new URL(logProofUrl(entry, version), origin).href})` : ''}`;
+const rows = [
+  {
+    label: 'RSS',
+    icon: 'shareRss',
+    href: '/rss',
+  },
+  { label: 'Copy link', icon: 'shareLink', action: 'copy' },
+  {
+    label: 'X',
+    icon: 'shareX',
+    href: `https://twitter.com/intent/tweet?${new URLSearchParams({ text: title, url })}`,
+  },
+  {
+    label: 'Discord',
+    icon: 'discord',
+    action: 'discord',
+  },
+  {
+    label: 'Telegram',
+    icon: 'telegram',
+    href: `https://t.me/share/url?${new URLSearchParams({ url, text: title })}`,
+  },
+  { label: 'Copy citation', icon: 'shareCitation', action: 'citation' },
+  {
+    label: 'More options',
+    icon: 'share',
+    action: 'native',
+  },
+] as const;
+---
+
+<button
+  id="open-share"
+  hidden
+  type="button"
+  aria-label="Share log"
+  aria-haspopup="dialog"
+  aria-controls="share-dialog"
+  aria-keyshortcuts="Control+Shift"
+  {...stylex.attrs(shareStyles.trigger)}
+>
+  Share{' '}
+  <kbd data-share-shortcut {...stylex.attrs(searchStyles.shortcut)}>
+    Ctrl Shift
+  </kbd>
+</button>
+<dialog
+  id="share-dialog"
+  aria-label="Share log"
+  data-url={url}
+  data-title={title}
+  data-citation={citation}
+  {...stylex.attrs(dialogStyles.dialog)}
+>
+  <form method="dialog">
+    <button type="submit" {...stylex.attrs(dialogStyles.accessibleClose)}>
+      Close share
+    </button>
+  </form>
+  <ul {...stylex.attrs(searchStyles.results)}>
+    {rows.map((row, index) => (
+      <li
+        hidden={'action' in row && row.action === 'native'}
+        data-native-row={
+          'action' in row && row.action === 'native' ? '' : undefined
+        }
+      >
+        {'href' in row ? (
+          <a
+            href={row.href}
+            target={index === 0 ? undefined : '_blank'}
+            rel={index === 0 ? undefined : 'noopener noreferrer'}
+            {...stylex.attrs(searchStyles.result)}
+          >
+            <span {...stylex.attrs(shareStyles.icon)}>
+              <Icon name={row.icon} />
+            </span>
+            <span>{row.label}</span>
+          </a>
+        ) : (
+          <button
+            type="button"
+            data-share-action={row.action}
+            {...stylex.attrs(searchStyles.result, shareStyles.row)}
+          >
+            <span {...stylex.attrs(shareStyles.icon)}>
+              <Icon name={row.icon} />
+            </span>
+            <span>{row.label}</span>
+          </button>
+        )}
+      </li>
+    ))}
+  </ul>
+  <p
+    id="share-status"
+    hidden
+    role="status"
+    {...stylex.attrs(searchStyles.status)}
+  ></p>
+</dialog>
+<noscript>
+  <div {...stylex.attrs(shareStyles.fallback)}>
+    <a href="/rss">RSS</a> · <a href={rows[2].href}>Share on X</a> ·{' '}
+    <a href={rows[4].href}>Share on Telegram</a>
+  </div>
+</noscript>
+<script>
+  import '../client/log-share';
+</script>

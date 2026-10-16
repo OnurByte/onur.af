@@ -1,3 +1,4 @@
+import { openDialog, closeDialog } from './dialogs';
 export {};
 const trigger = document.querySelector<HTMLButtonElement>('#open-search');
 const dialog = document.querySelector<HTMLDialogElement>('#search-dialog');
@@ -14,7 +15,7 @@ const entries = [...(results?.children ?? [])].map((item) => ({
 }));
 function open() {
   if (!dialog || !input) return;
-  dialog.showModal();
+  openDialog(dialog, trigger);
   input.focus();
   input.select();
   search();
@@ -29,12 +30,9 @@ document.addEventListener('keydown', (event) => {
     !event.repeat
   ) {
     event.preventDefault();
-    if (dialog?.open) dialog.close();
+    if (dialog?.open) closeDialog(dialog);
     else open();
   }
-});
-dialog?.addEventListener('close', () => {
-  trigger?.focus();
 });
 dialog?.addEventListener('click', (event) => {
   if (event.target !== dialog) return;
@@ -45,12 +43,12 @@ dialog?.addEventListener('click', (event) => {
     event.clientY < rect.top ||
     event.clientY > rect.bottom
   )
-    dialog.close();
+    closeDialog(dialog);
 });
 dialog?.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
     event.preventDefault();
-    dialog.close();
+    closeDialog(dialog);
     return;
   }
   if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;

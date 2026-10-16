@@ -1,0 +1,30 @@
+import * as stylex from '@stylexjs/stylex';
+export const shareStyles = stylex.create({
+  trigger: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    cursor: 'pointer',
+    minHeight: 44,
+    fontSize: 'inherit',
+  },
+  row: {
+    width: '100%',
+    textAlign: 'left',
+    cursor: 'pointer',
+    fontSize: 16,
+    color: 'inherit',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
+  icon: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 24,
+    height: 24,
+    flexShrink: 0,
+    overflow: 'hidden',
+  },
+  fallback: { padding: 12 },
+});
