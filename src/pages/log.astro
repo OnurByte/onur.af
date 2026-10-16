@@ -6,6 +6,7 @@ import { logStyles } from '../styles/log';
 import { logEntries, logProofUrl, logUrl, readingTime } from '../portfolio/log';
 import { publicPreview } from '../portfolio/previews';
 import ProofBadge from '../components/ProofBadge.astro';
+import LogSigil from '../components/LogSigil.astro';
 import { getLogSignatures } from '../portfolio/verified-proofs';
 const signatures = await getLogSignatures();
 ---
@@ -53,6 +54,9 @@ const signatures = await getLogSignatures();
           <p {...stylex.attrs(logStyles.excerpt)} class="p-summary">
             {entry.summary}
           </p>
+          <div {...stylex.attrs(logStyles.sigil)}>
+            <LogSigil id={entry.id} />
+          </div>
         </article>
       ))}
     </div>

@@ -60,10 +60,7 @@ import SearchNetworks from './SearchNetworks.astro';
     <SearchNetworks />
     {searchLogEntries.map(({ url, meta, searchText }) => (
       <li data-search-text={searchText}>
-        <a
-          href={url}
-          {...stylex.attrs(searchStyles.result)}
-        >
+        <a href={url} {...stylex.attrs(searchStyles.result)}>
           <span data-result-title>{meta.title}</span>
           <small data-result-description {...stylex.attrs(searchStyles.detail)}>
             {meta.description}
