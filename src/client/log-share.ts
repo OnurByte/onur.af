@@ -11,7 +11,7 @@ function open() {
   openDialog(dialog, trigger);
   dialog.querySelector<HTMLAnchorElement>('a')?.focus();
 }
-if (trigger && dialog) trigger.hidden = false;
+if (trigger && dialog) trigger.parentElement?.removeAttribute('hidden');
 trigger?.addEventListener('click', open);
 if (typeof navigator.share === 'function')
   dialog

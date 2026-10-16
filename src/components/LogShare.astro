@@ -53,10 +53,9 @@ const rows = [
 ] as const;
 ---
 
-<div {...stylex.attrs(shareStyles.triggerRow)}>
+<div hidden {...stylex.attrs(shareStyles.triggerRow)}>
   <button
     id="open-share"
-    hidden
     type="button"
     aria-label="Share log"
     aria-haspopup="dialog"
