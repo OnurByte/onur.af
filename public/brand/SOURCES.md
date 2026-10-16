@@ -24,4 +24,6 @@ Site typography: system sans-serif. Social cards bundle Liberation Sans regular 
 - `proof.svg`: original monochrome 16 px identity-proof check authored for this portfolio.
 
 - `discord.svg`, `telegram.svg`: Simple Icons (https://github.com/simple-icons/simple-icons), CC0, white monochrome variants.
-- `share.svg`, `share-link.svg`, `share-citation.svg`: original portfolio interface artwork, white monochrome.
+- `share.svg`, `share-link.svg`, `share-mail.svg`: original portfolio interface artwork, white monochrome.
+
+- `share-mark.svg`: original portfolio artwork; three linked diamond nodes, white monochrome.

@@ -4,24 +4,15 @@ import Icon from './Icon.astro';
 import { dialogStyles } from '../styles/dialog';
 import { searchStyles } from '../styles/search';
 import { shareStyles } from '../styles/log-share';
-import {
-  logUrl,
-  logProofUrl,
-  logMetadata,
-  type LogEntry,
-} from '../portfolio/log';
+import { logUrl, logMetadata, type LogEntry } from '../portfolio/log';
 import { siteOrigin } from '../portfolio/seo';
 interface Props {
   entry: LogEntry;
-  verified: boolean;
 }
-const { entry, verified } = Astro.props;
+const { entry } = Astro.props;
 const title = logMetadata(entry).title;
 const origin = siteOrigin() ?? Astro.url.origin;
 const url = new URL(logUrl(entry), origin).href;
-const version = entry.revisions.at(-1)!.version;
-const escapedTitle = title.replace(/[\\[\]]/g, '\\$&');
-const citation = `[${escapedTitle}](${url})\n\nv${version}${verified ? ` · [Verified revision](${new URL(logProofUrl(entry, version), origin).href})` : ''}`;
 const rows = [
   {
     label: 'RSS',
@@ -44,7 +35,11 @@ const rows = [
     icon: 'telegram',
     href: `https://t.me/share/url?${new URLSearchParams({ url, text: title })}`,
   },
-  { label: 'Copy citation', icon: 'shareCitation', action: 'citation' },
+  {
+    label: 'Mail',
+    icon: 'shareMail',
+    href: `mailto:?${new URLSearchParams({ subject: title, body: url }).toString().replaceAll('+', '%20')}`,
+  },
   {
     label: 'More options',
     icon: 'share',
@@ -63,7 +58,8 @@ const rows = [
   aria-keyshortcuts="Control+Shift"
   {...stylex.attrs(shareStyles.trigger)}
 >
-  Share{' '}
+  <Icon name="shareMark" />
+  <span>Share</span>
   <kbd data-share-shortcut {...stylex.attrs(searchStyles.shortcut)}>
     Ctrl Shift
   </kbd>
@@ -73,7 +69,6 @@ const rows = [
   aria-label="Share log"
   data-url={url}
   data-title={title}
-  data-citation={citation}
   {...stylex.attrs(dialogStyles.dialog)}
 >
   <form method="dialog">
@@ -81,7 +76,7 @@ const rows = [
       Close share
     </button>
   </form>
-  <ul {...stylex.attrs(searchStyles.results)}>
+  <ul {...stylex.attrs(searchStyles.results, shareStyles.results)}>
     {rows.map((row, index) => (
       <li
         hidden={'action' in row && row.action === 'native'}
@@ -92,8 +87,16 @@ const rows = [
         {'href' in row ? (
           <a
             href={row.href}
-            target={index === 0 ? undefined : '_blank'}
-            rel={index === 0 ? undefined : 'noopener noreferrer'}
+            target={
+              index === 0 || row.href.startsWith('mailto:')
+                ? undefined
+                : '_blank'
+            }
+            rel={
+              index === 0 || row.href.startsWith('mailto:')
+                ? undefined
+                : 'noopener noreferrer'
+            }
             {...stylex.attrs(searchStyles.result)}
           >
             <span {...stylex.attrs(shareStyles.icon)}>

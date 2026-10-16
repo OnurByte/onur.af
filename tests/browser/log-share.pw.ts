@@ -8,6 +8,7 @@ test('log sharing preserves RSS navigation and transfers focus between dialogs',
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/log/sealed-lodge-waits');
   const share = page.getByRole('button', { name: 'Share log' });
+  await page.screenshot({ path: '/tmp/portfolio-share-trigger.png' });
   await share.click();
   const dialog = page.getByRole('dialog', { name: 'Share log' });
   await expect(dialog.getByRole('link').first()).toHaveAttribute(
@@ -19,15 +20,39 @@ test('log sharing preserves RSS navigation and transfers focus between dialogs',
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     'http://127.0.0.1:14323/log/sealed-lodge-waits',
   );
+  await expect(dialog).not.toBeVisible();
+  await expect(share).toBeFocused();
+  await share.click();
   await expect(dialog.getByRole('status')).toBeHidden();
   await expect(dialog.getByRole('heading')).toHaveCount(0);
   await expect(
     dialog.getByText('↑ ↓ Navigate · Enter Select · Esc Close'),
   ).toHaveCount(0);
-  await dialog.getByRole('button', { name: /Copy citation/ }).click();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(
-    '/pgp/log/sealed-lodge-waits?v=1',
+  await expect(
+    dialog.getByRole('button', { name: /Copy citation/ }),
+  ).toHaveCount(0);
+  const mail = dialog.getByRole('link', { name: 'Mail', exact: true });
+  const mailUrl = new URL((await mail.getAttribute('href'))!);
+  expect(mailUrl.protocol).toBe('mailto:');
+  expect(mailUrl.searchParams.get('subject')).toBe(
+    'Example: copying embed snippets',
   );
+  expect(mailUrl.searchParams.get('body')).toBe(
+    'http://127.0.0.1:14323/log/sealed-lodge-waits',
+  );
+  await mail.evaluate((node) =>
+    node.addEventListener('click', (event) => event.preventDefault()),
+  );
+  await mail.click();
+  await expect(dialog).not.toBeVisible();
+  await expect(share).toBeFocused();
+  await share.click();
+  await dialog.getByRole('button', { name: 'Discord', exact: true }).click();
+  await expect(dialog).not.toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    'http://127.0.0.1:14323/log/sealed-lodge-waits',
+  );
+  await share.click();
   await page.keyboard.press('Control+k');
   await expect(
     page.getByRole('dialog', { name: 'Search pages' }),
@@ -66,6 +91,9 @@ test('share is usable on narrow screens in both themes and handles clipboard fai
     await expect(
       dialog.getByRole('button', { name: /More options/ }),
     ).toHaveCount(0);
+    await page.screenshot({
+      path: `/tmp/portfolio-share-balanced-${colorScheme}.png`,
+    });
     await page.keyboard.press('ArrowDown');
     await expect(
       dialog.getByRole('button', { name: 'Copy link', exact: true }),
@@ -131,3 +159,52 @@ test('RSS and platform links remain reachable without JavaScript', async ({
   ).toHaveAttribute('href', '/rss');
   await context.close();
 });
+
+test('contents rail stays beside the article while scrolling on narrow screens', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 700 });
+  await page.goto('/log/sealed-lodge-waits');
+  const rail = page.locator('.contents-rail');
+  const before = (await rail.boundingBox())!;
+  expect(before.x).toBeGreaterThanOrEqual(280);
+  expect(before.x + before.width).toBeLessThanOrEqual(300);
+  const text = (await page
+    .locator('.log-body.e-content p')
+    .first()
+    .boundingBox())!;
+  expect(text.x + text.width).toBeLessThan(before.x);
+  expect(before.y).toBeGreaterThan(200);
+  const first = (await rail.locator('a').first().boundingBox())!;
+  const last = (await rail.locator('a').last().boundingBox())!;
+  expect(last.y).toBeGreaterThan(first.y);
+  await page.evaluate(() =>
+    window.scrollTo(0, document.documentElement.scrollHeight),
+  );
+  const after = (await rail.boundingBox())!;
+  expect(Math.abs(after.y - before.y)).toBeLessThan(1);
+  expect(after.x + after.width).toBeLessThanOrEqual(320);
+});
+
+for (const width of [320, 1280]) {
+  test(`contents returns from section two to one on a short log at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/log/sealed-lodge-waits');
+    const links = page.locator('.contents-rail a');
+    await links.nth(1).click();
+    await expect(links.nth(1)).toHaveAttribute('aria-current', 'location');
+    const secondScroll = await page.evaluate(() => scrollY);
+    await links.nth(0).click();
+    await expect(page).toHaveURL(/#embed-snippet$/);
+    await expect(links.nth(0)).toHaveAttribute('aria-current', 'location');
+    await expect
+      .poll(() => page.evaluate(() => scrollY))
+      .toBeLessThan(secondScroll);
+    const heading = (await page
+      .locator('.log-body #embed-snippet')
+      .boundingBox())!;
+    expect(Math.abs(heading.y - 160)).toBeLessThanOrEqual(1);
+  });
+}

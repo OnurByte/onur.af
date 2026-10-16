@@ -62,10 +62,7 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
         v{latest.version} · {date(latest.publishedAt)}
       </time>
     )}
-    <LogShare
-      entry={entry}
-      verified={Boolean(signatures[`${entry.id}-v${latest.version}`])}
-    />
+    <LogShare entry={entry} />
   </div>
   <LogTags tags={metadata.tags} />
   <LogContents headings={headings} sources={metadata.sources.length > 0} />
@@ -128,6 +125,11 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
 <style>
   .h-entry {
     max-width: var(--reading-width);
+  }
+  @media (max-width: 1023px) {
+    .h-entry:has([data-log-contents]) {
+      max-width: min(var(--reading-width), calc(100% - 32px));
+    }
   }
   .log-connections {
     margin-top: 32px;
