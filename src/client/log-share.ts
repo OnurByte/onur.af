@@ -79,11 +79,35 @@ dialog?.addEventListener('click', async (event) => {
       closeDialog(dialog);
       return;
     }
+    if (action === 'discord') {
+      const isMobile =
+        /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent) ||
+        (navigator.maxTouchPoints > 1 &&
+          /Macintosh/i.test(navigator.userAgent));
+      if (isMobile && typeof navigator.share === 'function') {
+        await navigator.share({ title: dialog.dataset.title!, url });
+        closeDialog(dialog);
+        return;
+      }
+
+      let copy: Promise<void> | undefined;
+      try {
+        copy = navigator.clipboard?.writeText(url);
+      } catch {
+        // Still open Discord if the browser blocks clipboard access.
+      }
+      window.open('discord://-/channels/@me', '_blank', 'noopener,noreferrer');
+      if (!copy) throw new Error('Clipboard unavailable');
+      await copy;
+      status.hidden = false;
+      status.textContent = 'Link copied. Paste it into a Discord message.';
+      return;
+    }
     await navigator.clipboard.writeText(url);
     closeDialog(dialog);
   } catch (error) {
     if (
-      action === 'native' &&
+      (action === 'native' || action === 'discord') &&
       error instanceof DOMException &&
       error.name === 'AbortError'
     )
@@ -92,7 +116,9 @@ dialog?.addEventListener('click', async (event) => {
     status.textContent =
       action === 'native'
         ? 'Could not open sharing. Try Copy link.'
-        : 'Copy failed. Copy the address from your browser.';
+        : action === 'discord'
+          ? 'Copy failed. Copy the address from your browser and paste it into Discord.'
+          : 'Copy failed. Copy the address from your browser.';
   }
 });
 dialog?.addEventListener('keydown', (event) => {
