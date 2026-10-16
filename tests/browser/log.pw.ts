@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-test('Log navigation and PGP anchors remain minimal and usable on mobile', async ({
+test('PGP lists signed Log entries directly and remains usable on mobile', async ({
   page,
   request,
 }) => {
@@ -13,13 +13,28 @@ test('Log navigation and PGP anchors remain minimal and usable on mobile', async
   await expect(
     page.getByText(/no verification performed|illustrative layout|unverified/i),
   ).toHaveCount(0);
+  const log = page.locator('#log');
+  await expect(
+    log.getByRole('heading', { name: 'Log', exact: true }),
+  ).toBeVisible();
+  const signedEntry = log.getByRole('link', {
+    name: 'Example: copying embed snippets',
+    exact: true,
+  });
+  await expect(signedEntry).toHaveAttribute(
+    'href',
+    '/pgp/log/sealed-lodge-waits',
+  );
+  expect((await request.get('/pgp/log')).status()).toBe(404);
+  await signedEntry.click();
+  await expect(page).toHaveURL('/pgp/log/sealed-lodge-waits');
+  await expect(
+    page.getByRole('textbox', { name: 'PGP signature' }),
+  ).toBeVisible();
+  await page.goto('/pgp');
+  await expect(page.locator('#log')).toBeVisible();
   await page
-    .locator('main')
-    .getByRole('link', { name: 'Log', exact: true })
-    .click();
-  await expect(page).toHaveURL('/pgp/log');
-  await page
-    .locator('main')
+    .locator('header nav')
     .getByRole('link', { name: 'Log', exact: true })
     .click();
   await expect(page).toHaveURL('/log');

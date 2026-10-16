@@ -6,7 +6,7 @@ export const publicPaths: readonly string[] = [
   '/pgp',
   '/log',
 ];
-export const proofPaths = ['/pgp/x', '/pgp/github', '/pgp/log'] as const;
+export const proofPaths = ['/pgp/x', '/pgp/github'] as const;
 export const logPaths = () =>
   logEntries.flatMap((entry) => [logUrl(entry), logProofUrl(entry)]);
 export const siteDescription = '';
