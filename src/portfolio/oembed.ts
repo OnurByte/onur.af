@@ -1,5 +1,5 @@
 import { publicPreview } from './previews';
-import { publicPaths, validSiteUrl } from './seo';
+import { validSiteUrl } from './seo';
 
 export function oembedResponse(
   origin: string | undefined,
@@ -28,10 +28,11 @@ export function oembedResponse(
     target.username ||
     target.password ||
     target.search ||
-    target.hash ||
-    !publicPaths.includes(target.pathname)
+    target.hash
   )
     return error(404);
+  const preview = publicPreview(target.pathname);
+  if (!preview) return error(404);
 
   const limits = ['maxwidth', 'maxheight'].map((key) => {
     const value = request.searchParams.get(key);
@@ -45,8 +46,6 @@ export function oembedResponse(
     return error(404);
   const size =
     Math.min(...limits) >= 512 ? 512 : Math.min(...limits) >= 180 ? 180 : 0;
-  const preview = publicPreview(target.pathname);
-  if (!preview) return error(404);
   const { title, description } = preview;
   return new Response(
     JSON.stringify({
