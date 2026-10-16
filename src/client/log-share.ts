@@ -96,7 +96,7 @@ dialog?.addEventListener('click', async (event) => {
       } catch {
         // Still open Discord if the browser blocks clipboard access.
       }
-      window.location.href = 'discord://-/channels/@me';
+      window.open('discord://-/channels/@me', '_blank', 'noopener,noreferrer');
       if (!copy) throw new Error('Clipboard unavailable');
       await copy;
       status.hidden = false;
@@ -117,7 +117,7 @@ dialog?.addEventListener('click', async (event) => {
       action === 'native'
         ? 'Could not open sharing. Try Copy link.'
         : action === 'discord'
-          ? 'Could not copy the link. Copy the address from your browser and paste it into Discord.'
+          ? 'Copy failed. Copy the address from your browser and paste it into Discord.'
           : 'Copy failed. Copy the address from your browser.';
   }
 });
