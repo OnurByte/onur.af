@@ -6,6 +6,11 @@ import {
   verifyLogSignatures,
   assertAllLogRevisionsSigned,
 } from './log-signatures';
+import {
+  verifyLogPublications,
+  type VerifiedLogPublications,
+} from './log-publications';
+import publicationArtifacts from '../content/log-publications.json' with { type: 'json' };
 import { logEntries } from './log';
 let logCache: ReturnType<typeof verifyLogSignatures> | undefined;
 export function getLogSignatures() {
@@ -17,6 +22,18 @@ export function getLogSignatures() {
     assertAllLogRevisionsSigned(logEntries, signatures);
     return signatures;
   }));
+}
+
+let logPublicationCache: Promise<VerifiedLogPublications> | undefined;
+export function getLogPublications() {
+  return (logPublicationCache ??= getLogSignatures().then((signatures) =>
+    verifyLogPublications(
+      logEntries,
+      signatures,
+      publicationArtifacts,
+      publicKey,
+    ),
+  ));
 }
 
 let signedIdentityCache:
