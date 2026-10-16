@@ -11,8 +11,14 @@ export const logStyles = stylex.create({
   },
   entryCard: {
     position: 'relative',
+    display: 'grid',
+    gridTemplateColumns: {
+      default: 'minmax(0, 1fr) 72px',
+      '@media (min-width: 621px)': 'minmax(0, 1fr) 136px',
+    },
+    columnGap: { default: 12, '@media (min-width: 621px)': 24 },
     marginTop: 40,
-    padding: 24,
+    padding: { default: 16, '@media (min-width: 621px)': 24 },
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'var(--border)',
@@ -21,6 +27,14 @@ export const logStyles = stylex.create({
   },
   cardLink: { position: 'absolute', inset: 0 },
   cardBadge: { position: 'relative', zIndex: 1 },
+  sigil: {
+    gridColumn: 2,
+    gridRow: '1 / span 3',
+    alignSelf: 'center',
+    width: '100%',
+    color: 'var(--text)',
+    pointerEvents: 'none',
+  },
   title: {
     display: 'flex',
     alignItems: 'center',
