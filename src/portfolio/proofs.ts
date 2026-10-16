@@ -8,6 +8,7 @@ import {
   verify,
 } from 'openpgp';
 import rawProofs from '../content/identity-proofs.json' with { type: 'json' };
+import rawIdentityStatement from '../content/identity-statement.json' with { type: 'json' };
 
 export const identityAccounts = {
   x: { label: '𝕏', profile: 'https://x.com/onurstirner', name: '@onurstirner' },
@@ -17,6 +18,54 @@ export const identityAccounts = {
     name: 'onurbyte',
   },
 } as const;
+
+export const identityStatementText = `I confirm that the X and GitHub accounts listed here are mine.\n${identityAccounts.x.profile}\n${identityAccounts.github.profile}\n`;
+
+const identityStatementSchema = z
+  .object({
+    publishedAt: z.iso.datetime({ offset: true }),
+    signedMessage: z
+      .string()
+      .max(32768)
+      .startsWith('-----BEGIN PGP SIGNED MESSAGE-----'),
+  })
+  .strict();
+export type VerifiedIdentityStatement = z.infer<
+  typeof identityStatementSchema
+> & { fingerprint: string; statement: string };
+export const identityStatement =
+  identityStatementSchema.parse(rawIdentityStatement);
+
+export async function verifyIdentityStatement(
+  input: unknown,
+  publicKey: string,
+): Promise<VerifiedIdentityStatement> {
+  const statement = identityStatementSchema.parse(input);
+  if (
+    !/^-----BEGIN PGP SIGNED MESSAGE-----\r?\n(?:Hash: [A-Za-z0-9, -]+\r?\n)*\r?\n/.test(
+      statement.signedMessage,
+    ) ||
+    !/-----END PGP SIGNATURE-----\r?\n?$/.test(statement.signedMessage)
+  )
+    throw new Error('Unexpected unsigned text or armor headers');
+  const message = await readCleartextMessage({
+    cleartextMessage: statement.signedMessage,
+  });
+  if (message.getText() !== identityStatementText)
+    throw new Error(
+      'Signed text must be the canonical account ownership statement',
+    );
+  const key = await readKey({ armoredKey: publicKey });
+  const result = await verify({ message, verificationKeys: key });
+  if (result.signatures.length !== 1)
+    throw new Error('Expected one cleartext signature');
+  await result.signatures[0]!.verified;
+  return {
+    ...statement,
+    fingerprint: key.getFingerprint().toUpperCase(),
+    statement: message.getText(),
+  };
+}
 
 const claimSchema = z.object({
   id: z.enum(['x', 'github']),

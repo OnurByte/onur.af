@@ -14,8 +14,11 @@ import {
 } from '../src/portfolio/log-signatures';
 import {
   identityProofs,
+  identityStatement,
+  identityStatementText,
   identityAccounts,
   verifyIdentitySignature,
+  verifyIdentityStatement,
   verifyProofs,
   checkAccountProof,
   type IdentityClaim,
@@ -62,9 +65,20 @@ async function main() {
       throw new Error(
         'Identity proof signature or public counterpart failed verification',
       );
+    await verifyIdentityStatement(identityStatement, publicKey);
     console.log(
-      `${verified.length} identity proofs and ${Object.keys(artifacts).length} Log signatures verified.`,
+      `${verified.length} identity proofs, the account ownership statement, and ${Object.keys(artifacts).length} Log signatures verified.`,
     );
+    return;
+  }
+  if (command === 'identity-statement' && !id) {
+    const statement = {
+      publishedAt: new Date().toISOString(),
+      signedMessage: await clearSignWithGpg(identityStatementText, fingerprint),
+    };
+    await verifyIdentityStatement(statement, publicKey);
+    await save('identity-statement', statement);
+    console.log('Signed the X and GitHub account ownership statement.');
     return;
   }
   if (command === 'log' && id) {
@@ -110,7 +124,7 @@ async function main() {
     return;
   }
   throw new Error(
-    'Usage: bun scripts/proofs.ts --check | log <id> [version] | identity <x|github> [proof-url]',
+    'Usage: bun scripts/proofs.ts --check | log <id> [version] | identity-statement | identity <x|github> [proof-url]',
   );
 }
 main().catch((error: unknown) => {

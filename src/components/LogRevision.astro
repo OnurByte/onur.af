@@ -1,64 +1,21 @@
 ---
 import * as stylex from '@stylexjs/stylex';
-import { logStyles } from '../styles/log';
 import { styles } from '../styles/pages';
-import {
-  logProofUrl,
-  logRevisionUrl,
-  revisionMarkdown,
-  type LogEntry,
-} from '../portfolio/log';
-import { getLogTimestampProofs } from '../portfolio/verified-proofs';
-import { digest } from '../portfolio/log-signatures';
+import { type LogEntry } from '../portfolio/log';
 import { renderLogMarkdown } from '../portfolio/log-markdown';
 interface Props {
   entry: LogEntry;
   version: number;
-  signed: boolean;
   archived?: boolean;
 }
-const { entry, version, signed, archived = false } = Astro.props;
+const { entry, version, archived = false } = Astro.props;
 const revision = entry.revisions[version - 1]!;
-const timestamp = (await getLogTimestampProofs())[`${entry.id}-v${version}`];
-const path = logRevisionUrl(entry, version);
 ---
 
 <div
   class:list={['log-body', !archived && 'e-content']}
   set:html={renderLogMarkdown(revision.body)}
 />
-<details
-  id={archived ? `proof-v${version}` : 'proof'}
-  {...stylex.attrs(logStyles.details)}
->
-  <summary {...stylex.attrs(logStyles.summary)}>Proof</summary>
-  <div {...stylex.attrs(logStyles.links)}>
-    <a {...stylex.attrs(styles.walletLink)} href={path} download>
-      Markdown
-    </a>
-    {signed && (
-      <a {...stylex.attrs(styles.walletLink)} href={`${path}.asc`} download>
-        Signature
-      </a>
-    )}
-  </div>
-  {timestamp && (
-    <div {...stylex.attrs(logStyles.links)}>
-      <a {...stylex.attrs(styles.walletLink)} href={`${path}.ots`} download>
-        Timestamp
-      </a>
-      <a
-        {...stylex.attrs(styles.walletLink)}
-        href={logProofUrl(entry, version)}
-      >
-        PGP
-      </a>
-    </div>
-  )}
-  <p {...stylex.attrs(logStyles.hash)}>
-    SHA-256 {digest(revisionMarkdown(entry, version))}
-  </p>
-</details>
 <template data-log-code-copy>
   <div class="log-code-block">
     <div {...stylex.attrs(styles.keyActions)}>

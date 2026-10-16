@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "test": "bun test",
-    "build": "bun run proofs:verify && bun run rss:verify && bun run timestamps:verify && astro build",
+    "build": "bun run proofs:verify && bun run rss:verify && bun run timestamps:verify && bun run log-publications:verify && astro build",
     "gateway": "bun src/gateway.ts",
     "preview": "astro preview",
     "start": "node --env-file-if-exists=.env ./dist/server/entry.mjs",
@@ -25,6 +25,7 @@
     "timestamps:stamp": "bun scripts/log-timestamps.ts stamp",
     "timestamps:upgrade": "bun scripts/log-timestamps.ts upgrade",
     "timestamps:verify": "bun scripts/log-timestamps.ts --check",
+    "log-publications:verify": "bun scripts/log-publications.ts --check",
     "log:publish": "bun scripts/publish-log.ts",
     "log:new": "bun scripts/log-new.ts"
   },
