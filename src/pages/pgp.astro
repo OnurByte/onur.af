@@ -4,12 +4,11 @@ import { styles } from '../styles/pages';
 import { publicPreview } from '../portfolio/previews';
 import Layout from '../layouts/Layout.astro';
 import ProofRegistry from '../components/ProofRegistry.astro';
-import SignedMessage from '../components/SignedMessage.astro';
 import publicKey from '../../public/pgp.asc?raw';
 import { readKey } from 'openpgp';
 import { getSignedIdentityStatement } from '../portfolio/verified-proofs';
 const description = publicPreview('/pgp')!.description;
-const identityStatement = await getSignedIdentityStatement();
+await getSignedIdentityStatement();
 const keyText = publicKey.trim();
 const fingerprint =
   (await readKey({ armoredKey: publicKey }))
@@ -30,11 +29,15 @@ const fingerprint =
       <p {...stylex.attrs(styles.paragraph)}>
         I confirm that the X and GitHub accounts listed here are mine.
       </p>
-      <SignedMessage
-        message={identityStatement.signedMessage}
-        download="/pgp/identity.asc"
-        label="Signed account ownership statement"
-      />
+      <p {...stylex.attrs(styles.paragraph)}>
+        <a
+          {...stylex.attrs(styles.walletLink)}
+          href="/pgp/identity.asc"
+          download
+        >
+          Signed ownership statement
+        </a>
+      </p>
       <div id="fingerprint-field" {...stylex.attrs(styles.keySection)}>
         <div id="fingerprint-actions" {...stylex.attrs(styles.keyActions)}>
           <button
