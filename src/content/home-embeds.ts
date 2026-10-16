@@ -1,5 +1,8 @@
 import { resolve } from 'node:path';
-import { createFileEmbedCache } from '../portfolio/embed-cache';
+import {
+  createFileEmbedCache,
+  createVercelBlobEmbedCache,
+} from '../portfolio/embed-cache';
 import { createHomeEmbedSources } from '../portfolio/home-embed-adapters';
 
 import { createSpotifySource } from '../portfolio/spotify-source';
@@ -10,8 +13,9 @@ const cache = createFileEmbedCache(
       ? '/tmp/onur-portfolio-embeds'
       : resolve('data', 'embeds')),
 );
+const spotifyCache = process.env.VERCEL ? createVercelBlobEmbedCache() : cache;
 export const spotifySource = createSpotifySource(undefined, undefined, {
-  cache,
+  cache: spotifyCache,
 });
 
 // Order controls placement. Removing a source disables its home section.

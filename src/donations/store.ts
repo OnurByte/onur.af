@@ -1,6 +1,6 @@
 import { formatXmrAmount, parseXmrAmount } from './money';
 
-export type DonationState = 'creating' | 'ready' | 'review';
+type DonationState = 'creating' | 'ready' | 'review';
 
 export interface Donation {
   id: string;

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  "includeEntryExports": true,
+  "entry": [
+    "src/gateway.ts",
+    "src/xmr/agent-host.ts",
+    "scripts/log-new.ts",
+    "scripts/log-timestamps-watch.ts",
+    "scripts/log-timestamps.ts",
+    "scripts/probe-wallet.ts",
+    "scripts/proofs.ts",
+    "scripts/publish-log.ts",
+    "scripts/rss-sign.ts",
+    "tests/browser/**/*.pw.ts",
+  ],
+  "project": [
+    "src/**/*.{astro,ts,js}",
+    "scripts/**/*.ts",
+    "tests/**/*.{ts,js,mjs}",
+  ],
+  // These are host-provided tools used for optional, isolated GPG fixtures.
+  "ignoreBinaries": ["gpg", "gpgconf"],
+  // The browser test creates this module in a temporary checkout before Node imports it.
+  "ignoreUnresolved": ["./proof-fixtures.mjs"],
+}

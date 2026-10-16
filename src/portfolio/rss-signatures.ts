@@ -19,7 +19,6 @@ export const rssSignatureSchema = z
       .startsWith('-----BEGIN PGP SIGNATURE-----'),
   })
   .strict();
-export type RssSignatureArtifact = z.infer<typeof rssSignatureSchema>;
 export type VerifiedRssSignature =
   | { status: 'unsigned' }
   | {

@@ -1,6 +1,6 @@
 import { formatXmrAmount, parseXmrAmount, parseXmrAmountOrZero } from './money';
 
-export type AgentPaymentStatus =
+type AgentPaymentStatus =
   | 'pending'
   | 'mempool'
   | 'unconfirmed'
@@ -9,7 +9,7 @@ export type AgentPaymentStatus =
   | 'locked'
   | 'paid';
 
-export interface AgentOrder {
+interface AgentOrder {
   id: string;
   address: string;
   amount: string;
@@ -17,7 +17,7 @@ export interface AgentOrder {
   birthdayHeight?: number | undefined;
 }
 
-export interface AgentStatus {
+interface AgentStatus {
   id: string;
   paid: boolean;
   status: AgentPaymentStatus;
