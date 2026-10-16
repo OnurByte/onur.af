@@ -17,7 +17,7 @@ import type { Root } from 'hast';
 import { logMetadata, type LogEntry } from './log';
 import { renderLogContent } from './log-markdown';
 
-export type LogImage = {
+type LogImage = {
   src: string;
   width: number;
   height: number;
