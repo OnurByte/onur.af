@@ -12,6 +12,7 @@ import {
 import { getLogSignatures } from '../portfolio/verified-proofs';
 import { logConnections } from '../portfolio/log-connections';
 import { siteOrigin } from '../portfolio/seo';
+import LogShare from './LogShare.astro';
 import LogContents from './LogContents.astro';
 import { renderLogContent } from '../portfolio/log-markdown';
 import LogDiff from './LogDiff.astro';
@@ -61,6 +62,10 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
         v{latest.version} · {date(latest.publishedAt)}
       </time>
     )}
+    <LogShare
+      entry={entry}
+      verified={Boolean(signatures[`${entry.id}-v${latest.version}`])}
+    />
   </div>
   <LogTags tags={metadata.tags} />
   <LogContents headings={headings} sources={metadata.sources.length > 0} />

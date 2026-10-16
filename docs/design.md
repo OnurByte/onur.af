@@ -41,3 +41,9 @@ X like/repost counters use local decorative SVG icons with visible counts and ac
 The native Spotify player uses validated Lanyard start/end timestamps to show a monochrome progress bar and elapsed/total time, updated every second while visible. It displays playback status and position, with no simulated play/pause or seeking controls. Confirmed idle playback replaces the Listening heading with Playing nothing and hides the timeline while retaining recent history; the empty message is never duplicated in the track area.
 
 X and GitHub share 5 rem activity rows with 24 px gaps. X previews use two lines with collapsed whitespace; repository titles and descriptions each use one ellipsized line. Counter/language/commit footers align to the bottom of each row. Both desktop cards stretch to the same grid-row height. Full content remains available through the native links.
+
+## Log sharing
+
+Individual Log pages expose Share beside their metadata. Find and Share use the shared native dialog styles and exclusive dialog controller. Share opens on release of Ctrl + Shift alone, outside editable fields (Find's search field permits switching dialogs). Chords containing a third key do not open Share. Match Find’s plain action list: no visible dialog heading, footer key guide or section dividers. Clipboard success is silent; only failures show a status message. RSS always comes first and links to `/rss`; X appears before Discord. Discord copies the canonical link for pasting. Citation includes the current revision and only labels its proof verified when the signature exists. Native device sharing appears only where supported; RSS, X and Telegram have a no-JavaScript fallback.
+
+Log and Log proof social cards reuse the complete deterministic seal renderer from the list cards. The existing 1200 × 630 monochrome composition remains, with text constrained beside a 240 px seal. Other public cards retain their existing layout.

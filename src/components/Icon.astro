@@ -3,6 +3,13 @@ import * as stylex from '@stylexjs/stylex';
 import { shell } from '../styles/shell';
 
 const icons = {
+  shareX: { filename: 'x.svg', width: 24, height: 24 },
+  shareRss: { filename: 'rss.svg', width: 24, height: 24 },
+  discord: { filename: 'discord.svg', width: 24, height: 24 },
+  telegram: { filename: 'telegram.svg', width: 24, height: 24 },
+  share: { filename: 'share.svg', width: 24, height: 24 },
+  shareLink: { filename: 'share-link.svg', width: 24, height: 24 },
+  shareCitation: { filename: 'share-citation.svg', width: 24, height: 24 },
   proof: { filename: 'proof.svg', width: 16, height: 16 },
   onur: { filename: 'onur.svg', width: 56, height: 56 },
   tor: { filename: 'tor.svg', width: 32, height: 32 },
@@ -38,6 +45,8 @@ const { filename, width, height } = icons[name];
   {...stylex.attrs(
     shell.icon,
     shell.monochrome,
+    (name.startsWith('share') || name === 'discord' || name === 'telegram') &&
+      shell.shareIcon,
     (name === 'x' || name === 'github' || name === 'spotify') &&
       shell.providerIcon,
     (name === 'proof' ||

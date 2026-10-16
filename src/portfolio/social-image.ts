@@ -2,6 +2,7 @@ import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import sharp from 'sharp';
+import { logSigilSvg } from './log-sigil-svg';
 import assets from './fonts/card-assets.json';
 import { mottos, publicPreviewByKey } from './previews';
 
@@ -57,6 +58,17 @@ export async function socialImage(page: string, mottoIndex = 0) {
       .png()
       .toBuffer();
   };
+  const sealId = preview.key.startsWith('log-')
+    ? preview.key.slice(4)
+    : preview.key.startsWith('verified-')
+      ? preview.key.slice(9)
+      : undefined;
+  const seal = sealId
+    ? await sharp(Buffer.from(logSigilSvg(sealId, '#fff')))
+        .resize(240, 240)
+        .png()
+        .toBuffer()
+    : undefined;
   const isHome = preview.key === 'home';
   const cardTitleCharacters = Array.from(preview.title);
   const cardTitle =
@@ -71,9 +83,21 @@ export async function socialImage(page: string, mottoIndex = 0) {
       .toBuffer(),
     isHome ? undefined : text(mottos[mottoIndex]!, 19, false, 930),
     text('Onur', isHome ? 64 : 28),
-    text(isHome ? mottos[mottoIndex]! : cardTitle, titleSize, true, 1056, 145),
+    text(
+      isHome ? mottos[mottoIndex]! : cardTitle,
+      titleSize,
+      true,
+      seal ? 744 : 1056,
+      145,
+    ),
     preview.description
-      ? text(preview.description, 28, false, 1000)
+      ? text(
+          preview.description,
+          28,
+          false,
+          seal ? 744 : 1000,
+          seal ? 135 : undefined,
+        )
       : undefined,
   ]);
   const logoBounds = isHome
@@ -101,6 +125,7 @@ export async function socialImage(page: string, mottoIndex = 0) {
         top: 165,
       },
       { input: title, left: 72, top: 220 },
+      ...(seal ? [{ input: seal, left: 888, top: 220 }] : []),
       ...(description ? [{ input: description, left: 76, top: 418 }] : []),
     ])
     .png()

@@ -1,5 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { dialogStyles } from '../styles/dialog';
 import { searchStyles } from '../styles/search';
 import { searchLogEntries, searchPrimaryEntries } from '../portfolio/search';
 import SearchNetworks from './SearchNetworks.astro';
@@ -21,10 +22,10 @@ import SearchNetworks from './SearchNetworks.astro';
 <dialog
   id="search-dialog"
   aria-label="Search pages"
-  {...stylex.attrs(searchStyles.dialog)}
+  {...stylex.attrs(dialogStyles.dialog)}
 >
   <form method="dialog">
-    <button type="submit" {...stylex.attrs(searchStyles.accessibleClose)}>
+    <button type="submit" {...stylex.attrs(dialogStyles.accessibleClose)}>
       Close search
     </button>
   </form>

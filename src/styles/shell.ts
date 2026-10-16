@@ -125,6 +125,7 @@ export const shell = stylex.create({
     objectFit: 'contain',
     boxSizing: 'border-box',
   },
+  shareIcon: { width: 24, height: 24, objectFit: 'contain' },
   smallIcon: { width: 16, height: 16 },
   brandIcon: {
     width: { default: 48, '@media (min-width: 361px)': 56 },
