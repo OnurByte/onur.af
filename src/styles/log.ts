@@ -10,6 +10,7 @@ export const logStyles = stylex.create({
     scrollMarginTop: 24,
   },
   entryCard: {
+    position: 'relative',
     marginTop: 40,
     padding: 24,
     borderWidth: 1,
@@ -18,6 +19,8 @@ export const logStyles = stylex.create({
     borderRadius: 4,
     scrollMarginTop: 24,
   },
+  cardLink: { position: 'absolute', inset: 0 },
+  cardBadge: { position: 'relative', zIndex: 1 },
   title: {
     display: 'flex',
     alignItems: 'center',

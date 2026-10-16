@@ -6,14 +6,16 @@ interface Props {
   target: 'x' | 'github' | 'log';
   href?: string;
   label?: string;
+  aboveCardLink?: boolean;
 }
-const { target, href, label } = Astro.props;
+const { target, href, label, aboveCardLink } = Astro.props;
 ---
 
 <a
   {...stylex.attrs(
     logStyles.badge,
     label ? logStyles.badgeWithLabel : undefined,
+    aboveCardLink ? logStyles.cardBadge : undefined,
   )}
   href={href ?? `/pgp/${target}`}
   aria-label={`${target === 'log' ? 'Publication' : target === 'x' ? 'X identity' : 'GitHub identity'} PGP proof`}

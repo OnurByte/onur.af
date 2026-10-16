@@ -20,10 +20,18 @@ const signatures = await getLogSignatures();
           class="h-entry"
           id={entry.id}
         >
-          <h2 {...stylex.attrs(logStyles.title)}>
-            <a class="u-url p-name" href={logUrl(entry)}>
-              {entry.title}
-            </a>
+          <a
+            {...stylex.attrs(logStyles.cardLink)}
+            class="u-url"
+            href={logUrl(entry)}
+            aria-labelledby={`${entry.id}-title`}
+          />
+          <h2
+            {...stylex.attrs(logStyles.title)}
+            class="p-name"
+            id={`${entry.id}-title`}
+          >
+            {entry.title}
           </h2>
           <div {...stylex.attrs(logStyles.meta)}>
             <time
@@ -37,6 +45,7 @@ const signatures = await getLogSignatures();
                 target="log"
                 href={logProofUrl(entry)}
                 label="Verified"
+                aboveCardLink
               />
             )}
             <span>{readingTime(entry.revisions.at(-1)!.body)}</span>
