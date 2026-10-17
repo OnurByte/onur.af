@@ -74,7 +74,7 @@ export async function verifyIdentityStatement(
   const message = await readCleartextMessage({
     cleartextMessage: statement.signedMessage,
   });
-  const signedText = message.getText();
+  const signedText = message.getText().replace(/\r\n/g, '\n');
   const v2 = signedText.match(
     /^onurbyte-identity-statement-v2\npublication-sequence:([1-9][0-9]*)\nsigner:([A-F0-9]{40,64})\n\n([\s\S]*)$/,
   );
@@ -98,7 +98,7 @@ export async function verifyIdentityStatement(
   return {
     ...statement,
     fingerprint,
-    statement: message.getText(),
+    statement: signedText,
   };
 }
 
@@ -155,12 +155,10 @@ export async function verifyIdentitySignature(
   const message = await readCleartextMessage({
     cleartextMessage: proof.signedMessage,
   });
+  const signedText = message.getText().replace(/\r\n/g, '\n');
   const legacy = proof.publicationSequence === undefined;
   if (legacy) {
-    if (
-      proof.signerFingerprint !== undefined ||
-      message.getText() !== proof.profile
-    )
+    if (proof.signerFingerprint !== undefined || signedText !== proof.profile)
       throw new Error(
         'Legacy identity proof must sign exactly the account URL',
       );
@@ -170,7 +168,7 @@ export async function verifyIdentitySignature(
         'Versioned identity proof requires its signer fingerprint',
       );
     const expected = `onurbyte-identity-proof-v2\npublication-sequence:${proof.publicationSequence}\nsigner:${proof.signerFingerprint}\naccount:${proof.profile}\n`;
-    if (message.getText() !== expected)
+    if (signedText !== expected)
       throw new Error(
         'Signed identity proof must use its canonical versioned statement',
       );
@@ -189,7 +187,7 @@ export async function verifyIdentitySignature(
   return {
     ...proof,
     fingerprint,
-    statement: message.getText(),
+    statement: signedText,
   };
 }
 export async function verifyBytes(

@@ -247,7 +247,7 @@ test.skipIf(!enabled)(
       expect(html).toContain('aria-label="Alternate sites and contact"');
       expect(html).toContain(address);
       expect(html).toContain(`monero:${address}?tx_amount=0.025`);
-      expect(html).toContain('Requested donation: 0.075 XMR');
+      expect(html).toContain('Requested contribution: 0.075 XMR');
       expect(html).toContain('<svg');
       expect(html).toContain('href="http://example.onion/"');
       expect(html).toContain('href="/pgp"');
