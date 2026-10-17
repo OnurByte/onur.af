@@ -41,9 +41,9 @@ export function parseGitShowRepositories(html: string) {
     }
     if (!value || typeof value !== 'object') return;
     const record = value as Record<string, unknown>;
-    if (Array.isArray(record.categories)) {
+    if (Array.isArray(record['categories'])) {
       foundCategories = true;
-      for (const category of record.categories) {
+      for (const category of record['categories']) {
         if (!category || !Array.isArray(category.repos))
           throw new Error('Invalid GitShow category');
         for (const raw of category.repos) {

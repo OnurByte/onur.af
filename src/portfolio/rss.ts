@@ -3,6 +3,8 @@ import artifact from '../content/rss-signature.json';
 import { rssEntries } from './rss-entries';
 import { resolveRssPublication } from './rss-publication';
 import { siteOrigin } from './seo';
+import { configuredKeyHistory, loadConfiguredKeyTrust } from './key-history';
+const keyTrust = loadConfiguredKeyTrust(publicKey, configuredKeyHistory);
 
 // Verification promises are reused; callers get independent Response bodies.
 let cached:
@@ -11,8 +13,9 @@ let cached:
       result: ReturnType<typeof resolveRssPublication>;
     }
   | undefined;
-export async function getRssPublication(requestUrl: URL) {
-  const origin = siteOrigin();
+export async function getRssPublication(requestUrl: URL, configuredSite?: URL) {
+  const trust = await keyTrust;
+  const origin = siteOrigin(configuredSite);
   const effectiveOrigin =
     origin ??
     (['localhost', '127.0.0.1', '[::1]'].includes(requestUrl.hostname)
@@ -26,7 +29,7 @@ export async function getRssPublication(requestUrl: URL) {
         requestUrl,
         rssEntries,
         artifact,
-        publicKey,
+        trust,
       ),
     };
   }

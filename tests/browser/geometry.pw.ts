@@ -5,11 +5,11 @@ const paths = [
   '/rss',
   '/pgp',
   '/log',
-  '/donate',
+  '/contribute',
   '/404',
   ...Array.from(
     { length: 6 },
-    (_, index) => `/donate/00000000-0000-4000-8000-00000000000${index}`,
+    (_, index) => `/contribute/00000000-0000-4000-8000-00000000000${index}`,
   ),
 ];
 
@@ -51,7 +51,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
               }),
           };
         });
-        if (path === '/donate') {
+        if (path === '/contribute') {
           const custom = await page
             .locator('main form label')
             .last()
@@ -82,7 +82,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
           1,
         );
         if (
-          path === '/donate' &&
+          path === '/contribute' &&
           colorScheme === 'light' &&
           [320, 1280].includes(width)
         ) {

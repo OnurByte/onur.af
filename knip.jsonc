@@ -5,6 +5,7 @@
     "src/gateway.ts",
     "src/xmr/agent-host.ts",
     "scripts/log-new.ts",
+    "scripts/verify-log-bundle.ts",
     "scripts/log-timestamps-watch.ts",
     "scripts/log-timestamps.ts",
     "scripts/probe-wallet.ts",

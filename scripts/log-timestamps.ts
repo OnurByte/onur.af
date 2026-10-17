@@ -1,8 +1,11 @@
+import { readJsonFile, writeJsonFile } from '../src/server/json-file';
 import ots from 'opentimestamps';
-import { readFile, writeFile, rename, rm } from 'node:fs/promises';
-import { randomUUID } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import { logEntries, getLogEntryById } from '../src/portfolio/log';
 import { digest, verifyLogSignatures } from '../src/portfolio/log-signatures';
+import { revisionPublicationSequences } from '../src/portfolio/log-signatures';
+import { verifyLogPublicationChain } from '../src/portfolio/log-publications';
+import { loadConfiguredKeyTrust } from '../src/portfolio/key-history';
 import {
   detachedLogRevision,
   validateLogTimestamps,
@@ -33,17 +36,43 @@ async function main() {
     new URL('../public/pgp.asc', import.meta.url),
     'utf8',
   );
-  const signatures = JSON.parse(
-    await readFile(
-      new URL('../src/content/log-signatures.json', import.meta.url),
-      'utf8',
+  const trust = await loadConfiguredKeyTrust(
+    publicKey,
+    await readJsonFile(
+      new URL('../src/content/key-history.json', import.meta.url),
     ),
   );
-  const signed = await verifyLogSignatures(logEntries, signatures, publicKey);
-  const stored: Record<string, StoredLogTimestamp> = JSON.parse(
-    await readFile(target, 'utf8'),
+  const publications = await verifyLogPublicationChain(
+    await readJsonFile(
+      new URL('../src/content/log-publications.json', import.meta.url),
+    ),
+    trust,
   );
-  await validateLogTimestamps(logEntries, stored, signatures, publicKey);
+  const sequences = revisionPublicationSequences(publications, logEntries);
+  const signatures = await readJsonFile(
+    new URL('../src/content/log-signatures.json', import.meta.url),
+  );
+  const signed = await verifyLogSignatures(
+    logEntries,
+    signatures,
+    trust,
+    sequences,
+  );
+  const validated = await validateLogTimestamps(
+    logEntries,
+    await readJsonFile(target),
+    signatures,
+    trust,
+    sequences,
+  );
+  const stored: Record<string, StoredLogTimestamp> = Object.fromEntries(
+    Object.entries(validated).map(
+      ([id, { sha256, signatureSha256, proof }]) => [
+        id,
+        { sha256, signatureSha256, proof },
+      ],
+    ),
+  );
   const [command, id, versionArg, ...extra] = process.argv.slice(2);
   if (extra.length) throw new Error('Too many arguments');
   async function bounded<T>(promise: Promise<T>): Promise<T> {
@@ -119,16 +148,8 @@ async function main() {
       'Usage: bun scripts/log-timestamps.ts stamp <id> [version] | upgrade [id] | --check',
     );
   async function save(data: Record<string, StoredLogTimestamp>) {
-    await validateLogTimestamps(logEntries, data, signatures, publicKey);
-    const temporary = new URL(`${target.href}.${randomUUID()}.tmp`);
-    try {
-      await writeFile(temporary, `${JSON.stringify(data, null, 2)}\n`, {
-        flag: 'wx',
-      });
-      await rename(temporary, target);
-    } finally {
-      await rm(temporary, { force: true });
-    }
+    await validateLogTimestamps(logEntries, data, signatures, trust, sequences);
+    await writeJsonFile(target, data);
   }
   if (command === 'stamp') await save(stored);
 }

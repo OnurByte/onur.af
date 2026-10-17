@@ -5,7 +5,7 @@ import { styles } from '../../styles/pages';
 import { logMetadata, getLogEntryById } from '../../portfolio/log';
 import LogArticle from '../../components/LogArticle.astro';
 import { logArticleSchema, siteOrigin } from '../../portfolio/seo';
-const entry = getLogEntryById(Astro.params.id);
+const entry = getLogEntryById(Astro.params['id']);
 if (!entry) return Astro.rewrite('/404');
 const metadata = logMetadata(entry);
 ---
@@ -19,7 +19,7 @@ const metadata = logMetadata(entry);
     modifiedAt: entry.revisions.at(-1)!.publishedAt,
     tags: metadata.tags,
   }}
-  structuredData={logArticleSchema(siteOrigin(), entry)}
+  structuredData={logArticleSchema(siteOrigin(Astro.site), entry)}
 >
   <main {...stylex.attrs(styles.main)}>
     <LogArticle entry={entry} />

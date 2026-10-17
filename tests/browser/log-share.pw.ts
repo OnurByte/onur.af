@@ -6,7 +6,7 @@ test('log sharing preserves RSS navigation and transfers focus between dialogs',
   context,
 }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  await page.goto('/log/sealed-lodge-waits');
+  await page.goto('/log/cryptic-watchtower-watches');
   const share = page.getByRole('button', { name: 'Share log' });
   await page.screenshot({ path: '/tmp/portfolio-share-trigger.png' });
   await share.click();
@@ -18,7 +18,7 @@ test('log sharing preserves RSS navigation and transfers focus between dialogs',
   await expect(dialog.getByRole('link', { name: /RSS/ })).toBeFocused();
   await dialog.getByRole('button', { name: 'Copy link', exact: true }).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
-    'http://127.0.0.1:14323/log/sealed-lodge-waits',
+    'http://127.0.0.1:14323/log/cryptic-watchtower-watches',
   );
   await expect(dialog).not.toBeVisible();
   await expect(share).toBeFocused();
@@ -35,10 +35,10 @@ test('log sharing preserves RSS navigation and transfers focus between dialogs',
   const mailUrl = new URL((await mail.getAttribute('href'))!);
   expect(mailUrl.protocol).toBe('mailto:');
   expect(mailUrl.searchParams.get('subject')).toBe(
-    'Example: copying embed snippets',
+    'Become a massive value provider',
   );
   expect(mailUrl.searchParams.get('body')).toBe(
-    'http://127.0.0.1:14323/log/sealed-lodge-waits',
+    'http://127.0.0.1:14323/log/cryptic-watchtower-watches',
   );
   await mail.evaluate((node) =>
     node.addEventListener('click', (event) => event.preventDefault()),
@@ -50,7 +50,7 @@ test('log sharing preserves RSS navigation and transfers focus between dialogs',
   await dialog.getByRole('button', { name: 'Discord', exact: true }).click();
   await expect(dialog).not.toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
-    'http://127.0.0.1:14323/log/sealed-lodge-waits',
+    'http://127.0.0.1:14323/log/cryptic-watchtower-watches',
   );
   await expect(share).toBeFocused();
   await share.click();
@@ -86,7 +86,7 @@ test('share is usable on narrow screens in both themes and handles clipboard fai
   });
   for (const colorScheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme });
-    await page.goto('/log/sealed-lodge-waits');
+    await page.goto('/log/cryptic-watchtower-watches');
     await page.getByRole('button', { name: 'Share log' }).click();
     const dialog = page.getByRole('dialog', { name: 'Share log' });
     await expect(
@@ -129,7 +129,7 @@ test('device sharing receives the log URL and cancellation stays quiet', async (
       },
     });
   });
-  await page.goto('/log/sealed-lodge-waits');
+  await page.goto('/log/cryptic-watchtower-watches');
   await page.getByRole('button', { name: 'Share log' }).click();
   const dialog = page.getByRole('dialog', { name: 'Share log' });
   await dialog.getByRole('button', { name: /More options/ }).click();
@@ -137,8 +137,8 @@ test('device sharing receives the log URL and cancellation stays quiet', async (
     sessionStorage.getItem('shared-data'),
   );
   expect(JSON.parse(shared!)).toEqual({
-    title: 'Example: copying embed snippets',
-    url: 'http://127.0.0.1:14323/log/sealed-lodge-waits',
+    title: 'Become a massive value provider',
+    url: 'http://127.0.0.1:14323/log/cryptic-watchtower-watches',
   });
   await expect(dialog.getByRole('status')).toBeHidden();
 });
@@ -148,7 +148,7 @@ test('RSS and platform links remain reachable without JavaScript', async ({
 }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
-  await page.goto('http://127.0.0.1:14323/log/sealed-lodge-waits');
+  await page.goto('http://127.0.0.1:14323/log/cryptic-watchtower-watches');
   await expect(
     page.getByRole('link', { name: 'Share on X', exact: true }),
   ).toBeVisible();
@@ -165,7 +165,7 @@ test('contents rail stays beside the article while scrolling on narrow screens',
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 700 });
-  await page.goto('/log/sealed-lodge-waits');
+  await page.goto('/log/cryptic-watchtower-watches');
   const rail = page.locator('.contents-rail');
   const before = (await rail.boundingBox())!;
   expect(before.x).toBeGreaterThanOrEqual(280);
@@ -188,17 +188,20 @@ test('contents rail stays beside the article while scrolling on narrow screens',
 });
 
 for (const width of [320, 1280]) {
-  test(`contents returns from section two to one on a short log at ${width}px`, async ({
+  test(`contents returns from section two to one on a log at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto('/log/sealed-lodge-waits');
+    await page.goto('/log/cryptic-watchtower-watches');
     const links = page.locator('.contents-rail a');
     await links.nth(1).click();
     await expect(links.nth(1)).toHaveAttribute('aria-current', 'location');
     const secondScroll = await page.evaluate(() => scrollY);
     await links.nth(0).click();
-    await expect(page).toHaveURL(/#embed-snippet$/);
+    await expect(page).toHaveURL(
+      (url) =>
+        decodeURIComponent(url.hash) === '#give-people-more-than-they-came-for',
+    );
     await expect(links.nth(0)).toHaveAttribute('aria-current', 'location');
     await expect
       .poll(() => page.evaluate(() => scrollY))
@@ -206,7 +209,7 @@ for (const width of [320, 1280]) {
     await expect
       .poll(async () => {
         const heading = await page
-          .locator('.log-body #embed-snippet')
+          .locator('.log-body #give-people-more-than-they-came-for')
           .boundingBox();
         return heading ? Math.abs(heading.y - 160) : Infinity;
       })

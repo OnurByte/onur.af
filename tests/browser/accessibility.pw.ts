@@ -3,7 +3,7 @@ import { notFoundQuotes } from '../../src/portfolio/not-found-quotes';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-const publicPaths = ['/', '/rss', '/pgp', '/donate', '/404'];
+const publicPaths = ['/', '/rss', '/pgp', '/contribute', '/404'];
 const states = [
   'waiting',
   'partial',
@@ -13,7 +13,7 @@ const states = [
   'unavailable',
 ];
 const checkoutPaths = states.map(
-  (_, index) => `/donate/00000000-0000-4000-8000-00000000000${index}`,
+  (_, index) => `/contribute/00000000-0000-4000-8000-00000000000${index}`,
 );
 
 for (const colorScheme of ['light', 'dark'] as const) {
@@ -72,7 +72,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
 test('Find descriptions match the page intros and metadata', async ({
   page,
 }) => {
-  for (const path of ['/donate', '/rss', '/pgp']) {
+  for (const path of ['/contribute', '/rss', '/pgp']) {
     await page.goto(path);
     const description = await page
       .locator('[data-page-description]')
@@ -128,7 +128,7 @@ for (const path of ['/projects', '/notes', '/search']) {
 }
 
 for (const [query, title, href] of [
-  ['Monero', 'Donate', '/donate'],
+  ['Monero', 'Contribute', '/contribute'],
   ['signature', 'PGP', '/pgp'],
 ]) {
   test(`Local search finds ${query}`, async ({ page }) => {
@@ -153,7 +153,7 @@ test('Local search reports a missing match', async ({ page }) => {
   );
 });
 
-test('header search aligns with Donate and supports keyboard navigation', async ({
+test('header search aligns with Contribute and supports keyboard navigation', async ({
   page,
 }) => {
   await page.goto('/');
@@ -161,12 +161,14 @@ test('header search aligns with Donate and supports keyboard navigation', async 
   await expect(page.locator('footer #open-search')).toHaveCount(0);
   await expect(page.locator('footer a[href="/search"]')).toHaveCount(0);
   const headerBox = await trigger.boundingBox();
-  const donateBox = await page
-    .locator('footer a[href="/donate"]')
+  const contributeBox = await page
+    .locator('footer a[href="/contribute"]')
     .boundingBox();
   expect(
     Math.abs(
-      headerBox!.x + headerBox!.width - (donateBox!.x + donateBox!.width),
+      headerBox!.x +
+        headerBox!.width -
+        (contributeBox!.x + contributeBox!.width),
     ),
   ).toBeLessThan(2);
   await page.keyboard.press('Control+k');
@@ -216,7 +218,7 @@ test('header search aligns with Donate and supports keyboard navigation', async 
   await page.keyboard.press('ArrowDown');
   await expect(page.locator('#search-results a')).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL(/\/donate$/);
+  await expect(page).toHaveURL(/\/contribute$/);
   await page.keyboard.press('Meta+k');
   await expect(dialog).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
@@ -299,7 +301,7 @@ test('reopening search preserves the immediately filtered query', async ({
   await expect(page.locator('#search-results a')).toHaveCount(1);
   await expect(page.locator('#search-results a')).toHaveAttribute(
     'href',
-    '/donate',
+    '/contribute',
   );
 });
 
@@ -447,7 +449,7 @@ for (const width of [320, 375]) {
           status: document.querySelector('#search-status')?.textContent,
         };
       });
-    expect(immediate.hrefs).toEqual(['/donate']);
+    expect(immediate.hrefs).toEqual(['/contribute']);
     expect(immediate.status).not.toMatch(/Loading/i);
     expect(indexRequests).toEqual([]);
     await expect(dialog.locator('img')).toHaveCount(0);

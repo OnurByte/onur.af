@@ -4,6 +4,7 @@ import { siteSignature } from '../portfolio/signature';
 import { scrollProfileForPath } from '../portfolio/scroll';
 import { shell } from '../styles/shell';
 import '../styles/global.css';
+import { identityAccounts } from '../portfolio/proofs';
 import { portfolioLinks } from '../portfolio/links';
 import {
   mottos,
@@ -13,7 +14,12 @@ import {
 import Brand from '../components/Brand.astro';
 import Search from '../components/Search.astro';
 import Icon from '../components/Icon.astro';
-import { canonicalUrl, siteDescription, siteOrigin } from '../portfolio/seo';
+import {
+  canonicalUrl,
+  siteDescription,
+  siteOrigin,
+  robotsContent,
+} from '../portfolio/seo';
 interface Props {
   title?: string;
   description?: string;
@@ -33,14 +39,17 @@ const {
   structuredData,
 } = Astro.props;
 const links = portfolioLinks();
-const origin = siteOrigin();
+const origin = siteOrigin(Astro.site);
 const preview = publicPreview(Astro.url.pathname);
 const description = article
   ? suppliedDescription
   : (preview?.description ?? suppliedDescription);
 const canonical = canonicalUrl(origin, Astro.url.pathname);
-const indexable =
-  Boolean(canonical) && !noindex && Astro.response.status === 200;
+const robots = robotsContent(Astro.url.pathname, {
+  noindex: noindex || process.env['VERCEL_ENV'] === 'preview',
+  status: Astro.response.status ?? 200,
+});
+const indexable = robots === 'index, follow' && Boolean(canonical);
 const socialImage =
   indexable && preview
     ? `${origin}/social/${preview.key}.png?v=${socialImageVersion}&m=${mottos.indexOf(motto as (typeof mottos)[number])}`
@@ -133,17 +142,11 @@ const schema =
     />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
-    <meta
-      name="robots"
-      content={
-        indexable
-          ? 'index, follow'
-          : canonical && noindex
-            ? 'noindex, follow'
-            : 'noindex, nofollow'
-      }
-    />
+    <meta name="robots" content={robots} />
     {canonical && <link rel="canonical" href={canonical} />}
+    {Object.values(identityAccounts).map((account) => (
+      <link rel="me" href={account.profile} />
+    ))}
     <meta property="og:type" content={article ? 'article' : 'website'} />
     {article && (
       <>
@@ -274,7 +277,7 @@ const schema =
     </div>
     <footer
       {...stylex.attrs(shell.container, shell.footer)}
-      aria-label="Contact and donation links"
+      aria-label="Contact and contribution links"
     >
       <nav
         {...stylex.attrs(shell.footerNavigation)}
@@ -316,9 +319,9 @@ const schema =
         </span>
         <a
           {...stylex.attrs(shell.footerLink, shell.link, shell.end)}
-          href="/donate"
+          href="/contribute"
         >
-          DONATE
+          CONTRIBUTE
         </a>
       </nav>
     </footer>

@@ -110,7 +110,7 @@ export function renderLogContent(body: string, prefix = '', sourceCount = 0) {
           if (marker && first?.type === 'text') {
             first.value = first.value.slice(marker[0].length);
             const kind = marker[1]!.toLowerCase();
-            node.properties.dataCallout = kind;
+            node.properties['dataCallout'] = kind;
             node.children.unshift({
               type: 'element',
               tagName: 'p',

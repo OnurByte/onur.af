@@ -1,4 +1,7 @@
 ---
+import * as stylex from '@stylexjs/stylex';
+import { logStyles } from '../styles/log';
+import { archiveForSource } from '../portfolio/source-archives';
 import type { LogEntry } from '../portfolio/log';
 interface Props {
   sources: NonNullable<LogEntry['revisions'][number]['sources']>;
@@ -10,13 +13,22 @@ const { sources, references, prefix } = Astro.props;
 
 {sources.length > 0 && (
   <details class="log-sources" id={`${prefix}log-sources`}>
-    <summary>
+    <summary {...stylex.attrs(logStyles.summary)}>
       Sources <span>({sources.length})</span>
     </summary>
     <ol>
       {sources.map((source, index) => (
         <li id={`${prefix}source-${index + 1}`}>
           <a href={source.url}>{source.title}</a>
+          {archiveForSource(source.url) && (
+            <a
+              class="log-source-backlink"
+              href={archiveForSource(source.url)?.url}
+              title={`Archived ${archiveForSource(source.url)?.capturedAt}`}
+            >
+              Archive
+            </a>
+          )}
           {references
             .filter((reference) => reference.source === index + 1)
             .map((reference) => (

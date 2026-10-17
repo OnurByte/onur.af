@@ -11,12 +11,12 @@ JSON kaçışları veya siteye özgü bir şablon ekleme. Yazı gövdesi doğrud
 `log:new` komutuna verilir:
 
 ```sh
-bun run log:new "Yazı başlığı" "Kısa özet." article.md
+bun run log:new "Yazı başlığı" "Kısa özet." article.md metadata.json
 ```
 
 Komut, Markdown gövdesini `src/content/log.json` içine taslak olarak ekler.
-İsteğe bağlı `metadata.json` ile dil, etiketler, kapak ve kaynak listesi
-verilebilir:
+`metadata.json` zorunludur ve 1–5 kanonik etiket içermelidir. Dil, kapak ve
+kaynak listesi isteğe bağlıdır:
 
 ```sh
 bun run log:new "Yazı başlığı" "Kısa özet." article.md metadata.json
@@ -305,7 +305,7 @@ Komut satırındaki başlık ve özet dışında yalnızca `language`, `tags`, `
 ```json
 {
   "language": "tr",
-  "tags": ["cryptography", "pgp"],
+  "tags": ["cryptography", "identity"],
   "cover": {
     "src": "/media/signature-flow.webp",
     "alt": "İmzayı doğrulayan açık anahtarı gösteren diyagram",
@@ -320,8 +320,9 @@ Komut satırındaki başlık ve özet dışında yalnızca `language`, `tags`, `
 ```
 
 - `language`: `tr`, `en` veya `en-GB` biçiminde dil kodu.
-- `tags`: `src/content/log-tags.json` içinde tanımlı slug'lar; en fazla 12 ve
-  yinelenmeyen değer. Yeni etiketi önce bu sözlüğe ekle.
+- `tags`: `src/content/log-tags.json` içindeki kanonik slug'lardan 1–5
+  benzersiz değer. Sözlük `development`, `web`, `privacy`, `cryptography`,
+  `pgp`, `identity` ve `ai` etiketlerini içerir; serbest metin kabul edilmez.
 - `cover`: `src`, `alt`, `width`, `height` ve isteğe bağlı `caption` içerir.
   Kapak boyutları gerçek görselle birebir eşleşmelidir.
 - `sources`: yazının sonunda açılabilir kaynak listesidir; gövde içi dipnotla

@@ -1,8 +1,12 @@
 {
   "editions": [
     {
-      "manifest": "{\n  \"format\": 1,\n  \"sequence\": 1,\n  \"previousSha256\": null,\n  \"entries\": [\n    {\n      \"id\": \"sealed-lodge-waits\",\n      \"version\": 1,\n      \"sha256\": \"5ea22197836773e99068837147510546c11dbd243bc5c3be553646808122ea46\"\n    }\n  ]\n}\n",
-      "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatILoQAKCRDNHqyHSkMK\nVqjEAP9aa68MX4/kf+xXW1mAo2eUtma5o946uk9Cy3plHY8fhgD+MoBiDwiutaVa\nRk5GsJyssqB2Z3RgDdkjZOrCwW8JZA0=\n=P8PX\n-----END PGP SIGNATURE-----\n"
+      "manifest": "{\n  \"format\": 1,\n  \"sequence\": 1,\n  \"previousSha256\": null,\n  \"entries\": [\n    {\n      \"id\": \"cryptic-watchtower-watches\",\n      \"version\": 1,\n      \"sha256\": \"87f7847a9906fae7b478e42fc6808f0c23b8b3c95115cefe29ff8f9c296afc88\"\n    }\n  ]\n}\n",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatOrZwAKCRDNHqyHSkMK\nVn41AQDJIcN14PdNDlR45pvqx2YSzPPp1naK8ulExHV+HIUNBAEA0F3Ed8ia90ku\na2Z8+B/vN4ppBQK/Z58e2gnoloTOwAI=\n=n3Sq\n-----END PGP SIGNATURE-----\n"
+    },
+    {
+      "manifest": "{\n  \"format\": 1,\n  \"sequence\": 2,\n  \"previousSha256\": \"37b4c6bc4e55626a8dd3461e64e605785cd4bbca429cb6ae7ab63f40da7351b1\",\n  \"entries\": [\n    {\n      \"id\": \"cryptic-watchtower-watches\",\n      \"version\": 1,\n      \"sha256\": \"87f7847a9906fae7b478e42fc6808f0c23b8b3c95115cefe29ff8f9c296afc88\"\n    },\n    {\n      \"id\": \"cryptic-watchtower-watches\",\n      \"version\": 2,\n      \"sha256\": \"5b31a3b96e41598b0230e06faa9230ce3e0612288ec671c414aaf45564127065\"\n    }\n  ]\n}\n",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatPVHgAKCRDNHqyHSkMK\nVpZPAQDpGM4Se3JvHUHpTm+B1WvtYn025AvP91LLzNa/H7uwvAEAt6ByJMH/NuYi\nNpc23sW7wBzHbzHnQdxhPfktYKYRmQ8=\n=NxZ3\n-----END PGP SIGNATURE-----\n"
     }
   ]
 }

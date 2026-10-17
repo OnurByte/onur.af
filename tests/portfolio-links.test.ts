@@ -37,8 +37,8 @@ describe('portfolio footer URL validation', () => {
         { label: 'TOR', href: undefined },
         { label: 'I2P', href: undefined },
       ]);
-      process.env.PORTFOLIO_TOR_URL = 'https://example.onion';
-      process.env.PORTFOLIO_I2P_URL = 'http://example.i2p/path';
+      process.env['PORTFOLIO_TOR_URL'] = 'https://example.onion';
+      process.env['PORTFOLIO_I2P_URL'] = 'http://example.i2p/path';
       expect(portfolioLinks()).toEqual([
         { label: 'TOR', href: 'https://example.onion/' },
         { label: 'I2P', href: 'http://example.i2p/path' },

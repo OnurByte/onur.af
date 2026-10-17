@@ -28,5 +28,10 @@
     "title": "Development",
     "description": "Implementation notes and lessons from building software.",
     "indexable": false
+  },
+  "ai": {
+    "title": "AI",
+    "description": "Notes on AI tools, models, and agent workflows.",
+    "indexable": false
   }
 }

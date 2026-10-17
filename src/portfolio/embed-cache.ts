@@ -1,4 +1,5 @@
-import { mkdir, readFile, rename, writeFile, rm } from 'node:fs/promises';
+import { readJsonFile } from '../server/json-file';
+import { mkdir, rename, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { get, put } from '@vercel/blob';
@@ -13,9 +14,7 @@ export function createFileEmbedCache(directory: string): EmbedCache {
   return {
     async read(id) {
       try {
-        return JSON.parse(
-          await readFile(join(directory, `${id}.json`), 'utf8'),
-        );
+        return await readJsonFile(join(directory, `${id}.json`));
       } catch {
         return undefined;
       }

@@ -9,6 +9,11 @@ import {
 } from 'openpgp';
 import rawProofs from '../content/identity-proofs.json' with { type: 'json' };
 import rawIdentityStatement from '../content/identity-statement.json' with { type: 'json' };
+import {
+  resolveLegacyRootCertificate,
+  resolveTrustedCertificate,
+  type KeyTrust,
+} from './key-history';
 
 export const identityAccounts = {
   x: { label: '𝕏', profile: 'https://x.com/onurstirner', name: '@onurstirner' },
@@ -20,6 +25,24 @@ export const identityAccounts = {
 } as const;
 
 export const identityStatementText = `I confirm that the X and GitHub accounts listed here are mine.\n${identityAccounts.x.profile}\n${identityAccounts.github.profile}\n`;
+export function canonicalIdentityStatement(
+  sequence: number,
+  fingerprint: string,
+) {
+  if (!Number.isSafeInteger(sequence) || sequence < 1)
+    throw new Error('Identity statement publication sequence must be positive');
+  if (!/^[A-F0-9]{40,64}$/.test(fingerprint))
+    throw new Error('Identity statement fingerprint is invalid');
+  return `onurbyte-identity-statement-v2\npublication-sequence:${sequence}\nsigner:${fingerprint}\n\n${identityStatementText}`;
+}
+
+function trustCertificateAt(publicKey: string | KeyTrust, sequence: number) {
+  return typeof publicKey === 'string'
+    ? Promise.resolve(publicKey)
+    : resolveTrustedCertificate({ ...publicKey, sequence }).then(
+        (result) => result.certificate,
+      );
+}
 
 const identityStatementSchema = z
   .object({
@@ -38,7 +61,7 @@ export const identityStatement =
 
 export async function verifyIdentityStatement(
   input: unknown,
-  publicKey: string,
+  publicKey: string | KeyTrust,
 ): Promise<VerifiedIdentityStatement> {
   const statement = identityStatementSchema.parse(input);
   if (
@@ -51,18 +74,30 @@ export async function verifyIdentityStatement(
   const message = await readCleartextMessage({
     cleartextMessage: statement.signedMessage,
   });
-  if (message.getText() !== identityStatementText)
-    throw new Error(
-      'Signed text must be the canonical account ownership statement',
-    );
-  const key = await readKey({ armoredKey: publicKey });
+  const signedText = message.getText();
+  const v2 = signedText.match(
+    /^onurbyte-identity-statement-v2\npublication-sequence:([1-9][0-9]*)\nsigner:([A-F0-9]{40,64})\n\n([\s\S]*)$/,
+  );
+  const isLegacy = signedText === identityStatementText;
+  if (!isLegacy && (!v2 || v2[3] !== identityStatementText))
+    throw new Error('Identity statement must use a canonical signed format');
+  const sequence = v2 ? Number(v2[1]) : undefined;
+  if (sequence !== undefined && !Number.isSafeInteger(sequence))
+    throw new Error('Identity statement sequence is invalid');
+  const certificate = isLegacy
+    ? await resolveLegacyRootCertificate(publicKey)
+    : await trustCertificateAt(publicKey, sequence!);
+  const key = await readKey({ armoredKey: certificate });
+  const fingerprint = key.getFingerprint().toUpperCase();
+  if (v2 && v2[2] !== fingerprint)
+    throw new Error('Identity statement signer fingerprint mismatch');
   const result = await verify({ message, verificationKeys: key });
   if (result.signatures.length !== 1)
     throw new Error('Expected one cleartext signature');
   await result.signatures[0]!.verified;
   return {
     ...statement,
-    fingerprint: key.getFingerprint().toUpperCase(),
+    fingerprint,
     statement: message.getText(),
   };
 }
@@ -79,6 +114,11 @@ const identityProofSchema = claimSchema
       .string()
       .max(32768)
       .startsWith('-----BEGIN PGP SIGNED MESSAGE-----'),
+    publicationSequence: z.number().int().positive().optional(),
+    signerFingerprint: z
+      .string()
+      .regex(/^[A-F0-9]{40,64}$/)
+      .optional(),
   })
   .strict();
 export type IdentityClaim = z.infer<typeof claimSchema>;
@@ -97,7 +137,7 @@ if (
 /** Clear-sign only the canonical account URL; metadata is not part of the signed text. */
 export async function verifyIdentitySignature(
   input: unknown,
-  publicKey: string,
+  publicKey: string | KeyTrust,
 ): Promise<VerifiedIdentity> {
   const proof = identityProofSchema.parse(input);
   if (
@@ -115,25 +155,53 @@ export async function verifyIdentitySignature(
   const message = await readCleartextMessage({
     cleartextMessage: proof.signedMessage,
   });
-  if (message.getText() !== proof.profile)
-    throw new Error('Signed text must be exactly the account URL');
-  const key = await readKey({ armoredKey: publicKey });
+  const legacy = proof.publicationSequence === undefined;
+  if (legacy) {
+    if (
+      proof.signerFingerprint !== undefined ||
+      message.getText() !== proof.profile
+    )
+      throw new Error(
+        'Legacy identity proof must sign exactly the account URL',
+      );
+  } else {
+    if (!proof.signerFingerprint)
+      throw new Error(
+        'Versioned identity proof requires its signer fingerprint',
+      );
+    const expected = `onurbyte-identity-proof-v2\npublication-sequence:${proof.publicationSequence}\nsigner:${proof.signerFingerprint}\naccount:${proof.profile}\n`;
+    if (message.getText() !== expected)
+      throw new Error(
+        'Signed identity proof must use its canonical versioned statement',
+      );
+  }
+  const certificate = legacy
+    ? await resolveLegacyRootCertificate(publicKey)
+    : await trustCertificateAt(publicKey, proof.publicationSequence!);
+  const key = await readKey({ armoredKey: certificate });
+  const fingerprint = key.getFingerprint().toUpperCase();
+  if (!legacy && proof.signerFingerprint !== fingerprint)
+    throw new Error('Identity proof signer fingerprint mismatch');
   const result = await verify({ message, verificationKeys: key });
   if (result.signatures.length !== 1)
     throw new Error('Expected one cleartext signature');
   await result.signatures[0]!.verified;
   return {
     ...proof,
-    fingerprint: key.getFingerprint().toUpperCase(),
+    fingerprint,
     statement: message.getText(),
   };
 }
 export async function verifyBytes(
   body: string,
   signature: string,
-  publicKey: string,
+  publicKey: string | KeyTrust,
 ): Promise<string> {
-  const key = await readKey({ armoredKey: publicKey });
+  const certificate =
+    typeof publicKey === 'string'
+      ? publicKey
+      : (await resolveTrustedCertificate(publicKey)).certificate;
+  const key = await readKey({ armoredKey: certificate });
   const detached = await readSignature({ armoredSignature: signature });
   if (
     detached.packets.length !== 1 ||
@@ -275,17 +343,14 @@ export async function checkAccountProof(
 }
 export async function verifyProofs(
   input: readonly unknown[],
-  publicKey: string,
+  publicKey: string | KeyTrust,
   check = checkAccountProof,
 ): Promise<VerifiedIdentity[]> {
-  const fingerprint = (await readKey({ armoredKey: publicKey }))
-    .getFingerprint()
-    .toUpperCase();
   const proofs = await Promise.all(
     input.map(async (input) => {
       try {
         const proof = await verifyIdentitySignature(input, publicKey);
-        if (proof.proofUrl && !(await check(proof, fingerprint))) return;
+        if (proof.proofUrl && !(await check(proof, proof.fingerprint))) return;
         return proof;
       } catch {
         return;

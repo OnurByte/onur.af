@@ -32,7 +32,7 @@ const execute = promisify(execFile);
 test('signed Log renders revisions, feeds and exact independently verifiable downloads', async ({
   page,
 }) => {
-  test.setTimeout(60000);
+  test.setTimeout(120000);
   const directory = await mkdtemp(join(tmpdir(), 'portfolio-log-browser-'));
   let server: ChildProcess | undefined;
   try {
@@ -67,6 +67,7 @@ test('signed Log renders revisions, feeds and exact independently verifiable dow
           {
             version: 1,
             publishedAt: '2026-10-13T09:00:00Z',
+            tags: ['development'],
             body: 'Original **fixture** content.\n\n```html\n<iframe src="https://example.com/embed"></iframe>\n```',
           },
           {
@@ -242,6 +243,15 @@ $$
     await writeFile(join(directory, 'src/content/rss-entries.json'), '[]');
     await writeFile(join(directory, 'src/content/rss-signature.json'), 'null');
     await writeFile(join(directory, 'src/content/log-timestamps.json'), '{}');
+    await writeFile(
+      join(directory, 'src/content/publication-checkpoints.json'),
+      '{}',
+    );
+    await writeFile(join(directory, 'src/content/log-proofs.json'), '{}');
+    await writeFile(
+      join(directory, 'src/content/key-history.json'),
+      JSON.stringify({ transitions: [] }),
+    );
     await writeFile(join(directory, 'public/pgp.asc'), keys.publicKey);
     await execute(
       process.execPath,
@@ -277,25 +287,27 @@ $$
     );
     const origin = `http://127.0.0.1:${port}`;
     await expect
-      .poll(async () => {
-        try {
-          return (await fetch(`${origin}/log`)).status;
-        } catch {
-          return 0;
-        }
-      })
+      .poll(
+        async () => {
+          try {
+            return (await fetch(`${origin}/log`)).status;
+          } catch {
+            return 0;
+          }
+        },
+        { timeout: 30000 },
+      )
       .toBe(200);
     await page.goto(`${origin}/log`);
     const listedEntry = page.locator('main article#silent-lodge-convenes');
     if ((await listedEntry.count()) === 0)
       console.log('Log fixture markup:', (await page.content()).slice(0, 2500));
     await expect(listedEntry).toHaveCount(1);
-    const listedVerification = listedEntry
-      .locator('time.dt-published')
-      .locator('..')
-      .getByRole('link', { name: 'Publication PGP proof' });
+    const listedVerification = listedEntry.getByRole('link', {
+      name: 'Publication PGP proof',
+    });
     await expect(listedVerification).toContainText('Verified');
-    await expect(listedEntry.locator('h2 a[href^="/pgp/log/"]')).toHaveCount(0);
+    await expect(listedEntry.locator('h2 a[href^="/log/"]')).toHaveCount(0);
     await page.goto(origin);
     for (const claim of claims) {
       const name =
@@ -348,17 +360,17 @@ $$
     await found.click();
     await expect(page).toHaveURL(`${origin}/log/silent-lodge-convenes`);
     await expect(page.locator('article')).toHaveCount(1);
-    await expect(page.locator('article h1 a[href^="/pgp/log/"]')).toHaveCount(
-      0,
-    );
+    await expect(page.locator('article h1 a[href^="/log/"]')).toHaveCount(0);
     const verifiedLink = page
-      .locator('article time.dt-published')
-      .locator('..')
-      .getByRole('link', { name: 'Publication PGP proof' });
+      .locator('article')
+      .getByRole('link', {
+        name: 'Publication PGP proof',
+      })
+      .first();
     await expect(verifiedLink).toContainText('Verified');
     await expect(verifiedLink).toHaveAttribute(
       'href',
-      '/pgp/log/silent-lodge-convenes',
+      '/log/silent-lodge-convenes/verified',
     );
     await expect(page.locator('article .e-content')).toHaveCount(1);
     await expect(page.locator('html')).toHaveAttribute('lang', 'tr');
@@ -632,12 +644,16 @@ $$
     }).then((response) => response.text());
     expect(feedPage).toContain('Fixture note');
     await verifiedLink.click();
-    await expect(page).toHaveURL(`${origin}/pgp/log/silent-lodge-convenes`);
+    await expect(page).toHaveURL(
+      `${origin}/log/silent-lodge-convenes/verified`,
+    );
     await expect(
       page.getByRole('textbox', { name: 'PGP signature' }),
     ).toHaveValue(artifacts['silent-lodge-convenes-v2']!.signature);
     await page.getByRole('link', { name: 'v1', exact: true }).click();
-    await expect(page).toHaveURL(`${origin}/pgp/log/silent-lodge-convenes?v=1`);
+    await expect(page).toHaveURL(
+      `${origin}/log/silent-lodge-convenes/verified?v=1`,
+    );
     await expect(
       page.getByRole('textbox', { name: 'PGP signature' }),
     ).toHaveValue(artifacts['silent-lodge-convenes-v1']!.signature);
@@ -652,7 +668,7 @@ $$
     }
     expect((await fetch(`${origin}/log/not-a-post`)).status).toBe(404);
     expect(
-      (await fetch(`${origin}/pgp/log/silent-lodge-convenes?v=99`)).status,
+      (await fetch(`${origin}/log/silent-lodge-convenes/verified?v=99`)).status,
     ).toBe(404);
     await writeFile(
       join(directory, 'entry.md'),
@@ -729,7 +745,8 @@ $$
             return 0;
           }
         },
-        { timeout: 15000 },
+        // The first dev request includes cold Vite dependency optimization.
+        { timeout: 60000 },
       )
       .toBe(200);
     await page.goto(`${origin}/log/silent-lodge-convenes`);

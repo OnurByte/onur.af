@@ -4,6 +4,7 @@ import Icon from './Icon.astro';
 import { dialogStyles } from '../styles/dialog';
 import { searchStyles } from '../styles/search';
 import { shareStyles } from '../styles/log-share';
+import { styles } from '../styles/pages';
 import { logUrl, logMetadata, type LogEntry } from '../portfolio/log';
 import { siteOrigin } from '../portfolio/seo';
 interface Props {
@@ -11,7 +12,7 @@ interface Props {
 }
 const { entry } = Astro.props;
 const title = logMetadata(entry).title;
-const origin = siteOrigin() ?? Astro.url.origin;
+const origin = siteOrigin(Astro.site) ?? Astro.url.origin;
 const url = new URL(logUrl(entry), origin).href;
 const rows = [
   {
@@ -63,7 +64,6 @@ const rows = [
     aria-keyshortcuts="Control+Shift"
     {...stylex.attrs(shareStyles.trigger)}
   >
-    <Icon name="shareMark" />
     <span>Share</span>
     <kbd data-share-shortcut {...stylex.attrs(searchStyles.shortcut)}>
       Ctrl
@@ -135,9 +135,21 @@ const rows = [
 </dialog>
 <noscript>
   <div {...stylex.attrs(shareStyles.fallback)}>
-    <a href="/rss">RSS</a> · <a href={rows[2].href}>Share on X</a> ·{' '}
-    <a href={rows[4].href}>Share on Reddit</a> ·{' '}
-    <a href={rows[5].href}>Share on Telegram</a>
+    <a {...stylex.attrs(styles.walletLink)} href="/rss">
+      RSS
+    </a>{' '}
+    ·{' '}
+    <a {...stylex.attrs(styles.walletLink)} href={rows[2].href}>
+      Share on X
+    </a>{' '}
+    ·{' '}
+    <a {...stylex.attrs(styles.walletLink)} href={rows[4].href}>
+      Share on Reddit
+    </a>{' '}
+    ·{' '}
+    <a {...stylex.attrs(styles.walletLink)} href={rows[5].href}>
+      Share on Telegram
+    </a>
   </div>
 </noscript>
 <script>

@@ -143,7 +143,7 @@ export function parseLog(input: unknown): LogEntry[] {
 /** The generated ID is the only public permalink and signed identity. */
 export const logUrl = (entry: Pick<LogEntry, 'id'>) => `/log/${entry.id}`;
 export const logProofUrl = (entry: Pick<LogEntry, 'id'>, version?: number) =>
-  `/pgp/log/${entry.id}${version === undefined ? '' : `?v=${version}`}`;
+  `/log/${entry.id}/verified${version === undefined ? '' : `?v=${version}`}`;
 export const logRevisionUrl = (entry: Pick<LogEntry, 'id'>, version: number) =>
   `/proofs/${entry.id}-v${version}.md`;
 export const getLogEntryById = (id: string | undefined): LogEntry | undefined =>

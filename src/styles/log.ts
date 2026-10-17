@@ -25,7 +25,13 @@ export const logStyles = stylex.create({
     scrollMarginTop: 24,
   },
   cardLink: { position: 'absolute', inset: 0 },
-  cardBadge: { position: 'relative', zIndex: 1 },
+  cardBadge: {
+    position: 'relative',
+    zIndex: 1,
+    display: 'inline-flex',
+    alignItems: 'center',
+    minHeight: 24,
+  },
   sigil: {
     gridColumn: 2,
     gridRow: '1 / span 3',
@@ -53,7 +59,14 @@ export const logStyles = stylex.create({
     fontSize: '0.875rem',
   },
   details: { marginTop: 16, fontSize: '0.875rem', lineHeight: 1.7 },
-  summary: { cursor: 'pointer', paddingBlock: 8, width: 'fit-content' },
+  summary: {
+    cursor: 'pointer',
+    paddingBlock: 8,
+    width: 'fit-content',
+    minHeight: 44,
+    lineHeight: 1.7,
+    borderRadius: 4,
+  },
   links: {
     display: 'flex',
     flexWrap: 'wrap',

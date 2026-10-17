@@ -2,8 +2,8 @@ import { z } from 'astro/zod';
 
 export const publicPageSchema = z
   .object({
-    id: z.enum(['/', '/donate', '/rss', '/pgp', '/log']),
-    key: z.enum(['home', 'donate', 'rss', 'pgp', 'log']),
+    id: z.enum(['/', '/contribute', '/rss', '/pgp', '/log']),
+    key: z.enum(['home', 'contribute', 'rss', 'pgp', 'log']),
     title: z.string().trim().min(1),
     description: z.string().trim().max(159),
   })

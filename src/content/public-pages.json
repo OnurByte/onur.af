@@ -3,12 +3,12 @@
     "id": "/",
     "key": "home",
     "title": "Home",
-    "description": "Onur’s projects, signed technical notes, and public identity proofs."
+    "description": "What I make."
   },
   {
-    "id": "/donate",
-    "key": "donate",
-    "title": "Donate",
+    "id": "/contribute",
+    "key": "contribute",
+    "title": "Contribute",
     "description": "Support my work with Monero."
   },
   {

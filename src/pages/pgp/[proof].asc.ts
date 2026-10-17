@@ -4,7 +4,7 @@ import {
   getSignedIdentityStatement,
 } from '../../portfolio/verified-proofs';
 export const GET: APIRoute = async ({ params }) => {
-  if (params.proof === 'identity') {
+  if (params['proof'] === 'identity') {
     const statement = await getSignedIdentityStatement();
     return new Response(statement.signedMessage, {
       headers: {
@@ -15,10 +15,10 @@ export const GET: APIRoute = async ({ params }) => {
       },
     });
   }
-  if (params.proof !== 'x' && params.proof !== 'github')
+  if (params['proof'] !== 'x' && params['proof'] !== 'github')
     return new Response(null, { status: 404 });
   const proof = (await getSignedIdentities()).find(
-    (proof) => proof.id === params.proof,
+    (proof) => proof.id === params['proof'],
   );
   if (!proof) return new Response(null, { status: 404 });
   return new Response(proof.signedMessage, {

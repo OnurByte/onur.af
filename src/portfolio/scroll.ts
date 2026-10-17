@@ -4,7 +4,7 @@ export const scrollProfiles = {
   article: 220,
   pgp: 130,
   rss: 150,
-  donate: 70,
+  contribute: 70,
   utility: 110,
 } as const;
 
@@ -17,7 +17,7 @@ export function scrollProfileForPath(
   if (pathname.startsWith('/log/')) return 'article';
   if (pathname === '/pgp' || pathname.startsWith('/pgp/')) return 'pgp';
   if (pathname === '/rss') return 'rss';
-  if (pathname === '/donate' || pathname.startsWith('/donate/'))
-    return 'donate';
+  if (pathname === '/contribute' || pathname.startsWith('/contribute/'))
+    return 'contribute';
   return 'utility';
 }

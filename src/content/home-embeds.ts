@@ -8,12 +8,14 @@ import { createHomeEmbedSources } from '../portfolio/home-embed-adapters';
 import { createSpotifySource } from '../portfolio/spotify-source';
 
 const cache = createFileEmbedCache(
-  process.env.PORTFOLIO_EMBED_CACHE_DIR ||
-    (process.env.VERCEL
+  process.env['PORTFOLIO_EMBED_CACHE_DIR'] ||
+    (process.env['VERCEL']
       ? '/tmp/onur-portfolio-embeds'
       : resolve('data', 'embeds')),
 );
-const spotifyCache = process.env.VERCEL ? createVercelBlobEmbedCache() : cache;
+const spotifyCache = process.env['VERCEL']
+  ? createVercelBlobEmbedCache()
+  : cache;
 export const spotifySource = createSpotifySource(undefined, undefined, {
   cache: spotifyCache,
 });

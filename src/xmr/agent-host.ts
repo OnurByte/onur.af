@@ -1,19 +1,15 @@
+import {
+  moneroAddress as ADDRESS,
+  paymentStatuses as STATUSES,
+} from '../donations/protocol';
+import { requiredEnv as required } from '../server/env';
+import { jsonNoStore as json } from '../server/http';
 import { createRequire } from 'node:module';
 import { timingSafeEqual } from 'node:crypto';
 import { formatXmrAmount, parseXmrAmount } from '../donations/money';
 
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const ADDRESS = /^[45789AB][1-9A-HJ-NP-Za-km-z]{94}$/;
-const STATUSES = new Set([
-  'pending',
-  'mempool',
-  'unconfirmed',
-  'partial',
-  'underpaid',
-  'locked',
-  'paid',
-]);
 const LOCK_ID = 874120398123n;
 const validNumber = (value: unknown, integer = false) =>
   typeof value === 'number' &&
@@ -28,6 +24,8 @@ type XmrOrder = {
   status: string;
   paid?: boolean;
   receivedXmr?: number;
+  receivedPico?: string | undefined;
+  state?: string | undefined;
   pendingXmr?: number;
   lockedXmr?: number;
   shortfallXmr?: string;
@@ -41,6 +39,39 @@ type XmrOrder = {
   createdAt?: number;
   [key: string]: unknown;
 };
+
+interface ScannerSnapshot {
+  paid: boolean;
+  status: string;
+  receivedXmr: number;
+  receivedPico?: string;
+  pendingXmr: number;
+  lockedXmr: number;
+  shortfallXmr: string;
+  overpaid?: boolean;
+  overpaidXmr?: string;
+  confirmations: number;
+  txids: string[];
+}
+
+interface WalletScanner {
+  readonly viewOnly: boolean;
+  addressAt(index: number | undefined): Promise<string | undefined>;
+  checkOrders(
+    orders: {
+      id: string;
+      index: number | undefined;
+      amount: string;
+      birthdayHeight: number | null | undefined;
+    }[],
+    options: { minConfirmations: number; toleranceXmr: string; sync: boolean },
+  ): Promise<Map<string, ScannerSnapshot>>;
+  save(): Promise<void>;
+  sync(): Promise<void>;
+  height(): Promise<number>;
+  daemonHeight(): Promise<number>;
+  close(save: boolean): Promise<void>;
+}
 
 export interface PaymentAgent {
   get(id: string): XmrOrder | null;
@@ -182,11 +213,6 @@ export function createOrderHandler({
   let healthy = true;
   let serial = Promise.resolve();
   const prefixes = { mainnet: '48', stagenet: '57', testnet: '9B' }[network];
-  const json = (body: unknown, status = 200) =>
-    Response.json(body, {
-      status,
-      headers: { 'cache-control': 'no-store' },
-    });
   const unhealthy = () => {
     if (!healthy) return;
     healthy = false;
@@ -268,15 +294,15 @@ export function createOrderHandler({
         return json({ error: 'order object required' }, 400);
       const input = body as Record<string, unknown>;
       if (
-        typeof input.id !== 'string' ||
-        !UUID.test(input.id) ||
-        typeof input.amount !== 'string'
+        typeof input['id'] !== 'string' ||
+        !UUID.test(input['id']) ||
+        typeof input['amount'] !== 'string'
       )
         return json({ error: 'invalid order' }, 400);
-      const id = input.id.toLowerCase();
+      const id = input['id'].toLowerCase();
       let amount: string;
       try {
-        amount = formatXmrAmount(parseXmrAmount(input.amount));
+        amount = formatXmrAmount(parseXmrAmount(input['amount']));
       } catch {
         return json({ error: 'invalid amount' }, 400);
       }
@@ -399,7 +425,7 @@ export function createOrderHandler({
 const require = createRequire(import.meta.url);
 
 export async function reconcilePaidOrders(
-  scanner: Pick<any, 'checkOrders'>,
+  scanner: Pick<WalletScanner, 'checkOrders'>,
   orders: Map<string, XmrOrder>,
   minConfirmations: number,
 ): Promise<boolean> {
@@ -440,12 +466,6 @@ export async function reconcilePaidOrders(
   return changed;
 }
 
-function required(name: string): string {
-  const value = process.env[name];
-  if (!value) throw new Error(`${name} is required`);
-  return value;
-}
-
 function validStoredOrder(
   value: unknown,
   id: string,
@@ -483,7 +503,7 @@ function validStoredOrder(
 }
 
 export async function validateWalletLedger(
-  scanner: Pick<any, 'addressAt'>,
+  scanner: Pick<WalletScanner, 'addressAt'>,
   orders: Map<string, XmrOrder>,
   primaryAddress: string,
 ): Promise<void> {
@@ -517,9 +537,8 @@ async function startXmrAgent(): Promise<{
   )
     throw new Error('XMR_RESTORE_HEIGHT must be a nonnegative safe integer');
   const restoreHeight = Number(restoreHeightText);
-  const network = (process.env.XMR_NETWORK || 'stagenet') as
-    'mainnet' | 'stagenet' | 'testnet';
-  if (!['mainnet', 'stagenet', 'testnet'].includes(network))
+  const network = process.env['XMR_NETWORK'] || 'stagenet';
+  if (network !== 'mainnet' && network !== 'stagenet' && network !== 'testnet')
     throw new Error('XMR_NETWORK must be mainnet, stagenet or testnet');
   const { nodesFromEnv } = require('xmr-pay/nodes') as {
     nodesFromEnv(env: NodeJS.ProcessEnv): unknown[];
@@ -530,7 +549,7 @@ async function startXmrAgent(): Promise<{
   let lockBackendPid = 0;
   let lockGuard: ReturnType<typeof createWriterLockGuard> | undefined;
   let lockMonitor: ReturnType<typeof setInterval> | undefined;
-  let scanner: any;
+  let scannerToClose: WalletScanner | undefined;
   let paymentAgent: PaymentAgent | undefined;
   let poller: ReturnType<typeof createAgentPoller> | undefined;
   let server: ReturnType<typeof Bun.serve> | undefined;
@@ -583,18 +602,19 @@ async function startXmrAgent(): Promise<{
     }
 
     const { createScanner } = require('xmr-pay/scanner') as {
-      createScanner(options: Record<string, unknown>): Promise<any>;
+      createScanner(options: Record<string, unknown>): Promise<WalletScanner>;
     };
-    scanner = await createScanner({
+    const scanner = await createScanner({
       primaryAddress,
       privateViewKey,
       networkType: network,
       nodes,
       restoreHeight,
       path: walletPath,
-      password: process.env.XMR_WALLET_PASSWORD || '',
+      password: process.env['XMR_WALLET_PASSWORD'] || '',
       syncTimeoutMs: 120000,
     });
+    scannerToClose = scanner;
     if (scanner.viewOnly !== true)
       throw new Error('refusing to start xmr agent without a view-only wallet');
     await validateWalletLedger(scanner, orders, primaryAddress);
@@ -781,7 +801,7 @@ async function startXmrAgent(): Promise<{
     const activeRequests = new Set<Promise<Response>>();
     server = Bun.serve({
       hostname: '127.0.0.1',
-      port: Number(process.env.XMR_AGENT_PORT || 8788),
+      port: Number(process.env['XMR_AGENT_PORT'] || 8788),
       maxRequestBodySize: 4096,
       async fetch(request) {
         const operation = (async () => {
@@ -808,7 +828,7 @@ async function startXmrAgent(): Promise<{
       },
     });
 
-    const listeningPort = Number(process.env.XMR_AGENT_PORT || 8788);
+    const listeningPort = Number(process.env['XMR_AGENT_PORT'] || 8788);
     let stopped = false;
     return {
       port: server.port ?? listeningPort,
@@ -848,7 +868,7 @@ async function startXmrAgent(): Promise<{
     lockMonitor = undefined;
     await poller?.stop();
     paymentAgent?.stop();
-    if (scanner) await scanner.close(false);
+    if (scannerToClose) await scannerToClose.close(false);
     if (lock) {
       try {
         await lock`SELECT pg_advisory_unlock(${LOCK_ID}::bigint)`;

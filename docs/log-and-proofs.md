@@ -212,7 +212,7 @@ editorial navigation; the signed identity is the tag slug.
 Article pages derive their language, Open Graph article metadata, BlogPosting
 and BreadcrumbList JSON-LD from the latest revision. The sitemap uses actual
 revision timestamps for `lastmod`. Configure the public `SITE_URL` for canonical
-URLs and indexable structured data; local unconfigured previews stay noindex.
+URLs, social metadata and structured data; Astro’s configured site URL also supplies metadata when the runtime variable is absent. Public HTML remains indexable without an origin setting. Private checkout pages, errors, unapproved tag archives and Vercel preview deployments retain noindex.
 The existing generated social cards remain in use. No meta keywords are emitted.
 
 Reference documentation:

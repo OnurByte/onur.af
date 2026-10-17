@@ -1,8 +1,13 @@
+import { readJsonFile } from '../src/server/json-file';
+import { z } from 'astro/zod';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { parseLog } from '../src/portfolio/log';
+import { loadConfiguredKeyTrust } from '../src/portfolio/key-history';
+import { verifyLogPublicationChain } from '../src/portfolio/log-publications';
+import { revisionPublicationSequences } from '../src/portfolio/log-signatures';
 import {
   validateLogTimestamps,
   verifyLogTimestampBitcoin,
@@ -17,22 +22,34 @@ let lastError = '';
 let failures = 0;
 async function inspect() {
   const [entries, receipts, signatures, publicKey] = await Promise.all([
-    readFile(new URL('../src/content/log.json', import.meta.url), 'utf8'),
-    readFile(
+    readJsonFile(new URL('../src/content/log.json', import.meta.url)),
+    readJsonFile(
       new URL('../src/content/log-timestamps.json', import.meta.url),
-      'utf8',
     ),
-    readFile(
+    readJsonFile(
       new URL('../src/content/log-signatures.json', import.meta.url),
-      'utf8',
     ),
     readFile(new URL('../public/pgp.asc', import.meta.url), 'utf8'),
   ]);
-  const records = await validateLogTimestamps(
-    parseLog(JSON.parse(entries)),
-    JSON.parse(receipts),
-    JSON.parse(signatures),
+  const parsedEntries = parseLog(entries);
+  const trust = await loadConfiguredKeyTrust(
     publicKey,
+    await readJsonFile(
+      new URL('../src/content/key-history.json', import.meta.url),
+    ),
+  );
+  const publications = await verifyLogPublicationChain(
+    await readJsonFile(
+      new URL('../src/content/log-publications.json', import.meta.url),
+    ),
+    trust,
+  );
+  const records = await validateLogTimestamps(
+    parsedEntries,
+    receipts,
+    signatures,
+    trust,
+    revisionPublicationSequences(publications, parsedEntries),
   );
   const checked = await Promise.all(
     Object.entries(records).map(
@@ -58,12 +75,13 @@ async function inspect() {
 for (;;) {
   try {
     // Bound each receipt separately so a slow later receipt cannot starve earlier upgrades.
-    const receipts = JSON.parse(
-      await readFile(
-        new URL('../src/content/log-timestamps.json', import.meta.url),
-        'utf8',
-      ),
-    );
+    const receipts = z
+      .record(z.string(), z.unknown())
+      .parse(
+        await readJsonFile(
+          new URL('../src/content/log-timestamps.json', import.meta.url),
+        ),
+      );
     const errors: string[] = [];
     for (const id of Object.keys(receipts)) {
       try {

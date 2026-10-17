@@ -146,6 +146,13 @@ export const embeds = stylex.create({
     lineHeight: 1.6,
     color: 'var(--muted)',
   },
+  repositoryLogs: {
+    display: 'flex',
+    gap: 8,
+    minWidth: 0,
+    overflowX: 'auto',
+    whiteSpace: 'nowrap',
+  },
   repositoryMeta: {
     display: 'flex',
     flexWrap: 'nowrap',

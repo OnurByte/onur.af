@@ -7,11 +7,14 @@ import stylex from '@stylexjs/unplugin';
 import { validSiteUrl } from './src/portfolio/seo';
 
 const site = validSiteUrl(
-  process.env.SITE_URL ??
-    loadEnv(process.env.NODE_ENV ?? 'production', process.cwd(), '').SITE_URL,
+  process.env['SITE_URL'] ??
+    loadEnv(process.env['NODE_ENV'] ?? 'production', process.cwd(), '')[
+      'SITE_URL'
+    ],
 );
 
 export default defineConfig({
+  devToolbar: { enabled: false },
   integrations: [logImages()],
   vite: {
     ssr: { external: ['opentimestamps'] },
@@ -19,7 +22,7 @@ export default defineConfig({
   },
   ...(site ? { site } : {}),
   output: 'server',
-  adapter: process.env.VERCEL ? vercel() : node({ mode: 'standalone' }),
+  adapter: process.env['VERCEL'] ? vercel() : node({ mode: 'standalone' }),
   security: {
     allowedDomains: [
       { hostname: '127.0.0.1', protocol: 'http' },
