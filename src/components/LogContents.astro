@@ -176,6 +176,7 @@ const baseDepth = Math.min(...entries.map((entry) => entry.depth));
   }
 </style>
 <script>
+  import { scrollToPage } from '../client/smooth-scroll';
   document
     .querySelectorAll<HTMLElement>('[data-log-contents]')
     .forEach((menu) => {
@@ -186,7 +187,7 @@ const baseDepth = Math.min(...entries.map((entry) => entry.depth));
         ...menu.querySelectorAll<HTMLAnchorElement>('.contents-rail a'),
       ];
       const sections = railLinks
-        .map((link) => document.getElementById(link.dataset.section!))
+        .map((link) => document.getElementById(link.dataset['section']!))
         .filter((section): section is HTMLElement => section !== null);
       let frame = 0;
       menu.addEventListener('pointerleave', () =>
@@ -216,7 +217,7 @@ const baseDepth = Math.min(...entries.map((entry) => entry.depth));
             event.altKey
           )
             return;
-          const target = document.getElementById(link.dataset.section!);
+          const target = document.getElementById(link.dataset['section']!);
           if (!target) return;
           event.preventDefault();
           if (target instanceof HTMLDetailsElement) target.open = true;
@@ -225,7 +226,7 @@ const baseDepth = Math.min(...entries.map((entry) => entry.depth));
             target.getBoundingClientRect().top + window.scrollY - readingLine;
           if (window.location.hash !== link.hash)
             history.pushState(null, '', link.hash);
-          window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+          scrollToPage(Math.max(0, top));
           if (!target.hasAttribute('tabindex')) target.tabIndex = -1;
           target.focus({ preventScroll: true });
           scheduleUpdate();
@@ -256,9 +257,9 @@ const baseDepth = Math.min(...entries.map((entry) => entry.depth));
         const active = sections[activeIndex]?.id;
         links.forEach((link) => {
           const index = sections.findIndex(
-            (section) => section.id === link.dataset.section,
+            (section) => section.id === link.dataset['section'],
           );
-          const selected = link.dataset.section === active;
+          const selected = link.dataset['section'] === active;
           if (selected) link.setAttribute('aria-current', 'location');
           else link.removeAttribute('aria-current');
           const start = starts[index] ?? 0;
