@@ -25,6 +25,10 @@ export const identityAccounts = {
 } as const;
 
 export const identityStatementText = `I confirm that the X and GitHub accounts listed here are mine.\n${identityAccounts.x.profile}\n${identityAccounts.github.profile}\n`;
+function matchesCleartext(actual: string, expected: string) {
+  const normalized = actual.replace(/\r\n/g, '\n');
+  return normalized === expected || normalized === expected.replace(/\n$/, '');
+}
 export function canonicalIdentityStatement(
   sequence: number,
   fingerprint: string,
@@ -78,8 +82,8 @@ export async function verifyIdentityStatement(
   const v2 = signedText.match(
     /^onurbyte-identity-statement-v2\npublication-sequence:([1-9][0-9]*)\nsigner:([A-F0-9]{40,64})\n\n([\s\S]*)$/,
   );
-  const isLegacy = signedText === identityStatementText;
-  if (!isLegacy && (!v2 || v2[3] !== identityStatementText))
+  const isLegacy = matchesCleartext(signedText, identityStatementText);
+  if (!isLegacy && (!v2 || !matchesCleartext(v2[3]!, identityStatementText)))
     throw new Error('Identity statement must use a canonical signed format');
   const sequence = v2 ? Number(v2[1]) : undefined;
   if (sequence !== undefined && !Number.isSafeInteger(sequence))
@@ -158,7 +162,10 @@ export async function verifyIdentitySignature(
   const signedText = message.getText().replace(/\r\n/g, '\n');
   const legacy = proof.publicationSequence === undefined;
   if (legacy) {
-    if (proof.signerFingerprint !== undefined || signedText !== proof.profile)
+    if (
+      proof.signerFingerprint !== undefined ||
+      !matchesCleartext(signedText, proof.profile)
+    )
       throw new Error(
         'Legacy identity proof must sign exactly the account URL',
       );
@@ -168,7 +175,7 @@ export async function verifyIdentitySignature(
         'Versioned identity proof requires its signer fingerprint',
       );
     const expected = `onurbyte-identity-proof-v2\npublication-sequence:${proof.publicationSequence}\nsigner:${proof.signerFingerprint}\naccount:${proof.profile}\n`;
-    if (signedText !== expected)
+    if (!matchesCleartext(signedText, expected))
       throw new Error(
         'Signed identity proof must use its canonical versioned statement',
       );

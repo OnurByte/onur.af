@@ -237,6 +237,20 @@ test('versioned RSS and identity statements remain authorized after rotation thr
       )
     ).fingerprint,
   ).toBe(nextFingerprint);
+  expect(
+    (
+      await verifyIdentityStatement(
+        {
+          ...statement,
+          signedMessage: await clearSignature(
+            identityText.replace(/\n$/, ''),
+            nextPrivate,
+          ),
+        },
+        trust,
+      )
+    ).fingerprint,
+  ).toBe(nextFingerprint);
   const profile = 'https://github.com/onurbyte';
   const identityProofText = `onurbyte-identity-proof-v2\npublication-sequence:3\nsigner:${nextFingerprint}\naccount:${profile}\n`;
   const identityProof = {
