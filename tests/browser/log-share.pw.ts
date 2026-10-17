@@ -203,9 +203,13 @@ for (const width of [320, 1280]) {
     await expect
       .poll(() => page.evaluate(() => scrollY))
       .toBeLessThan(secondScroll);
-    const heading = (await page
-      .locator('.log-body #embed-snippet')
-      .boundingBox())!;
-    expect(Math.abs(heading.y - 160)).toBeLessThanOrEqual(1);
+    await expect
+      .poll(async () => {
+        const heading = await page
+          .locator('.log-body #embed-snippet')
+          .boundingBox();
+        return heading ? Math.abs(heading.y - 160) : Infinity;
+      })
+      .toBeLessThanOrEqual(1);
   });
 }
