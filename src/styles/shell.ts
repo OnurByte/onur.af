@@ -73,7 +73,7 @@ export const shell = stylex.create({
   footer: {
     paddingTop: 20,
     paddingBottom: 28,
-    fontSize: { default: 16, '@media (min-width: 621px)': 20 },
+    fontSize: { default: 14, '@media (min-width: 621px)': 20 },
     fontWeight: 700,
   },
   footerNavigation: {
