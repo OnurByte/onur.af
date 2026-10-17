@@ -22,7 +22,7 @@ test('preview descriptions use the published page intros', () => {
   expect(publicPreview('/rss')!.description).toBe(
     'Follow new writing via RSS.',
   );
-  expect(publicPreview('/donate')!.description).toBe(
+  expect(publicPreview('/contribute')!.description).toBe(
     'Support my work with Monero.',
   );
   expect(publicPreview('/pgp')!.description).toBe(

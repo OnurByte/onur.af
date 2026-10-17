@@ -8,14 +8,15 @@ import { wantsFeedHtml } from '../portfolio/feeds';
 import { getRssPublication } from '../portfolio/rss';
 import { rssEntries } from '../portfolio/rss-entries';
 import { feedStyles } from '../styles/feed';
-const publication = await getRssPublication(Astro.url);
+const publication = await getRssPublication(Astro.url, Astro.site);
 const verification = publication.verification;
 if (!wantsFeedHtml(Astro.request.headers.get('accept'))) {
   return publication.response;
 }
 Astro.response.headers.set('Vary', 'Accept');
 Astro.response.headers.set('Cache-Control', 'no-cache');
-const feedUrl = new URL('/rss', siteOrigin() ?? Astro.url.origin).href;
+const feedUrl = new URL('/rss', siteOrigin(Astro.site) ?? Astro.url.origin)
+  .href;
 const description = publicPreview('/rss')!.description;
 ---
 

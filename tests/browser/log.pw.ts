@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { decodeProofArchive } from '../../src/portfolio/proof-archive';
 
 test('PGP lists signed Log entries directly and remains usable on mobile', async ({
   page,
@@ -18,19 +19,28 @@ test('PGP lists signed Log entries directly and remains usable on mobile', async
     log.getByRole('heading', { name: 'Log', exact: true }),
   ).toBeVisible();
   const signedEntry = log.getByRole('link', {
-    name: 'Example: copying embed snippets',
+    name: 'Become a massive value provider',
     exact: true,
   });
   await expect(signedEntry).toHaveAttribute(
     'href',
-    '/pgp/log/sealed-lodge-waits',
+    '/log/cryptic-watchtower-watches/verified',
   );
   expect((await request.get('/pgp/log')).status()).toBe(404);
   await signedEntry.click();
-  await expect(page).toHaveURL('/pgp/log/sealed-lodge-waits');
+  await expect(page).toHaveURL('/log/cryptic-watchtower-watches/verified');
+  await expect(
+    page.getByText(/verify this revision with a fingerprint you trust/i),
+  ).toBeVisible();
   await expect(
     page.getByRole('textbox', { name: 'PGP signature' }),
   ).toBeVisible();
+  await expect(
+    page.getByText(/this revision has no signed media manifest/i),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'Download archive' }),
+  ).toHaveAttribute('href', '/log/cryptic-watchtower-watches/archive.tar');
   await page.goto('/pgp');
   await expect(page.locator('#log')).toBeVisible();
   await page
@@ -54,6 +64,78 @@ test('PGP lists signed Log entries directly and remains usable on mobile', async
   ]) {
     expect((await request.get(path)).status()).toBe(404);
   }
+});
+
+test('legacy signed Log URLs redirect and retain their selected revision', async ({
+  request,
+}) => {
+  const response = await request.get(
+    '/pgp/log/cryptic-watchtower-watches?v=1',
+    { maxRedirects: 0 },
+  );
+  expect(response.status()).toBe(301);
+  const redirect = new URL(response.headers()['location']!);
+  expect(redirect.pathname + redirect.search).toBe(
+    '/log/cryptic-watchtower-watches/verified?v=1',
+  );
+});
+
+test('machine-readable PGP discovery exposes signed identity, key and Log proof URLs', async ({
+  request,
+}) => {
+  const response = await request.get('/pgp/identity.json');
+  expect(response.ok()).toBe(true);
+  expect(response.headers()['content-type']).toContain('application/json');
+  const discovery = await response.json();
+  expect(discovery.identity.statementUrl).toBe('/pgp/identity.asc');
+  expect(discovery.identity.statement).toContain(
+    '-----BEGIN PGP SIGNED MESSAGE-----',
+  );
+  expect(discovery.key.url).toBe('/pgp.asc');
+  expect(discovery.key.fingerprint).toMatch(/^[0-9A-F]{40,64}$/);
+  expect(discovery.logProofs).toContainEqual(
+    expect.objectContaining({
+      id: 'cryptic-watchtower-watches',
+      revision: 1,
+      url: '/log/cryptic-watchtower-watches/verified?v=1',
+      archive: '/log/cryptic-watchtower-watches/archive.tar',
+    }),
+  );
+});
+
+test('legacy proof routes offer a readable TAR and keep absent v2 artifacts absent', async ({
+  request,
+}) => {
+  const id = 'cryptic-watchtower-watches';
+  const archiveResponse = await request.get(`/log/${id}/archive.tar`);
+  expect(archiveResponse.ok()).toBe(true);
+  expect(archiveResponse.headers()['content-type']).toContain(
+    'application/x-tar',
+  );
+  const files = decodeProofArchive(
+    new Uint8Array(await archiveResponse.body()),
+  );
+  expect(files.has('bundle.json')).toBe(true);
+  expect(files.has(`revisions/${id}-v1.md`)).toBe(true);
+  expect(files.has(`revisions/${id}-v1.md.asc`)).toBe(true);
+  expect(files.has(`proofs/${id}-v1.json`)).toBe(false);
+
+  expect(
+    (await request.get('/log/unknown-log/words/archive.tar')).status(),
+  ).toBe(404);
+  expect((await request.get(`/proofs/${id}-v1.proof.json`)).status()).toBe(404);
+  expect(
+    (await request.get(`/proofs/${id}-v1.proof.json.asc.ots`)).status(),
+  ).toBe(404);
+});
+
+test('Log detail omits Related navigation when there are no related logs', async ({
+  page,
+}) => {
+  await page.goto('/log/cryptic-watchtower-watches');
+  await expect(
+    page.getByRole('navigation', { name: 'Related logs' }),
+  ).toHaveCount(0);
 });
 
 test('X and GitHub always show their PGP tick beside the account, including before signing', async ({

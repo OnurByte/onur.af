@@ -1,6 +1,10 @@
 {
-  "sealed-lodge-waits-v1": {
-    "sha256": "5ea22197836773e99068837147510546c11dbd243bc5c3be553646808122ea46",
-    "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatESswAKCRDNHqyHSkMK\nVpeyAQCZ6kcQVFD1C8B4DBakBJaf3PW1WvoVGOdWroH7sjTKJAD/XyRJc/h7C2Km\nXDQio8gpgUHY6DR77pgi2uc0DMHpmAU=\n=4TVy\n-----END PGP SIGNATURE-----\n"
+  "cryptic-watchtower-watches-v1": {
+    "sha256": "87f7847a9906fae7b478e42fc6808f0c23b8b3c95115cefe29ff8f9c296afc88",
+    "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatOrYgAKCRDNHqyHSkMK\nVk+gAP40TWMEE4mhh/pcTYfCiX5OukVP2PGluO6XvFwizS6S7AEAoQK3GPTzJLDv\nL42DMrq0IVymgk+iHZ4eZOCN8adAMw0=\n=5sLI\n-----END PGP SIGNATURE-----\n"
+  },
+  "cryptic-watchtower-watches-v2": {
+    "sha256": "5b31a3b96e41598b0230e06faa9230ce3e0612288ec671c414aaf45564127065",
+    "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatPVGAAKCRDNHqyHSkMK\nVrPSAP9CnvrICTjmL5zhRwrc0q6XBAAkAKVTNbT25cfxt2CJbAD/aiw5mLETYxdn\nSOcEdMeQWMMjRrXLfIe+s7jQFLbOsAY=\n=XxYl\n-----END PGP SIGNATURE-----\n"
   }
 }

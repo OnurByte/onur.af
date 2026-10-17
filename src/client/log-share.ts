@@ -68,14 +68,14 @@ dialog?.addEventListener('click', async (event) => {
   }
   const action = (event.target as Element).closest<HTMLElement>(
     '[data-share-action]',
-  )?.dataset.shareAction;
+  )?.dataset['shareAction'];
   if (!action || !status) return;
   status.textContent = '';
   status.hidden = true;
-  const url = dialog.dataset.url!;
+  const url = dialog.dataset['url']!;
   try {
     if (action === 'native') {
-      await navigator.share({ title: dialog.dataset.title!, url });
+      await navigator.share({ title: dialog.dataset['title']!, url });
       closeDialog(dialog);
       return;
     }
@@ -85,7 +85,7 @@ dialog?.addEventListener('click', async (event) => {
         (navigator.maxTouchPoints > 1 &&
           /Macintosh/i.test(navigator.userAgent));
       if (isMobile && typeof navigator.share === 'function') {
-        await navigator.share({ title: dialog.dataset.title!, url });
+        await navigator.share({ title: dialog.dataset['title']!, url });
         closeDialog(dialog);
         return;
       }

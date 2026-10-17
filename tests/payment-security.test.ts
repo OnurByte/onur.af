@@ -39,7 +39,7 @@ function transfer({
 }
 
 async function scannerWith(
-  transfers: any[],
+  transfers: ReturnType<typeof transfer>[],
   sync: () => Promise<void> = async () => {},
 ) {
   const wallet = {

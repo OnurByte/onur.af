@@ -84,7 +84,10 @@ test('home brand name matches the visible icon height and vertical alignment', a
 
 test('log and proof cards include the same seal on the right', async () => {
   const seals = [];
-  for (const key of ['log-sealed-lodge-waits', 'verified-sealed-lodge-waits']) {
+  for (const key of [
+    'log-cryptic-watchtower-watches',
+    'verified-cryptic-watchtower-watches',
+  ]) {
     const seal = await sharp(await socialImage(key))
       .extract({ left: 888, top: 220, width: 240, height: 240 })
       .removeAlpha()

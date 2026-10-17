@@ -6,7 +6,7 @@ import pages from '../src/content/public-pages.json';
 test('search indexes public descriptions, never checkout data', () => {
   expect(searchPages.map((page) => page.url)).toEqual([
     '/',
-    '/donate',
+    '/contribute',
     '/rss',
     '/pgp',
     '/log',
@@ -46,11 +46,13 @@ test('Log entries are searchable by title, summary and the latest published body
         {
           version: 1,
           publishedAt: '2026-10-14T09:00:00Z',
+          tags: ['development'],
           body: 'Outdated sentence',
         },
         {
           version: 2,
           publishedAt: '2026-10-15T09:00:00Z',
+          tags: ['development'],
           body: 'Unique searchable sentence',
         },
       ],

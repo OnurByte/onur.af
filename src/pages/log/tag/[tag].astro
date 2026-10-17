@@ -6,7 +6,7 @@ import { styles } from '../../../styles/pages';
 import { logStyles } from '../../../styles/log';
 import { logTags, logTagIndexable } from '../../../portfolio/log-tags';
 import { getLogSignatures } from '../../../portfolio/verified-proofs';
-const tag = logTags().find((tag) => tag.slug === Astro.params.tag);
+const tag = logTags().find((tag) => tag.slug === Astro.params['tag']);
 if (!tag) return Astro.rewrite('/404');
 const signatures = await getLogSignatures();
 ---
@@ -17,11 +17,16 @@ const signatures = await getLogSignatures();
   noindex={!logTagIndexable(tag.slug)}
 >
   <main {...stylex.attrs(styles.main)}>
-    <nav aria-label="Breadcrumb">
-      <a href="/log">Log</a> / {tag.title}
+    <nav {...stylex.attrs(styles.breadcrumb)} aria-label="Breadcrumb">
+      <a {...stylex.attrs(styles.walletLink)} href="/log">
+        Log
+      </a>{' '}
+      / {tag.title}
     </nav>
     <h1 {...stylex.attrs(styles.heading)}>{tag.title}</h1>
-    <p>{tag.description}</p>
+    <div {...stylex.attrs(styles.prose)}>
+      <p {...stylex.attrs(styles.paragraph)}>{tag.description}</p>
+    </div>
     <div {...stylex.attrs(logStyles.list)} class="h-feed">
       {tag.entries.map((entry) => (
         <LogCard

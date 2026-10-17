@@ -19,6 +19,12 @@ export const styles = stylex.create({
     letterSpacing: '-0.03em',
     overflowWrap: 'anywhere',
   },
+  breadcrumb: {
+    marginBottom: 16,
+    fontSize: '0.875rem',
+    lineHeight: 1.6,
+    color: 'var(--muted)',
+  },
   prose: { maxWidth: 'var(--reading-width)', lineHeight: 1.8 },
   paragraph: { marginBlock: 24 },
   mono: {

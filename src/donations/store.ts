@@ -1,3 +1,4 @@
+import { moneroAddress } from './protocol';
 import { formatXmrAmount, parseXmrAmount } from './money';
 
 type DonationState = 'creating' | 'ready' | 'review';
@@ -41,8 +42,7 @@ function donation(row: DonationRow): Donation {
 }
 
 function validAddress(address: string): void {
-  if (!/^[45789AB][1-9A-HJ-NP-Za-km-z]{94}$/.test(address))
-    throw new Error('invalid donation address');
+  if (!moneroAddress.test(address)) throw new Error('invalid donation address');
 }
 
 export function createDonationStore(databaseUrl: string) {

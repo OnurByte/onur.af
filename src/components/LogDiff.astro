@@ -1,4 +1,6 @@
 ---
+import * as stylex from '@stylexjs/stylex';
+import { logStyles } from '../styles/log';
 import { type LogEntry } from '../portfolio/log';
 import { logRevisionDiff } from '../portfolio/log-diff';
 interface Props {
@@ -25,7 +27,7 @@ const lines = diff.hunks.flatMap((hunk) => [
 
 {diff.hunks.length > 0 && (
   <details class="log-diff">
-    <summary>
+    <summary {...stylex.attrs(logStyles.summary)}>
       Changes in v{version} · {diff.added} added, {diff.removed} removed
     </summary>
     <pre
@@ -47,6 +49,7 @@ const lines = diff.hunks.flatMap((hunk) => [
     overflow-x: auto;
     padding: 12px;
     border: 1px solid var(--border);
+    border-radius: 4px;
     background: var(--surface);
     font-size: 0.8125rem;
     line-height: 1.7;

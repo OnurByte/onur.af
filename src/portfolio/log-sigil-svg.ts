@@ -17,6 +17,20 @@ export function logSigilSvg(
       return point(angle, geometry.innerRadius);
     },
   ).join(' ');
+  const framePoints = Array.from({ length: geometry.frameSides }, (_, index) =>
+    point(geometry.frameRotation + (360 / geometry.frameSides) * index, 73),
+  ).join(' ');
+  const frame = geometry.frameSides
+    ? `<polygon points="${framePoints}" />`
+    : '<circle cx="80" cy="80" r="73" />';
+  const centerMark = [
+    '<path d="M80 48 84 76 112 80 84 84 80 112 76 84 48 80 76 76Z" />',
+    '<path d="M56 56 104 104M104 56 56 104" />',
+    '<polygon points="80,46 89,71 114,80 89,89 80,114 71,89 46,80 71,71" />',
+    '<circle cx="80" cy="80" r="17" /><circle cx="80" cy="80" r="7" />',
+    `<polygon points="${point(270, 20)} ${point(342, 20)} ${point(54, 20)} ${point(126, 20)}" />`,
+    '',
+  ][geometry.centerMark]!;
   return `<svg
   class="log-sigil"
   xmlns="http://www.w3.org/2000/svg"
@@ -29,14 +43,14 @@ export function logSigilSvg(
   aria-hidden="true"
   focusable="false"
 >
-  <circle cx="80" cy="80" r="73" />
+  ${frame}
   <path d="${arcPath}" />
-  <circle cx="80" cy="80" r="61" />
+  ${geometry.innerRing ? '<circle cx="80" cy="80" r="61" />' : ''}
   ${geometry.spokes.map((spoke) => `<line x1="${spoke.x1}" y1="${spoke.y1}" x2="${spoke.x2}" y2="${spoke.y2}" />`).join('')}
   ${geometry.nodes.map((node) => `<circle cx="${node.x}" cy="${node.y}" r="${node.radius}" fill="${color}" stroke="none" />`).join('')}
   <circle cx="80" cy="80" r="43" />
   <polygon points="${polygonPoints}" />
-  <path d="M80 48 84 76 112 80 84 84 80 112 76 84 48 80 76 76Z" />
+  ${centerMark}
   <circle cx="80" cy="80" r="5" fill="${color}" stroke="none" />
 </svg>
 

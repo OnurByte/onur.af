@@ -1,5 +1,5 @@
-import { logEntries, logMetadata, logUrl, type LogEntry } from './log';
-import { renderLogContent } from './log-markdown';
+import { logEntries, logMetadata, type LogEntry } from './log';
+import { buildContentIndex } from './content-index';
 
 export function logConnections(
   entry: LogEntry,
@@ -20,24 +20,13 @@ export function logConnections(
     .sort((a, b) => b.overlap - a.overlap || byDate(a.entry, b.entry))
     .slice(0, 3)
     .map((item) => item.entry);
-  const base = origin ?? 'https://log.invalid';
+  const referring = new Set(
+    buildContentIndex(entries, origin)
+      .referencedBy(entry.id)
+      .map((document) => document.id),
+  );
   const referencedBy = others
-    .filter((candidate) =>
-      [
-        ...renderLogContent(candidate.revisions.at(-1)!.body).links,
-        ...logMetadata(candidate).sources.map((source) => source.url),
-      ].some((href) => {
-        try {
-          const target = new URL(href, new URL(logUrl(candidate), base));
-          return (
-            target.origin === new URL(base).origin &&
-            target.pathname === logUrl(entry)
-          );
-        } catch {
-          return false;
-        }
-      }),
-    )
+    .filter((candidate) => referring.has(candidate.id))
     .sort(byDate);
   return { related, referencedBy };
 }

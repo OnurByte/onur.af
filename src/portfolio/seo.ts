@@ -8,7 +8,7 @@ import {
 import { logTags, logTagUrl } from './log-tags';
 export const publicPaths: readonly string[] = [
   '/',
-  '/donate',
+  '/contribute',
   '/rss',
   '/pgp',
   '/log',
@@ -16,8 +16,7 @@ export const publicPaths: readonly string[] = [
 export const proofPaths = ['/pgp/x', '/pgp/github'] as const;
 export const logPaths = () =>
   logEntries.flatMap((entry) => [logUrl(entry), logProofUrl(entry)]);
-export const siteDescription =
-  'Onur’s projects, signed technical notes, and public identity proofs.';
+export const siteDescription = 'What I make.';
 
 export function validSiteUrl(value: string | undefined): string | undefined {
   if (!value || /[\u0000-\u0020\u007f\\]/.test(value)) return;
@@ -47,22 +46,44 @@ export function validSiteUrl(value: string | undefined): string | undefined {
   }
 }
 
-export function siteOrigin(): string | undefined {
-  return validSiteUrl(process.env.SITE_URL ?? import.meta.env?.SITE_URL);
+export function resolveSiteOrigin(
+  value: string | undefined,
+  fallback: string | URL | undefined,
+): string | undefined {
+  return validSiteUrl(value || fallback?.toString());
+}
+export function siteOrigin(fallback?: string | URL): string | undefined {
+  return resolveSiteOrigin(
+    process.env['SITE_URL'] ?? import.meta.env?.['SITE_URL'],
+    fallback,
+  );
+}
+function isPublicPage(pathname: string): boolean {
+  return (
+    publicPaths.includes(pathname) ||
+    proofPaths.some((path) => path === pathname) ||
+    logPaths().includes(pathname) ||
+    logTags().some((tag) => logTagUrl(tag.slug) === pathname)
+  );
+}
+/** Indexability is a page policy, independent of whether an absolute canonical origin is configured. */
+export function robotsContent(
+  pathname: string,
+  options: { noindex?: boolean; status?: number } = {},
+): string {
+  if ((options.status ?? 200) !== 200 || !isPublicPage(pathname))
+    return 'noindex, nofollow';
+  const tag = logTags().find((tag) => logTagUrl(tag.slug) === pathname);
+  return options.noindex || (tag && !tag.indexable)
+    ? 'noindex, follow'
+    : 'index, follow';
 }
 
 export function canonicalUrl(
   origin: string | undefined,
   pathname: string,
 ): string | undefined {
-  if (
-    !origin ||
-    (!publicPaths.includes(pathname) &&
-      !proofPaths.some((path) => path === pathname) &&
-      !logPaths().includes(pathname) &&
-      !logTags().some((tag) => logTagUrl(tag.slug) === pathname))
-  )
-    return;
+  if (!origin || !isPublicPage(pathname)) return;
   return new URL(pathname, origin).href;
 }
 

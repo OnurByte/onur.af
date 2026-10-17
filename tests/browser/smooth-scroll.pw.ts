@@ -34,12 +34,12 @@ test('anchors preserve focus and history, and keyboard input stops momentum', as
   expect(await page.evaluate(() => scrollY)).toBe(stopped);
 });
 
-test('the donation profile responds faster than home at the same animation time', async ({
+test('the contribution profile responds faster than home at the same animation time', async ({
   page,
 }) => {
   await page.clock.install();
   const positions: number[] = [];
-  for (const path of ['/', '/donate']) {
+  for (const path of ['/', '/contribute']) {
     await page.goto(path);
     await page.evaluate(() => {
       document.body.style.minHeight = '4000px';
@@ -64,7 +64,7 @@ test('pages expose distinct scroll profiles and wheel movement settles smoothly'
   page,
 }) => {
   const profiles = new Set<string>();
-  for (const path of ['/', '/log', '/pgp', '/rss', '/donate', '/404']) {
+  for (const path of ['/', '/log', '/pgp', '/rss', '/contribute', '/404']) {
     await page.goto(path);
     profiles.add(
       (await page.locator('html').getAttribute('data-scroll-profile')) ?? '',

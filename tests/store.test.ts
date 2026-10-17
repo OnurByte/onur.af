@@ -5,7 +5,7 @@ import {
   DonationCapacityError,
 } from '../src/donations/store';
 
-const databaseUrl = Bun.env.TEST_DATABASE_URL;
+const databaseUrl = Bun.env['TEST_DATABASE_URL'];
 const store = databaseUrl ? createDonationStore(databaseUrl) : null;
 const sql = databaseUrl ? new Bun.SQL(databaseUrl) : null;
 const ids: string[] = [];

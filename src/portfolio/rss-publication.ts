@@ -4,6 +4,7 @@ import {
   verifyRssSignature,
   type VerifiedRssSignature,
 } from './rss-signatures';
+import type { KeyTrust } from './key-history';
 
 export interface RssPublication {
   response: Response;
@@ -15,7 +16,7 @@ export async function resolveRssPublication(
   requestUrl: URL | undefined,
   entries: readonly RssEntry[],
   artifact: unknown,
-  publicKey: string,
+  publicKey: string | KeyTrust,
 ): Promise<RssPublication> {
   const response = rssResponse(origin, requestUrl, entries);
   response.headers.set('Cache-Control', 'no-cache, no-transform');

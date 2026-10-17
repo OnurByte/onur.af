@@ -1,4 +1,5 @@
-import { logEntries, logUrl, logMetadata, type LogEntry } from './log';
+import { logEntries, type LogEntry } from './log';
+import { buildContentIndex } from './content-index';
 import pages from '../content/public-pages.json' with { type: 'json' };
 
 // Fixed public metadata only: never crawl checkout URLs or payment data.
@@ -8,17 +9,17 @@ export const searchPages = pages.map(({ id, title, description }) => ({
 }));
 
 export function logSearchEntries(entries: readonly LogEntry[]) {
-  return entries.map((entry) => ({
-    url: logUrl(entry),
-    meta: {
-      title: logMetadata(entry).title,
-      description: logMetadata(entry).summary,
-    },
+  return buildContentIndex(entries).documents.map((document) => ({
+    url: document.url,
+    meta: { title: document.title, description: document.summary },
     searchText: [
-      logMetadata(entry).title,
-      logMetadata(entry).summary,
-      ...logMetadata(entry).tags,
-      entry.revisions.at(-1)!.body,
+      document.title,
+      document.summary,
+      ...document.tags,
+      document.body,
+      ...document.links,
+      ...document.sources.map((source) => source.title),
+      ...document.repositories.map((reference) => reference.repository),
     ].join(' '),
   }));
 }

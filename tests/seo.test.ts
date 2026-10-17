@@ -38,8 +38,8 @@ describe('public SEO URLs', () => {
     expect(canonicalUrl('https://portfolio.example', '/')).toBe(
       'https://portfolio.example/',
     );
-    expect(canonicalUrl('https://portfolio.example', '/donate')).toBe(
-      'https://portfolio.example/donate',
+    expect(canonicalUrl('https://portfolio.example', '/contribute')).toBe(
+      'https://portfolio.example/contribute',
     );
     for (const path of [
       '/donate/private-id',
@@ -65,4 +65,28 @@ describe('public SEO URLs', () => {
     expect(sitemapXml('https://portfolio.example')).not.toContain('private-id');
     expect(sitemapXml('https://portfolio.example')).not.toContain('/identity');
   });
+});
+
+test('missing canonical configuration never blocks known public pages from indexing', async () => {
+  const { robotsContent } = await import('../src/portfolio/seo');
+  for (const path of [...publicPaths, ...proofPaths, ...logPaths()])
+    expect(robotsContent(path)).toBe('index, follow');
+  expect(robotsContent('/pgp', { noindex: true })).toBe('noindex, follow');
+  expect(robotsContent('/404', { status: 404 })).toBe('noindex, nofollow');
+  expect(robotsContent('/contribute/private-id')).toBe('noindex, nofollow');
+  expect(robotsContent('/', { status: 500 })).toBe('noindex, nofollow');
+  expect(robotsContent('/log/tag/development')).toBe('noindex, follow');
+});
+test('Astro site configuration supplies the canonical origin when runtime configuration is absent', async () => {
+  const { resolveSiteOrigin } = await import('../src/portfolio/seo');
+  expect(resolveSiteOrigin(undefined, 'https://portfolio.example/')).toBe(
+    'https://portfolio.example',
+  );
+  expect(resolveSiteOrigin('https://new.example', 'https://old.example/')).toBe(
+    'https://new.example',
+  );
+  expect(
+    resolveSiteOrigin('http://localhost:4321', 'https://portfolio.example/'),
+  ).toBeUndefined();
+  expect(resolveSiteOrigin(undefined, undefined)).toBeUndefined();
 });

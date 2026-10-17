@@ -4,6 +4,7 @@ import { embeds as styles } from '../../styles/embeds';
 import Icon from '../Icon.astro';
 import AccountLink from '../AccountLink.astro';
 import SpotifyEmbed from './SpotifyEmbed.astro';
+import { contentIndex, githubReference } from '../../portfolio/content-index';
 import type { Embed } from '../../portfolio/embeds';
 interface Props {
   embeds: readonly Embed[];
@@ -161,7 +162,11 @@ const timestamp = (value: string) =>
                     </time>
                   )}
                   {item.kind === 'repository' &&
-                    (item.language || item.commits !== undefined) && (
+                    (item.language ||
+                      item.commits !== undefined ||
+                      contentIndex.forRepository(
+                        githubReference(item.href)?.repository ?? '',
+                      ).length > 0) && (
                       <div
                         {...stylex.attrs(styles.detail, styles.repositoryMeta)}
                       >
@@ -185,6 +190,21 @@ const timestamp = (value: string) =>
                             {item.commits === 1 ? 'commit' : 'commits'}
                           </span>
                         )}
+                        <span {...stylex.attrs(styles.repositoryLogs)}>
+                          {contentIndex
+                            .forRepository(
+                              githubReference(item.href)?.repository ?? '',
+                            )
+                            .map((document, index) => (
+                              <a
+                                href={document.url}
+                                title={document.title}
+                                {...stylex.attrs(styles.link)}
+                              >
+                                Log{index > 0 ? ` ${index + 1}` : ''}
+                              </a>
+                            ))}
+                        </span>
                       </div>
                     )}
                 </li>

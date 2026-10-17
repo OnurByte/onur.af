@@ -1,10 +1,11 @@
 import { expect, test } from 'bun:test';
-import { parseLog, revisionMarkdown } from '../src/portfolio/log';
+import { logProofUrl, parseLog, revisionMarkdown } from '../src/portfolio/log';
 import { renderLogMarkdown } from '../src/portfolio/log-markdown';
 import { logSearchEntries } from '../src/portfolio/search';
 const revision = {
   version: 1,
   publishedAt: '2026-10-16T09:00:00Z',
+  tags: ['development'],
   body: 'Text',
 };
 const entry = {
@@ -38,6 +39,32 @@ test('signed metadata belongs to its revision and old bytes stay unchanged', () 
   expect(revisionMarkdown(parsed, 2)).toContain('tags: ["pgp"]');
   expect(logSearchEntries([parsed])[0]!.searchText).toContain('pgp');
   expect(logSearchEntries([parsed])[0]!.meta.title).toBe('Updated');
+});
+
+test('Log proof URLs use the stable verified route and retain revision selection', () => {
+  const parsed = parseLog([entry])[0]!;
+  expect(logProofUrl(parsed)).toBe('/log/ancient-archive-opens/verified');
+  expect(logProofUrl(parsed, 1)).toBe(
+    '/log/ancient-archive-opens/verified?v=1',
+  );
+});
+
+test('legacy revisions without tags retain their exact signed Markdown bytes', () => {
+  const legacy = parseLog([
+    {
+      ...entry,
+      revisions: [
+        {
+          version: 1,
+          publishedAt: '2026-10-16T09:00:00Z',
+          body: 'Text',
+        },
+      ],
+    },
+  ])[0]!;
+  expect(revisionMarkdown(legacy, 1)).toBe(
+    '---\nid: ancient-archive-opens\ntitle: "Original"\nsummary: "Summary"\nversion: 1\npublished: 2026-10-16T09:00:00Z\nupdated: 2026-10-16T09:00:00Z\n---\n\nText\n',
+  );
 });
 
 test('rejects duplicate or unknown tags and inaccessible covers', () => {
@@ -155,7 +182,7 @@ test('used tag routes get canonical URLs but enter sitemap only after editorial 
   const parsed = parseLog([
     { ...entry, revisions: [{ ...revision, tags: ['pgp'] }] },
   ])[0]!;
-  const wasIndexable = logTagDefinitions.pgp!.indexable;
+  const wasIndexable = logTagDefinitions['pgp']!.indexable;
   logEntries.push(parsed);
   try {
     expect(canonicalUrl('https://portfolio.example', '/log/tag/pgp')).toBe(
@@ -164,15 +191,15 @@ test('used tag routes get canonical URLs but enter sitemap only after editorial 
     expect(
       canonicalUrl('https://portfolio.example', '/log/tag/unknown'),
     ).toBeUndefined();
-    logTagDefinitions.pgp!.indexable = false;
+    logTagDefinitions['pgp']!.indexable = false;
     expect(sitemapXml('https://portfolio.example')).not.toContain(
       '/log/tag/pgp',
     );
-    logTagDefinitions.pgp!.indexable = true;
+    logTagDefinitions['pgp']!.indexable = true;
     expect(sitemapXml('https://portfolio.example')).toContain('/log/tag/pgp');
   } finally {
     logEntries.pop();
-    logTagDefinitions.pgp!.indexable = wasIndexable;
+    logTagDefinitions['pgp']!.indexable = wasIndexable;
   }
 });
 
@@ -267,7 +294,7 @@ test('archived signed tag links do not prevent removing a tag in a later revisio
           ...revision,
           version: 2,
           publishedAt: '2026-10-17T09:00:00Z',
-          tags: [],
+          tags: ['privacy'],
           body: 'Updated',
         },
       ],

@@ -21,15 +21,20 @@ jobs:
       - name: Upgrade existing receipts and inspect Bitcoin attestations
         continue-on-error: true
         run: bun scripts/log-timestamps-watch.ts --once
+      - name: Upgrade publication manifest receipts
+        continue-on-error: true
+        run: bun run checkpoints upgrade
+      - name: Validate publication receipt bindings
+        run: bun run checkpoints --check
       - name: Validate signed revision bindings
         run: bun scripts/log-timestamps.ts --check
       - name: Commit upgraded receipts
         run: |
-          if git diff --quiet -- src/content/log-timestamps.json; then
+          if git diff --quiet -- src/content/log-timestamps.json src/content/publication-checkpoints.json; then
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- src/content/log-timestamps.json
-          git commit -m 'Upgrade Log Bitcoin timestamp receipts' --only -- src/content/log-timestamps.json
+          git add -- src/content/log-timestamps.json src/content/publication-checkpoints.json
+          git commit -m 'Upgrade Log Bitcoin timestamp receipts' --only -- src/content/log-timestamps.json src/content/publication-checkpoints.json
           git push

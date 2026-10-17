@@ -1,3 +1,4 @@
+import type { MoneroWalletFull } from 'monero-ts';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { cp, chmod, mkdtemp, rm } from 'node:fs/promises';
@@ -8,7 +9,7 @@ import { createRequire } from 'node:module';
 let recoveryStage = 'setup';
 
 async function recover() {
-  const databaseUrl = Bun.env.TEST_DATABASE_URL!;
+  const databaseUrl = Bun.env['TEST_DATABASE_URL']!;
   const db = new URL(databaseUrl);
   if (db.search)
     throw new Error(
@@ -38,15 +39,17 @@ async function recover() {
     if ((await proc.exited) !== 0)
       throw new Error('isolated backup recovery command failed');
   };
-  let source: any;
-  let wallet: any;
-  let restoredWallet: any;
+  let source: MoneroWalletFull | null = null;
+  let wallet: MoneroWalletFull | null = null;
+  let restoredWallet: MoneroWalletFull | null = null;
   let schemaOwned = false;
   try {
-    const mono = createRequire(import.meta.url)('monero-ts');
+    const mono = createRequire(import.meta.url)(
+      'monero-ts',
+    ) as typeof import('monero-ts');
     recoveryStage = 'source wallet generation';
     source = await mono.createWalletFull({
-      networkType: 'stagenet',
+      networkType: mono.MoneroNetworkType.STAGENET,
       password: '',
       proxyToWorker: false,
     });
@@ -55,7 +58,7 @@ async function recover() {
     const privateViewKey = await source.getPrivateViewKey();
     recoveryStage = 'view-only wallet creation';
     wallet = await mono.createWalletFull({
-      networkType: 'stagenet',
+      networkType: mono.MoneroNetworkType.STAGENET,
       primaryAddress,
       privateViewKey,
       restoreHeight: 0,
@@ -148,13 +151,13 @@ async function recover() {
     restoredWallet = await mono.openWalletFull({
       path: walletDir,
       password: 'recovery-test',
-      networkType: 'stagenet',
+      networkType: mono.MoneroNetworkType.STAGENET,
       proxyToWorker: false,
     });
     recoveryStage = 'restored view-only check';
     assert.equal(await restoredWallet.isViewOnly(), true);
     recoveryStage = 'restored ledger read';
-    const rows = await sql!.unsafe<{ order_id: string; order_data: any }[]>(
+    const rows = await sql!.unsafe<{ order_id: string; order_data: unknown }[]>(
       `SELECT order_id, order_data FROM "${schema}".xmr_agent_orders`,
     );
     assert.equal(rows.length, 1);
@@ -177,10 +180,12 @@ async function recover() {
       ),
     );
     recoveryStage = 'restored order validation';
-    const restoredOrder =
+    const decoded: unknown =
       typeof row.order_data === 'string'
         ? JSON.parse(row.order_data)
         : row.order_data;
+    assert.deepEqual(decoded, order);
+    const restoredOrder = decoded as typeof order;
     recoveryStage = 'restored donation ID check';
     assert.equal(restoredOrder.id, donationID);
     recoveryStage = 'restored amount check';
@@ -199,7 +204,10 @@ async function recover() {
     const { validateWalletLedger } = await import('../src/xmr/agent-host');
     await validateWalletLedger(
       {
-        addressAt: async (index: number) => restoredWallet.getAddress(0, index),
+        addressAt: async (index: number) => {
+          assert.ok(restoredWallet);
+          return restoredWallet.getAddress(0, index);
+        },
       },
       orders,
       primaryAddress,
@@ -234,7 +242,7 @@ if (process.argv.includes('--recovery-child')) {
   });
 } else {
   const enabled =
-    Bun.env.TEST_WALLET_RECOVERY === '1' && !!Bun.env.TEST_DATABASE_URL;
+    Bun.env['TEST_WALLET_RECOVERY'] === '1' && !!Bun.env['TEST_DATABASE_URL'];
   const { test, expect } = await import('bun:test');
   test.skipIf(!enabled)(
     'restores a stopped stagenet view-only wallet and its isolated order ledger',

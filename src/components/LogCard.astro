@@ -17,6 +17,7 @@ interface Props {
 }
 const { entry, verified } = Astro.props;
 const metadata = logMetadata(entry);
+const publishedAt = entry.revisions[0]!.publishedAt;
 ---
 
 <article {...stylex.attrs(logStyles.entryCard)} class="h-entry" id={entry.id}>
@@ -34,9 +35,21 @@ const metadata = logMetadata(entry);
     {metadata.title}
   </h2>
   <div {...stylex.attrs(logStyles.meta)}>
-    <time class="dt-published" datetime={entry.revisions[0]!.publishedAt}>
-      {entry.revisions[0]!.publishedAt.slice(0, 10)}
-    </time>
+    {verified ? (
+      <a
+        {...stylex.attrs(logStyles.cardBadge)}
+        href={`${logProofUrl(entry)}#timestamps`}
+        aria-label={`Timestamp proof for ${publishedAt.slice(0, 10)}`}
+      >
+        <time class="dt-published" datetime={publishedAt}>
+          {publishedAt.slice(0, 10)}
+        </time>
+      </a>
+    ) : (
+      <time class="dt-published" datetime={publishedAt}>
+        {publishedAt.slice(0, 10)}
+      </time>
+    )}
     {verified && (
       <ProofBadge
         target="log"

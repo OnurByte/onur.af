@@ -2,18 +2,23 @@ import { createHash } from 'node:crypto';
 import { z } from 'astro/zod';
 import type { LogEntry } from './log';
 import { verifyBytes } from './proofs';
+import type { KeyTrust } from './key-history';
 
 const publicationEntrySchema = z
   .object({
     id: z.string().regex(/^[a-z]+-[a-z]+-[a-z]+$/),
     version: z.number().int().positive(),
     sha256: z.string().regex(/^[a-f0-9]{64}$/),
+    proofSha256: z
+      .string()
+      .regex(/^[a-f0-9]{64}$/)
+      .optional(),
   })
   .strict();
 
 const publicationManifestSchema = z
   .object({
-    format: z.literal(1),
+    format: z.union([z.literal(1), z.literal(2)]),
     sequence: z.number().int().positive(),
     previousSha256: z
       .string()
@@ -52,6 +57,13 @@ export type VerifiedLogPublications = {
   latest?: VerifiedLogPublicationEdition;
 };
 
+function atSequence(
+  trust: string | KeyTrust,
+  sequence: number,
+): string | KeyTrust {
+  return typeof trust === 'string' ? trust : { ...trust, sequence };
+}
+
 const sha256 = (bytes: string) =>
   createHash('sha256').update(bytes, 'utf8').digest('hex');
 
@@ -79,12 +91,13 @@ export function canonicalLogPublication(
 /** Verify signatures, chain continuity, and append-only history without a live-set comparison. */
 export async function verifyLogPublicationChain(
   input: unknown,
-  publicKey: string,
+  publicKey: string | KeyTrust,
 ): Promise<VerifiedLogPublications> {
   const store = publicationStoreSchema.parse(input);
   const editions: VerifiedLogPublicationEdition[] = [];
   let previousBytes: string | undefined;
   let previousEntries = new Map<string, string>();
+  let previousProofs = new Map<string, string>();
 
   for (const [index, artifact] of store.editions.entries()) {
     let decoded: unknown;
@@ -105,9 +118,19 @@ export async function verifyLogPublicationChain(
       manifest.previousSha256 !== (previousBytes ? sha256(previousBytes) : null)
     )
       throw new Error(`Log publication chain mismatch: edition ${key}`);
-    await verifyBytes(artifact.manifest, artifact.signature, publicKey);
+    await verifyBytes(
+      artifact.manifest,
+      artifact.signature,
+      atSequence(publicKey, manifest.sequence),
+    );
 
+    if (
+      manifest.format === 1 &&
+      manifest.entries.some((item) => item.proofSha256)
+    )
+      throw new Error('Proof bindings require publication format 2');
     const currentEntries = new Map<string, string>();
+    const currentProofs = new Map<string, string>();
     let priorOrder: LogPublicationEntry | undefined;
     for (const item of manifest.entries) {
       if (priorOrder && compareEntries(priorOrder, item) >= 0)
@@ -116,6 +139,8 @@ export async function verifyLogPublicationChain(
         );
       priorOrder = item;
       currentEntries.set(`${item.id}-v${item.version}`, item.sha256);
+      if (item.proofSha256)
+        currentProofs.set(`${item.id}-v${item.version}`, item.proofSha256);
     }
     for (const [id, digest] of previousEntries) {
       if (currentEntries.get(id) !== digest)
@@ -123,6 +148,10 @@ export async function verifyLogPublicationChain(
           `Log publication history changed or was removed: ${id}`,
         );
     }
+
+    for (const [id, hash] of previousProofs)
+      if (currentProofs.get(id) !== hash)
+        throw new Error(`Publication proof changed or was removed: ${id}`);
 
     editions.push({
       manifest,
@@ -132,6 +161,7 @@ export async function verifyLogPublicationChain(
     });
     previousBytes = artifact.manifest;
     previousEntries = currentEntries;
+    previousProofs = currentProofs;
   }
 
   const latest = editions.at(-1);
@@ -143,7 +173,7 @@ export async function verifyLogPublications(
   entries: readonly LogEntry[],
   revisionDigests: Readonly<Record<string, { sha256: string }>>,
   input: unknown,
-  publicKey: string,
+  publicKey: string | KeyTrust,
 ): Promise<VerifiedLogPublications> {
   const publications = await verifyLogPublicationChain(input, publicKey);
   const latest = publications.latest;
