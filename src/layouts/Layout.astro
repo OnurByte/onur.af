@@ -3,6 +3,7 @@ import * as stylex from '@stylexjs/stylex';
 import { siteSignature } from '../portfolio/signature';
 import { scrollProfileForPath } from '../portfolio/scroll';
 import { shell } from '../styles/shell';
+import { edge } from '../styles/edge';
 import '../styles/global.css';
 import { identityAccounts } from '../portfolio/proofs';
 import { portfolioLinks } from '../portfolio/links';
@@ -249,13 +250,18 @@ const schema =
       <nav
         {...stylex.attrs(shell.container, shell.navigation)}
         aria-label="Main navigation"
+        data-nav-glass
       >
-        <span {...stylex.attrs(shell.title)}>
+        <a
+          {...stylex.attrs(shell.title, shell.link)}
+          href="/"
+          aria-label="Onur home"
+        >
           <Brand />
-        </span>
+        </a>
         <div {...stylex.attrs(shell.navigationActions)}>
           <a
-            {...stylex.attrs(shell.navigationLink)}
+            {...stylex.attrs(shell.navigationLink, edge.frame)}
             href="/log"
             aria-current={Astro.url.pathname === '/log' ? 'page' : undefined}
           >
@@ -263,6 +269,10 @@ const schema =
           </a>
           <Search />
         </div>
+        <span
+          {...stylex.attrs(shell.navigationBorder, edge.ring)}
+          aria-hidden="true"
+        />
       </nav>
     </header>
     <div id="content" {...stylex.attrs(shell.content)} tabindex="-1">

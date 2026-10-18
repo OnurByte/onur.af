@@ -44,9 +44,6 @@ export const shell = stylex.create({
       inset: '-4px -12px',
       pointerEvents: 'none',
       borderRadius: 'var(--radius-card)',
-      borderWidth: 1,
-      borderStyle: 'solid',
-      borderColor: 'color-mix(in srgb, var(--text) 16%, transparent)',
       backgroundColor: {
         default: 'var(--background)',
         '@supports (backdrop-filter: blur(1px))':
@@ -57,20 +54,36 @@ export const shell = stylex.create({
       backgroundImage:
         'linear-gradient(135deg, color-mix(in srgb, var(--text) 5%, transparent), transparent 35%, color-mix(in srgb, var(--text) 2%, transparent))',
       backdropFilter: {
-        default: 'blur(6px) saturate(100%)',
+        default: 'var(--glass-optics, grayscale(1))',
         '@media (prefers-reduced-transparency: reduce)': 'none',
         '@media (prefers-contrast: more)': 'none',
       },
-      boxShadow: {
-        default:
-          'inset 0 1px 0 rgb(255 255 255 / 90%), inset 0 -1px 0 rgb(0 0 0 / 6%)',
-        '@media (prefers-color-scheme: dark)':
-          'inset 0 1px 0 rgb(255 255 255 / 18%), inset 0 -1px 0 rgb(255 255 255 / 4%)',
+    },
+    '::after': {
+      content: '""',
+      position: 'absolute',
+      inset: '-4px -12px',
+      pointerEvents: 'none',
+      borderRadius: 'var(--radius-card)',
+      backgroundImage:
+        'var(--glass-rim, linear-gradient(transparent, transparent)), radial-gradient(ellipse 45% 130% at var(--glass-light-x, 50%) var(--glass-light-y, 40%), rgb(255 255 255 / 10%), transparent 75%)',
+      backgroundSize: '100% 100%, 100% 100%',
+      backgroundRepeat: 'no-repeat',
+      opacity: {
+        default: 1,
+        '@media (prefers-reduced-transparency: reduce)': 0,
+        '@media (prefers-contrast: more)': 0,
       },
     },
   },
+  navigationBorder: {
+    position: 'absolute',
+    inset: '-4px -12px',
+    borderRadius: 'var(--radius-card)',
+  },
   navigationActions: {
     position: 'relative',
+    zIndex: 1,
     display: 'flex',
     alignItems: 'center',
     gap: { default: 8, '@media (min-width: 621px)': 16 },
@@ -98,6 +111,7 @@ export const shell = stylex.create({
   },
   title: {
     position: 'relative',
+    zIndex: 1,
     display: 'flex',
     alignItems: 'center',
     flexShrink: 0,
