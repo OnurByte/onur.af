@@ -4,6 +4,7 @@ import { embeds as styles } from '../../styles/embeds';
 import Icon from '../Icon.astro';
 import AccountLink from '../AccountLink.astro';
 import SpotifyEmbed from './SpotifyEmbed.astro';
+import Connect from '../Connect.astro';
 import { contentIndex, githubReference } from '../../portfolio/content-index';
 import type { Embed } from '../../portfolio/embeds';
 interface Props {
@@ -213,6 +214,7 @@ const timestamp = (value: string) =>
           )}
         </section>
       ))}
+    <Connect />
     {spotifyEmbed && <SpotifyEmbed embed={spotifyEmbed} />}
   </div>
 )}
