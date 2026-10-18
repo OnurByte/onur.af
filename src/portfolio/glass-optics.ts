@@ -1,6 +1,6 @@
 // A deterministic optical field, independent of the DOM and rendering backend.
-const MAX_OFFSET = 2.4;
-const BEZEL = 10;
+const MAX_OFFSET = 0.6;
+const BEZEL = 3;
 const IOR = 1.48;
 const clamp = (x: number, lo: number, hi: number) =>
   Math.min(hi, Math.max(lo, x));
@@ -60,9 +60,8 @@ export function createGlassField(
   const height = Math.round(inputHeight * resolution);
   const radius = Math.min(inputRadius, inputWidth / 2, inputHeight / 2);
   const displacement = new Uint8ClampedArray(width * height * 4);
-  const highlight = new Uint8ClampedArray(displacement.length);
   const phases = [phase(seed, 0), phase(seed, 1), phase(seed, 2)];
-  const depth = 5.5 + Math.sin(phases[0]!) * 0.35;
+  const depth = 1.5 + Math.sin(phases[0]!) * 0.08;
   let maxOffset = 0;
 
   for (let y = 0; y < height; y++) {
@@ -126,18 +125,9 @@ export function createGlassField(
       maxOffset = Math.max(maxOffset, Math.hypot(dx, dy));
       displacement[offset] = 128 + (dx / MAX_OFFSET) * 127;
       displacement[offset + 1] = 128 + (dy / MAX_OFFSET) * 127;
-
-      // Schlick Fresnel reflectance and a monochrome, directional rim lobe.
-      const r0 = ((IOR - 1) / (IOR + 1)) ** 2;
-      const fresnel = r0 + (1 - r0) * (1 - nz) ** 5;
-      const light = Math.max(0, nx * -0.36 + ny * -0.48 + nz * 0.8);
-      const rim = Math.sin(Math.PI * u) ** 2;
-      const intensity = clamp((fresnel * 2 + light ** 24) * rim, 0, 1);
-      highlight[offset] = highlight[offset + 1] = highlight[offset + 2] = 255;
-      highlight[offset + 3] = Math.round(intensity * 255);
     }
   }
-  return { width, height, displacement, highlight, maxOffset };
+  return { width, height, displacement, maxOffset };
 }
 
 export function glassMotion(

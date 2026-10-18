@@ -18,8 +18,11 @@ test('the reading plateau stays optically neutral and the edge is bounded', () =
   expect(field.displacement[center]).toBe(128);
   expect(field.displacement[center + 1]).toBe(128);
   expect(field.maxOffset).toBeGreaterThan(0.1);
-  expect(field.maxOffset).toBeLessThanOrEqual(2.4);
+  expect(field.maxOffset).toBeLessThanOrEqual(0.6);
   expect([...field.displacement].every(Number.isFinite)).toBe(true);
+  const belowBorder = (5 * field.width + 90) * 4;
+  expect(field.displacement[belowBorder]).toBe(128);
+  expect(field.displacement[belowBorder + 1]).toBe(128);
 });
 
 test('constant-pixel bezel does not stretch with navbar aspect ratio', () => {
@@ -64,7 +67,7 @@ test('high-density sampling adds edge detail without changing optical dimensions
   const center = (56 * field.width + 180) * 4;
   expect(field.displacement[center]).toBe(128);
   expect(field.displacement[center + 1]).toBe(128);
-  expect(field.maxOffset).toBeLessThanOrEqual(2.4);
+  expect(field.maxOffset).toBeLessThanOrEqual(0.6);
   expect(() =>
     createGlassField(
       { width: 180, height: 56, radius: 12, resolution: Infinity },

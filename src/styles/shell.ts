@@ -66,8 +66,8 @@ export const shell = stylex.create({
       pointerEvents: 'none',
       borderRadius: 'var(--radius-card)',
       backgroundImage:
-        'var(--glass-rim, linear-gradient(transparent, transparent)), radial-gradient(ellipse 45% 130% at var(--glass-light-x, 50%) var(--glass-light-y, 40%), rgb(255 255 255 / 10%), transparent 75%)',
-      backgroundSize: '100% 100%, 100% 100%',
+        'radial-gradient(ellipse 45% 130% at var(--glass-light-x, 50%) var(--glass-light-y, 40%), rgb(255 255 255 / 4%), transparent 75%)',
+      backgroundSize: '100% 100%',
       backgroundRepeat: 'no-repeat',
       opacity: {
         default: 1,
