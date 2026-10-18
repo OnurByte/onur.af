@@ -1,6 +1,18 @@
 import * as stylex from '@stylexjs/stylex';
 export const searchStyles = stylex.create({
   trigger: {
+    backgroundColor: {
+      default: 'var(--background)',
+      '@supports (backdrop-filter: blur(1px))':
+        'color-mix(in srgb, var(--background) 38%, transparent)',
+      '@media (prefers-reduced-transparency: reduce)': 'var(--background)',
+      '@media (prefers-contrast: more)': 'var(--background)',
+    },
+    backdropFilter: {
+      default: 'blur(6px) grayscale(1)',
+      '@media (prefers-reduced-transparency: reduce)': 'none',
+      '@media (prefers-contrast: more)': 'none',
+    },
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',

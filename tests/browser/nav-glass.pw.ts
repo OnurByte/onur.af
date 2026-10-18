@@ -133,7 +133,6 @@ test('navbar controls use the Connect border and the brand links home', async ({
       border: getComputedStyle(el).borderColor,
     }));
     for (const control of [
-      page.locator('#open-search'),
       page.locator('[data-nav-glass] > div > a[href="/log"]'),
     ]) {
       expect(
@@ -143,6 +142,17 @@ test('navbar controls use the Connect border and the brand links home', async ({
         await control.evaluate((el) => getComputedStyle(el).borderColor),
       ).toBe(standard.border);
     }
+    const find = await page.locator('#open-search').evaluate((el) => {
+      const style = getComputedStyle(el);
+      return {
+        fill: style.backgroundColor,
+        filter: style.backdropFilter,
+        border: style.borderWidth,
+      };
+    });
+    expect(find.fill).toContain('/ 0.38)');
+    expect(find.filter).toContain('blur(6px)');
+    expect(find.border).toBe('1px');
     const ring = page.locator('[data-nav-glass] > span[aria-hidden]');
     expect(
       await ring.evaluate((el) => {
