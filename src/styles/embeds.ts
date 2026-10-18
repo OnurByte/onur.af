@@ -100,9 +100,6 @@ export const embeds = stylex.create({
   spotifyRecent: {
     flexBasis: '100%',
     minWidth: 0,
-    borderTopWidth: 1,
-    borderTopStyle: 'solid',
-    borderTopColor: 'var(--border)',
     paddingTop: 24,
   },
   recentHeading: {
