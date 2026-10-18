@@ -27,14 +27,9 @@ export const shell = stylex.create({
     top: 0,
     zIndex: 30,
     paddingBlock: 24,
-    backgroundColor: {
-      default: 'var(--background)',
-      '@supports (backdrop-filter: blur(1px))':
-        'color-mix(in srgb, var(--background) 80%, transparent)',
-    },
-    backdropFilter: 'blur(16px)',
   },
   navigation: {
+    position: 'relative',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -43,8 +38,39 @@ export const shell = stylex.create({
       '@media (min-width: 401px)': 16,
       '@media (min-width: 621px)': 16,
     },
+    '::before': {
+      content: '""',
+      position: 'absolute',
+      inset: '-4px -12px',
+      pointerEvents: 'none',
+      borderRadius: 'var(--radius-card)',
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: 'color-mix(in srgb, var(--text) 16%, transparent)',
+      backgroundColor: {
+        default: 'var(--background)',
+        '@supports (backdrop-filter: blur(1px))':
+          'color-mix(in srgb, var(--background) 68%, transparent)',
+        '@media (prefers-reduced-transparency: reduce)': 'var(--background)',
+        '@media (prefers-contrast: more)': 'var(--background)',
+      },
+      backgroundImage:
+        'linear-gradient(135deg, color-mix(in srgb, var(--text) 5%, transparent), transparent 35%, color-mix(in srgb, var(--text) 2%, transparent))',
+      backdropFilter: {
+        default: 'blur(6px) saturate(100%)',
+        '@media (prefers-reduced-transparency: reduce)': 'none',
+        '@media (prefers-contrast: more)': 'none',
+      },
+      boxShadow: {
+        default:
+          'inset 0 1px 0 rgb(255 255 255 / 90%), inset 0 -1px 0 rgb(0 0 0 / 6%)',
+        '@media (prefers-color-scheme: dark)':
+          'inset 0 1px 0 rgb(255 255 255 / 18%), inset 0 -1px 0 rgb(255 255 255 / 4%)',
+      },
+    },
   },
   navigationActions: {
+    position: 'relative',
     display: 'flex',
     alignItems: 'center',
     gap: { default: 8, '@media (min-width: 621px)': 16 },
@@ -71,6 +97,7 @@ export const shell = stylex.create({
     fontWeight: 500,
   },
   title: {
+    position: 'relative',
     display: 'flex',
     alignItems: 'center',
     flexShrink: 0,
