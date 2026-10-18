@@ -305,16 +305,21 @@ test('reopening search preserves the immediately filtered query', async ({
   );
 });
 
-test('Find links directly to the X, GitHub and Spotify embeds', async ({
+test('Find links to Connect accounts and the Spotify embed', async ({
   page,
 }) => {
   for (const item of [
-    { query: 'X posts', title: '𝕏', url: '/#embed-x', heading: 'Posts' },
+    {
+      query: 'X posts',
+      title: '𝕏',
+      url: '/#connect-x',
+      heading: '@onurstirner',
+    },
     {
       query: 'GitHub repositories',
       title: 'GitHub',
-      url: '/#embed-github',
-      heading: 'Repositories',
+      url: '/#connect-github',
+      heading: 'onurbyte',
     },
     {
       query: 'Spotify recents',

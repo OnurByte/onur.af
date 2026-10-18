@@ -3,6 +3,9 @@ import * as stylex from '@stylexjs/stylex';
 import { shell } from '../styles/shell';
 
 const icons = {
+  connectGithub: { filename: 'github.svg', width: 24, height: 24 },
+  connectKey: { filename: 'search-key.svg', width: 24, height: 24 },
+  xmpp: { filename: 'xmpp.svg', width: 24, height: 24 },
   shareMark: { filename: 'share-mark.svg', width: 16, height: 16 },
   shareX: { filename: 'x.svg', width: 24, height: 24 },
   shareRss: { filename: 'rss.svg', width: 24, height: 24 },
@@ -49,6 +52,9 @@ const { filename, width, height } = icons[name];
     shell.icon,
     shell.monochrome,
     (name.startsWith('share') ||
+      name === 'connectGithub' ||
+      name === 'connectKey' ||
+      name === 'xmpp' ||
       name === 'discord' ||
       name === 'reddit' ||
       name === 'telegram') &&

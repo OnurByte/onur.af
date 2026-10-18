@@ -25,15 +25,15 @@ export function logSearchEntries(entries: readonly LogEntry[]) {
 }
 const homeEmbedEntries = [
   {
-    url: '/#embed-x',
-    meta: { title: '𝕏', description: 'Recent posts from @onurstirner.' },
+    url: '/#connect-x',
+    meta: { title: '𝕏', description: 'Connect with @onurstirner on X.' },
     searchText: 'X posts Twitter @onurstirner embed',
   },
   {
-    url: '/#embed-github',
+    url: '/#connect-github',
     meta: {
       title: 'GitHub',
-      description: 'Recent repositories from onurbyte.',
+      description: 'Connect with onurbyte on GitHub.',
     },
     searchText: 'GitHub repositories projects onurbyte embed',
   },
