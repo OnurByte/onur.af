@@ -2,6 +2,7 @@
 import * as stylex from '@stylexjs/stylex';
 import { logStyles } from '../styles/log';
 import Icon from './Icon.astro';
+import { proof } from '../styles/proof';
 interface Props {
   target: 'x' | 'github' | 'log';
   href?: string;
@@ -13,8 +14,8 @@ const { target, href, label, aboveCardLink } = Astro.props;
 
 <a
   {...stylex.attrs(
-    logStyles.badge,
-    label ? logStyles.badgeWithLabel : undefined,
+    proof.badge,
+    label ? proof.labeled : undefined,
     aboveCardLink ? logStyles.cardBadge : undefined,
   )}
   href={href ?? `/pgp/${target}`}

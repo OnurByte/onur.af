@@ -1,5 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { edge } from '../../styles/edge';
 import Icon from '../Icon.astro';
 import { embeds as styles, recentMarker } from '../../styles/embeds';
 import type { Embed } from '../../portfolio/embeds';
@@ -20,7 +21,7 @@ const time = (ms: number) =>
 
 <section
   id="spotify-embed"
-  {...stylex.attrs(styles.section, styles.spotifySection)}
+  {...stylex.attrs(styles.section, edge.frame, styles.spotifySection)}
   aria-labelledby="embed-spotify"
 >
   <div {...stylex.attrs(styles.spotifyTop)}>

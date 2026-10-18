@@ -1,5 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { edge } from '../styles/edge';
 import Icon from './Icon.astro';
 import { dialogStyles } from '../styles/dialog';
 import { searchStyles } from '../styles/search';
@@ -76,7 +77,7 @@ const rows = [
   aria-label="Share log"
   data-url={url}
   data-title={title}
-  {...stylex.attrs(dialogStyles.dialog)}
+  {...stylex.attrs(dialogStyles.dialog, edge.frame)}
 >
   <form method="dialog">
     <button type="submit" {...stylex.attrs(dialogStyles.accessibleClose)}>

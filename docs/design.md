@@ -5,7 +5,7 @@ The site uses one restrained, monochrome design implemented with StyleX. The off
 - Utility pages (RSS, Donate, PGP): one plain `h1`, followed by a short introduction in the prose-width container, then the controls or empty state. Use the common main alignment.
 - Typeface: Helvetica Neue, Helvetica, Arial. Body: 16 px, line height 1.6. Machine addresses use monospace for readability.
 - Theme: system preference, white/black backgrounds. No shadows, gradients or theme selector. The brand stays monochrome.
-- Corners: 4 px on buttons, inputs, amount choices and status labels, through StyleX `borderRadius: 4`.
+- Corners: 12 px on cards and dialogs through `--radius-card`; 8 px on buttons, inputs, amount choices and status labels through `--radius-control`; Connect uses the shared 8 px control radius.
 - Borders: 1 px for controls and separators. Keyboard focus: 2 px outline, 3 px offset.
 - Controls: at least 44 px high, 16 px text, weight 500, line height 1.4. Buttons use 12 px vertical and 16 px horizontal padding.
 - Primary actions: solid foreground background, inverted text. Secondary actions such as Copy: transparent with a neutral border. Navigation actions remain native links, styled with the shared StyleX button definitions when they need button emphasis.
@@ -26,11 +26,11 @@ Favicons remain document metadata links. Payment QR codes are generated per dona
 
 ## Native home embeds
 
-Home source sections follow the [native embed contract](home-embeds.md). Providers supply normalized data only; all typography, layout, status text and links are rendered by the portfolio. No iframe, provider UI, raw HTML or provider scripts. Use sections with a 1 px outer border in the shared border color, 4 px corners, 16 px mobile / 24 px desktop padding, local monochrome provider icons, normal-weight 18 px section heading, 14 px secondary text and 32 px column gaps. Start 40 px below the motto, one column through 900 px and two above. Empty registry renders nothing. Keep every provider-independent state accessible in the existing system themes.
+Home source sections follow the [native embed contract](home-embeds.md). Providers supply normalized data only; all typography, layout, status text and links are rendered by the portfolio. No iframe, provider UI, raw HTML or provider scripts. Use sections with a 1 px outer border in the shared border color, 12 px corners, 16 px mobile / 24 px desktop padding, local monochrome provider icons, normal-weight 18 px section heading, 14 px secondary text and 32 px column gaps. Start 40 px below the motto, one column through 900 px and two above. Empty registry renders nothing. Keep every provider-independent state accessible in the existing system themes.
 
 Embed provider icons share a non-shrinking square sized to the combined title line height, 4 px gap and profile line height (51.6 px at the default font size), with contained SVG artwork and no inner padding. Header titles and 14 px profile links stack together beside that box so profile length cannot change icon sizing or header alignment. Entries use 24 px spacing; secondary text uses 14 px / 1.6 line height. All colors inherit shared theme tokens.
 
-The Spotify source appears below the two home columns as a full-width native section. Its provider heading and track information form a horizontal row that wraps on narrow screens; use the same border, 4 px corners, padding, type scale and monochrome icon registry as the other embeds.
+The Spotify source appears below the two home columns as a full-width native section. Its provider heading and track information form a horizontal row that wraps on narrow screens; use the same border, 12 px corners, padding, type scale and monochrome icon registry as the other embeds.
 
 Limit X post previews to two visible lines, keeping the full text accessible through the native post link and preserving keyboard focus without hover underlines. Repository names use weight 500, with 4 px before their 14 px descriptions. Spotify remains visible with Playing nothing replacing the Listening heading only for confirmed idle playback; otherwise it shows the current track and up to five distinct recent tracks in a responsive grid below it.
 
@@ -52,4 +52,18 @@ Log contents indicators remain a fixed vertical rail at the right edge at every 
 
 ## Connect
 
-The home Connect section sits immediately above Spotify and follows the shared bordered card, monochrome icon registry and responsive spacing. Email, X, GitHub, XMPP and PGP use visible labels and secondary identity text. Unpublished addresses are plain text, never empty or guessed links. Set `PUBLIC_CONTACT_EMAIL` and `PUBLIC_CONTACT_XMPP` to publish the owner's addresses; XMPP uses a native `xmpp:` URI. X and GitHub reuse the existing identity account registry. PGP links to the site's identity verification page. Links remain keyboard accessible and at least 44 px high.
+The home Connect section sits immediately above Spotify and follows the shared bordered card, monochrome icon registry and responsive spacing. Email, X, GitHub and XMPP remain visible. Service labels are primary; account names and configured addresses are secondary. Unconfigured Email and XMPP show only their service label, without placeholder status text or a link. PGP identity verification is available through the account proof badges; no separate Verify identity link is shown. Proof badges remain direct links without popups. Set `PUBLIC_CONTACT_EMAIL` and `PUBLIC_CONTACT_XMPP` to publish the owner's addresses; XMPP uses a native `xmpp:` URI. X and GitHub reuse the existing identity account registry. PGP links to the site's identity verification page. Links remain keyboard accessible and at least 44 px high.
+
+## Verification badges
+
+All identity and publication proof badges use `src/styles/proof.ts`: a 16 px decorative seal centered in a 24 px link, a 4 px gap from adjacent text, and shared hover/focus treatment. Labeled publication badges use the same 14 px text and 24 px line height. Account names and badges share one vertically centered identity row. Provider profile spacing belongs to the whole row, never just the account link. Connect uses the same identity row; proof links remain independent of the surrounding account click target.
+
+## Corner radius rationale
+
+Cards and dialogs use `--radius-card: 12px`; controls and proof focus outlines use `--radius-control: 8px`; Connect uses the shared 8 px control radius. This is a restrained design choice for the monochrome technical site, not a scientifically optimal pixel value. Bar and Neta (2006) found a preference for curved over sharp contours in visual objects; their study does not establish a numerical radius for web interfaces. Source: https://doi.org/10.1111/j.1467-9280.2006.01759.x .
+
+Connect geometry: ordinary 8 px rounded corners; no squircle, translate, scale or tilt. The shared layered background treatment strengthens the top-right and bottom-left border regions while preserving independent nick/proof hit targets. Hover changes only surface and border colors.
+
+Shared edge treatment: `src/styles/edge.ts` renders corner-anchored specular borders with layered CSS backgrounds, avoiding pseudo-elements that could conflict with card links or scroll inside dialogs. Apply to Log cards, home source sections, Connect items and Find/Share dialogs. Do not apply to text links, proof badges, form fields, QR codes, separators or small controls. The normal border remains the unsupported-browser fallback; shared fill/line custom properties support Connect hover and focus.
+
+Responsive edge lighting uses corner-anchored `ellipse 50% 50%` gradients: each lighting field scales independently with the element’s own width and height. Stops run from 0% to 100%, with no fixed pixel fade distance, DOM measurement or resize listener. Browser layout automatically recalculates the field on content and viewport changes.
