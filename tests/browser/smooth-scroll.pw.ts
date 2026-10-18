@@ -20,7 +20,7 @@ test('anchors preserve focus and history, and keyboard input stops momentum', as
   await page.locator('#jump-fixture').click();
   await expect(page).toHaveURL(/#destination-fixture$/);
   await expect(page.locator('#destination-fixture')).toBeFocused();
-  await expect.poll(() => page.evaluate(() => scrollY)).toBe(1500);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(1380);
   await page.clock.install();
   await page.evaluate(() =>
     document.body.dispatchEvent(

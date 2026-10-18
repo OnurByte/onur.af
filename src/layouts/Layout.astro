@@ -245,21 +245,14 @@ const schema =
     />
   </head>
   <body {...stylex.attrs(shell.body)}>
-    <header {...stylex.attrs(shell.container, shell.header)}>
-      <nav {...stylex.attrs(shell.navigation)} aria-label="Main navigation">
-        {Astro.url.pathname === '/' ? (
-          <span {...stylex.attrs(shell.title)}>
-            <Brand />
-          </span>
-        ) : (
-          <a
-            {...stylex.attrs(shell.title, shell.link)}
-            href="/"
-            aria-label="Onur home"
-          >
-            <Brand />
-          </a>
-        )}
+    <header {...stylex.attrs(shell.header)}>
+      <nav
+        {...stylex.attrs(shell.container, shell.navigation)}
+        aria-label="Main navigation"
+      >
+        <span {...stylex.attrs(shell.title)}>
+          <Brand />
+        </span>
         <div {...stylex.attrs(shell.navigationActions)}>
           <a
             {...stylex.attrs(shell.navigationLink)}

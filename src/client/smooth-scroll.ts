@@ -173,7 +173,11 @@ export function initSmoothScroll(): void {
     event.preventDefault();
     if (element instanceof HTMLDetailsElement) element.open = true;
     if (location.hash !== url.hash) history.pushState(null, '', url.hash);
-    moveTo?.(element.getBoundingClientRect().top + window.scrollY);
+    const padding =
+      Number.parseFloat(
+        getComputedStyle(document.documentElement).scrollPaddingTop,
+      ) || 0;
+    moveTo?.(element.getBoundingClientRect().top + window.scrollY - padding);
     if (!element.hasAttribute('tabindex')) element.tabIndex = -1;
     element.focus({ preventScroll: true });
   });

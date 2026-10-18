@@ -22,10 +22,20 @@ export const shell = stylex.create({
     justifyContent: 'space-between',
     gap: 20,
   },
-  header: { paddingBlock: 24 },
+  header: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 30,
+    paddingBlock: 24,
+    backgroundColor: {
+      default: 'var(--background)',
+      '@supports (backdrop-filter: blur(1px))':
+        'color-mix(in srgb, var(--background) 80%, transparent)',
+    },
+    backdropFilter: 'blur(16px)',
+  },
   navigation: {
     display: 'flex',
-    width: '100%',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: {
