@@ -28,7 +28,7 @@ export function initNavGlass() {
   displace.setAttribute('in2', 'lens');
   displace.setAttribute('xChannelSelector', 'R');
   displace.setAttribute('yChannelSelector', 'G');
-  displace.setAttribute('scale', '3.6');
+  displace.setAttribute('scale', '0.9');
   filter.append(map, displace);
   svg.append(filter);
   document.body.append(svg);
@@ -65,7 +65,7 @@ export function initNavGlass() {
       velocity +=
         (Math.max(-1, Math.min(1, movement / dt / 2)) - velocity) * smoothing;
       const state = glassMotion(seed, elapsed, velocity);
-      displace.setAttribute('scale', (state.strength * 4.8).toFixed(3));
+      displace.setAttribute('scale', (state.strength * 1.2).toFixed(3));
       nav.style.setProperty('--glass-light-x', `${state.lightX.toFixed(1)}%`);
       nav.style.setProperty('--glass-light-y', `${state.lightY.toFixed(1)}%`);
     }
@@ -84,7 +84,6 @@ export function initNavGlass() {
     bounds = nav.getBoundingClientRect();
     if (blocked()) {
       nav.style.removeProperty('--glass-optics');
-      nav.style.removeProperty('--glass-rim');
       nav.dataset['glassState'] = 'opaque';
       cancel();
       return;
@@ -108,9 +107,6 @@ export function initNavGlass() {
       image.data.set(field.displacement);
       context.putImageData(image, 0, 0);
       map.setAttribute('href', canvas.toDataURL());
-      image.data.set(field.highlight);
-      context.putImageData(image, 0, 0);
-      nav.style.setProperty('--glass-rim', `url("${canvas.toDataURL()}")`);
       for (const element of [filter, map]) {
         element.setAttribute('x', '0');
         element.setAttribute('y', '0');
@@ -128,7 +124,7 @@ export function initNavGlass() {
         : 'reflective';
     if (reduced.matches) {
       cancel();
-      displace.setAttribute('scale', '3.6');
+      displace.setAttribute('scale', '0.9');
       nav.style.removeProperty('--glass-light-x');
       nav.style.removeProperty('--glass-light-y');
     } else resume();
@@ -147,7 +143,7 @@ export function initNavGlass() {
   );
   for (const preference of [reduced, opaque, contrast])
     preference.addEventListener('change', () => {
-      size = ''; // Recreate the rim when returning from the opaque preference.
+      size = ''; // Recreate the lens when returning from the opaque preference.
       rebuild();
     });
   document.addEventListener('visibilitychange', () => {

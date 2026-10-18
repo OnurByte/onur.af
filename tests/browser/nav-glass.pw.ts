@@ -100,7 +100,7 @@ test('motion pauses for preferences and bfcache while contrast becomes opaque', 
     await nav.evaluate(
       (element) => getComputedStyle(element, '::after').backgroundImage,
     ),
-  ).toContain('data:image/png');
+  ).not.toContain('data:image/png');
 });
 
 test('without JavaScript the navbar keeps its original readable glass and links', async ({
@@ -157,7 +157,7 @@ test('navbar controls use the Connect border and the brand links home', async ({
   await expect(page).toHaveURL(/\/$/);
 });
 
-test('dense reflection maps fit the same CSS surface on a 2x screen', async ({
+test('dense displacement maps preserve the flat surface on a 2x screen', async ({
   browser,
 }) => {
   const context = await browser.newContext({
@@ -181,7 +181,7 @@ test('dense reflection maps fit the same CSS surface on a 2x screen', async ({
     };
   });
   expect(metrics.width).toBe(metrics.expected);
-  expect(metrics.fit).toBe('100% 100%, 100% 100%');
+  expect(metrics.fit).toBe('100% 100%');
   expect(metrics.height).toBe(104);
   await context.close();
 });
