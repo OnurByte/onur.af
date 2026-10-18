@@ -27,3 +27,4 @@ Site typography: system sans-serif. Social cards bundle Liberation Sans regular 
 - `share.svg`, `share-link.svg`, `share-mail.svg`: original portfolio interface artwork, white monochrome.
 
 - `share-mark.svg`: original portfolio artwork; three linked diamond nodes, white monochrome.
+- `xmpp.svg`: original portfolio chat-bubble interface artwork for XMPP, white monochrome; not an official protocol logo.

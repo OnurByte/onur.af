@@ -49,3 +49,7 @@ Individual Log pages expose Share beside their metadata. Find and Share use the 
 Log and Log proof social cards reuse the complete deterministic seal renderer from the list cards. The existing 1200 × 630 monochrome composition remains, with text constrained beside a 240 px seal. Other public cards retain their existing layout.
 
 Log contents indicators remain a fixed vertical rail at the right edge at every viewport width. The rail respects the shared page gutter (20 px on mobile, 24 px above 620 px). Narrow article layouts reserve 32 px beside the reading column so the rail never covers prose; the contents panel opens inward beside it.
+
+## Connect
+
+The home Connect section sits immediately above Spotify and follows the shared bordered card, monochrome icon registry and responsive spacing. Email, X, GitHub, XMPP and PGP use visible labels and secondary identity text. Unpublished addresses are plain text, never empty or guessed links. Set `PUBLIC_CONTACT_EMAIL` and `PUBLIC_CONTACT_XMPP` to publish the owner's addresses; XMPP uses a native `xmpp:` URI. X and GitHub reuse the existing identity account registry. PGP links to the site's identity verification page. Links remain keyboard accessible and at least 44 px high.
