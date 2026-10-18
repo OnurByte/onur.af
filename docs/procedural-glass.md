@@ -6,7 +6,7 @@ The owner approved combining seeded variation, scroll response and slow organic 
 
 `src/portfolio/glass-optics.ts` is an original, deterministic CPU field generator. It combines a rounded-rectangle signed distance field, its finite-difference gradient, a quintic Hermite bezel profile and a seeded, bounded spectral perturbation. The profile and perturbation envelope have zero first and second endpoint derivatives in the distance coordinate. The surface normal refracts a perpendicular ray using Snell's law with index 1.48. The raised specular rim was removed after visual review: the surface now retains only the existing one-pixel site border.
 
-The 3 px edge region is expressed in actual CSS pixels, independently of the navbar aspect ratio. The central plateau is neutral. The displacement vector is limited to 0.6 px; the animated filter scales it downward from that bound. The output is one RGBA displacement map. This is a single-surface optical approximation with artistic surface perturbations, not a complete physical light transport simulation.
+The 3 px edge region is expressed in actual CSS pixels, independently of the navbar aspect ratio. The central plateau is neutral. The generated displacement vector is limited to 0.6 map units; the display gain maps this to at most 5.88 CSS px before raster rounding. The output is one RGBA displacement map. This is a single-surface optical approximation with artistic surface perturbations, not a complete physical light transport simulation.
 
 ## Rendering and motion
 
@@ -31,7 +31,7 @@ Unit tests verify reproducibility, seed variation, neutral center, constant-pixe
 
 ## Latest material settings
 
-Roughness is zero: there is no blur filter in the enhanced or no-JavaScript surface. Backdrop coloration is monochrome through `grayscale(1)` and neutral tint only. There is no generated specular rim, raised bevel, outer shadow or simulated mirror-reflectivity control. The virtual slab depth is 1.5 ± 0.08 px, retaining only a slight edge refraction. Dense sampling follows screen resolution through 2× without tessellating or moving the navbar silhouette.
+Following visual feedback, the enhanced and no-JavaScript surfaces use 6 px backdrop blur and an 18% neutral tint. Backdrop coloration is monochrome through `grayscale(1)` and neutral tint only. There is no generated specular rim, raised bevel, outer shadow or simulated mirror-reflectivity control. The virtual slab depth is 1.5 ± 0.08 px, with a tenfold display gain to make edge refraction visible. Dense sampling follows screen resolution through 2× without tessellating or moving the navbar silhouette.
 
 The navbar's one-pixel outline uses `edge.ring`, derived from exactly the same corner-light background as Connect's `edge.frame`. The ring masks out its interior so it cannot paint over the refractive surface. Log and Find reuse `edge.frame` directly. The Onur mark/name is a native link to `/` on every page.
 

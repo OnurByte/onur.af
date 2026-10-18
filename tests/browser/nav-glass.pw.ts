@@ -167,7 +167,7 @@ test('navbar controls use the Connect border and the brand links home', async ({
       await page
         .locator('[data-nav-glass]')
         .evaluate((el) => getComputedStyle(el, '::before').backdropFilter),
-    ).not.toContain('blur');
+    ).toContain('blur(6px)');
   }
   await page.goto('/log');
   await page.getByRole('link', { name: 'Onur home' }).click();

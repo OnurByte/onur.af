@@ -40,7 +40,7 @@ export function initNavGlass() {
   displace.setAttribute('in2', 'centered-lens');
   displace.setAttribute('xChannelSelector', 'R');
   displace.setAttribute('yChannelSelector', 'G');
-  displace.setAttribute('scale', '0.9');
+  displace.setAttribute('scale', '9');
   filter.append(map, centered, displace);
   svg.append(filter);
   document.body.append(svg);
@@ -77,7 +77,7 @@ export function initNavGlass() {
       velocity +=
         (Math.max(-1, Math.min(1, movement / dt / 2)) - velocity) * smoothing;
       const state = glassMotion(seed, elapsed, velocity);
-      displace.setAttribute('scale', (state.strength * 1.2).toFixed(3));
+      displace.setAttribute('scale', (state.strength * 12).toFixed(3));
       nav.style.setProperty('--glass-light-x', `${state.lightX.toFixed(1)}%`);
       nav.style.setProperty('--glass-light-y', `${state.lightY.toFixed(1)}%`);
     }
@@ -128,7 +128,10 @@ export function initNavGlass() {
       size = key;
     }
     if (chromium)
-      nav.style.setProperty('--glass-optics', `url("#${id}") grayscale(1)`);
+      nav.style.setProperty(
+        '--glass-optics',
+        `blur(6px) url("#${id}") grayscale(1)`,
+      );
     nav.dataset['glassState'] = reduced.matches
       ? 'static'
       : chromium
@@ -136,7 +139,7 @@ export function initNavGlass() {
         : 'reflective';
     if (reduced.matches) {
       cancel();
-      displace.setAttribute('scale', '0.9');
+      displace.setAttribute('scale', '9');
       nav.style.removeProperty('--glass-light-x');
       nav.style.removeProperty('--glass-light-y');
     } else resume();
