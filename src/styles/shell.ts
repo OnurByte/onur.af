@@ -93,6 +93,7 @@ export const shell = stylex.create({
     gap: { default: 8, '@media (min-width: 621px)': 16 },
   },
   navigationLink: {
+    position: 'relative',
     '--edge-fill': {
       default: 'var(--background)',
       '@supports (backdrop-filter: blur(1px))':
@@ -124,6 +125,11 @@ export const shell = stylex.create({
       '@media (min-width: 621px)': 16,
     },
     fontWeight: 500,
+  },
+  navigationLinkBorder: {
+    position: 'absolute',
+    inset: -1,
+    borderRadius: 'inherit',
   },
   title: {
     position: 'relative',
