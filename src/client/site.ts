@@ -1,7 +1,9 @@
 import { siteSignature } from '../portfolio/signature';
 import { initSmoothScroll } from './smooth-scroll';
+import { initNavGlass } from './nav-glass';
 
 initSmoothScroll();
+initNavGlass();
 
 document.addEventListener('contextmenu', (event) => {
   if (!(event.target instanceof Element && event.target.closest('.h-entry')))

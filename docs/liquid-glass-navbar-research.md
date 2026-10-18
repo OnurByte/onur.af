@@ -13,7 +13,7 @@ The portfolio's navigation should suggest clear liquid glass while retaining its
 | [rizzytoday/liquid-glass](https://github.com/rizzytoday/liquid-glass/blob/main/core/liquid-glass.ts)                                                                                                              | Dependency-free generated displacement maps, resize observation and explicit Chromium detection.                                  | More suitable than a React package if physical refraction becomes a requirement, but Safari/Firefox still receive a blur fallback. The default three-channel aberration is inappropriate for monochrome navigation.                                                    |
 | [sohumsuthar/liquid-glass core](https://github.com/sohumsuthar/liquid-glass/blob/main/css/liquid-glass-core.css) and [navigation](https://github.com/sohumsuthar/liquid-glass/blob/main/css/liquid-glass-nav.css) | Separates transmission, neutral tint, specular rim and content; uses a compact navbar and distinguishes clear from regular glass. | The separation of material from content informs this implementation. Its full optics, pill geometry, scroll effects and outer shadows are not adopted. Its calibration/performance claims are author claims, not measurements reproduced here.                         |
 
-## Decision
+## Initial decision (superseded by the approved optical implementation)
 
 Implement an original CSS material in the existing StyleX definitions, without copying source or adding a runtime dependency. The result suggests clear liquid glass through transmission and rim lighting; it does not physically refract the backdrop.
 
@@ -25,3 +25,5 @@ Implement an original CSS material in the existing StyleX definitions, without c
 - Preserve the existing 120 px anchor clearance and all navigation dimensions.
 
 The only exception to the general no-gradient/no-shadow language is the navbar material: a very faint neutral tint gradient and inset rim highlights describe the glass surface. They are not a new treatment for cards or controls.
+
+The owner subsequently approved seeded procedural refraction, then requested zero roughness, monochrome tint, full reflection gain, dense sampling, the shared Connect border, no cursor tracking, and restoration of the home brand link. The current implementation is described in [procedural navigation optics](procedural-glass.md).
