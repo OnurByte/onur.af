@@ -312,10 +312,13 @@ $$
     for (const claim of claims) {
       const name =
         claim.id === 'x' ? 'X identity PGP proof' : 'GitHub identity PGP proof';
+      const identityRegion = page.getByRole('region', {
+        name: claim.id === 'x' ? 'Posts' : 'Repositories',
+      });
       await expect(
-        page.getByRole('link', { name, exact: true }),
+        identityRegion.getByRole('link', { name, exact: true }),
       ).toHaveAttribute('href', `/pgp/${claim.id}`);
-      await page.getByRole('link', { name, exact: true }).click();
+      await identityRegion.getByRole('link', { name, exact: true }).click();
       await expect(page).toHaveURL(`${origin}/pgp/${claim.id}`);
       await expect(
         page.getByRole('link', { name: 'Proof', exact: true }),
