@@ -16,12 +16,18 @@ export const edge = stylex.create({
     backgroundImage: `linear-gradient(var(--edge-fill, var(--background)), var(--edge-fill, var(--background))), ${cornerLights}`,
   },
   ring: {
-    padding: 1,
-    backgroundImage: cornerLights,
-    maskImage: 'linear-gradient(#fff 0 0), linear-gradient(#fff 0 0)',
-    maskClip: 'content-box, border-box',
-    maskOrigin: 'content-box, border-box',
-    maskComposite: 'exclude',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: {
+      default: 'var(--border)',
+      '@supports (background-clip: border-area)': 'transparent',
+    },
+    backgroundImage: {
+      default: 'none',
+      '@supports (background-clip: border-area)': cornerLights,
+    },
+    backgroundClip: 'border-area',
+    backgroundOrigin: 'border-box',
     pointerEvents: 'none',
   },
 });

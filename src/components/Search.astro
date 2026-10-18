@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex';
 import { edge } from '../styles/edge';
 import { dialogStyles } from '../styles/dialog';
 import { searchStyles } from '../styles/search';
-import { searchPrimaryEntries } from '../portfolio/search';
+import { searchEntries } from '../portfolio/search';
 import SearchNetworks from './SearchNetworks.astro';
 ---
 
@@ -17,6 +17,10 @@ import SearchNetworks from './SearchNetworks.astro';
   aria-keyshortcuts="Control+K Meta+K"
   {...stylex.attrs(searchStyles.trigger)}
 >
+  <i
+    aria-hidden="true"
+    {...stylex.attrs(searchStyles.triggerBorder, edge.ring)}
+  ></i>
   <span>Find</span>
   <kbd {...stylex.attrs(searchStyles.shortcut)}>Ctrl K</kbd>
 </button>
@@ -49,7 +53,7 @@ import SearchNetworks from './SearchNetworks.astro';
     {...stylex.attrs(searchStyles.status)}
   ></p>
   <ul id="search-results" {...stylex.attrs(searchStyles.results)}>
-    {searchPrimaryEntries.map(({ url, meta, searchText }) => (
+    {searchEntries.map(({ url, meta, searchText }) => (
       <li data-search-text={searchText}>
         <a href={url} {...stylex.attrs(searchStyles.result)}>
           <span data-result-title>{meta.title}</span>
@@ -61,17 +65,6 @@ import SearchNetworks from './SearchNetworks.astro';
     ))}
     <SearchNetworks />
   </ul>
-  <template id="search-result-template">
-    <li>
-      <a {...stylex.attrs(searchStyles.result)}>
-        <span data-result-title></span>
-        <small
-          data-result-description
-          {...stylex.attrs(searchStyles.detail)}
-        ></small>
-      </a>
-    </li>
-  </template>
 </dialog>
 <script>
   import '../client/search';

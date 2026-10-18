@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
 export const searchStyles = stylex.create({
   trigger: {
+    position: 'relative',
     backgroundColor: {
       default: 'var(--background)',
       '@supports (backdrop-filter: blur(1px))':
@@ -39,6 +40,11 @@ export const searchStyles = stylex.create({
       '@media (min-width: 621px)': 16,
     },
     fontWeight: 500,
+  },
+  triggerBorder: {
+    position: 'absolute',
+    inset: -1,
+    borderRadius: 'inherit',
   },
   shortcut: {
     display: 'inline-flex',
