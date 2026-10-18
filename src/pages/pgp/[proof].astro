@@ -31,6 +31,7 @@ const description = proof ? 'Verified by PGP.' : 'OpenPGP signature.';
         <AccountLink
           account={id}
           label={account.profile}
+          href={account.profile}
           {...stylex.attrs(styles.walletLink)}
         />
       </p>

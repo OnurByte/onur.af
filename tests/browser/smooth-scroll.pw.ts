@@ -38,6 +38,7 @@ test('the contribution profile responds faster than home at the same animation t
   page,
 }) => {
   await page.clock.install();
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
   const positions: number[] = [];
   for (const path of ['/', '/contribute']) {
     await page.goto(path);

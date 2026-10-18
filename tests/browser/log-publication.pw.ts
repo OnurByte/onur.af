@@ -186,6 +186,16 @@ $$
       JSON.stringify(entries),
     );
     await writeFile(
+      join(directory, 'src/content/log-connections.json'),
+      JSON.stringify([
+        {
+          from: 'silent-lodge-convenes',
+          to: 'ancient-archive-opens',
+          reason: 'Background for this publication.',
+        },
+      ]),
+    );
+    await writeFile(
       join(directory, 'src/content/log-signatures.json'),
       JSON.stringify(artifacts),
     );
@@ -532,7 +542,7 @@ $$
     expect(imageResponse.headers.get('x-robots-tag') ?? '').not.toContain(
       'noindex',
     );
-    for (const name of ['Related logs', 'Referenced by'])
+    for (const name of ['Further reading', 'Referenced by'])
       await expect(
         page
           .getByRole('navigation', { name })

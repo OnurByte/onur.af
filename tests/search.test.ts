@@ -13,7 +13,11 @@ test('search indexes public descriptions, never checkout data', () => {
   ]);
   for (const page of searchPages) {
     const preview = publicPreview(page.url)!;
-    expect(page.meta.description).toBe(preview.description);
+    if (page.url === '/') {
+      expect(preview.description).toBe('');
+    } else {
+      expect(page.meta.description).toBe(preview.description);
+    }
     expect(page.meta.title).toBe(preview.title);
   }
 });

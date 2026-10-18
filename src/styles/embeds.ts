@@ -4,13 +4,13 @@ export const recentMarker = stylex.defaultMarker();
 
 export const embeds = stylex.create({
   grid: {
-    marginTop: 40,
+    marginTop: 'var(--section-space)',
     display: 'grid',
     gridTemplateColumns: {
       default: 'minmax(0, 1fr)',
       '@media (min-width: 901px)': 'repeat(2, minmax(0, 1fr))',
     },
-    gap: 32,
+    gap: 'var(--space-6)',
     alignItems: 'start',
   },
   section: {
@@ -19,10 +19,10 @@ export const embeds = stylex.create({
     borderStyle: 'solid',
     borderColor: 'var(--border)',
     borderRadius: 'var(--radius-card)',
-    padding: { default: 16, '@media (min-width: 621px)': 24 },
+    padding: 'var(--card-padding)',
   },
   activitySection: { alignSelf: 'stretch' },
-  activityList: { display: 'grid', gap: 24, marginTop: 24 },
+  activityList: { display: 'grid', gap: 24, marginTop: 'var(--space-6)' },
   activityItem: {
     height: '5rem',
     display: 'flex',
@@ -54,7 +54,7 @@ export const embeds = stylex.create({
     gridColumn: { default: '1 / -1', '@media (min-width: 621px)': 2 },
     gridRow: { default: 2, '@media (min-width: 621px)': 1 },
   },
-  spotifyProgress: { marginTop: 8 },
+  spotifyProgress: { marginTop: 'var(--space-2)' },
   progressBar: {
     display: 'block',
     width: '100%',
@@ -80,7 +80,7 @@ export const embeds = stylex.create({
     display: 'flex',
     justifyContent: 'space-between',
     marginTop: 4,
-    fontSize: '0.875rem',
+    fontSize: 'var(--font-small)',
     color: 'var(--muted)',
     lineHeight: 1.6,
     fontVariantNumeric: 'tabular-nums',
@@ -106,7 +106,7 @@ export const embeds = stylex.create({
     paddingTop: 24,
   },
   recentHeading: {
-    fontSize: '0.875rem',
+    fontSize: 'var(--font-small)',
     fontWeight: 400,
     color: 'var(--muted)',
     lineHeight: 1.6,
@@ -150,7 +150,7 @@ export const embeds = stylex.create({
   sourceLink: {
     display: 'block',
     marginTop: 4,
-    fontSize: '0.875rem',
+    fontSize: 'var(--font-small)',
     lineHeight: 1.6,
     color: 'var(--muted)',
   },
@@ -170,22 +170,22 @@ export const embeds = stylex.create({
   },
   language: { display: 'inline-flex', alignItems: 'center', gap: 4 },
   title: {
-    fontSize: '1.125rem',
-    fontWeight: 400,
-    lineHeight: 1.4,
+    fontSize: 'var(--font-subheading)',
+    fontWeight: 'var(--weight-heading)',
+    lineHeight: 'var(--leading-heading)',
     overflowWrap: 'anywhere',
   },
   link: { textUnderlineOffset: '0.3em', overflowWrap: 'anywhere' },
-  meta: { fontSize: '0.875rem', color: 'var(--muted)', marginTop: 12 },
+  meta: { fontSize: 'var(--font-small)', color: 'var(--muted)', marginTop: 12 },
   list: { listStyle: 'none', padding: 0, margin: 0 },
-  item: { marginTop: 24, minWidth: 0 },
+  item: { marginTop: 'var(--space-6)', minWidth: 0 },
   postStat: { display: 'inline-flex', alignItems: 'center', gap: 4 },
   postStats: {
     display: 'flex',
     flexWrap: 'wrap',
     gap: 16,
     marginTop: 'auto',
-    fontSize: '0.875rem',
+    fontSize: 'var(--font-small)',
     lineHeight: 1.6,
     color: 'var(--muted)',
   },
@@ -198,7 +198,7 @@ export const embeds = stylex.create({
   },
   detail: {
     display: 'block',
-    fontSize: '0.875rem',
+    fontSize: 'var(--font-small)',
     color: 'var(--muted)',
     lineHeight: 1.6,
     overflowWrap: 'anywhere',

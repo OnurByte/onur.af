@@ -8,13 +8,36 @@ html {
   color-scheme: light;
   --background: #fff;
   --text: #0d0d0d;
-  --muted: #333;
+  --muted: #595959;
   --border: #b3b3b3;
   --surface: #f2f2f2;
   --page-gutter: 20px;
   --page-max-width: 960px;
   --reading-width: 592px;
   --control-height: 48px;
+  --font-page-title: clamp(2.25rem, 6vw, 3rem);
+  --font-section-title: 1.5rem;
+  --font-subheading: 1.25rem;
+  --font-item-title: 1.125rem;
+  --font-body: 1rem;
+  --font-small: 0.875rem;
+  --font-label: 0.75rem;
+  --leading-title: 1.15;
+  --leading-heading: 1.35;
+  --leading-body: 1.7;
+  --leading-reading: 1.8;
+  --weight-heading: 500;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --section-space: 40px;
+  --page-start: 40px;
+  --page-end: 80px;
+  --card-padding: 16px;
   --radius-control: 8px;
   --radius-card: 12px;
   -webkit-text-size-adjust: 100%;
@@ -23,6 +46,10 @@ html {
 @media (min-width: 621px) {
   html {
     --page-gutter: 24px;
+    --page-start: 64px;
+    --page-end: 96px;
+    --section-space: 48px;
+    --card-padding: 24px;
   }
 }
 @media (prefers-color-scheme: dark) {
@@ -30,7 +57,7 @@ html {
     color-scheme: dark;
     --background: #000;
     --text: #fff;
-    --muted: #fff;
+    --muted: #b3b3b3;
     --border: #404040;
     --surface: #222;
   }

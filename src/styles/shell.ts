@@ -9,8 +9,8 @@ export const shell = stylex.create({
     backgroundColor: 'var(--background)',
     color: 'var(--text)',
     fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-    fontSize: 16,
-    lineHeight: 1.6,
+    fontSize: 'var(--font-body)',
+    lineHeight: 'var(--leading-body)',
     fontSynthesis: 'none',
   },
   container: {
@@ -31,7 +31,7 @@ export const shell = stylex.create({
     gap: {
       default: 4,
       '@media (min-width: 401px)': 16,
-      '@media (min-width: 621px)': 20,
+      '@media (min-width: 621px)': 16,
     },
   },
   navigationActions: {
@@ -56,7 +56,7 @@ export const shell = stylex.create({
     fontSize: {
       default: 14,
       '@media (min-width: 361px)': 16,
-      '@media (min-width: 621px)': 20,
+      '@media (min-width: 621px)': 16,
     },
     fontWeight: 500,
   },
@@ -73,8 +73,8 @@ export const shell = stylex.create({
   footer: {
     paddingTop: 20,
     paddingBottom: 28,
-    fontSize: { default: 14, '@media (min-width: 621px)': 20 },
-    fontWeight: 700,
+    fontSize: 'var(--font-small)',
+    fontWeight: 500,
   },
   footerNavigation: {
     display: 'grid',

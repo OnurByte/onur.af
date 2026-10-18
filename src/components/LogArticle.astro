@@ -147,12 +147,13 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
     </nav>
   )}
   {connections.related.length > 0 && (
-    <nav class="log-connections" aria-label="Related logs">
-      <h2>Related</h2>
+    <nav class="log-connections" aria-label="Further reading">
+      <h2>Further reading</h2>
       <ul>
         {connections.related.map((related) => (
           <li>
             <a href={logUrl(related)}>{logMetadata(related).title}</a>
+            {'reason' in related && <p>{related.reason}</p>}
           </li>
         ))}
       </ul>

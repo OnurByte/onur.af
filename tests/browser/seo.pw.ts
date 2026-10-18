@@ -12,10 +12,14 @@ test('public HTML remains indexable without a runtime canonical origin', async (
       'index, follow',
     );
     await expect(page.locator('title')).not.toBeEmpty();
-    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
-      'content',
-      /\S+/,
-    );
+    if (path === '/') {
+      await expect(page.locator('meta[name="description"]')).toHaveCount(0);
+    } else {
+      await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+        'content',
+        /\S+/,
+      );
+    }
     expect(await page.locator('head').innerHTML()).not.toContain(
       'undefined/social/',
     );

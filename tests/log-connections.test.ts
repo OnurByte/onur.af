@@ -13,7 +13,7 @@ const entry = (
   revisions: [{ version: 1, publishedAt, tags, body }],
 });
 
-test('related logs rank shared tags then recency, exclude self and cap at three', () => {
+test('editorial reading paths follow author order and include a reason', () => {
   const entries = parseLog([
     entry('silent-lodge-convenes', ['pgp', 'privacy']),
     entry(
@@ -29,7 +29,15 @@ test('related logs rank shared tags then recency, exclude self and cap at three'
   ]);
   const main = entries.find((item) => item.id === 'silent-lodge-convenes')!;
   expect(
-    logConnections(main, entries).related.map((entry) => entry.id),
+    logConnections(main, entries, undefined, [
+      { from: main.id, to: 'ancient-archive-opens', reason: 'Background' },
+      { from: main.id, to: 'veiled-compass-turns', reason: 'An application' },
+      {
+        from: main.id,
+        to: 'hidden-temple-waits',
+        reason: 'A different perspective',
+      },
+    ]).related.map((entry) => entry.id),
   ).toEqual([
     'ancient-archive-opens',
     'veiled-compass-turns',

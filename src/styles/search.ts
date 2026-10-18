@@ -24,7 +24,7 @@ export const searchStyles = stylex.create({
     fontSize: {
       default: 14,
       '@media (min-width: 361px)': 16,
-      '@media (min-width: 621px)': 20,
+      '@media (min-width: 621px)': 16,
     },
     fontWeight: 500,
   },
