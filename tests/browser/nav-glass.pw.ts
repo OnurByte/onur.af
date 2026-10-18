@@ -42,8 +42,9 @@ test('procedural glass preserves geometry and responds without moving controls',
       (element) => element.parentElement!.getBoundingClientRect().height,
     ),
   ).toBe(96);
-  expect(await page.locator('feImage').getAttribute('href')).not.toBe(
-    before.map,
+  await expect(page.locator('feImage')).not.toHaveAttribute(
+    'href',
+    before.map!,
   );
   await page.locator('#open-search').click();
   await expect(
@@ -144,8 +145,24 @@ test('navbar controls use the Connect border and the brand links home', async ({
     }
     const ring = page.locator('[data-nav-glass] > span[aria-hidden]');
     expect(
-      await ring.evaluate((el) => getComputedStyle(el).backgroundImage),
-    ).toBe(standard.image.slice(standard.image.indexOf('radial-gradient')));
+      await ring.evaluate((el) => {
+        const style = getComputedStyle(el);
+        return {
+          widths: [
+            style.borderTopWidth,
+            style.borderRightWidth,
+            style.borderBottomWidth,
+            style.borderLeftWidth,
+          ],
+          mask: style.maskImage,
+          background: style.backgroundImage,
+        };
+      }),
+    ).toEqual({
+      widths: ['1px', '1px', '1px', '1px'],
+      mask: 'none',
+      background: 'none',
+    });
     expect(
       await page
         .locator('[data-nav-glass]')
