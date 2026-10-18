@@ -23,13 +23,25 @@ export function initNavGlass() {
   const map = document.createElementNS(ns, 'feImage');
   map.setAttribute('result', 'lens');
   map.setAttribute('preserveAspectRatio', 'none');
+  // 8-bit maps encode neutrality at 128, while SVG expects exactly 0.5.
+  // This affine correction centers the plateau without a subpixel bias.
+  const centered = document.createElementNS(ns, 'feComponentTransfer');
+  centered.setAttribute('in', 'lens');
+  centered.setAttribute('result', 'centered-lens');
+  for (const channel of ['feFuncR', 'feFuncG']) {
+    const curve = document.createElementNS(ns, channel);
+    curve.setAttribute('type', 'linear');
+    curve.setAttribute('slope', String(255 / 254));
+    curve.setAttribute('intercept', String(-1 / 254));
+    centered.append(curve);
+  }
   const displace = document.createElementNS(ns, 'feDisplacementMap');
   displace.setAttribute('in', 'SourceGraphic');
-  displace.setAttribute('in2', 'lens');
+  displace.setAttribute('in2', 'centered-lens');
   displace.setAttribute('xChannelSelector', 'R');
   displace.setAttribute('yChannelSelector', 'G');
   displace.setAttribute('scale', '0.9');
-  filter.append(map, displace);
+  filter.append(map, centered, displace);
   svg.append(filter);
   document.body.append(svg);
 
