@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
 
-// Each corner light spans half of this element’s own width and height.
-// Layered backgrounds follow the real border without clipping links or focus rings.
+// Each radial field is anchored to this element's own corner, so the highlights
+// scale with the surface without measuring or painting over interactive content.
 export const edge = stylex.create({
   frame: {
     borderColor: {
@@ -11,6 +11,6 @@ export const edge = stylex.create({
     backgroundOrigin: 'border-box',
     backgroundClip: 'padding-box, border-box, border-box',
     backgroundImage:
-      'linear-gradient(var(--edge-fill, var(--background)), var(--edge-fill, var(--background))), radial-gradient(ellipse 50% 50% at 100% 0%, color-mix(in srgb, var(--text) 55%, var(--edge-line, var(--border))) 0%, transparent 100%), radial-gradient(ellipse 50% 50% at 0% 100%, color-mix(in srgb, var(--text) 55%, var(--edge-line, var(--border))) 0%, var(--edge-line, var(--border)) 100%)',
+      'linear-gradient(var(--edge-fill, var(--background)), var(--edge-fill, var(--background))), radial-gradient(ellipse 50% 50% at 100% 0%, color-mix(in srgb, var(--text) 92%, var(--edge-line, var(--border))) 0%, color-mix(in srgb, var(--text) 45%, var(--edge-line, var(--border))) 50%, transparent 100%), radial-gradient(ellipse 50% 50% at 0% 100%, color-mix(in srgb, var(--text) 92%, var(--edge-line, var(--border))) 0%, color-mix(in srgb, var(--text) 45%, var(--edge-line, var(--border))) 50%, var(--edge-line, var(--border)) 100%)',
   },
 });
