@@ -11,7 +11,14 @@ const titleSchema = z
   .refine((value) => !/[\r\n]/.test(value));
 export const logTagDefinitions: Record<
   string,
-  { title: string; description: string; indexable: boolean }
+  {
+    title: string;
+    description: string;
+    indexable: boolean;
+    aliases?: string[];
+    broader?: string;
+    related?: string[];
+  }
 > = tagDefinitions;
 const sourceSchema = z
   .object({
@@ -98,9 +105,7 @@ export type LogEntry = z.infer<typeof entrySchema>;
 export function parseLog(input: unknown): LogEntry[] {
   const entries = z.array(entrySchema).parse(input);
   const availableIds = new Set(entries.map((entry) => entry.id));
-  const usedTags = new Set(
-    entries.flatMap((entry) => entry.revisions.at(-1)!.tags ?? []),
-  );
+  const usedTags = new Set(Object.keys(logTagDefinitions));
   const ids = new Set<string>();
   for (const entry of entries) {
     if (ids.has(entry.id)) throw new Error(`Duplicate Log id: ${entry.id}`);

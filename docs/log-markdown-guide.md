@@ -15,7 +15,7 @@ bun run log:new "Yazı başlığı" "Kısa özet." article.md metadata.json
 ```
 
 Komut, Markdown gövdesini `src/content/log.json` içine taslak olarak ekler.
-`metadata.json` zorunludur ve 1–5 kanonik etiket içermelidir. Dil, kapak ve
+`metadata.json` zorunludur ve etiket içermek zorunda değildir. Dil, kapak ve
 kaynak listesi isteğe bağlıdır:
 
 ```sh
@@ -320,7 +320,7 @@ Komut satırındaki başlık ve özet dışında yalnızca `language`, `tags`, `
 ```
 
 - `language`: `tr`, `en` veya `en-GB` biçiminde dil kodu.
-- `tags`: `src/content/log-tags.json` içindeki kanonik slug'lardan 1–5
+- `tags`: `src/content/log-tags.json` içindeki kanonik slug’lardan 0–12
   benzersiz değer. Sözlük `development`, `web`, `privacy`, `cryptography`,
   `pgp`, `identity` ve `ai` etiketlerini içerir; serbest metin kabul edilmez.
 - `cover`: `src`, `alt`, `width`, `height` ve isteğe bağlı `caption` içerir.

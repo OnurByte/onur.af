@@ -2,19 +2,31 @@
 import * as stylex from '@stylexjs/stylex';
 import type { HTMLAttributes } from 'astro/types';
 import { identityAccounts } from '../portfolio/proofs';
-import { logStyles } from '../styles/log';
+import { proof } from '../styles/proof';
 import ProofBadge from './ProofBadge.astro';
 interface Props extends HTMLAttributes<'a'> {
   account: keyof typeof identityAccounts;
   label?: string;
   showProofBadge?: boolean;
+  wrapperAttributes?: HTMLAttributes<'span'>;
 }
-const { account, label, showProofBadge = true, ...attributes } = Astro.props;
+const {
+  account,
+  label,
+  showProofBadge = true,
+  wrapperAttributes = {},
+  ...attributes
+} = Astro.props;
 const identity = identityAccounts[account];
 ---
 
-<span {...stylex.attrs(logStyles.identity)}>
-  <a {...attributes} href={`/pgp/${account}`}>
+<span
+  {...wrapperAttributes}
+  class={[stylex.attrs(proof.identity).class, wrapperAttributes.class]
+    .filter(Boolean)
+    .join(' ')}
+>
+  <a {...attributes} href={attributes.href ?? `/pgp/${account}`}>
     {label ?? identity.name}
   </a>
   {showProofBadge && <ProofBadge target={account} />}

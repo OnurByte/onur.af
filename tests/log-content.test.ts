@@ -128,8 +128,13 @@ test('tag archives include matching entries and canonical URLs with editorial in
   const parsed = parseLog([
     { ...entry, revisions: [{ ...revision, tags: ['pgp'] }] },
   ]);
-  expect(logTags(parsed)[0]).toMatchObject({ slug: 'pgp', title: 'PGP' });
-  expect(logTags(parsed)[0]!.entries).toHaveLength(1);
+  expect(logTags(parsed).find((tag) => tag.slug === 'pgp')).toMatchObject({
+    slug: 'pgp',
+    title: 'PGP',
+  });
+  expect(
+    logTags(parsed).find((tag) => tag.slug === 'pgp')!.entries,
+  ).toHaveLength(1);
   expect(logTagUrl('pgp')).toBe('/log/tag/pgp');
   expect(logTagIndexable('pgp', parsed)).toBe(false);
 });

@@ -13,7 +13,7 @@ export const shareStyles = stylex.create({
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'var(--border)',
-    borderRadius: 4,
+    borderRadius: 'var(--radius-control, 8px)',
   },
   results: { padding: 8 },
   row: {

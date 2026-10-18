@@ -1,6 +1,7 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import { styles } from '../styles/pages';
+import { logStyles } from '../styles/log';
 import Layout from '../layouts/Layout.astro';
 import HomeEmbeds from '../components/embeds/HomeEmbeds.astro';
 import { homeEmbedSources } from '../content/home-embeds';
@@ -21,7 +22,11 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
   <main {...stylex.attrs(styles.main)} aria-label="Portfolio">
     <h1 {...stylex.attrs(styles.heading)}>{motto}</h1>
     {recentLogs.length > 0 && (
-      <section aria-label="Recent Log entries" class="h-feed">
+      <section
+        {...stylex.attrs(logStyles.list)}
+        aria-label="Recent Log entries"
+        class="h-feed"
+      >
         {recentLogs.map((entry) => (
           <LogCard
             entry={entry}

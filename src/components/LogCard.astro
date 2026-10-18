@@ -1,5 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { edge } from '../styles/edge';
 import { logStyles } from '../styles/log';
 import {
   logMetadata,
@@ -20,7 +21,11 @@ const metadata = logMetadata(entry);
 const publishedAt = entry.revisions[0]!.publishedAt;
 ---
 
-<article {...stylex.attrs(logStyles.entryCard)} class="h-entry" id={entry.id}>
+<article
+  {...stylex.attrs(logStyles.entryCard, edge.frame)}
+  class="h-entry"
+  id={entry.id}
+>
   <a
     {...stylex.attrs(logStyles.cardLink)}
     class="u-url"

@@ -1,9 +1,11 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { edge } from '../styles/edge';
 import Icon from './Icon.astro';
 import ProofBadge from './ProofBadge.astro';
 import { embeds } from '../styles/embeds';
 import { connect } from '../styles/connect';
+import { proof } from '../styles/proof';
 import { identityAccounts } from '../portfolio/proofs';
 
 // Publish only addresses explicitly configured by the site owner.
@@ -12,7 +14,7 @@ const xmpp = import.meta.env['PUBLIC_CONTACT_XMPP']?.trim();
 const contacts = [
   {
     label: 'Email',
-    icon: 'shareMail',
+    icon: 'connectMail',
     href: email ? `mailto:${email}` : undefined,
     detail: email,
   },
@@ -34,12 +36,11 @@ const contacts = [
     href: xmpp ? `xmpp:${xmpp}` : undefined,
     detail: xmpp,
   },
-  { label: 'PGP', icon: 'connectKey', href: '/pgp', detail: 'Verify identity' },
 ] as const;
 ---
 
 <section
-  {...stylex.attrs(embeds.section, connect.section)}
+  {...stylex.attrs(embeds.section, edge.frame, connect.section)}
   aria-labelledby="connect-heading"
 >
   <h2 id="connect-heading" {...stylex.attrs(embeds.title)}>
@@ -58,11 +59,20 @@ const contacts = [
         {...stylex.attrs(connect.item)}
       >
         {contact.label === 'X' || contact.label === 'GitHub' ? (
-          <div {...stylex.attrs(connect.link, connect.accountRow)}>
-            <Icon name={contact.icon} />
-            <div {...stylex.attrs(connect.copy)}>
+          <div
+            {...stylex.attrs(
+              connect.link,
+              edge.frame,
+              connect.interactive,
+              connect.accountRow,
+            )}
+          >
+            <div {...stylex.attrs(connect.heading)}>
+              <Icon name={contact.icon} />
               <span>{contact.label}</span>
-              <div {...stylex.attrs(connect.identity)}>
+            </div>
+            <div {...stylex.attrs(connect.copy)}>
+              <div {...stylex.attrs(proof.identity)}>
                 <a
                   href={contact.href}
                   rel="me noreferrer"
@@ -82,20 +92,23 @@ const contacts = [
             rel={
               contact.href.startsWith('https:') ? 'me noreferrer' : undefined
             }
-            {...stylex.attrs(connect.link)}
+            {...stylex.attrs(connect.link, edge.frame, connect.interactive)}
           >
-            <Icon name={contact.icon} />
-            <span {...stylex.attrs(connect.copy)}>
+            <span {...stylex.attrs(connect.heading)}>
+              <Icon name={contact.icon} />
               <span>{contact.label}</span>
+            </span>
+            <span {...stylex.attrs(connect.copy)}>
               <span {...stylex.attrs(connect.detail)}>{contact.detail}</span>
             </span>
           </a>
         ) : (
-          <span {...stylex.attrs(connect.link, connect.unpublished)}>
-            <Icon name={contact.icon} />
-            <span {...stylex.attrs(connect.copy)}>
+          <span
+            {...stylex.attrs(connect.link, edge.frame, connect.unpublished)}
+          >
+            <span {...stylex.attrs(connect.heading)}>
+              <Icon name={contact.icon} />
               <span>{contact.label}</span>
-              <span {...stylex.attrs(connect.detail)}>Not published</span>
             </span>
           </span>
         )}

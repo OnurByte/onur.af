@@ -15,7 +15,7 @@ export const dialogStyles = stylex.create({
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'var(--border)',
-    borderRadius: 4,
+    borderRadius: 'var(--radius-card, 12px)',
     backgroundColor: 'var(--background)',
     color: 'var(--text)',
     overflowY: 'auto',

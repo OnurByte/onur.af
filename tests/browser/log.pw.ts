@@ -134,7 +134,7 @@ test('Log detail omits Related navigation when there are no related logs', async
 }) => {
   await page.goto('/log/cryptic-watchtower-watches');
   await expect(
-    page.getByRole('navigation', { name: 'Related logs' }),
+    page.getByRole('navigation', { name: 'Further reading' }),
   ).toHaveCount(0);
 });
 

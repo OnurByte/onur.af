@@ -529,7 +529,7 @@ $$
     expect(imageResponse.headers.get('x-robots-tag') ?? '').not.toContain(
       'noindex',
     );
-    for (const name of ['Related logs', 'Referenced by'])
+    for (const name of ['Further reading', 'Referenced by'])
       await expect(
         page
           .getByRole('navigation', { name })

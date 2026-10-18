@@ -206,7 +206,7 @@ display title and useful topic description there before using a new tag. Used
 tags appear on cards, articles, Find, and `/log/tag/<slug>` archives. Keep
 `indexable: false` until an archive has useful topic coverage; set it to `true`
 after editorial review to include it in the sitemap. No automatic post-count
-threshold is imposed. Unused/unknown tag routes return 404. Tag labels are
+threshold is imposed. Unknown subject routes return 404; known empty subjects remain accessible and noindex. Tag labels are
 editorial navigation; the signed identity is the tag slug.
 
 Article pages derive their language, Open Graph article metadata, BlogPosting
@@ -301,3 +301,27 @@ It links to the matching numbered source, opens the Sources disclosure
 and scrolls to the entry. A return arrow beside each source jumps back to its
 citation. Numbers follow the order in `sources`; markers without a matching
 entry remain ordinary text. Markers inside code or existing links are ignored.
+
+## Subjects and editorial reading paths
+
+Cards and articles display signed `tags` as Subjects, retaining `rel="tag"` and
+`p-category`. Existing `/log/tag/<slug>` URLs remain permanent. No tags are
+required when drafting; the revision schema permits up to 12 unique canonical
+slugs, including an empty array.
+
+The subject dictionary also accepts `aliases`, an optional `broader` slug, and
+`related` slugs. Hierarchies must be acyclic and all referenced subjects must
+exist. Broader archives include records filed under narrower subjects without
+adding tags to signed revisions. Find indexes aliases and populated subject
+pages. Empty known subjects remain accessible for old links, with noindex;
+only populated subjects explicitly marked `indexable` enter the sitemap.
+
+`src/content/log-connections.json` contains author-selected reading paths:
+`{"from":"<log-id>","to":"<log-id>","reason":"Why read this next"}`.
+The file is an array; order controls presentation. IDs must exist, reasons must
+be nonempty, and self links and duplicate pairs are rejected. These navigation
+choices are editable independently of signed logs. They appear as Further
+reading with the reason, outside the scope of revision verification. Shared
+subjects alone produce no recommendations. Referenced by continues to derive
+from actual links in the latest revision. Leave the array empty until there
+are real reading paths to recommend.

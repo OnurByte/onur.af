@@ -8,7 +8,7 @@ const { tags } = Astro.props;
 ---
 
 {tags.length > 0 && (
-  <nav class="log-tags" aria-label="Log tags">
+  <nav class="log-tags" aria-label="Subjects">
     {tags.map((tag) => (
       <a href={logTagUrl(tag)} rel="tag" class="p-category">
         #{logTagDefinitions[tag]!.title}

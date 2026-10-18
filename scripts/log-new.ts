@@ -27,12 +27,6 @@ if (
   )
 )
   throw new Error('Metadata accepts only language, tags, cover and sources');
-if (
-  !Array.isArray((metadata as { tags?: unknown }).tags) ||
-  (metadata as { tags: unknown[] }).tags.length < 1 ||
-  (metadata as { tags: unknown[] }).tags.length > 5
-)
-  throw new Error('Metadata must include 1 to 5 canonical Log tags');
 const body = await readFile(markdownFile, 'utf8');
 if (!body.trim()) throw new Error('Cannot create an empty Log entry');
 

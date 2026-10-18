@@ -5,6 +5,7 @@ import {
   logMetadata,
   type LogEntry,
 } from './log';
+import { logTagDefinitions } from './log';
 import { logTags, logTagUrl } from './log-tags';
 export const publicPaths: readonly string[] = [
   '/',
@@ -16,7 +17,7 @@ export const publicPaths: readonly string[] = [
 export const proofPaths = ['/pgp/x', '/pgp/github'] as const;
 export const logPaths = () =>
   logEntries.flatMap((entry) => [logUrl(entry), logProofUrl(entry)]);
-export const siteDescription = 'What I make.';
+export const siteDescription = '';
 
 export function validSiteUrl(value: string | undefined): string | undefined {
   if (!value || /[\u0000-\u0020\u007f\\]/.test(value)) return;
@@ -63,7 +64,7 @@ function isPublicPage(pathname: string): boolean {
     publicPaths.includes(pathname) ||
     proofPaths.some((path) => path === pathname) ||
     logPaths().includes(pathname) ||
-    logTags().some((tag) => logTagUrl(tag.slug) === pathname)
+    Object.keys(logTagDefinitions).some((slug) => logTagUrl(slug) === pathname)
   );
 }
 /** Indexability is a page policy, independent of whether an absolute canonical origin is configured. */
@@ -74,7 +75,8 @@ export function robotsContent(
   if ((options.status ?? 200) !== 200 || !isPublicPage(pathname))
     return 'noindex, nofollow';
   const tag = logTags().find((tag) => logTagUrl(tag.slug) === pathname);
-  return options.noindex || (tag && !tag.indexable)
+  return options.noindex ||
+    (pathname.startsWith('/log/tag/') && (!tag || !tag.indexable))
     ? 'noindex, follow'
     : 'index, follow';
 }
