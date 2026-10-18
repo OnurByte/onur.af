@@ -222,6 +222,7 @@ test('header search aligns with Contribute and supports keyboard navigation', as
   await expect(page.locator('#search-results a')).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/contribute$/);
+  await page.waitForLoadState('load');
   await page.keyboard.press('Meta+k');
   await expect(dialog).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);

@@ -30,7 +30,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
           };
           const main = box('main');
           return {
-            header: box('header'),
+            header: box('body > header nav'),
             footer: box('footer'),
             main,
             heading: box('main h1'),

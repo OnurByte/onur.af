@@ -5,6 +5,7 @@
   border: 0 solid;
 }
 html {
+  scroll-padding-top: 120px;
   color-scheme: light;
   --background: #fff;
   --text: #0d0d0d;
