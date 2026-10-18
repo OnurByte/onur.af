@@ -17,6 +17,7 @@ test('surface borders keep both corner lights across responsive widths', async (
           backgroundClip: computed.backgroundClip,
           backgroundImage: computed.backgroundImage,
           borderColor: computed.borderColor,
+          borderRadius: computed.borderRadius,
           width: element.clientWidth,
         };
       });
@@ -29,6 +30,9 @@ test('surface borders keep both corner lights across responsive widths', async (
       );
       expect(style.backgroundClip).toBe('padding-box, border-box, border-box');
       expect(style.borderColor).toBe('rgba(0, 0, 0, 0)');
+      expect(style.borderRadius).toBe(
+        selector === '#spotify-embed' ? '12px' : '8px',
+      );
       expect(style.width).toBeGreaterThan(0);
     }
   }

@@ -177,13 +177,16 @@ test('header search aligns with Contribute and supports keyboard navigation', as
   await expect(dialog.locator('#close-search')).toHaveCount(0);
   expect(await dialog.innerText()).not.toMatch(/Esc|navigate|Enter open/);
   await expect(page.getByRole('searchbox')).toBeFocused();
-  for (const control of [trigger, dialog]) {
+  for (const [control, radius] of [
+    [trigger, '8px'],
+    [dialog, '12px'],
+  ] as const) {
     expect(
       await control.evaluate((element) => {
         const style = getComputedStyle(element);
         return [style.borderTopWidth, style.borderTopStyle, style.borderRadius];
       }),
-    ).toEqual(['1px', 'solid', '4px']);
+    ).toEqual(['1px', 'solid', radius]);
   }
   expect(
     await page.getByRole('searchbox').evaluate((element) => {

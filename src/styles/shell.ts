@@ -52,7 +52,7 @@ export const shell = stylex.create({
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'var(--border)',
-    borderRadius: 4,
+    borderRadius: 'var(--radius-control)',
     fontSize: {
       default: 14,
       '@media (min-width: 361px)': 16,
@@ -101,7 +101,7 @@ export const shell = stylex.create({
     minWidth: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 4,
+    borderRadius: 'var(--radius-control)',
     gap: 8,
   },
   unavailable: { cursor: 'default', color: 'var(--muted)', opacity: 0.45 },
