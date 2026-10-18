@@ -186,6 +186,16 @@ $$
       JSON.stringify(entries),
     );
     await writeFile(
+      join(directory, 'src/content/log-connections.json'),
+      JSON.stringify([
+        {
+          from: 'silent-lodge-convenes',
+          to: 'ancient-archive-opens',
+          reason: 'Background for this publication.',
+        },
+      ]),
+    );
+    await writeFile(
       join(directory, 'src/content/log-signatures.json'),
       JSON.stringify(artifacts),
     );

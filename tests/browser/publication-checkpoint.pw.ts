@@ -37,6 +37,11 @@ test('downloaded checkpoint, manifest, signature and timestamp bind identical by
   );
   const documents = await (await request.get('/search-index.json')).json();
   for (const document of documents) {
+    if (
+      !document.url.startsWith('/log/') ||
+      document.url.startsWith('/log/tag/')
+    )
+      continue;
     const id = document.url.split('/').at(-1);
     const image = await request.get(`/social/log-${id}.png`);
     expect(image.status()).toBe(200);

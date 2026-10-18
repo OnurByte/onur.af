@@ -167,7 +167,14 @@ test('X and GitHub always show their PGP tick beside the account, including befo
       await expect(badge).toBeVisible();
       await expect(badge).toHaveAttribute('href', `/pgp/${account}`);
       const previous = badge.locator('..').locator('a').first();
-      await expect(previous).toHaveAttribute('href', `/pgp/${account}`);
+      await expect(previous).toHaveAttribute(
+        'href',
+        path === `/pgp/${account}`
+          ? account === 'x'
+            ? 'https://x.com/onurstirner'
+            : 'https://github.com/onurbyte'
+          : `/pgp/${account}`,
+      );
       const textBox = await previous.boundingBox();
       const badgeBox = await badge.boundingBox();
       expect(badgeBox!.x).toBeGreaterThanOrEqual(textBox!.x + textBox!.width);
