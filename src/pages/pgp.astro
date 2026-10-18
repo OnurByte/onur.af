@@ -6,7 +6,9 @@ import Layout from '../layouts/Layout.astro';
 import ProofRegistry from '../components/ProofRegistry.astro';
 import publicKey from '../../public/pgp.asc?raw';
 import { readKey } from 'openpgp';
+import { getSignedIdentityStatement } from '../portfolio/verified-proofs';
 const description = publicPreview('/pgp')!.description;
+await getSignedIdentityStatement();
 const keyText = publicKey.trim();
 const fingerprint =
   (await readKey({ armoredKey: publicKey }))
@@ -22,6 +24,16 @@ const fingerprint =
     <div {...stylex.attrs(styles.prose)}>
       <p {...stylex.attrs(styles.paragraph)} data-page-description>
         {description}
+      </p>
+      <h2 {...stylex.attrs(styles.sectionHeading)}>Account ownership</h2>
+      <p {...stylex.attrs(styles.paragraph)}>
+        <a
+          {...stylex.attrs(styles.walletLink)}
+          href="/pgp/identity.asc"
+          download
+        >
+          Signed ownership statement
+        </a>
       </p>
       <div id="fingerprint-field" {...stylex.attrs(styles.keySection)}>
         <div id="fingerprint-actions" {...stylex.attrs(styles.keyActions)}>

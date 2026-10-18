@@ -1,7 +1,7 @@
 import { expect, test } from 'bun:test';
 import { startGateway } from '../src/gateway';
 
-test.skipIf(!Bun.env.TEST_DATABASE_URL)(
+test.skipIf(!Bun.env['TEST_DATABASE_URL'])(
   'gateway keeps one address across retries and fails closed on ambiguous allocation',
   async () => {
     const token = crypto.randomUUID();
@@ -48,19 +48,19 @@ test.skipIf(!Bun.env.TEST_DATABASE_URL)(
         });
       },
     });
-    process.env.DONATION_DATABASE_URL = Bun.env.TEST_DATABASE_URL;
-    process.env.DONATION_GATEWAY_TOKEN = token;
-    process.env.XMR_AGENT_TOKEN = token;
-    process.env.XMR_AGENT_URL = `http://127.0.0.1:${agent.port}`;
-    process.env.XMR_NETWORK = 'stagenet';
-    process.env.DONATION_GATEWAY_PORT = '0';
+    process.env['DONATION_DATABASE_URL'] = Bun.env['TEST_DATABASE_URL'];
+    process.env['DONATION_GATEWAY_TOKEN'] = token;
+    process.env['XMR_AGENT_TOKEN'] = token;
+    process.env['XMR_AGENT_URL'] = `http://127.0.0.1:${agent.port}`;
+    process.env['XMR_NETWORK'] = 'stagenet';
+    process.env['DONATION_GATEWAY_PORT'] = '0';
     const gateway = await startGateway();
     const ids = [
       crypto.randomUUID(),
       crypto.randomUUID(),
       crypto.randomUUID(),
     ] as const;
-    const sql = new Bun.SQL(Bun.env.TEST_DATABASE_URL!);
+    const sql = new Bun.SQL(Bun.env['TEST_DATABASE_URL']!);
     async function create(id: string, amount: string, authorized = true) {
       return fetch(`http://127.0.0.1:${gateway.port}/donations`, {
         method: 'POST',

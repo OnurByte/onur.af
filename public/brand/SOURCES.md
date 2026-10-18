@@ -22,3 +22,10 @@ Site typography: system sans-serif. Social cards bundle Liberation Sans regular 
 - `heart.svg`, `repost.svg`: original 16 px white outline glyphs authored for native post counters; rendered through the common icon registry.
 
 - `proof.svg`: original monochrome 16 px identity-proof check authored for this portfolio.
+
+- `discord.svg`, `reddit.svg`, `telegram.svg`: Simple Icons (https://github.com/simple-icons/simple-icons), CC0, white monochrome variants.
+- `share.svg`, `share-link.svg`, `share-mail.svg`: original portfolio interface artwork, white monochrome.
+
+- `share-mark.svg`: original portfolio artwork; three linked diamond nodes, white monochrome.
+- `xmpp.svg`: XMPP Foundation & Nicola Spanti, user-selected black XMPP logo from https://commons.wikimedia.org/wiki/File:Xmpp-logo-dark.svg ; original SVG and viewBox preserved. MIT/Expat license, copyright XMPP Standards Foundation; see `xmpp-LICENSE.txt`. Shared CSS handles monochrome theme rendering.
+- `connect-mail.svg`: Tabler Icons `mail-fast`, https://github.com/tabler/tabler-icons/blob/main/icons/outline/mail-fast.svg ; MIT, copyright Paweł Kuna. Original paths and 24 × 24 viewBox preserved; stroke set to white for shared theme rendering. License: `tabler-LICENSE.txt`. The Share dialog retains its own mail icon.

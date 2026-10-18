@@ -1,7 +1,17 @@
 import { siteSignature } from '../portfolio/signature';
+import { initSmoothScroll } from './smooth-scroll';
 
-document.addEventListener('contextmenu', (event) => event.preventDefault());
-document.addEventListener('copy', (event) => event.preventDefault());
+initSmoothScroll();
+
+document.addEventListener('contextmenu', (event) => {
+  if (!(event.target instanceof Element && event.target.closest('.h-entry')))
+    event.preventDefault();
+});
+document.addEventListener('copy', (event) => {
+  const anchor = window.getSelection()?.anchorNode;
+  const element = anchor instanceof Element ? anchor : anchor?.parentElement;
+  if (!element?.closest('.h-entry')) event.preventDefault();
+});
 
 const codeCopyTemplate = document.querySelector<HTMLTemplateElement>(
   'template[data-log-code-copy]',
@@ -17,7 +27,7 @@ if (codeCopyTemplate) {
       ) as HTMLElement;
       const button = wrapper.querySelector<HTMLButtonElement>('button')!;
       code.id = `log-code-${index}`;
-      button.dataset.copy = code.id;
+      button.dataset['copy'] = code.id;
       pre.before(wrapper);
       wrapper.append(pre);
     });
@@ -51,9 +61,11 @@ document
     button.style.whiteSpace = 'nowrap';
     button.setAttribute('aria-live', 'polite');
     button.addEventListener('click', async () => {
-      const target = document.getElementById(button.dataset.copy ?? '');
+      const target = document.getElementById(button.dataset['copy'] ?? '');
       if (!target) return;
-      const status = document.getElementById(button.dataset.copyStatus ?? '');
+      const status = document.getElementById(
+        button.dataset['copyStatus'] ?? '',
+      );
       try {
         await navigator.clipboard.writeText(
           target instanceof HTMLInputElement ||

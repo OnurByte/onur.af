@@ -81,3 +81,20 @@ test('home brand name matches the visible icon height and vertical alignment', a
   expect(Math.abs(name.top - icon.top)).toBeLessThanOrEqual(1);
   expect(Math.abs(name.bottom - icon.bottom)).toBeLessThanOrEqual(1);
 });
+
+test('log and proof cards include the same seal on the right', async () => {
+  const seals = [];
+  for (const key of [
+    'log-cryptic-watchtower-watches',
+    'verified-cryptic-watchtower-watches',
+  ]) {
+    const seal = await sharp(await socialImage(key))
+      .extract({ left: 888, top: 220, width: 240, height: 240 })
+      .removeAlpha()
+      .raw()
+      .toBuffer();
+    expect(seal.some((channel) => channel > 240)).toBe(true);
+    seals.push(seal);
+  }
+  expect(seals[0]!.equals(seals[1]!)).toBe(true);
+});

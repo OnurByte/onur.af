@@ -2,9 +2,9 @@ import { mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import sharp from 'sharp';
+import { logSigilSvg } from './log-sigil-svg';
 import assets from './fonts/card-assets.json';
-import { mottos, publicPreview } from './previews';
-import { publicPaths } from './seo';
+import { mottos, publicPreviewByKey } from './previews';
 
 let fonts: Promise<{ regular: string; bold: string }> | undefined;
 function cardFonts() {
@@ -28,9 +28,7 @@ const escapeMarkup = (value: string) =>
     .replaceAll('>', '&gt;');
 
 export async function socialImage(page: string, mottoIndex = 0) {
-  const preview = publicPaths
-    .map(publicPreview)
-    .find((entry) => entry?.key === page);
+  const preview = publicPreviewByKey(page);
   if (!preview) throw new RangeError('Unknown public page');
   if (
     !Number.isInteger(mottoIndex) ||
@@ -60,7 +58,24 @@ export async function socialImage(page: string, mottoIndex = 0) {
       .png()
       .toBuffer();
   };
+  const sealId = preview.key.startsWith('log-')
+    ? preview.key.slice(4)
+    : preview.key.startsWith('verified-')
+      ? preview.key.slice(9)
+      : undefined;
+  const seal = sealId
+    ? await sharp(Buffer.from(logSigilSvg(sealId, '#fff')))
+        .resize(240, 240)
+        .png()
+        .toBuffer()
+    : undefined;
   const isHome = preview.key === 'home';
+  const cardTitleCharacters = Array.from(preview.title);
+  const cardTitle =
+    cardTitleCharacters.length > 64
+      ? `${cardTitleCharacters.slice(0, 63).join('')}…`
+      : preview.title;
+  const titleSize = !isHome && Array.from(cardTitle).length > 36 ? 60 : 96;
   const [logo, motto, name, title, description] = await Promise.all([
     sharp(Buffer.from(assets.logo))
       .resize(64, 64, { fit: 'contain' })
@@ -68,9 +83,21 @@ export async function socialImage(page: string, mottoIndex = 0) {
       .toBuffer(),
     isHome ? undefined : text(mottos[mottoIndex]!, 19, false, 930),
     text('Onur', isHome ? 64 : 28),
-    text(isHome ? mottos[mottoIndex]! : preview.title, 96, true, 1056, 145),
+    text(
+      isHome ? mottos[mottoIndex]! : cardTitle,
+      titleSize,
+      true,
+      seal ? 744 : 1056,
+      145,
+    ),
     preview.description
-      ? text(preview.description, 28, false, 1000)
+      ? text(
+          preview.description,
+          28,
+          false,
+          seal ? 744 : 1000,
+          seal ? 135 : undefined,
+        )
       : undefined,
   ]);
   const logoBounds = isHome
@@ -98,6 +125,7 @@ export async function socialImage(page: string, mottoIndex = 0) {
         top: 165,
       },
       { input: title, left: 72, top: 220 },
+      ...(seal ? [{ input: seal, left: 888, top: 220 }] : []),
       ...(description ? [{ input: description, left: 76, top: 418 }] : []),
     ])
     .png()
@@ -105,7 +133,7 @@ export async function socialImage(page: string, mottoIndex = 0) {
 }
 
 export async function socialImageResponse(page: string | undefined, url: URL) {
-  if (!publicPaths.some((path) => publicPreview(path)?.key === page))
+  if (!page || !publicPreviewByKey(page))
     return new Response('Not found', { status: 404 });
   const indices = url.searchParams.getAll('m');
   if (indices.length > 1 || (indices.length && !/^[0-2]$/.test(indices[0]!)))

@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
 import { getRssPublication } from '../portfolio/rss';
 
-export const GET: APIRoute = async ({ url }) => {
-  const { verification } = await getRssPublication(url);
+export const GET: APIRoute = async ({ url, site }) => {
+  const { verification } = await getRssPublication(url, site);
   const signed = verification.status === 'signed';
   return new Response(
     signed

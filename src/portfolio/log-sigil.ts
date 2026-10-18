@@ -4,6 +4,10 @@ export type LogSigilGeometry = {
   innerRotation: number;
   innerSides: number;
   innerRadius: number;
+  frameSides: number;
+  frameRotation: number;
+  innerRing: boolean;
+  centerMark: number;
   arcStart: number;
   arcEnd: number;
 };
@@ -38,7 +42,7 @@ export function logSigilGeometry(id: string): LogSigilGeometry {
         ? 8
         : actionWord === 'endures'
           ? 10
-          : 8 + Math.floor(random() * 5);
+          : 4 + (hash(`${id}:spokes`) % 13);
   const spokeOffset =
     actionWord === 'waits' ? 0 : random() * (360 / spokeCount);
   const spokes = Array.from({ length: spokeCount }, (_, index) => {
@@ -53,8 +57,8 @@ export function logSigilGeometry(id: string): LogSigilGeometry {
     };
   });
 
-  const nodeCount = 4 + Math.floor(random() * 5);
-  const nodeOffset = random() * (360 / nodeCount);
+  const nodeCount = hash(`${id}:nodes`) % 13;
+  const nodeOffset = nodeCount ? random() * (360 / nodeCount) : 0;
   const nodes = Array.from({ length: nodeCount }, (_, index) => {
     const angle = ((nodeOffset + (360 / nodeCount) * index) * Math.PI) / 180;
     const radius = 55 + random() * 7;
@@ -78,6 +82,10 @@ export function logSigilGeometry(id: string): LogSigilGeometry {
             ? 3
             : 4 + Math.floor(random() * 5),
     innerRadius: 25 + random() * 8,
+    frameSides: [0, 4, 5, 6, 7, 8, 9][hash(`${id}:frame`) % 7]!,
+    frameRotation: Math.floor(random() * 360),
+    innerRing: hash(`${id}:ring`) % 2 === 0,
+    centerMark: hash(`${id}:mark`) % 6,
     arcStart:
       frameWord === 'sealed'
         ? 18

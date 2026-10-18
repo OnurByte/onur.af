@@ -1,0 +1,94 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import Layout from '../../../layouts/Layout.astro';
+import LogCard from '../../../components/LogCard.astro';
+import { styles } from '../../../styles/pages';
+import { logStyles } from '../../../styles/log';
+import { logTags, logTagIndexable } from '../../../portfolio/log-tags';
+import { logTagDefinitions } from '../../../portfolio/log';
+import { logTagUrl } from '../../../portfolio/log-tags';
+import { getLogSignatures } from '../../../portfolio/verified-proofs';
+const tag = logTags().find((tag) => tag.slug === Astro.params['tag']);
+const slug = Astro.params['tag']!;
+const definition = logTagDefinitions[slug];
+if (!definition) return Astro.rewrite('/404');
+const subject = tag ?? { slug, ...definition, entries: [] };
+const available = logTags();
+const broader = available.find((item) => item.slug === subject.broader);
+const narrower = available.filter((item) => item.broader === subject.slug);
+const related = available.filter((item) =>
+  subject.related?.includes(item.slug),
+);
+const signatures = await getLogSignatures();
+---
+
+<Layout
+  title={`${subject.title} · Log · Onur`}
+  description={subject.description}
+  noindex={!logTagIndexable(subject.slug)}
+>
+  <main {...stylex.attrs(styles.main)}>
+    <nav {...stylex.attrs(styles.breadcrumb)} aria-label="Breadcrumb">
+      <a {...stylex.attrs(styles.walletLink)} href="/log">
+        Log
+      </a>{' '}
+      / {subject.title}
+    </nav>
+    <h1 {...stylex.attrs(styles.heading)}>{subject.title}</h1>
+    <div {...stylex.attrs(styles.prose)}>
+      <p {...stylex.attrs(styles.paragraph)}>{subject.description}</p>
+    </div>
+    {(broader || narrower.length > 0 || related.length > 0) && (
+      <nav aria-label="Subject connections" class="subject-connections">
+        {broader && (
+          <p>
+            Broader subject:{' '}
+            <a href={logTagUrl(broader.slug)}>{broader.title}</a>
+          </p>
+        )}
+        {narrower.length > 0 && (
+          <p>
+            More specific:{' '}
+            {narrower.map((item) => (
+              <a href={logTagUrl(item.slug)}>{item.title}</a>
+            ))}
+          </p>
+        )}
+        {related.length > 0 && (
+          <p>
+            Related subjects:{' '}
+            {related.map((item) => (
+              <a href={logTagUrl(item.slug)}>{item.title}</a>
+            ))}
+          </p>
+        )}
+      </nav>
+    )}
+    {subject.entries.length === 0 && (
+      <p>No logs filed under this subject yet.</p>
+    )}
+    <div {...stylex.attrs(logStyles.list)} class="h-feed">
+      {subject.entries.map((entry) => (
+        <LogCard
+          entry={entry}
+          verified={Boolean(
+            signatures[`${entry.id}-v${entry.revisions.at(-1)!.version}`],
+          )}
+        />
+      ))}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .subject-connections {
+    margin: 24px 0;
+    font-size: 0.875rem;
+  }
+  .subject-connections p {
+    margin: 8px 0;
+  }
+  .subject-connections a + a {
+    margin-left: 12px;
+  }
+</style>

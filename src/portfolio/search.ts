@@ -1,4 +1,6 @@
-import { logEntries, logUrl, type LogEntry } from './log';
+import { logEntries, logTagDefinitions, type LogEntry } from './log';
+import { buildContentIndex } from './content-index';
+import { logTags, logTagUrl } from './log-tags';
 import pages from '../content/public-pages.json' with { type: 'json' };
 
 // Fixed public metadata only: never crawl checkout URLs or payment data.
@@ -8,25 +10,49 @@ export const searchPages = pages.map(({ id, title, description }) => ({
 }));
 
 export function logSearchEntries(entries: readonly LogEntry[]) {
-  return entries.map((entry) => ({
-    url: logUrl(entry),
-    meta: { title: entry.title, description: entry.summary },
-    searchText: [entry.title, entry.summary, entry.revisions.at(-1)!.body].join(
-      ' ',
-    ),
+  const logs = buildContentIndex(entries).documents.map((document) => ({
+    url: document.url,
+    meta: { title: document.title, description: document.summary },
+    searchText: [
+      document.title,
+      document.summary,
+      ...document.tags.flatMap((slug) => {
+        const subject = logTagDefinitions[slug]!;
+        return [slug, subject.title, ...(subject.aliases ?? [])];
+      }),
+      document.body,
+      ...document.links,
+      ...document.sources.map((source) => source.title),
+      ...document.repositories.map((reference) => reference.repository),
+    ].join(' '),
   }));
+  return [
+    ...logs,
+    ...logTags(entries).map((subject) => ({
+      url: logTagUrl(subject.slug),
+      meta: {
+        title: subject.title,
+        description: subject.description,
+      },
+      searchText: [
+        subject.title,
+        subject.description,
+        ...(subject.aliases ?? []),
+      ].join(' '),
+    })),
+  ];
 }
 const homeEmbedEntries = [
   {
-    url: '/#embed-x',
-    meta: { title: '𝕏', description: 'Recent posts from @onurstirner.' },
+    url: '/#connect-x',
+    meta: { title: '𝕏', description: 'Connect with @onurstirner on X.' },
     searchText: 'X posts Twitter @onurstirner embed',
   },
   {
-    url: '/#embed-github',
+    url: '/#connect-github',
     meta: {
       title: 'GitHub',
-      description: 'Recent repositories from onurbyte.',
+      description: 'Connect with onurbyte on GitHub.',
     },
     searchText: 'GitHub repositories projects onurbyte embed',
   },

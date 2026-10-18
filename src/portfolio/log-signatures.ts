@@ -1,6 +1,8 @@
 import { createHash } from 'node:crypto';
 import { z } from 'astro/zod';
 import { verifyBytes } from './proofs';
+import type { KeyTrust } from './key-history';
+import type { VerifiedLogPublications } from './log-publications';
 import { revisionMarkdown, type LogEntry } from './log';
 export const digest = (body: string) =>
   createHash('sha256').update(body, 'utf8').digest('hex');
@@ -19,7 +21,8 @@ const schema = z.record(
 export async function verifyLogSignatures(
   entries: readonly LogEntry[],
   input: unknown,
-  publicKey: string,
+  publicKey: string | KeyTrust,
+  publicationSequenceByRevision: Readonly<Record<string, number>> = {},
 ) {
   const artifacts = schema.parse(input);
   const verified: Record<
@@ -41,10 +44,40 @@ export async function verifyLogSignatures(
     const body = revisions.get(id);
     if (!body || digest(body) !== artifact.sha256)
       throw new Error(`Log revision changed since signing: ${id}`);
-    const fingerprint = await verifyBytes(body, artifact.signature, publicKey);
+    const trust =
+      typeof publicKey === 'string'
+        ? publicKey
+        : {
+            ...publicKey,
+            ...(publicationSequenceByRevision[id] !== undefined
+              ? { sequence: publicationSequenceByRevision[id] }
+              : {}),
+          };
+    const fingerprint = await verifyBytes(body, artifact.signature, trust);
     verified[id] = { ...artifact, fingerprint };
   }
   return verified;
+}
+
+/** Pick the first signed publication sequence that claims each immutable revision digest. */
+export function revisionPublicationSequences(
+  publications: VerifiedLogPublications,
+  entries: readonly LogEntry[],
+): Record<string, number> {
+  const sequences: Record<string, number> = {};
+  for (const edition of publications.editions) {
+    for (const entry of edition.manifest.entries) {
+      const id = `${entry.id}-v${entry.version}`;
+      sequences[id] ??= edition.manifest.sequence;
+    }
+  }
+  const nextSequence = (publications.latest?.manifest.sequence ?? 0) + 1;
+  for (const entry of entries)
+    for (const revision of entry.revisions) {
+      const id = `${entry.id}-v${revision.version}`;
+      sequences[id] ??= nextSequence;
+    }
+  return sequences;
 }
 
 export function assertAllLogRevisionsSigned(

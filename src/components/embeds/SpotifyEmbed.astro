@@ -1,5 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { edge } from '../../styles/edge';
 import Icon from '../Icon.astro';
 import { embeds as styles, recentMarker } from '../../styles/embeds';
 import type { Embed } from '../../portfolio/embeds';
@@ -20,7 +21,7 @@ const time = (ms: number) =>
 
 <section
   id="spotify-embed"
-  {...stylex.attrs(styles.section, styles.spotifySection)}
+  {...stylex.attrs(styles.section, edge.frame, styles.spotifySection)}
   aria-labelledby="embed-spotify"
 >
   <div {...stylex.attrs(styles.spotifyTop)}>
@@ -157,8 +158,8 @@ const time = (ms: number) =>
       `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
     function tick() {
       if (progress.hidden || document.hidden) return;
-      const start = Number(progress.dataset.start);
-      const end = Number(progress.dataset.end);
+      const start = Number(progress.dataset['start']);
+      const end = Number(progress.dataset['end']);
       const total = end - start;
       if (!Number.isFinite(total) || total <= 0) {
         progress.hidden = true;
@@ -219,8 +220,8 @@ const time = (ms: number) =>
           playing?.kind === 'track' ? playing.playback : undefined;
         progress.hidden = !playback;
         if (playback) {
-          progress.dataset.start = String(playback.startedAt);
-          progress.dataset.end = String(playback.endsAt);
+          progress.dataset['start'] = String(playback.startedAt);
+          progress.dataset['end'] = String(playback.endsAt);
           tick();
         }
       } else {

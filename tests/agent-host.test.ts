@@ -7,14 +7,23 @@ import {
   createWriterLockGuard,
   reconcilePaidOrders,
   validateWalletLedger,
+  type PaymentAgent,
 } from '../src/xmr/agent-host';
 
 const ID = '5f14af55-aacc-4660-8658-58dc000247e5';
 const ADDRESS = `7${'1'.repeat(94)}`;
 const PRIMARY = `7${'2'.repeat(94)}`;
 
+type XmrOrder = NonNullable<ReturnType<PaymentAgent['get']>>;
+type Scanner = Parameters<typeof reconcilePaidOrders>[0];
+
 test('accepts a wallet whose primary and order addresses match the ledger', async () => {
-  const orders = new Map([[ID, { id: ID, address: ADDRESS, index: 4 } as any]]);
+  const orders = new Map([
+    [
+      ID,
+      { id: ID, address: ADDRESS, index: 4, amount: '0.01', status: 'pending' },
+    ],
+  ]);
   const scanner = {
     addressAt: async (index: number) => (index === 0 ? PRIMARY : ADDRESS),
   };
@@ -33,7 +42,12 @@ test('rejects a wallet primary address that differs from configuration', async (
 });
 
 test('rejects a ledger index missing from the opened wallet', async () => {
-  const orders = new Map([[ID, { id: ID, address: ADDRESS, index: 4 } as any]]);
+  const orders = new Map([
+    [
+      ID,
+      { id: ID, address: ADDRESS, index: 4, amount: '0.01', status: 'pending' },
+    ],
+  ]);
   const scanner = {
     addressAt: async (index: number) => (index === 0 ? PRIMARY : undefined),
   };
@@ -44,7 +58,12 @@ test('rejects a ledger index missing from the opened wallet', async () => {
 });
 
 test('rejects an order address that differs from its wallet index', async () => {
-  const orders = new Map([[ID, { id: ID, address: ADDRESS, index: 4 } as any]]);
+  const orders = new Map([
+    [
+      ID,
+      { id: ID, address: ADDRESS, index: 4, amount: '0.01', status: 'pending' },
+    ],
+  ]);
   const scanner = {
     addressAt: async (index: number) => (index === 0 ? PRIMARY : PRIMARY),
   };
@@ -107,11 +126,12 @@ test('poller shutdown waits until its current scanner tick finishes', async () =
 });
 
 test('reconciles settled orders from the fresh scanner snapshot after a reorg', async () => {
-  const orders = new Map<string, any>([
+  const orders = new Map<string, XmrOrder>([
     [
       ID,
       {
         id: ID,
+        address: ADDRESS,
         index: 4,
         birthdayHeight: 100,
         amount: '0.01',
@@ -127,6 +147,7 @@ test('reconciles settled orders from the fresh scanner snapshot after a reorg', 
       '5f14af55-aacc-4660-8658-58dc000247e6',
       {
         id: '5f14af55-aacc-4660-8658-58dc000247e6',
+        address: ADDRESS,
         index: 5,
         birthdayHeight: 100,
         amount: '0.02',
@@ -171,17 +192,18 @@ test('reconciles settled orders from the fresh scanner snapshot after a reorg', 
       },
     ],
   ]);
-  let query: any;
+  let query: Parameters<Scanner['checkOrders']> | undefined;
   const scanner = {
-    async checkOrders(list: any[], options: any) {
-      query = { list, options };
+    async checkOrders(...args: Parameters<Scanner['checkOrders']>) {
+      query = args;
       return snapshots;
     },
   };
 
   expect(await reconcilePaidOrders(scanner, orders, 10)).toBe(true);
-  expect(query.list).toHaveLength(2);
-  expect(query.options).toEqual({
+  assert.ok(query);
+  expect(query[0]).toHaveLength(2);
+  expect(query[1]).toEqual({
     minConfirmations: 10,
     toleranceXmr: '0',
     sync: false,
@@ -355,7 +377,7 @@ test('GET fails closed when a paid-order refresh fails', async () => {
 });
 
 test('serializes same-id creates and returns the durable address on a lost-response retry', async () => {
-  const orders = new Map<string, any>();
+  const orders = new Map<string, XmrOrder>();
   const entered = deferred();
   const release = deferred();
   let creates = 0;
@@ -416,7 +438,7 @@ test('serializes same-id creates and returns the durable address on a lost-respo
 });
 
 test('rejects reusing an id for a different amount without allocating another address', async () => {
-  const orders = new Map<string, any>();
+  const orders = new Map<string, XmrOrder>();
   let creates = 0;
   const agent = {
     get: (id: string) => orders.get(id) ?? null,
@@ -486,7 +508,7 @@ test('GET exposes the existing address with the donation status fields', async (
 });
 
 test('fails closed after wallet or order persistence fails', async () => {
-  const orders = new Map<string, any>();
+  const orders = new Map<string, XmrOrder>();
   let creates = 0;
   const agent = {
     get: (id: string) => orders.get(id) ?? null,
@@ -539,10 +561,10 @@ test('fails closed after wallet or order persistence fails', async () => {
   expect((await ledgerFailure(request(crypto.randomUUID()))).status).toBe(503);
 });
 
-test.skipIf(!Bun.env.TEST_DATABASE_URL)(
+test.skipIf(!Bun.env['TEST_DATABASE_URL'])(
   'fails closed permanently when the reserved PostgreSQL lock backend is terminated',
   async () => {
-    const databaseUrl = Bun.env.TEST_DATABASE_URL!;
+    const databaseUrl = Bun.env['TEST_DATABASE_URL']!;
     const firstSql = new Bun.SQL(databaseUrl);
     const secondSql = new Bun.SQL(databaseUrl);
     const first = await firstSql.reserve();

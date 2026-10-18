@@ -67,7 +67,8 @@ test('Spotify refreshes recent tracks, playback timing and the empty player', as
   page,
 }) => {
   const startedAt = Date.UTC(2026, 9, 15, 10, 0);
-  await page.clock.install({ time: new Date(startedAt + 65_000) });
+  await page.clock.install({ time: new Date(startedAt + 64_000) });
+  await page.clock.pauseAt(new Date(startedAt + 65_000));
   let empty = false;
   await page.route('**/spotify.json', (route) =>
     route.fulfill({

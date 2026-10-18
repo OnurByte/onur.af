@@ -33,7 +33,7 @@ GitHub repo metrikleri, `pushed_at`, varsayılan dal ve lisans durumu GitHub RES
 
 ### 3. errbufferoverfl/garden.errbufferoverfl.me — içerik ve kişisel egemenlik bağı için incelendi
 
-[Depo](https://github.com/errbufferoverfl/garden.errbufferoverfl.me) · [README](https://github.com/errbufferoverfl/garden.errbufferoverfl.me/blob/hugo/README.md) · [anasayfa kaynağı](https://github.com/errbufferoverfl/garden.errbufferoverfl.me/blob/hugo/index.qmd) · [lisans dosyası](https://github.com/errbufferoverfl/garden.errbufferoverfl.me/blob/hugo/LICENCE.md) · [GitHub repo verisi](https://api.github.com/repos/errbufferoverfl/garden.errbufferoverfl.me)
+[Depo](https://github.com/errbufferoverfl/garden.errbufferoverfl.me) · [README](https://github.com/errbufferoverfl/garden.errbufferoverfl.me/blob/main/README.md) · [anasayfa kaynağı](https://github.com/errbufferoverfl/garden.errbufferoverfl.me/blob/main/index.qmd) · [lisans dosyası](https://github.com/errbufferoverfl/garden.errbufferoverfl.me/blob/main/license.qmd) · [GitHub repo verisi](https://api.github.com/repos/errbufferoverfl/garden.errbufferoverfl.me)
 
 - **Yıldız / lisans / son push:** 11 yıldız; GitHub API lisansı `NOASSERTION` olarak gösteriyor, depodaki `LICENCE.md` CC BY-SA 4.0 metnini içeriyor; 14 Ekim 2024.
 - **Doğrulama:** README, Quarto ve Obsidian temelli bir dijital bahçeyi anlatıyor; yarım kalmış notlar ve fikirlerin zaman içinde gelişmesini merkeze alıyor. `index.qmd` yazarın kendini tanıtmasını; gözetim kapitalizmine karşı duruş, sürdürülebilir yaşam ve peer-to-peer teknolojiler gibi gerçek ilgi alanlarıyla bağlıyor. Aynı ana sayfa profil bağlantıları ve sosyal ikonlar sunuyor; `about.template: trestles` seçimi hazır Quarto görünümüne dayanıyor.

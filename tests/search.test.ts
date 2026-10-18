@@ -6,14 +6,18 @@ import pages from '../src/content/public-pages.json';
 test('search indexes public descriptions, never checkout data', () => {
   expect(searchPages.map((page) => page.url)).toEqual([
     '/',
-    '/donate',
+    '/contribute',
     '/rss',
     '/pgp',
     '/log',
   ]);
   for (const page of searchPages) {
     const preview = publicPreview(page.url)!;
-    expect(page.meta.description).toBe(preview.description);
+    if (page.url === '/') {
+      expect(preview.description).toBe('');
+    } else {
+      expect(page.meta.description).toBe(preview.description);
+    }
     expect(page.meta.title).toBe(preview.title);
   }
 });
@@ -46,11 +50,13 @@ test('Log entries are searchable by title, summary and the latest published body
         {
           version: 1,
           publishedAt: '2026-10-14T09:00:00Z',
+          tags: ['development'],
           body: 'Outdated sentence',
         },
         {
           version: 2,
           publishedAt: '2026-10-15T09:00:00Z',
+          tags: ['development'],
           body: 'Unique searchable sentence',
         },
       ],

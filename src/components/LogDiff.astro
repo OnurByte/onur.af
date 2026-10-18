@@ -1,0 +1,69 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { logStyles } from '../styles/log';
+import { type LogEntry } from '../portfolio/log';
+import { logRevisionDiff } from '../portfolio/log-diff';
+interface Props {
+  entry: LogEntry;
+  version: number;
+}
+const { entry, version } = Astro.props;
+const diff = logRevisionDiff(entry, version);
+const lines = diff.hunks.flatMap((hunk) => [
+  {
+    kind: 'range',
+    text: `@@ -${hunk.oldStart},${hunk.oldLines} +${hunk.newStart},${hunk.newLines} @@`,
+  },
+  ...hunk.lines.map((text) => ({
+    kind: text.startsWith('+')
+      ? 'added'
+      : text.startsWith('-')
+        ? 'removed'
+        : 'context',
+    text,
+  })),
+]);
+---
+
+{diff.hunks.length > 0 && (
+  <details class="log-diff">
+    <summary {...stylex.attrs(logStyles.summary)}>
+      Changes in v{version} · {diff.added} added, {diff.removed} removed
+    </summary>
+    <pre
+      tabindex="0"
+      aria-label={`Changes from version ${version - 1} to ${version}`}
+    ><code>{lines.map((line) => <span class={`diff-${line.kind}`}>{line.text}{'\n'}</span>)}</code></pre>
+  </details>
+)}
+<style>
+  .log-diff {
+    margin-top: 16px;
+  }
+  summary {
+    cursor: pointer;
+    padding-block: 8px;
+  }
+  pre {
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+  }
+  code > span {
+    white-space: pre;
+  }
+  .diff-range {
+    color: var(--muted);
+  }
+  .diff-added {
+    font-weight: 700;
+  }
+  .diff-removed {
+    text-decoration: line-through;
+  }
+</style>

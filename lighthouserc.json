@@ -7,7 +7,7 @@
         "http://portfolio.example:14324/",
         "http://portfolio.example:14324/rss",
         "http://portfolio.example:14324/pgp",
-        "http://portfolio.example:14324/donate"
+        "http://portfolio.example:14324/contribute"
       ],
       "numberOfRuns": 1,
       "settings": {

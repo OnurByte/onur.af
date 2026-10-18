@@ -3,7 +3,21 @@ import * as stylex from '@stylexjs/stylex';
 import { shell } from '../styles/shell';
 
 const icons = {
+  connectMail: { filename: 'connect-mail.svg', width: 24, height: 24 },
+  connectGithub: { filename: 'github.svg', width: 24, height: 24 },
+  connectKey: { filename: 'search-key.svg', width: 24, height: 24 },
+  xmpp: { filename: 'xmpp.svg', width: 24, height: 24 },
+  shareMark: { filename: 'share-mark.svg', width: 16, height: 16 },
+  shareX: { filename: 'x.svg', width: 24, height: 24 },
+  shareRss: { filename: 'rss.svg', width: 24, height: 24 },
+  discord: { filename: 'discord.svg', width: 24, height: 24 },
+  reddit: { filename: 'reddit.svg', width: 24, height: 24 },
+  telegram: { filename: 'telegram.svg', width: 24, height: 24 },
+  share: { filename: 'share.svg', width: 24, height: 24 },
+  shareLink: { filename: 'share-link.svg', width: 24, height: 24 },
+  shareMail: { filename: 'share-mail.svg', width: 24, height: 24 },
   proof: { filename: 'proof.svg', width: 16, height: 16 },
+  shift: { filename: 'shift.svg', width: 16, height: 16 },
   onur: { filename: 'onur.svg', width: 56, height: 56 },
   tor: { filename: 'tor.svg', width: 32, height: 32 },
   i2p: { filename: 'i2p.svg', width: 64, height: 32 },
@@ -38,9 +52,20 @@ const { filename, width, height } = icons[name];
   {...stylex.attrs(
     shell.icon,
     shell.monochrome,
+    (name.startsWith('share') ||
+      name === 'connectMail' ||
+      name === 'connectGithub' ||
+      name === 'connectKey' ||
+      name === 'xmpp' ||
+      name === 'discord' ||
+      name === 'reddit' ||
+      name === 'telegram') &&
+      shell.shareIcon,
     (name === 'x' || name === 'github' || name === 'spotify') &&
       shell.providerIcon,
-    (name === 'proof' ||
+    (name === 'shareMark' ||
+      name === 'proof' ||
+      name === 'shift' ||
       name === 'rust' ||
       name === 'typescript' ||
       name === 'javascript' ||

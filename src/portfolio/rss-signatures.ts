@@ -2,8 +2,14 @@ import { createHash } from 'node:crypto';
 import { createMessage, enums, readKey, readSignature, verify } from 'openpgp';
 import { z } from 'astro/zod';
 import { validSiteUrl } from './seo';
+import {
+  resolveLegacyRootCertificate,
+  resolveTrustedCertificate,
+  type KeyTrust,
+} from './key-history';
+import { verifyBytes } from './proofs';
 
-export const rssSignatureSchema = z
+const legacyRssSignatureSchema = z
   .object({
     version: z.literal(1),
     origin: z
@@ -19,7 +25,49 @@ export const rssSignatureSchema = z
       .startsWith('-----BEGIN PGP SIGNATURE-----'),
   })
   .strict();
-export type RssSignatureArtifact = z.infer<typeof rssSignatureSchema>;
+const rssAuthorizationBodySchema = z
+  .object({
+    domain: z.literal('onurbyte-rss-signature-authorization-v1'),
+    publicationSequence: z.number().int().positive(),
+    fingerprint: z.string().regex(/^[A-F0-9]{40,64}$/),
+    xmlSha256: z.string().regex(/^[a-f0-9]{64}$/),
+    signatureSha256: z.string().regex(/^[a-f0-9]{64}$/),
+  })
+  .strict();
+const versionedRssSignatureSchema = z
+  .object({
+    version: z.literal(2),
+    origin: z
+      .string()
+      .refine(
+        (value) => validSiteUrl(value) === value,
+        'Use a canonical public origin',
+      ),
+    sha256: z.string().regex(/^[a-f0-9]{64}$/),
+    signature: z
+      .string()
+      .max(32768)
+      .startsWith('-----BEGIN PGP SIGNATURE-----'),
+    authorization: rssAuthorizationBodySchema
+      .extend({
+        signature: z
+          .string()
+          .max(32768)
+          .startsWith('-----BEGIN PGP SIGNATURE-----'),
+      })
+      .strict(),
+  })
+  .strict();
+export const rssSignatureSchema = z.union([
+  legacyRssSignatureSchema,
+  versionedRssSignatureSchema,
+]);
+export function canonicalRssAuthorization(input: unknown): string {
+  const candidate = input as Record<string, unknown>;
+  const { signature: _signature, ...payload } = candidate;
+  const body = rssAuthorizationBodySchema.parse(payload);
+  return `${JSON.stringify(body, null, 2)}\n`;
+}
 export type VerifiedRssSignature =
   | { status: 'unsigned' }
   | {
@@ -27,6 +75,7 @@ export type VerifiedRssSignature =
       signature: string;
       fingerprint: string;
       origin: string;
+      publicationSequence?: number;
     };
 export const rssDigest = (xml: string): string =>
   createHash('sha256').update(xml, 'utf8').digest('hex');
@@ -34,13 +83,49 @@ export const rssDigest = (xml: string): string =>
 export async function verifyRssSignature(
   xml: string,
   input: unknown,
-  publicKey: string,
+  publicKey: string | KeyTrust,
 ): Promise<VerifiedRssSignature> {
   if (input === null) return { status: 'unsigned' };
   const artifact = rssSignatureSchema.parse(input);
   if (rssDigest(xml) !== artifact.sha256)
     throw new Error('RSS changed since signing; sign it again');
-  const key = await readKey({ armoredKey: publicKey });
+  let certificate: string;
+  let publicationSequence: number | undefined;
+  if (artifact.version === 2) {
+    const authorization = artifact.authorization;
+    if (
+      authorization.xmlSha256 !== artifact.sha256 ||
+      authorization.signatureSha256 !== rssDigest(artifact.signature)
+    )
+      throw new Error(
+        'RSS authorization does not bind its exact signature bytes',
+      );
+    const body = canonicalRssAuthorization(authorization);
+    const fingerprint = await verifyBytes(
+      body,
+      authorization.signature,
+      typeof publicKey === 'string'
+        ? publicKey
+        : { ...publicKey, sequence: authorization.publicationSequence },
+    );
+    if (fingerprint !== authorization.fingerprint)
+      throw new Error('RSS authorization signer fingerprint mismatch');
+    publicationSequence = authorization.publicationSequence;
+    certificate =
+      typeof publicKey === 'string'
+        ? publicKey
+        : (
+            await resolveTrustedCertificate({
+              ...publicKey,
+              sequence: publicationSequence,
+            })
+          ).certificate;
+  } else {
+    certificate = await resolveLegacyRootCertificate(publicKey);
+  }
+  const key = await readKey({
+    armoredKey: certificate,
+  });
   const detached = await readSignature({
     armoredSignature: artifact.signature,
   });
@@ -68,5 +153,6 @@ export async function verifyRssSignature(
     signature: artifact.signature,
     fingerprint: key.getFingerprint().toUpperCase(),
     origin: artifact.origin,
+    ...(publicationSequence === undefined ? {} : { publicationSequence }),
   };
 }

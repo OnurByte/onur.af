@@ -18,7 +18,7 @@ const gateway = Bun.serve({
         '75a4WYbeKsdGjdFHqxpgNMSi3oqb1z9yx9m6qvNt3ZbTBpoFnD7EqicUZtCVsQoNPKXF5cMcTLJaTCkYiZVzddby9zc7bFV',
       status: {
         status:
-          state === 'waiting'
+          state === 'waiting' || state === 'syncing'
             ? 'pending'
             : state === 'confirming'
               ? 'unconfirmed'

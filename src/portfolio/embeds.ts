@@ -23,7 +23,7 @@ export const trackItemSchema = z
     playedAt: z.iso.datetime({ offset: true }).optional(),
   })
   .strict();
-export const embedItemSchema = z.discriminatedUnion('kind', [
+const embedItemSchema = z.discriminatedUnion('kind', [
   trackItemSchema,
   z
     .object({

@@ -9,8 +9,8 @@ export const shell = stylex.create({
     backgroundColor: 'var(--background)',
     color: 'var(--text)',
     fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-    fontSize: 16,
-    lineHeight: 1.6,
+    fontSize: 'var(--font-body)',
+    lineHeight: 'var(--leading-body)',
     fontSynthesis: 'none',
   },
   container: {
@@ -31,7 +31,7 @@ export const shell = stylex.create({
     gap: {
       default: 4,
       '@media (min-width: 401px)': 16,
-      '@media (min-width: 621px)': 20,
+      '@media (min-width: 621px)': 16,
     },
   },
   navigationActions: {
@@ -52,11 +52,11 @@ export const shell = stylex.create({
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: 'var(--border)',
-    borderRadius: 4,
+    borderRadius: 'var(--radius-control)',
     fontSize: {
       default: 14,
       '@media (min-width: 361px)': 16,
-      '@media (min-width: 621px)': 20,
+      '@media (min-width: 621px)': 16,
     },
     fontWeight: 500,
   },
@@ -73,8 +73,8 @@ export const shell = stylex.create({
   footer: {
     paddingTop: 20,
     paddingBottom: 28,
-    fontSize: { default: 16, '@media (min-width: 621px)': 20 },
-    fontWeight: 700,
+    fontSize: 'var(--font-small)',
+    fontWeight: 500,
   },
   footerNavigation: {
     display: 'grid',
@@ -101,7 +101,7 @@ export const shell = stylex.create({
     minWidth: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 4,
+    borderRadius: 'var(--radius-control)',
     gap: 8,
   },
   unavailable: { cursor: 'default', color: 'var(--muted)', opacity: 0.45 },
@@ -125,6 +125,7 @@ export const shell = stylex.create({
     objectFit: 'contain',
     boxSizing: 'border-box',
   },
+  shareIcon: { width: 24, height: 24, objectFit: 'contain' },
   smallIcon: { width: 16, height: 16 },
   brandIcon: {
     width: { default: 48, '@media (min-width: 361px)': 56 },

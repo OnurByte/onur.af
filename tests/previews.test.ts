@@ -1,5 +1,9 @@
 import { expect, test } from 'bun:test';
-import { mottos, publicPreview } from '../src/portfolio/previews';
+import {
+  mottos,
+  publicPreview,
+  publicPreviewByKey,
+} from '../src/portfolio/previews';
 import { publicPaths, siteDescription } from '../src/portfolio/seo';
 import pages from '../src/content/public-pages.json';
 import { publicPageSchema } from '../src/content/schema';
@@ -9,8 +13,8 @@ test('public pages have distinct previews and utility descriptions', () => {
   for (const path of publicPaths) {
     const preview = publicPreview(path);
     expect(preview).toBeDefined();
-    if (path === '/') expect(preview!.description).toBe('');
-    else expect(preview!.description.trim().length).toBeGreaterThan(0);
+    if (path !== '/')
+      expect(preview!.description.trim().length).toBeGreaterThan(0);
     expect(preview!.description.length).toBeLessThan(160);
     expect(preview!.title.length).toBeGreaterThan(0);
     expect(keys.has(preview!.key)).toBe(false);
@@ -23,7 +27,7 @@ test('preview descriptions use the published page intros', () => {
   expect(publicPreview('/rss')!.description).toBe(
     'Follow new writing via RSS.',
   );
-  expect(publicPreview('/donate')!.description).toBe(
+  expect(publicPreview('/contribute')!.description).toBe(
     'Support my work with Monero.',
   );
   expect(publicPreview('/pgp')!.description).toBe(
@@ -55,6 +59,10 @@ test('public page collection matches the published routes and validates metadata
   }
   expect(publicPreview('/')!.description).toBe(siteDescription);
   expect(siteDescription).toBe('');
+  expect(publicPreviewByKey('home')!.description).toBe('');
+  expect(pages.find((page) => page.id === '/')!.description).toBe(
+    'What I make.',
+  );
   expect(
     publicPageSchema.safeParse({ ...pages[1], description: '' }).success,
   ).toBe(false);

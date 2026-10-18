@@ -1,26 +1,18 @@
+import { moneroAddress, paymentStatuses, type PaymentStatus } from './protocol';
 import { formatXmrAmount, parseXmrAmount, parseXmrAmountOrZero } from './money';
 
-export type AgentPaymentStatus =
-  | 'pending'
-  | 'mempool'
-  | 'unconfirmed'
-  | 'partial'
-  | 'underpaid'
-  | 'locked'
-  | 'paid';
-
-export interface AgentOrder {
+interface AgentOrder {
   id: string;
   address: string;
   amount: string;
-  status: AgentPaymentStatus;
+  status: PaymentStatus;
   birthdayHeight?: number | undefined;
 }
 
-export interface AgentStatus {
+interface AgentStatus {
   id: string;
   paid: boolean;
-  status: AgentPaymentStatus;
+  status: PaymentStatus;
   amount: string;
   receivedXmr: number;
   pendingXmr?: number | undefined;
@@ -39,17 +31,6 @@ export interface DonationAgentClient {
   recover(id: string, amount: string): Promise<AgentOrder>;
   status(id: string): Promise<AgentStatus>;
 }
-
-const PAYMENT_STATUSES = new Set<AgentPaymentStatus>([
-  'pending',
-  'mempool',
-  'unconfirmed',
-  'partial',
-  'underpaid',
-  'locked',
-  'paid',
-]);
-const MONERO_ADDRESS = /^[45789AB][1-9A-HJ-NP-Za-km-z]{94}$/;
 
 function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value))
@@ -74,14 +55,11 @@ function finiteNumber(
   return value;
 }
 
-function paymentStatus(value: unknown): AgentPaymentStatus {
-  if (
-    typeof value !== 'string' ||
-    !PAYMENT_STATUSES.has(value as AgentPaymentStatus)
-  ) {
+function paymentStatus(value: unknown): PaymentStatus {
+  if (typeof value !== 'string' || !paymentStatuses.has(value)) {
     throw new Error('invalid agent response: status');
   }
-  return value as AgentPaymentStatus;
+  return value as PaymentStatus;
 }
 
 function validateId(value: unknown, expected: string): string {
@@ -98,12 +76,12 @@ function agentOrder(
   expectedAmount: string,
 ): AgentOrder {
   const raw = record(value);
-  const resultId = validateId(raw.id, id);
-  if (typeof raw.address !== 'string' || !MONERO_ADDRESS.test(raw.address))
+  const resultId = validateId(raw['id'], id);
+  if (typeof raw['address'] !== 'string' || !moneroAddress.test(raw['address']))
     throw new Error('invalid agent response: address');
   if (
-    typeof raw.amount !== 'string' ||
-    formatXmrAmount(parseXmrAmount(raw.amount)) !== expectedAmount
+    typeof raw['amount'] !== 'string' ||
+    formatXmrAmount(parseXmrAmount(raw['amount'])) !== expectedAmount
   ) {
     throw new Error(
       'agent response amount mismatch; refusing to use this donation address',
@@ -111,10 +89,10 @@ function agentOrder(
   }
   return {
     id: resultId,
-    address: raw.address,
+    address: raw['address'],
     amount: expectedAmount,
-    status: paymentStatus(raw.status),
-    birthdayHeight: finiteNumber(raw.birthdayHeight, 'birthdayHeight', {
+    status: paymentStatus(raw['status']),
+    birthdayHeight: finiteNumber(raw['birthdayHeight'], 'birthdayHeight', {
       optional: true,
       integer: true,
     }),
@@ -201,23 +179,23 @@ export function createDonationAgentClient({
     },
     async status(id) {
       const raw = record(await request(`/order/${encodeURIComponent(id)}`));
-      const resultId = validateId(raw.id, id);
-      if (typeof raw.paid !== 'boolean')
+      const resultId = validateId(raw['id'], id);
+      if (typeof raw['paid'] !== 'boolean')
         throw new Error('invalid agent response: paid');
-      const status = paymentStatus(raw.status);
-      if (raw.paid !== (status === 'paid'))
+      const status = paymentStatus(raw['status']);
+      if (raw['paid'] !== (status === 'paid'))
         throw new Error('invalid agent response: paid/status mismatch');
-      if (typeof raw.amount !== 'string')
+      if (typeof raw['amount'] !== 'string')
         throw new Error('invalid agent response: amount');
-      parseXmrAmount(raw.amount);
-      if (raw.syncing !== undefined && typeof raw.syncing !== 'boolean')
+      parseXmrAmount(raw['amount']);
+      if (raw['syncing'] !== undefined && typeof raw['syncing'] !== 'boolean')
         throw new Error('invalid agent response: syncing');
-      if (raw.overpaid !== undefined && typeof raw.overpaid !== 'boolean')
+      if (raw['overpaid'] !== undefined && typeof raw['overpaid'] !== 'boolean')
         throw new Error('invalid agent response: overpaid');
       if (
-        raw.txids !== undefined &&
-        (!Array.isArray(raw.txids) ||
-          raw.txids.some((txid) => typeof txid !== 'string'))
+        raw['txids'] !== undefined &&
+        (!Array.isArray(raw['txids']) ||
+          raw['txids'].some((txid) => typeof txid !== 'string'))
       ) {
         throw new Error('invalid agent response: txids');
       }
@@ -230,27 +208,29 @@ export function createDonationAgentClient({
       }
       return {
         id: resultId,
-        paid: raw.paid,
+        paid: raw['paid'],
         status,
-        amount: raw.amount,
-        receivedXmr: finiteNumber(raw.receivedXmr, 'receivedXmr')!,
-        pendingXmr: finiteNumber(raw.pendingXmr, 'pendingXmr', {
+        amount: raw['amount'],
+        receivedXmr: finiteNumber(raw['receivedXmr'], 'receivedXmr')!,
+        pendingXmr: finiteNumber(raw['pendingXmr'], 'pendingXmr', {
           optional: true,
         }),
-        lockedXmr: finiteNumber(raw.lockedXmr, 'lockedXmr', { optional: true }),
-        shortfallXmr: raw.shortfallXmr as string | undefined,
-        overpaid: raw.overpaid as boolean | undefined,
-        overpaidXmr: raw.overpaidXmr as string | undefined,
-        confirmations: finiteNumber(raw.confirmations, 'confirmations', {
+        lockedXmr: finiteNumber(raw['lockedXmr'], 'lockedXmr', {
+          optional: true,
+        }),
+        shortfallXmr: raw['shortfallXmr'] as string | undefined,
+        overpaid: raw['overpaid'] as boolean | undefined,
+        overpaidXmr: raw['overpaidXmr'] as string | undefined,
+        confirmations: finiteNumber(raw['confirmations'], 'confirmations', {
           integer: true,
         })!,
         minConfirmations: finiteNumber(
-          raw.minConfirmations,
+          raw['minConfirmations'],
           'minConfirmations',
           { optional: true, integer: true },
         ),
-        syncing: raw.syncing as boolean | undefined,
-        txids: raw.txids as string[] | undefined,
+        syncing: raw['syncing'] as boolean | undefined,
+        txids: raw['txids'] as string[] | undefined,
       };
     },
   };

@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readJsonFile } from '../server/json-file';
 import { resolve } from 'node:path';
 import ots from 'opentimestamps';
 import { z } from 'astro/zod';
@@ -6,6 +6,10 @@ import { logEntries, revisionMarkdown, type LogEntry } from './log';
 import { digest, verifyLogSignatures } from './log-signatures';
 import rawTimestamps from '../content/log-timestamps.json' with { type: 'json' };
 import rawSignatures from '../content/log-signatures.json' with { type: 'json' };
+import rawPublications from '../content/log-publications.json' with { type: 'json' };
+import { verifyLogPublicationChain } from './log-publications';
+import { revisionPublicationSequences } from './log-signatures';
+import type { KeyTrust } from './key-history';
 
 const schema = z.record(
   z.string().regex(/^[a-z0-9][a-z0-9-]*-v[1-9][0-9]*$/),
@@ -34,9 +38,15 @@ export async function validateLogTimestamps(
   entries: readonly LogEntry[],
   input: unknown,
   signatures: unknown,
-  publicKey: string,
+  publicKey: string | KeyTrust,
+  publicationSequenceByRevision: Readonly<Record<string, number>> = {},
 ): Promise<Record<string, LogTimestamp>> {
-  const signed = await verifyLogSignatures(entries, signatures, publicKey);
+  const signed = await verifyLogSignatures(
+    entries,
+    signatures,
+    publicKey,
+    publicationSequenceByRevision,
+  );
   const artifacts = schema.parse(input);
   const output: Record<string, LogTimestamp> = {};
   for (const [id, artifact] of Object.entries(artifacts)) {
@@ -117,15 +127,15 @@ export async function verifyLogTimestampBitcoin(
   return { ...unverified, status: 'unverified' };
 }
 export async function readLogTimestampStore(path?: string): Promise<unknown> {
-  const configured = path ?? process.env.PORTFOLIO_TIMESTAMP_STORE;
+  const configured = path ?? process.env['PORTFOLIO_TIMESTAMP_STORE'];
   const source =
     configured ??
-    (process.env.VERCEL
+    (process.env['VERCEL']
       ? undefined
       : resolve('src/content/log-timestamps.json'));
   if (!source) return rawTimestamps;
   try {
-    return JSON.parse(await readFile(source, 'utf8'));
+    return await readJsonFile(source);
   } catch (error) {
     if (
       !configured &&
@@ -139,13 +149,19 @@ export async function readLogTimestampStore(path?: string): Promise<unknown> {
 }
 
 export async function getLogTimestamps(
-  publicKey: string,
+  publicKey: string | KeyTrust,
 ): Promise<Record<string, LogTimestamp>> {
+  const publications = await verifyLogPublicationChain(
+    rawPublications,
+    publicKey,
+  );
+  const sequences = revisionPublicationSequences(publications, logEntries);
   const records = await validateLogTimestamps(
     logEntries,
     await readLogTimestampStore(),
     rawSignatures,
     publicKey,
+    sequences,
   );
   return Object.fromEntries(
     await Promise.all(

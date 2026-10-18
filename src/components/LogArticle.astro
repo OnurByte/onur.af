@@ -3,59 +3,102 @@ import * as stylex from '@stylexjs/stylex';
 import { styles } from '../styles/pages';
 import { logStyles } from '../styles/log';
 import {
+  logMetadata,
   logProofUrl,
   logUrl,
   readingTime,
   type LogEntry,
 } from '../portfolio/log';
 import { getLogSignatures } from '../portfolio/verified-proofs';
+import { buildContentIndex } from '../portfolio/content-index';
+import { logConnections } from '../portfolio/log-connections';
+import { siteOrigin } from '../portfolio/seo';
+import LogShare from './LogShare.astro';
+import LogContents from './LogContents.astro';
+import { renderLogContent } from '../portfolio/log-markdown';
+import LogDiff from './LogDiff.astro';
 import LogRevision from './LogRevision.astro';
+import LogTags from './LogTags.astro';
 import ProofBadge from './ProofBadge.astro';
+import LogSigil from './LogSigil.astro';
 interface Props {
   entry: LogEntry;
 }
 const { entry } = Astro.props;
+const metadata = logMetadata(entry);
 const signatures = await getLogSignatures();
 const latest = entry.revisions.at(-1)!;
+const headings = renderLogContent(
+  latest.body,
+  '',
+  metadata.sources.length,
+).headings;
+const origin = siteOrigin(Astro.site);
+const references = buildContentIndex([entry], origin).documents[0]!
+  .repositories;
+const connections = logConnections(entry, undefined, origin);
 const date = (value: string) => new Date(value).toISOString().slice(0, 10);
 ---
 
-<article id={entry.id} class="h-entry" {...stylex.attrs(logStyles.article)}>
-  <h1 {...stylex.attrs(logStyles.title, styles.heading)}>
-    <a class="u-url p-name" href={logUrl(entry)}>
-      {entry.title}
-    </a>
-  </h1>
+<article id={entry.id} class="h-entry" data-log-version={latest.version}>
+  <link
+    class="u-url"
+    href={origin ? new URL(logUrl(entry), origin).href : logUrl(entry)}
+  />
+  <header class="log-heading">
+    <h1 {...stylex.attrs(logStyles.title, styles.heading)}>
+      <span class="p-name">{metadata.title}</span>
+    </h1>
+    <div class="log-heading-sigil">
+      <LogSigil id={entry.id} />
+    </div>
+  </header>
   <div {...stylex.attrs(logStyles.meta)}>
-    <time
-      class="dt-published"
-      datetime={entry.revisions[0]!.publishedAt}
-      title={entry.revisions[0]!.publishedAt}
+    <a
+      href={`${logProofUrl(entry, entry.revisions[0]!.version)}#timestamps`}
+      aria-label={`Timestamp proof for ${date(entry.revisions[0]!.publishedAt)}`}
     >
-      {date(entry.revisions[0]!.publishedAt)}
-    </time>
+      <time
+        class="dt-published"
+        datetime={entry.revisions[0]!.publishedAt}
+        title={entry.revisions[0]!.publishedAt}
+      >
+        {date(entry.revisions[0]!.publishedAt)}
+      </time>
+    </a>
     {signatures[`${entry.id}-v${latest.version}`] && (
       <ProofBadge target="log" href={logProofUrl(entry)} label="Verified" />
     )}
+    <span class="p-author h-card">
+      By{' '}
+      <a class="p-name u-url" href={origin ? `${origin}/` : '/'}>
+        Onur
+      </a>
+    </span>
     <span>{readingTime(latest.body)}</span>
     {latest.version > 1 && (
-      <time
-        class="dt-updated"
-        datetime={latest.publishedAt}
-        title={`Updated ${latest.publishedAt}`}
+      <a
+        href={`${logProofUrl(entry, latest.version)}#timestamps`}
+        aria-label={`Timestamp proof for revision ${latest.version}, ${date(latest.publishedAt)}`}
       >
-        v{latest.version} · {date(latest.publishedAt)}
-      </time>
+        <time
+          class="dt-updated"
+          datetime={latest.publishedAt}
+          title={`Updated ${latest.publishedAt}`}
+        >
+          v{latest.version} · {date(latest.publishedAt)}
+        </time>
+      </a>
     )}
+    <LogShare entry={entry} />
   </div>
-  <LogRevision
-    entry={entry}
-    version={latest.version}
-    signed={Boolean(signatures[`${entry.id}-v${latest.version}`])}
-  />
+  <LogTags tags={metadata.tags} />
+  <LogContents headings={headings} sources={metadata.sources.length > 0} />
+  <LogRevision entry={entry} version={latest.version} />
   {latest.version > 1 && (
     <details {...stylex.attrs(logStyles.details)}>
       <summary {...stylex.attrs(logStyles.summary)}>History</summary>
+      <LogDiff entry={entry} version={latest.version} />
       {entry.revisions
         .slice(0, -1)
         .toReversed()
@@ -64,7 +107,7 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
             id={`${entry.id}-v${revision.version}`}
             {...stylex.attrs(logStyles.proof)}
           >
-            <h2>
+            <h2 {...stylex.attrs(logStyles.proofTitle)}>
               v{revision.version} ·{' '}
               <time
                 datetime={revision.publishedAt}
@@ -73,14 +116,108 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
                 {date(revision.publishedAt)}
               </time>
             </h2>
-            <LogRevision
-              entry={entry}
-              version={revision.version}
-              archived
-              signed={Boolean(signatures[`${entry.id}-v${revision.version}`])}
-            />
+            <LogDiff entry={entry} version={revision.version} />
+            <LogRevision entry={entry} version={revision.version} archived />
+            {signatures[`${entry.id}-v${revision.version}`] && (
+              <div {...stylex.attrs(logStyles.links)}>
+                <ProofBadge
+                  target="log"
+                  href={logProofUrl(entry, revision.version)}
+                  label="Verified"
+                />
+              </div>
+            )}
           </section>
         ))}
     </details>
   )}
+  {references.length > 0 && (
+    <nav class="log-connections" aria-label="Referenced code">
+      <h2>Referenced code</h2>
+      <ul>
+        {references.map((reference) => (
+          <li>
+            <a href={reference.url} rel="noreferrer">
+              {reference.repository}
+              {reference.commit ? ` · ${reference.commit.slice(0, 12)}` : ''}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )}
+  {connections.related.length > 0 && (
+    <nav class="log-connections" aria-label="Further reading">
+      <h2>Further reading</h2>
+      <ul>
+        {connections.related.map((related) => (
+          <li>
+            <a href={logUrl(related)}>{logMetadata(related).title}</a>
+            {'reason' in related && <p>{related.reason}</p>}
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )}
+  {connections.referencedBy.length > 0 && (
+    <nav class="log-connections" aria-label="Referenced by">
+      <h2>Referenced by</h2>
+      <ul>
+        {connections.referencedBy.map((related) => (
+          <li>
+            <a href={logUrl(related)}>{logMetadata(related).title}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )}
 </article>
+<style>
+  .h-entry {
+    max-width: var(--reading-width);
+  }
+  .log-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1.618034fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+  }
+  .log-heading h1 {
+    min-width: 0;
+    margin: 0;
+  }
+  .log-heading-sigil {
+    justify-self: end;
+    width: min(100%, 136px);
+    color: var(--text);
+    pointer-events: none;
+  }
+  @media (max-width: 480px) {
+    .log-heading {
+      grid-template-columns: minmax(0, 1fr) 64px;
+      gap: 12px;
+    }
+  }
+  @media (max-width: 1023px) {
+    .h-entry:has([data-log-contents]) {
+      max-width: min(var(--reading-width), calc(100% - 32px));
+    }
+  }
+  .log-connections {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    line-height: 1.8;
+  }
+  .log-connections h2 {
+    margin-bottom: 8px;
+    font-size: 1.125rem;
+  }
+  .log-connections a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .log-connections li + li {
+    margin-top: 8px;
+  }
+</style>

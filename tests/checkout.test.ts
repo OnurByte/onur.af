@@ -2,7 +2,7 @@ import { expect, test } from 'bun:test';
 import { publicPaths, proofPaths, logPaths } from '../src/portfolio/seo';
 import { publicPreview } from '../src/portfolio/previews';
 
-const enabled = Bun.env.TEST_CHECKOUT === '1';
+const enabled = Bun.env['TEST_CHECKOUT'] === '1';
 test.skipIf(!enabled)(
   'built SSR checkout accepts custom amounts and preserves payment URI and status',
   async () => {
@@ -106,7 +106,11 @@ test.skipIf(!enabled)(
         expect(asset.ok).toBe(true);
         expect(await asset.text()).toContain('<svg');
       }
-      expect(home).not.toContain('<svg');
+      const inlineSvgs = [...home.matchAll(/<svg\b[^>]*>/g)];
+      expect(inlineSvgs.length).toBeGreaterThan(0);
+      expect(
+        inlineSvgs.every((svg) => svg[0].includes('class="log-sigil"')),
+      ).toBe(true);
       expect([
         ...home.matchAll(/<img[^>]*data-icon="(?:onur|rss|tor|i2p)"/g),
       ]).toHaveLength(4);
@@ -151,9 +155,9 @@ test.skipIf(!enabled)(
               ?.trim(),
           ).toBe(description);
         }
-        if (path === '/') expect(page).not.toContain('name="description"');
-        else
+        if (description)
           expect(page).toContain(`name="description" content="${description}"`);
+        else expect(page).not.toContain('name="description"');
         if (path !== '/')
           expect(
             (
@@ -162,16 +166,16 @@ test.skipIf(!enabled)(
               })
             ).status,
           ).toBe(200);
-        if (path === '/') {
-          expect(page).not.toContain('property="og:description"');
-          expect(page).not.toContain('name="twitter:description"');
-        } else {
+        if (description) {
           expect(page).toContain(
             `property="og:description" content="${description}"`,
           );
           expect(page).toContain(
             `name="twitter:description" content="${description}"`,
           );
+        } else {
+          expect(page).not.toContain('property="og:description"');
+          expect(page).not.toContain('name="twitter:description"');
         }
       }
       expect(home).toContain('data-network-label="TOR"');
@@ -196,7 +200,9 @@ test.skipIf(!enabled)(
           `<loc>https://portfolio.example${path}</loc>`,
         );
       }
-      expect(sitemap).toContain('<loc>https://portfolio.example/donate</loc>');
+      expect(sitemap).toContain(
+        '<loc>https://portfolio.example/contribute</loc>',
+      );
       expect(sitemap).not.toContain(id);
       for (const removed of [
         '/identity',
@@ -232,8 +238,8 @@ test.skipIf(!enabled)(
         redirect: 'manual',
       });
       expect(response.status).toBe(303);
-      expect(response.headers.get('location')).toBe(`/donate/${id}`);
-      const checkout = await fetch(`${origin}/donate/${id}`);
+      expect(response.headers.get('location')).toBe(`/contribute/${id}`);
+      const checkout = await fetch(`${origin}/contribute/${id}`);
       const html = await checkout.text();
       expect(checkout.headers.get('cache-control')).toBe('private, no-store');
       expect(checkout.headers.get('referrer-policy')).toBe('no-referrer');
@@ -248,17 +254,17 @@ test.skipIf(!enabled)(
       expect(html).toContain('aria-label="Alternate sites and contact"');
       expect(html).toContain(address);
       expect(html).toContain(`monero:${address}?tx_amount=0.025`);
-      expect(html).toContain('Requested donation: 0.075 XMR');
+      expect(html).toContain('Requested contribution: 0.075 XMR');
       expect(html).toContain('<svg');
       expect(html).toContain('href="http://example.onion/"');
       expect(html).toContain('href="/pgp"');
       expect(html).not.toContain('javascript:alert(1)');
-      expect(html).toContain('href="/donate"');
+      expect(html).toContain('href="/contribute"');
       expect(html).not.toContain(token);
       expect(creations).toBe(1);
       for (const state of ['paid', 'unconfirmed', 'unknown']) {
         paymentState = state;
-        const result = await fetch(`${origin}/donate/${id}`);
+        const result = await fetch(`${origin}/contribute/${id}`);
         const receipt = await result.text();
         expect(receipt).not.toContain(`href="monero:`);
         expect(receipt).not.toContain('Send the exact amount');
@@ -268,7 +274,7 @@ test.skipIf(!enabled)(
       paymentState = 'partial';
       shortfall = undefined;
       const unknownRemaining = await (
-        await fetch(`${origin}/donate/${id}`)
+        await fetch(`${origin}/contribute/${id}`)
       ).text();
       expect(unknownRemaining).toContain('id="amount">Unavailable</span>');
       expect(unknownRemaining).not.toContain('href="monero:');

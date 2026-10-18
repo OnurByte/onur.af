@@ -1,3 +1,6 @@
+import { donationSubaddressPrefix } from './donations/protocol';
+import { requiredEnv as required } from './server/env';
+import { jsonNoStore as json } from './server/http';
 import { timingSafeEqual } from 'node:crypto';
 import { createDonationAgentClient } from './donations/agent';
 import { formatXmrAmount, parseXmrAmount } from './donations/money';
@@ -5,11 +8,6 @@ import { createDonationStore, DonationCapacityError } from './donations/store';
 
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const required = (key: string) => {
-  const value = process.env[key];
-  if (!value) throw new Error(`${key} is required`);
-  return value;
-};
 
 export async function startGateway() {
   const token = required('DONATION_GATEWAY_TOKEN');
@@ -17,24 +15,17 @@ export async function startGateway() {
     throw new Error('DONATION_GATEWAY_TOKEN must have at least 32 characters');
   const store = createDonationStore(required('DONATION_DATABASE_URL'));
   const agent = createDonationAgentClient({
-    baseUrl: process.env.XMR_AGENT_URL || 'http://127.0.0.1:8788',
+    baseUrl: process.env['XMR_AGENT_URL'] || 'http://127.0.0.1:8788',
     token: required('XMR_AGENT_TOKEN'),
     timeoutMs: 15000,
   });
-  const network = process.env.XMR_NETWORK || 'stagenet';
-  const prefix = { mainnet: '8', stagenet: '7', testnet: 'B' }[network];
-  if (!prefix)
-    throw new Error('XMR_NETWORK must be mainnet, stagenet or testnet');
+  const network = process.env['XMR_NETWORK'] || 'stagenet';
+  const prefix = donationSubaddressPrefix(network);
   await store.initialize();
-  const json = (body: unknown, status = 200) =>
-    Response.json(body, {
-      status,
-      headers: { 'cache-control': 'no-store' },
-    });
   let allocating = false;
   return Bun.serve({
     hostname: '127.0.0.1',
-    port: Number(process.env.DONATION_GATEWAY_PORT || 8790),
+    port: Number(process.env['DONATION_GATEWAY_PORT'] || 8790),
     maxRequestBodySize: 4096,
     async fetch(request) {
       const expected = Buffer.from(`Bearer ${token}`);

@@ -3,7 +3,11 @@ import * as stylex from '@stylexjs/stylex';
 import { styles } from '../styles/pages';
 import { logStyles } from '../styles/log';
 import AccountLink from './AccountLink.astro';
+import ProofBadge from './ProofBadge.astro';
 import { identityAccounts } from '../portfolio/proofs';
+import { logEntries, logProofUrl, logMetadata } from '../portfolio/log';
+import { getLogSignatures } from '../portfolio/verified-proofs';
+const signatures = await getLogSignatures();
 ---
 
 <div {...stylex.attrs(styles.prose)}>
@@ -29,7 +33,32 @@ import { identityAccounts } from '../portfolio/proofs';
     aria-labelledby="log-title"
   >
     <h2 id="log-title" {...stylex.attrs(logStyles.proofTitle)}>
-      <a href="/pgp/log">Log</a>
+      Log
     </h2>
+    {logEntries.length > 0 ? (
+      <ul {...stylex.attrs(logStyles.registryList)}>
+        {logEntries.map((entry) => {
+          const latest = entry.revisions.at(-1)!;
+          const proofUrl = logProofUrl(entry);
+          return (
+            <li {...stylex.attrs(logStyles.registryEntry)}>
+              <a {...stylex.attrs(logStyles.registryTitle)} href={proofUrl}>
+                {logMetadata(entry).title}
+              </a>
+              <div {...stylex.attrs(logStyles.registryMeta)}>
+                <time datetime={entry.revisions[0]!.publishedAt}>
+                  {entry.revisions[0]!.publishedAt.slice(0, 10)}
+                </time>
+                {signatures[`${entry.id}-v${latest.version}`] && (
+                  <ProofBadge target="log" href={proofUrl} label="Verified" />
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    ) : (
+      <p {...stylex.attrs(styles.paragraph)}>No signed Log entries.</p>
+    )}
   </section>
 </div>

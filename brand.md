@@ -59,11 +59,11 @@ Site monokromdur. Tema işletim sisteminin açık/koyu tercihinden gelir; ayrı 
 | `--border`     | `#b3b3b3` | `#404040` | Kontrol kenarları      |
 | `--surface`    | `#f2f2f2` | `#222222` | Girdi ve nötr yüzeyler |
 
-Renkleri sayfa bazında yeniden icat etme. Gölge, gradient, parıltı ve dekoratif vurgu rengi bu dilin parçası değildir. Ödeme QR'ı taranabilirlik için iki temada da beyaz zeminde kalır.
+Renkleri sayfa bazında yeniden icat etme. Gölge, parıltı ve dekoratif vurgu rengi bu dilin parçası değildir. Gradient yalnız aşağıda tanımlanan yüzey kenarlıklarında kullanılır. Ödeme QR'ı taranabilirlik için iki temada da beyaz zeminde kalır.
 
 ### Tipografi
 
-Ana yazı ailesi `Helvetica Neue`, ardından `Helvetica`, `Arial` ve sistem sans-serif fallback'idir. Gövde metni 6 px, satır yüksekliği 1.6'dır. Başlıklar yalın, normal ağırlıkta ve belirgin hiyerarşiye sahiptir; aşırı büyük pazarlama başlıkları kullanılmaz.
+Ana yazı ailesi `Helvetica Neue`, ardından `Helvetica`, `Arial` ve sistem sans-serif fallback'idir. Gövde metni 16 px, satır yüksekliği 1.6'dır. Başlıklar yalın, normal ağırlıkta ve belirgin hiyerarşiye sahiptir; aşırı büyük pazarlama başlıkları kullanılmaz.
 
 PGP anahtarı, parmak izi ve ödeme adresi gibi makine verileri monospace ile gösterilir. Bu bilgiler rahat seçilebilir ve kopyalanabilir olmalıdır. Sosyal paylaşım kartlarının sunucu tarafındaki üretimi, mevcut paketlenmiş Liberation Sans fontlarını kullanır.
 
@@ -72,6 +72,14 @@ PGP anahtarı, parmak izi ve ödeme adresi gibi makine verileri monospace ile g�
 Header, ana içerik ve footer aynı hizayı paylaşır. Ortak maksimum genişlik 960 px; yan boşluklar 24 px, 620 px ve altında 20 px'dir. Metin blokları yaklaşık 65 karakter genişliğinde, bağış kontrolleri en fazla 740 px olur.
 
 Boşluklar 4 px'in katlarıyla kurulur. Küçük gruplarda 8–12 px, ilişkili öğelerde 16–24 px, bölümler arasında 32–40 px kullanılır. Mobilde gruplar sarılır; içerik ekranın dışına taşmaz. Her içeriği kart içine almak veya panel eklemek yerine mevcut açık sayfa düzenini kullan.
+
+### Köşe geometrisi
+
+Kabul edilmiş ölçüler: kartlar ve pencereler 12 px; kontroller 8 px; Connect öğeleri ve bunların odak çerçeveleri için aşağıdaki ayrı köşe geometrisi kullanılır. Değerleri sayfalar içinde tekrar tanımlamak yerine ortak tokenları kullan. Bu ölçüler Apple'ın sabit değerleri veya psikolojik bir optimum değildir; sitenin ölçülerine göre verilmiş tasarım kararlarıdır.
+
+Connect tam genişlikte, Posts ve Repositories altında, Spotify üstünde yer alır. Servis adı birincil, nick/adres ikincildir. Hesap doğrulaması nick yanındaki ortak PGP tiki üzerinden açılır. Adresi henüz tanımlanmayan Email ve XMPP görünür kalır; durum metni, sahte bağlantı veya hover ile tıklanabilirlik vaadi eklenmez.
+
+Connect öğeleri normal 8 px köşeler kullanır; squircle ve hareketli yükselme yoktur. Kenarlığın sağ üst ve sol alt bölgelerinde ton yoğunlaşır; ışık alan bir kenar hissi verir. Aynı kenarlık Connect öğelerinde, Posts/Repositories/Spotify yüzeylerinde, Connect dış çerçevesinde, Log kartlarında ve Find/Share pencerelerinde ortak `src/styles/edge.ts` ile kullanılır. Metin bağlantıları, PGP tikleri, rozetler, giriş alanları ve küçük kontroller bu uygulamanın dışındadır. Bu yalnız 1 px çerçeve içinde kalan monokrom bir gradient istisnasıdır; yüzeyde gradient, parıltı veya gölge yoktur. Ton geçişi, her yüzeyin kendi genişliğinin ve yüksekliğinin %50’sini kullanan eliptik gradientlerle ölçeklenir; sabit piksel ışık alanı yoktur. Pencere boyutu ve içerik yüksekliği değişince CSS otomatik hesaplar. Desteklemeyen tarayıcılarda düz çerçeve korunur. Hover yalnız nötr yüzey rengini değiştirir; kenarlık sabit kalır. Nick ve PGP tiki bağımsız hedefler olarak kalır.
 
 ### Logo ve ikonlar
 
@@ -83,7 +91,7 @@ Bütün sabit SVG dosyaları `public/brand/` altında bulunur. Arayüzde tek `Ic
 
 ## Kontroller ve etkileşim
 
-Kontrolün işlevi, görünümünden ve metninden anlaşılır olmalıdır. Ana eylem dolu, yardımcı eylem nötr kenarlıklı olur. Köşeler 4 px; standart kontrol yüksekliği en az 44 px'dir. Düğme metni 16 px ve 500 ağırlıktadır.
+Kontrolün işlevi, görünümünden ve metninden anlaşılır olmalıdır. Ana eylem dolu, yardımcı eylem nötr kenarlıklı olur. Kartlar ve pencereler `--radius-card: 12px`, butonlar `--radius-control: 8px`, Connect öğeleri `--radius-control: 8px` kullanır. Standart kontrol yüksekliği en az 44 px'dir. Düğme metni 16 px ve 500 ağırlıktadır.
 
 Bağlantılar bağlantı, düğmeler düğme, seçimler gerçek form kontrolleri olarak kalır. PGP gibi çok satırlı veriler salt okunur alanda sunulur. Kopyalama başarısı ve hata sonucu kısa bir durum mesajıyla bildirilir. JavaScript kullanılamadığında anahtar indirme ve elle kopyalama gibi temel yollar erişilebilir kalır.
 

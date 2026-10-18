@@ -40,6 +40,7 @@ jobs:
         with:
           bun-version: 1.4.0
       - run: bun install --frozen-lockfile
+      - run: bun run deadcode:check
       - run: bun run format:check
       - run: bun run check
       - run: bun run build

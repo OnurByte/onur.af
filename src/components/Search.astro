@@ -1,7 +1,9 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { edge } from '../styles/edge';
+import { dialogStyles } from '../styles/dialog';
 import { searchStyles } from '../styles/search';
-import { searchLogEntries, searchPrimaryEntries } from '../portfolio/search';
+import { searchPrimaryEntries } from '../portfolio/search';
 import SearchNetworks from './SearchNetworks.astro';
 ---
 
@@ -21,10 +23,10 @@ import SearchNetworks from './SearchNetworks.astro';
 <dialog
   id="search-dialog"
   aria-label="Search pages"
-  {...stylex.attrs(searchStyles.dialog)}
+  {...stylex.attrs(dialogStyles.dialog, edge.frame)}
 >
   <form method="dialog">
-    <button type="submit" {...stylex.attrs(searchStyles.accessibleClose)}>
+    <button type="submit" {...stylex.attrs(dialogStyles.accessibleClose)}>
       Close search
     </button>
   </form>
@@ -58,17 +60,18 @@ import SearchNetworks from './SearchNetworks.astro';
       </li>
     ))}
     <SearchNetworks />
-    {searchLogEntries.map(({ url, meta, searchText }) => (
-      <li data-search-text={searchText}>
-        <a href={url} {...stylex.attrs(searchStyles.result)}>
-          <span data-result-title>{meta.title}</span>
-          <small data-result-description {...stylex.attrs(searchStyles.detail)}>
-            {meta.description}
-          </small>
-        </a>
-      </li>
-    ))}
   </ul>
+  <template id="search-result-template">
+    <li>
+      <a {...stylex.attrs(searchStyles.result)}>
+        <span data-result-title></span>
+        <small
+          data-result-description
+          {...stylex.attrs(searchStyles.detail)}
+        ></small>
+      </a>
+    </li>
+  </template>
 </dialog>
 <script>
   import '../client/search';

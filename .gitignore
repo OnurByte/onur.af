@@ -6,6 +6,15 @@ data/
 dist/
 .astro/
 
+# Recoverable local Log publication transactions
+.log-publication.lock
+.log-publication.lock.*.stale
+.log-publication-readers/
+.log-publication-journal.json
+.log-publication-journal.json.*.tmp
+.log-publication-stage-*
+.log-publication-backup-*
+
 work/
 
 .vercel
@@ -14,3 +23,12 @@ lychee/
 playwright-report/
 test-results/
 public/pagefind/
+
+# Build-time Log image variants
+public/log-media/
+
+# Mutable local delivery receipts
+.local/
+
+# Generated independent proof verifier
+public/proof-verifier.mjs

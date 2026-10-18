@@ -1,3 +1,4 @@
+import { openDialog, closeDialog } from './dialogs';
 export {};
 const trigger = document.querySelector<HTMLButtonElement>('#open-search');
 const dialog = document.querySelector<HTMLDialogElement>('#search-dialog');
@@ -6,7 +7,7 @@ const status = document.querySelector<HTMLElement>('#search-status');
 const results = document.querySelector<HTMLUListElement>('#search-results');
 const entries = [...(results?.children ?? [])].map((item) => ({
   text: (
-    (item as HTMLElement).dataset.searchText ??
+    (item as HTMLElement).dataset['searchText'] ??
     item.textContent ??
     ''
   ).toLowerCase(),
@@ -14,10 +15,11 @@ const entries = [...(results?.children ?? [])].map((item) => ({
 }));
 function open() {
   if (!dialog || !input) return;
-  dialog.showModal();
+  openDialog(dialog, trigger);
   input.focus();
   input.select();
   search();
+  void loadLogs();
 }
 trigger?.addEventListener('click', open);
 if (trigger && dialog) trigger.hidden = false;
@@ -29,12 +31,9 @@ document.addEventListener('keydown', (event) => {
     !event.repeat
   ) {
     event.preventDefault();
-    if (dialog?.open) dialog.close();
+    if (dialog?.open) closeDialog(dialog);
     else open();
   }
-});
-dialog?.addEventListener('close', () => {
-  trigger?.focus();
 });
 dialog?.addEventListener('click', (event) => {
   if (event.target !== dialog) return;
@@ -45,12 +44,12 @@ dialog?.addEventListener('click', (event) => {
     event.clientY < rect.top ||
     event.clientY > rect.bottom
   )
-    dialog.close();
+    closeDialog(dialog);
 });
 dialog?.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
     event.preventDefault();
-    dialog.close();
+    closeDialog(dialog);
     return;
   }
   if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
@@ -70,11 +69,77 @@ dialog?.addEventListener('keydown', (event) => {
 function search() {
   if (!input || !status || !results) return;
   const terms = input.value.trim().slice(0, 200).toLowerCase().split(/\s+/);
-  const matches = entries.filter(({ text }) =>
-    terms.every((term) => text.includes(term)),
+  const query = input.value.trim().slice(0, 200);
+  const ranked = query && logSearch ? logSearch(query) : undefined;
+  const matches = entries.filter(
+    ({ text, node }) =>
+      terms.every((term) => text.includes(term)) ||
+      (ranked?.has(
+        (node as HTMLElement).querySelector('a')?.getAttribute('href') ?? '',
+      ) ??
+        false),
   );
   results.replaceChildren(...matches.map(({ node }) => node.cloneNode(true)));
   status.hidden = matches.length > 0;
   status.textContent = matches.length ? '' : 'Nothing found.';
 }
 input?.addEventListener('input', search);
+
+let loading: Promise<void> | undefined;
+let loaded = false;
+async function loadLogs() {
+  if (loaded) return;
+  if (loading) return loading;
+  loading = (async () => {
+    try {
+      const [{ default: MiniSearch }, response] = await Promise.all([
+        import('minisearch'),
+        fetch('/search-index.json', { signal: AbortSignal.timeout(10000) }),
+      ]);
+      if (!response.ok) throw new Error('Index unavailable');
+      const documents: {
+        url: string;
+        meta: { title: string; description: string };
+        searchText: string;
+      }[] = await response.json();
+      const index = new MiniSearch({ idField: 'url', fields: ['searchText'] });
+      index.addAll(documents);
+      const template = document.querySelector<HTMLTemplateElement>(
+        '#search-result-template',
+      );
+      if (!template) throw new Error('Search template unavailable');
+      for (const item of documents) {
+        const node = template.content.firstElementChild!.cloneNode(
+          true,
+        ) as HTMLElement;
+        node.querySelector('a')!.setAttribute('href', item.url);
+        node.querySelector('[data-result-title]')!.textContent =
+          item.meta.title;
+        node.querySelector('[data-result-description]')!.textContent =
+          item.meta.description;
+        entries.push({ text: item.searchText.toLowerCase(), node });
+      }
+      logSearch = (query) =>
+        new Set(
+          index
+            .search(query, {
+              prefix: true,
+              combineWith: 'AND',
+              boost: { searchText: 1 },
+            })
+            .map((result) => String(result.id)),
+        );
+      loaded = true;
+      search();
+    } catch {
+      if (status) {
+        status.hidden = false;
+        status.textContent = 'Log search unavailable. Reopen Find to retry.';
+      }
+    } finally {
+      loading = undefined;
+    }
+  })();
+  return loading;
+}
+let logSearch: ((query: string) => Set<string>) | undefined;

@@ -1,0 +1,52 @@
+{
+  "cryptography": {
+    "title": "Cryptography",
+    "description": "Notes on cryptographic tools, signatures and verification.",
+    "indexable": false,
+    "aliases": ["crypto"],
+    "related": ["privacy", "identity"]
+  },
+  "privacy": {
+    "title": "Privacy",
+    "description": "Notes on privacy and control over personal information.",
+    "indexable": false,
+    "aliases": ["data protection"],
+    "related": ["identity", "cryptography"]
+  },
+  "pgp": {
+    "title": "PGP",
+    "description": "Public-key signatures, identity proofs and PGP workflows.",
+    "indexable": false,
+    "aliases": ["OpenPGP", "GPG"],
+    "broader": "cryptography",
+    "related": ["identity", "privacy"]
+  },
+  "identity": {
+    "title": "Identity",
+    "description": "Notes on digital identity and authorship.",
+    "indexable": false,
+    "aliases": ["authorship"],
+    "related": ["privacy", "cryptography"]
+  },
+  "web": {
+    "title": "Web",
+    "description": "Building and understanding the web.",
+    "indexable": false,
+    "aliases": ["WWW"],
+    "related": ["development"]
+  },
+  "development": {
+    "title": "Development",
+    "description": "Implementation notes and lessons from building software.",
+    "indexable": false,
+    "aliases": ["programming", "software engineering"],
+    "related": ["web", "ai"]
+  },
+  "ai": {
+    "title": "AI",
+    "description": "Notes on AI tools, models, and agent workflows.",
+    "indexable": false,
+    "aliases": ["artificial intelligence", "agents"],
+    "related": ["development"]
+  }
+}
