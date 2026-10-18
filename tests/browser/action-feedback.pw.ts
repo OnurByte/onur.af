@@ -103,6 +103,8 @@ for (const width of [320, 1280]) {
     await page.goto('/pgp');
     await page.locator('#copy-key').click();
     await expect(page.locator('#copy-key')).toHaveText('Copied');
+    await page.clock.install();
+    await page.clock.pauseAt(new Date(Date.now() + 1000));
     const download = page.waitForEvent('download');
     await page.locator('#key-actions a[download][href="/pgp.asc"]').click();
     expect((await download).suggestedFilename()).toBe('pgp.asc');
@@ -129,6 +131,7 @@ for (const width of [320, 1280]) {
         fullPage: true,
       });
     }
+    await page.clock.runFor(2001);
     await expect(
       page.locator('#key-actions a[download][href="/pgp.asc"]'),
     ).toHaveText('Download');
