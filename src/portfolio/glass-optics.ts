@@ -1,16 +1,15 @@
+import {
+  createSpectralField,
+  glassProfile,
+  projectGlassOffset,
+} from './glass-random';
+
 // A deterministic optical field, independent of the DOM and rendering backend.
 const MAX_OFFSET = 0.6;
 const BEZEL = 3;
 const IOR = 1.48;
 const clamp = (x: number, lo: number, hi: number) =>
   Math.min(hi, Math.max(lo, x));
-
-function phase(seed: number, lane: number) {
-  let value = (seed ^ Math.imul(lane + 1, 0x9e3779b9)) >>> 0;
-  value = Math.imul(value ^ (value >>> 16), 0x21f0aaad);
-  value = Math.imul(value ^ (value >>> 15), 0x735a2d97);
-  return (((value ^ (value >>> 15)) >>> 0) / 0x100000000) * Math.PI * 2;
-}
 
 function distance(
   x: number,
@@ -60,8 +59,8 @@ export function createGlassField(
   const height = Math.round(inputHeight * resolution);
   const radius = Math.min(inputRadius, inputWidth / 2, inputHeight / 2);
   const displacement = new Uint8ClampedArray(width * height * 4);
-  const phases = [phase(seed, 0), phase(seed, 1), phase(seed, 2)];
-  const depth = 1.5 + Math.sin(phases[0]!) * 0.08;
+  const field = createSpectralField(seed);
+  const depth = 1.5 + field.sample(0, 0, 0).value * 0.08;
   let maxOffset = 0;
 
   for (let y = 0; y < height; y++) {
@@ -85,25 +84,13 @@ export function createGlassField(
         distance(px, py - 0.5, inputWidth, inputHeight, radius);
       const gradient = Math.hypot(gx, gy) || 1;
 
-      // Seeded, domain-warped low-frequency waves perturb the optical slope.
-      // Their envelope and its derivative vanish at both bezel boundaries.
-      const warp = Math.sin(px / 91 + phases[0]!) * 0.32;
-      const a = px / 47 + py / 31 + phases[1]! + warp;
-      const b = px / 23 - py / 41 + phases[2]!;
-      const wave = Math.sin(a) * 0.7 + Math.sin(b) * 0.3;
-      const envelope = 16 * u * u * (1 - u) * (1 - u);
-      const derivative = 32 * u * (1 - u) * (1 - 2 * u);
-      const slope = (depth / BEZEL) * 6 * u * (1 - u);
-      const perturbation = (0.16 * derivative * wave) / BEZEL;
-      const tangentX =
-        0.16 *
-        envelope *
-        (Math.cos(a) *
-          0.7 *
-          (1 / 47 + (Math.cos(px / 91 + phases[0]!) * 0.32) / 91) +
-          (Math.cos(b) * 0.3) / 23);
-      const tangentY =
-        0.16 * envelope * ((Math.cos(a) * 0.7) / 31 - (Math.cos(b) * 0.3) / 41);
+      const profile = glassProfile(u);
+      const sample = field.sample(px, py, 0);
+      const slope = (depth / BEZEL) * profile.slope;
+      const perturbation =
+        (0.16 * profile.envelopeSlope * sample.value) / BEZEL;
+      const tangentX = 0.16 * profile.envelope * sample.dx;
+      const tangentY = 0.16 * profile.envelope * sample.dy;
       let nx = (gx / gradient) * (slope + perturbation) - tangentX;
       let ny = (gy / gradient) * (slope + perturbation) - tangentY;
       const length = Math.hypot(nx, ny, 1);
@@ -116,12 +103,7 @@ export function createGlassField(
       const f =
         eta * nz - Math.sqrt(Math.max(0, 1 - eta * eta * (1 - nz * nz)));
       const travel = depth / Math.max(1e-4, eta - f * nz);
-      let dx = f * nx * travel,
-        dy = f * ny * travel;
-      const magnitude = Math.hypot(dx, dy);
-      const attenuation = Math.min(1, MAX_OFFSET / Math.max(magnitude, 1e-6));
-      dx *= attenuation;
-      dy *= attenuation;
+      const [dx, dy] = projectGlassOffset(f * nx * travel, f * ny * travel);
       maxOffset = Math.max(maxOffset, Math.hypot(dx, dy));
       displacement[offset] = 128 + (dx / MAX_OFFSET) * 127;
       displacement[offset + 1] = 128 + (dy / MAX_OFFSET) * 127;
@@ -130,22 +112,25 @@ export function createGlassField(
   return { width, height, displacement, maxOffset };
 }
 
+let motionField:
+  { seed: number; field: ReturnType<typeof createSpectralField> } | undefined;
+
 export function glassMotion(
   seed: number,
   milliseconds: number,
   velocity: number,
 ) {
+  if (!motionField || motionField.seed !== seed)
+    motionField = { seed, field: createSpectralField(seed) };
   const t = milliseconds / 1000;
-  const drift =
-    Math.sin(t / 13 + phase(seed, 3)) * 0.65 +
-    Math.sin(t / 23 + phase(seed, 4)) * 0.35;
+  const drift = motionField.field.sample(0, 0, t).value;
+  const vertical = motionField.field.sample(123, 71, t).value;
+  const v = Math.tanh(velocity);
+  // Smooth bounded scroll energy: no abs cusp or clamp discontinuity at rest.
+  const energy = 1 - Math.exp(-8 * v * v);
   return {
-    strength: clamp(
-      0.74 + drift * 0.12 + Math.abs(clamp(velocity, -1, 1)) * 0.14,
-      0.55,
-      1,
-    ),
-    lightX: clamp(50 + drift * 8, 0, 100),
-    lightY: clamp(40 + Math.sin(t / 19 + phase(seed, 5)) * 6, 0, 100),
+    strength: 0.74 + drift * 0.12 + energy * 0.12,
+    lightX: 50 + drift * 8,
+    lightY: 40 + vertical * 6,
   };
 }

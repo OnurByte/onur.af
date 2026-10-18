@@ -4,7 +4,7 @@ The owner approved combining seeded variation, scroll response and slow organic 
 
 ## Mathematical field
 
-`src/portfolio/glass-optics.ts` is an original, deterministic CPU field generator. It combines a rounded-rectangle signed distance field, its finite-difference gradient, a smoothstep bezel profile and a seeded, domain-warped wave perturbation. The perturbation envelope and derivative vanish at the bezel boundaries. The surface normal refracts a perpendicular ray using Snell's law with index 1.48. The raised specular rim was removed after visual review: the surface now retains only the existing one-pixel site border.
+`src/portfolio/glass-optics.ts` is an original, deterministic CPU field generator. It combines a rounded-rectangle signed distance field, its finite-difference gradient, a quintic Hermite bezel profile and a seeded, bounded spectral perturbation. The profile and perturbation envelope have zero first and second endpoint derivatives in the distance coordinate. The surface normal refracts a perpendicular ray using Snell's law with index 1.48. The raised specular rim was removed after visual review: the surface now retains only the existing one-pixel site border.
 
 The 3 px edge region is expressed in actual CSS pixels, independently of the navbar aspect ratio. The central plateau is neutral. The displacement vector is limited to 0.6 px; the animated filter scales it downward from that bound. The output is one RGBA displacement map. This is a single-surface optical approximation with artistic surface perturbations, not a complete physical light transport simulation.
 
@@ -12,7 +12,7 @@ The 3 px edge region is expressed in actual CSS pixels, independently of the nav
 
 `src/client/nav-glass.ts` creates the SVG filter and maps once at initialization and regenerates them on actual size changes. It caps map geometry at 2048 × 256 and samples at the device pixel ratio capped at 2× while keeping the bezel in CSS pixels. No source from the research repositories is copied and no runtime package is installed.
 
-A cryptographically generated per-page seed selects the stationary wave phases and slow temporal phases. The seed is used only for visual variation. Time evolves through two incommensurate low-frequency waves; this is continuous deterministic variation, not a fresh random sample every frame. There are no cursor or pointer listeners. Bounded scroll velocity briefly changes the optical strength. A maximum 30 Hz update changes the displacement scale and the slowly evolving light position; it does not regenerate the optical maps or transform the controls.
+A cryptographically generated per-page seed selects coefficients through a finite-precision Box–Muller transform. The seed is used only for visual variation. Six low-frequency Fourier modes define a positive spectral covariance (Bochner representation); tanh bounds the resulting perturbation and its analytic derivatives. The transformed field is not itself Gaussian. This is continuous deterministic variation, not a fresh random sample every frame. There are no cursor or pointer listeners. Bounded scroll velocity briefly changes the optical strength. A maximum 30 Hz update changes the displacement scale and the slowly evolving light position; it does not regenerate the optical maps or transform the controls.
 
 The effect samples the real backdrop in Chromium through an SVG `feDisplacementMap`. Other engines retain the CSS backdrop material with the same standard one-pixel border. Chromium detection is an explicit compatibility tier, not a claim that all browsers render SVG backdrop filters identically.
 
@@ -36,3 +36,5 @@ Roughness is zero: there is no blur filter in the enhanced or no-JavaScript surf
 The navbar's one-pixel outline uses `edge.ring`, derived from exactly the same corner-light background as Connect's `edge.frame`. The ring masks out its interior so it cannot paint over the refractive surface. Log and Find reuse `edge.frame` directly. The Onur mark/name is a native link to `/` on every page.
 
 The result is an artistic single-surface optical approximation. It is not a physically complete or mathematically perfect reproduction of Apple Liquid Glass: it has no full environment reflection, multiple scattering or measured material calibration.
+
+See [the mathematical contract and derivations](glass-mathematical-contract.md) for the precise conditions, proofs and finite-precision limitations.
