@@ -96,12 +96,12 @@ export const shell = stylex.create({
     '--edge-fill': {
       default: 'var(--background)',
       '@supports (backdrop-filter: blur(1px))':
-        'color-mix(in srgb, var(--background) 38%, transparent)',
+        'color-mix(in srgb, var(--background) 12%, transparent)',
       '@media (prefers-reduced-transparency: reduce)': 'var(--background)',
       '@media (prefers-contrast: more)': 'var(--background)',
     },
     backdropFilter: {
-      default: 'blur(6px) grayscale(1)',
+      default: 'blur(8px) grayscale(1)',
       '@media (prefers-reduced-transparency: reduce)': 'none',
       '@media (prefers-contrast: more)': 'none',
     },
