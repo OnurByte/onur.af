@@ -93,6 +93,18 @@ export const shell = stylex.create({
     gap: { default: 8, '@media (min-width: 621px)': 16 },
   },
   navigationLink: {
+    '--edge-fill': {
+      default: 'var(--background)',
+      '@supports (backdrop-filter: blur(1px))':
+        'color-mix(in srgb, var(--background) 38%, transparent)',
+      '@media (prefers-reduced-transparency: reduce)': 'var(--background)',
+      '@media (prefers-contrast: more)': 'var(--background)',
+    },
+    backdropFilter: {
+      default: 'blur(6px) grayscale(1)',
+      '@media (prefers-reduced-transparency: reduce)': 'none',
+      '@media (prefers-contrast: more)': 'none',
+    },
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
