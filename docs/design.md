@@ -16,6 +16,10 @@ The site uses one restrained, monochrome design implemented with StyleX. The off
 
 Do not add page-specific button radii, fonts or colors. Keep the existing StyleX patterns and shared system color tokens. StyleX is compiled locally; the browser does not download a CSS framework or execute a CDN runtime.
 
+## Glass navigation material
+
+The sticky navbar preserves its original dimensions: 104 px high on desktop, 96 px through 360 px, 24 px vertical padding, 48/56 px brand mark, 32/40 px name and 48 px controls. Its content keeps the common page alignment. A stationary, noninteractive surface extends 12 px beyond that content, using the existing 12 px card radius, 68% neutral tint, 6 px backdrop blur and subtle inset rim highlights. This navbar-only material is an exception to the general no-gradient/no-shadow rule; it adds no outer shadow, chromatic fringe, pointer tracking or runtime library. Reduced transparency, increased contrast and unsupported backdrop filtering use a solid surface. See [research and source comparison](liquid-glass-navbar-research.md).
+
 ## Static icons
 
 All static SVG assets live in `public/brand/`, with lowercase filenames and their provenance in `public/brand/SOURCES.md`. Render them through `src/components/Icon.astro`; its typed name registry owns each asset URL and dimensions. Do not inline SVG markup, import icons with `?raw`, or duplicate image rendering in page templates.
