@@ -1,6 +1,6 @@
 # Mathematical contract for random glass
 
-This contract defines verifiable numerical and visual invariants, not a claim of perfect glass or perfect randomness. The material remains flat, monochrome and zero-blur, with no pointer tracking or geometric motion.
+This contract defines verifiable numerical and visual invariants, not a claim of perfect glass or perfect randomness. The material remains flat and monochrome with 6 px backdrop blur, with no pointer tracking or geometric motion.
 
 ## 1. Positive spectral covariance
 
@@ -32,13 +32,13 @@ Random surface height is multiplied by `e(u)=64u³(1-u)³`. Its value and first 
 
 ## 3. Non-expansive convex projection
 
-The displacement limiter is the Euclidean projection onto the closed radius-0.6-px disk:
+The displacement limiter is the Euclidean projection onto the closed radius-0.6 map-unit disk:
 
 `P(x) = x min(1, 0.6 / ||x||)`.
 
 It satisfies `||P(x)|| <= 0.6` and `||P(x)-P(y)|| <= ||x-y||`. See [Duchi, Introductory Lectures on Stochastic Optimization, Corollary 2.2.8](https://stanford.edu/~jduchi/PCMIConvex/Duchi16.pdf). The limiter cannot amplify a perturbation. Projection is not differentiable at every point of the disk boundary; no stronger smoothness claim is made.
 
-The animation strength is `0.74 + 0.12*tanh(G) + 0.12*(1-exp(-8*tanh(v)²))`. Its range is contained in `[0.62, 0.98]`. The scroll response is smooth through zero velocity. Together with the field projection this leaves headroom for 8-bit map rounding rather than multiplying a maximum displacement upward.
+The animation strength is `0.74 + 0.12*tanh(G) + 0.12*(1-exp(-8*tanh(v)²))`. Its range is contained in `[0.62, 0.98]`. The scroll response is smooth through zero velocity. The renderer applies a display scale of 12 times this strength: the ideal visible displacement is bounded by 5.88 CSS px. The 0.6 bound above concerns the generated field, not the final display displacement; raster rounding adds finite error.
 
 ## 4. Exact neutral code and practical limits
 

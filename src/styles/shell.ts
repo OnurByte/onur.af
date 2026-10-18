@@ -47,14 +47,14 @@ export const shell = stylex.create({
       backgroundColor: {
         default: 'var(--background)',
         '@supports (backdrop-filter: blur(1px))':
-          'color-mix(in srgb, var(--background) 68%, transparent)',
+          'color-mix(in srgb, var(--background) 18%, transparent)',
         '@media (prefers-reduced-transparency: reduce)': 'var(--background)',
         '@media (prefers-contrast: more)': 'var(--background)',
       },
       backgroundImage:
         'linear-gradient(135deg, color-mix(in srgb, var(--text) 5%, transparent), transparent 35%, color-mix(in srgb, var(--text) 2%, transparent))',
       backdropFilter: {
-        default: 'var(--glass-optics, grayscale(1))',
+        default: 'var(--glass-optics, blur(6px) grayscale(1))',
         '@media (prefers-reduced-transparency: reduce)': 'none',
         '@media (prefers-contrast: more)': 'none',
       },
