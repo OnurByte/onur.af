@@ -1,5 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { edge } from '../../styles/edge';
 import { embeds as styles } from '../../styles/embeds';
 import Icon from '../Icon.astro';
 import AccountLink from '../AccountLink.astro';
@@ -35,6 +36,7 @@ const timestamp = (value: string) =>
         <section
           {...stylex.attrs(
             styles.section,
+            edge.frame,
             (embed.id === 'x' || embed.id === 'github') &&
               styles.activitySection,
           )}
@@ -52,8 +54,8 @@ const timestamp = (value: string) =>
                 {embed.id === 'x' || embed.id === 'github' ? (
                   <AccountLink
                     account={embed.id}
-                    label={embed.source}
-                    {...stylex.attrs(styles.link, styles.sourceLink)}
+                    {...stylex.attrs(styles.link)}
+                    wrapperAttributes={stylex.attrs(styles.sourceIdentity)}
                     rel="noreferrer"
                   />
                 ) : (

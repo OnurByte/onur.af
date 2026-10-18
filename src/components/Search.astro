@@ -1,5 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { edge } from '../styles/edge';
 import { dialogStyles } from '../styles/dialog';
 import { searchStyles } from '../styles/search';
 import { searchPrimaryEntries } from '../portfolio/search';
@@ -22,7 +23,7 @@ import SearchNetworks from './SearchNetworks.astro';
 <dialog
   id="search-dialog"
   aria-label="Search pages"
-  {...stylex.attrs(dialogStyles.dialog)}
+  {...stylex.attrs(dialogStyles.dialog, edge.frame)}
 >
   <form method="dialog">
     <button type="submit" {...stylex.attrs(dialogStyles.accessibleClose)}>

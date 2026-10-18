@@ -139,6 +139,11 @@ export const embeds = stylex.create({
   },
   identity: { display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 },
   headingGroup: { minWidth: 0 },
+  sourceIdentity: {
+    marginTop: 4,
+    fontSize: 'var(--font-small, 0.875rem)',
+    color: 'var(--muted)',
+  },
   sourceLink: {
     display: 'block',
     marginTop: 4,
