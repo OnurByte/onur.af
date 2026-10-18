@@ -261,10 +261,14 @@ const schema =
         </a>
         <div {...stylex.attrs(shell.navigationActions)}>
           <a
-            {...stylex.attrs(shell.navigationLink, edge.frame)}
+            {...stylex.attrs(shell.navigationLink)}
             href="/log"
             aria-current={Astro.url.pathname === '/log' ? 'page' : undefined}
           >
+            <i
+              aria-hidden="true"
+              {...stylex.attrs(shell.navigationLinkBorder, edge.ring)}
+            ></i>
             Log
           </a>
           <Search />
