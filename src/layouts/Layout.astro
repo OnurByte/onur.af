@@ -269,7 +269,10 @@ const schema =
           </a>
           <Search />
         </div>
-        <span {...stylex.attrs(shell.navigationBorder)} aria-hidden="true" />
+        <span
+          {...stylex.attrs(shell.navigationBorder, edge.ring)}
+          aria-hidden="true"
+        />
       </nav>
     </header>
     <div id="content" {...stylex.attrs(shell.content)} tabindex="-1">

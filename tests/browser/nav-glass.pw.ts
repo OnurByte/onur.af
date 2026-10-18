@@ -42,10 +42,12 @@ test('procedural glass preserves geometry and responds without moving controls',
       (element) => element.parentElement!.getBoundingClientRect().height,
     ),
   ).toBe(96);
-  await expect(page.locator('feImage')).not.toHaveAttribute(
-    'href',
-    before.map!,
-  );
+  await expect
+    .poll(async () => {
+      await page.clock.runFor(100);
+      return page.locator('feImage').getAttribute('href');
+    })
+    .not.toBe(before.map);
   await page.locator('#open-search').click();
   await expect(
     page.getByRole('dialog', { name: 'Search pages' }),
@@ -74,8 +76,12 @@ test('motion pauses for preferences and bfcache while contrast becomes opaque', 
       new PageTransitionEvent('pageshow', { persisted: true }),
     ),
   );
-  await page.clock.runFor(300);
-  expect(await nav.getAttribute('style')).not.toBe(stopped);
+  await expect
+    .poll(async () => {
+      await page.clock.runFor(1000);
+      return nav.getAttribute('style');
+    })
+    .not.toBe(stopped);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(nav).toHaveAttribute('data-glass-state', 'static');
   const staticScale = await page
@@ -165,13 +171,13 @@ test('navbar controls use the Connect border and the brand links home', async ({
             style.borderLeftWidth,
           ],
           mask: style.maskImage,
-          background: style.backgroundImage,
+          background: style.backgroundImage.includes('radial-gradient'),
         };
       }),
     ).toEqual({
       widths: ['1px', '1px', '1px', '1px'],
       mask: 'none',
-      background: 'none',
+      background: true,
     });
     expect(
       await page

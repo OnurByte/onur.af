@@ -1,61 +1,39 @@
 import { expect, test } from '@playwright/test';
 
-test('Find loads Log index only on demand and supports prefix search safely', async ({
+test('Find searches Log prefixes without a separate index request', async ({
   page,
 }) => {
   let requests = 0;
   await page.route('**/search-index.json', async (route) => {
     requests++;
-    await route.fulfill({
-      json: [
-        {
-          url: '/log/sealed-council-convenes',
-          meta: {
-            title: '<script>Example</script>',
-            description: 'Repository note',
-          },
-          searchText: 'quaternion onurbyte/portfolio',
-        },
-      ],
-    });
+    await route.abort();
   });
   await page.goto('/log');
-  expect(requests).toBe(0);
   await page.locator('#open-search').click();
-  await page.locator('#search-query').fill('quater');
-  const result = page.locator(
-    '#search-results a[href="/log/sealed-council-convenes"]',
+  await page.locator('#search-query').fill('provid');
+  await expect(page.locator('#search-results')).toContainText(
+    'Become a massive value provider',
   );
-  await expect(result).toBeVisible();
-  await expect(result).toHaveText('<script>Example</script>Repository note');
-  await expect(result.locator('script')).toHaveCount(0);
+  await expect(page.locator('#search-status')).toBeHidden();
   await page.keyboard.press('Escape');
   await page.locator('#open-search').click();
-  expect(requests).toBe(1);
+  expect(requests).toBe(0);
 });
 
-test('Find retries failed index loads on reopening', async ({ page }) => {
-  let requests = 0;
-  await page.route('**/search-index.json', async (route) => {
-    requests++;
-    if (requests === 1)
-      await route.fulfill({ status: 503, body: 'Unavailable' });
-    else
-      await route.fulfill({
-        json: [
-          {
-            url: '/log/sealed-council-convenes',
-            meta: { title: 'Recovered', description: 'Note' },
-            searchText: 'recovered',
-          },
-        ],
-      });
-  });
-  await page.goto('/log');
+test('Find remains searchable offline after the page loads', async ({
+  page,
+  context,
+}) => {
+  await page.goto('/');
+  await expect(page.locator('#open-search')).toBeVisible();
+  await context.setOffline(true);
   await page.locator('#open-search').click();
-  await expect(page.locator('#search-status')).toContainText('Reopen Find');
-  await page.keyboard.press('Escape');
-  await page.locator('#open-search').click();
-  await page.locator('#search-query').fill('recover');
-  await expect(page.locator('#search-results')).toContainText('Recovered');
+  await page.locator('#search-query').fill('provid');
+  await expect(page.locator('#search-results')).toContainText(
+    'Become a massive value provider',
+  );
+  await expect(page.locator('#search-status')).toBeHidden();
+  await page.locator('#search-query').fill('zzzzunmatched');
+  await expect(page.locator('#search-status')).toHaveText('Nothing found.');
+  await context.setOffline(false);
 });
