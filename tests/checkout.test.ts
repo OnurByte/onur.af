@@ -1,4 +1,5 @@
 import { expect, test } from 'bun:test';
+import { listedLogEntries } from '../src/portfolio/log';
 import { publicPaths, proofPaths, logPaths } from '../src/portfolio/seo';
 import { publicPreview } from '../src/portfolio/previews';
 
@@ -193,7 +194,9 @@ test.skipIf(!enabled)(
       expect(pgp).not.toContain('<pre');
       const sitemap = await (await fetch(`${origin}/sitemap.xml`)).text();
       expect(sitemap.match(/<loc>/g)).toHaveLength(
-        publicPaths.length + proofPaths.length + logPaths().length,
+        publicPaths.length +
+          proofPaths.length +
+          logPaths(listedLogEntries).length,
       );
       for (const path of ['/rss', '/pgp']) {
         expect(sitemap).toContain(
