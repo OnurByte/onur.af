@@ -1,6 +1,7 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import { styles } from '../styles/pages';
+import { edge } from '../styles/edge';
 import { logStyles } from '../styles/log';
 import Layout from '../layouts/Layout.astro';
 import HomeEmbeds from '../components/embeds/HomeEmbeds.astro';
@@ -21,6 +22,20 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
 <Layout title={`${motto} · Onur`} motto={motto}>
   <main {...stylex.attrs(styles.main)} aria-label="Portfolio">
     <h1 {...stylex.attrs(styles.heading)}>{motto}</h1>
+    <section
+      {...stylex.attrs(styles.homeIntroduction, edge.frame)}
+      aria-labelledby="introduction-heading"
+    >
+      <div {...stylex.attrs(styles.homeIntroductionCopy)}>
+        <h2 id="introduction-heading" {...stylex.attrs(styles.sectionHeading)}>
+          I'm Onur.
+        </h2>
+        <p {...stylex.attrs(styles.prose, styles.homeIntroductionText)}>
+          I build software and shape my own tools. I care about understanding
+          what runs on my machines and deciding what I share.
+        </p>
+      </div>
+    </section>
     {recentLogs.length > 0 && (
       <section
         {...stylex.attrs(logStyles.list)}

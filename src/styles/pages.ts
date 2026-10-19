@@ -35,6 +35,19 @@ export const styles = stylex.create({
     maxWidth: 'var(--reading-width)',
     lineHeight: 'var(--leading-reading)',
   },
+  homeIntroduction: {
+    marginTop: 'var(--section-space)',
+    padding: 'var(--card-padding)',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'var(--border)',
+    borderRadius: 'var(--radius-card)',
+  },
+  homeIntroductionCopy: { minWidth: 0 },
+  homeIntroductionText: {
+    marginTop: 'var(--space-3)',
+    color: 'var(--muted)',
+  },
   paragraph: { marginBlock: 24 },
   mono: {
     fontFamily:

@@ -8,6 +8,7 @@ Bu belge, Onur'un kişisel sitesinin kimliğini ve tasarım kararlarının arkas
 - **Site türü:** Kişisel site ve portfolyo.
 - **İmza:** Mevcut Onur işareti ile yanında yazan `Onur` adı.
 - **Ana sayfa metni:** Mevcut üç mottodan biri; ayrıca slogan eklenmez.
+- **Kişisel giriş:** Motto altında, ortak kart genişliğinde ve köşe ışıklı çerçeve içinde kısa birinci tekil kişi anlatımı. Başlık ve açıklama, Onur'un yazılım üretme yaklaşımını ve kullandığı araçlar üzerindeki kontrolünü anlatır. Ek slogan, kimlik etiketi, araç listesi veya yönlendirme bağlantısı eklenmez.
 - **Arayüz dili:** İngilizce. Bu rehberin dili Türkçe.
 
 Onur, burada bir kişinin adı ve yaptığı işlerin imzasıdır. Marka bir ajans gibi konuşmaz, ekip veya şirket büyüklüğü ima etmez. Metinlerde kişi kendi adına konuşur; İngilizcede `I`, `my` kullanılır.
