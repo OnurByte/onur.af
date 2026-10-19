@@ -114,7 +114,7 @@ test.skipIf(!enabled)(
       expect([
         ...home.matchAll(/<img[^>]*data-icon="(?:onur|rss|tor|i2p)"/g),
       ]).toHaveLength(4);
-      expect(home).not.toContain('aria-label="Onur home"');
+      expect(home).toContain('aria-label="Onur home"');
       const discord = JSON.parse(
         home.match(
           /<script[^>]*id="discord:component-embed"[^>]*>(.*?)<\/script>/s,
