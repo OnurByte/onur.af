@@ -76,6 +76,15 @@ export const shell = stylex.create({
       },
     },
   },
+  navigationBorder: {
+    position: 'absolute',
+    inset: '-4px -12px',
+    pointerEvents: 'none',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: 'var(--border)',
+    borderRadius: 'var(--radius-card)',
+  },
   navigationActions: {
     position: 'relative',
     zIndex: 1,
