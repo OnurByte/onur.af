@@ -1,10 +1,15 @@
 import { expect, test } from '@playwright/test';
+import { listedLogEntries } from '../../src/portfolio/log';
 import { publicPaths, proofPaths, logPaths } from '../../src/portfolio/seo';
 
 test('public HTML remains indexable without a runtime canonical origin', async ({
   page,
 }) => {
-  for (const path of [...publicPaths, ...proofPaths, ...logPaths()]) {
+  for (const path of [
+    ...publicPaths,
+    ...proofPaths,
+    ...logPaths(listedLogEntries),
+  ]) {
     const response = await page.goto(path);
     expect(response?.status(), path).toBe(200);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute(

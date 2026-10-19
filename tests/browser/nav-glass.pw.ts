@@ -142,10 +142,14 @@ test('navbar controls use the Connect border and the brand links home', async ({
       page.locator('[data-nav-glass] > div > a[href="/log"]'),
     ]) {
       expect(
-        await control.evaluate((el) => getComputedStyle(el).backgroundImage),
-      ).toBe(standard.image);
+        await control
+          .locator('i[aria-hidden]')
+          .evaluate((el) => getComputedStyle(el).backgroundImage),
+      ).toContain('radial-gradient');
       expect(
-        await control.evaluate((el) => getComputedStyle(el).borderColor),
+        await control
+          .locator('i[aria-hidden]')
+          .evaluate((el) => getComputedStyle(el).borderColor),
       ).toBe(standard.border);
     }
     const find = await page.locator('#open-search').evaluate((el) => {

@@ -1,4 +1,4 @@
-import { logEntries, logMetadata, logUrl, type LogEntry } from './log';
+import { listedLogEntries, logMetadata, logUrl, type LogEntry } from './log';
 import { renderLogContent } from './log-markdown';
 
 export interface GithubReference {
@@ -131,4 +131,4 @@ export function buildContentIndex(
   };
 }
 
-export const contentIndex = buildContentIndex(logEntries);
+export const contentIndex = buildContentIndex(listedLogEntries);

@@ -3,6 +3,72 @@ import * as stylex from '@stylexjs/stylex';
 import { shell } from '../styles/shell';
 
 const icons = {
+  techJavascript: { filename: 'javascript.svg', width: 24, height: 24 },
+  techTypescript: { filename: 'typescript.svg', width: 24, height: 24 },
+  techPython: { filename: 'technologies/python.svg', width: 24, height: 24 },
+  techGnubash: { filename: 'technologies/gnubash.svg', width: 24, height: 24 },
+  techRust: { filename: 'rust.svg', width: 24, height: 24 },
+  techGo: { filename: 'technologies/go.svg', width: 24, height: 24 },
+  techOpenjdk: { filename: 'technologies/openjdk.svg', width: 24, height: 24 },
+  techPhp: { filename: 'technologies/php.svg', width: 24, height: 24 },
+  techLua: { filename: 'technologies/lua.svg', width: 24, height: 24 },
+  techHtml5: { filename: 'technologies/html5.svg', width: 24, height: 24 },
+  techCss: { filename: 'technologies/css.svg', width: 24, height: 24 },
+  techAstro: { filename: 'technologies/astro.svg', width: 24, height: 24 },
+  techNextdotjs: {
+    filename: 'technologies/nextdotjs.svg',
+    width: 24,
+    height: 24,
+  },
+  techReact: { filename: 'technologies/react.svg', width: 24, height: 24 },
+  techTailwindcss: {
+    filename: 'technologies/tailwindcss.svg',
+    width: 24,
+    height: 24,
+  },
+  techShadcnui: {
+    filename: 'technologies/shadcnui.svg',
+    width: 24,
+    height: 24,
+  },
+  techLinux: { filename: 'technologies/linux.svg', width: 24, height: 24 },
+  techGit: { filename: 'technologies/git.svg', width: 24, height: 24 },
+  techNixos: { filename: 'technologies/nixos.svg', width: 24, height: 24 },
+  techNeovim: { filename: 'technologies/neovim.svg', width: 24, height: 24 },
+  techZedindustries: {
+    filename: 'technologies/zedindustries.svg',
+    width: 24,
+    height: 24,
+  },
+  techJetbrains: {
+    filename: 'technologies/jetbrains.svg',
+    width: 24,
+    height: 24,
+  },
+  techNodedotjs: {
+    filename: 'technologies/nodedotjs.svg',
+    width: 24,
+    height: 24,
+  },
+  techBun: { filename: 'technologies/bun.svg', width: 24, height: 24 },
+  techGtk: { filename: 'technologies/gtk.svg', width: 24, height: 24 },
+  techGnome: { filename: 'technologies/gnome.svg', width: 24, height: 24 },
+  techSqlite: { filename: 'technologies/sqlite.svg', width: 24, height: 24 },
+  techMysql: { filename: 'technologies/mysql.svg', width: 24, height: 24 },
+  techPostgresql: {
+    filename: 'technologies/postgresql.svg',
+    width: 24,
+    height: 24,
+  },
+  techDrizzle: { filename: 'technologies/drizzle.svg', width: 24, height: 24 },
+  techCodex: { filename: 'technologies/codex.svg', width: 24, height: 24 },
+  techClaude: { filename: 'technologies/claude.svg', width: 24, height: 24 },
+  techModelcontextprotocol: {
+    filename: 'technologies/modelcontextprotocol.svg',
+    width: 24,
+    height: 24,
+  },
+
   connectMail: { filename: 'connect-mail.svg', width: 24, height: 24 },
   connectGithub: { filename: 'github.svg', width: 24, height: 24 },
   connectKey: { filename: 'search-key.svg', width: 24, height: 24 },
@@ -52,7 +118,8 @@ const { filename, width, height } = icons[name];
   {...stylex.attrs(
     shell.icon,
     shell.monochrome,
-    (name.startsWith('share') ||
+    (name.startsWith('tech') ||
+      name.startsWith('share') ||
       name === 'connectMail' ||
       name === 'connectGithub' ||
       name === 'connectKey' ||

@@ -1,5 +1,6 @@
 import {
   logEntries,
+  isListedLogEntry,
   logMetadata,
   logTagDefinitions,
   type LogEntry,
@@ -24,15 +25,17 @@ for (const [slug, definition] of Object.entries(logTagDefinitions)) {
 
 export function logTags(entries: readonly LogEntry[] = logEntries) {
   return Object.entries(logTagDefinitions).flatMap(([slug, definition]) => {
-    const matches = entries.filter((entry) =>
-      logMetadata(entry).tags.some((tag) => {
-        let subject: string | undefined = tag;
-        while (subject) {
-          if (subject === slug) return true;
-          subject = logTagDefinitions[subject]?.broader;
-        }
-        return false;
-      }),
+    const matches = entries.filter(
+      (entry) =>
+        isListedLogEntry(entry) &&
+        logMetadata(entry).tags.some((tag) => {
+          let subject: string | undefined = tag;
+          while (subject) {
+            if (subject === slug) return true;
+            subject = logTagDefinitions[subject]?.broader;
+          }
+          return false;
+        }),
     );
     return matches.length ? [{ slug, ...definition, entries: matches }] : [];
   });

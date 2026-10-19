@@ -90,6 +90,7 @@ const revisionSchema = z
   .strict();
 const entrySchema = z
   .object({
+    visibility: z.enum(['public', 'unlisted']).optional(),
     id: z.string().regex(/^[a-z]+-[a-z]+-[a-z]+$/),
     title: z
       .string()
@@ -211,7 +212,7 @@ export function readingTime(markdown: string): string {
     : `${Math.ceil(seconds / 60)} min read`;
 }
 export function logFeedEntries(entries: readonly LogEntry[]) {
-  return entries.map((entry) => ({
+  return entries.filter(isListedLogEntry).map((entry) => ({
     id: `log-${entry.id}`,
     title: logMetadata(entry).title,
     summary: logMetadata(entry).summary,
@@ -219,4 +220,8 @@ export function logFeedEntries(entries: readonly LogEntry[]) {
     url: logUrl(entry),
   }));
 }
+export function isListedLogEntry(entry: Pick<LogEntry, 'visibility'>) {
+  return entry.visibility !== 'unlisted';
+}
 export const logEntries = parseLog(rawEntries);
+export const listedLogEntries = logEntries.filter(isListedLogEntry);

@@ -1,6 +1,10 @@
 import type { APIRoute } from 'astro';
 import publicKey from '../../../public/pgp.asc?raw';
-import { logEntries, logProofUrl, logRevisionUrl } from '../../portfolio/log';
+import {
+  listedLogEntries,
+  logProofUrl,
+  logRevisionUrl,
+} from '../../portfolio/log';
 import {
   getLogSignatures,
   getLogProofs,
@@ -18,7 +22,7 @@ export const GET: APIRoute = async () => {
     getLogProofs(),
   ]);
   const key = await readKey({ armoredKey: publicKey });
-  const logProofs = logEntries.flatMap((entry) =>
+  const logProofs = listedLogEntries.flatMap((entry) =>
     entry.revisions.flatMap((revision) => {
       const id = `${entry.id}-v${revision.version}`;
       const signature = signatures[id];

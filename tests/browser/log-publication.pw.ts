@@ -186,6 +186,10 @@ $$
       JSON.stringify(entries),
     );
     await writeFile(
+      join(directory, 'src/content/introduction.json'),
+      JSON.stringify({ logId: entries[0]!.id }),
+    );
+    await writeFile(
       join(directory, 'src/content/log-connections.json'),
       JSON.stringify([
         {

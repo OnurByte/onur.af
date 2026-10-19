@@ -1,1 +1,14 @@
-null
+{
+  "version": 2,
+  "origin": "https://portfolio-seven-plum-73.vercel.app",
+  "sha256": "9577193f0e682f82e7534763667463ce104266785513bb6c8aaabd274a1873a9",
+  "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatX9BQAKCRDNHqyHSkMK\nVkYcAPwMGacxtsaB71rlJV2LadpcnVaXwbWOm0zOl9m4aY6OSwEA7f8hoOs+TMvk\ncvPnp0AedKbcsSzq5k+XFkP3YuHILgM=\n=LZrw\n-----END PGP SIGNATURE-----\n",
+  "authorization": {
+    "domain": "onurbyte-rss-signature-authorization-v1",
+    "publicationSequence": 3,
+    "fingerprint": "096E249AA4606A6D54A2B3E2CD1EAC874A430A56",
+    "xmlSha256": "9577193f0e682f82e7534763667463ce104266785513bb6c8aaabd274a1873a9",
+    "signatureSha256": "f1055a528542dc541e6ece0c12f2f60fe533a4fa008da0e702ca66cd5d64a362",
+    "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatX9BQAKCRDNHqyHSkMK\nVnFOAQCvo7sCGiXz4zYhjBPiSC5umkaSOk0V1ytw+b18dizfagEAlc2M66hxuGin\nUhXcOK/QFyPXvgw7GtCm7vd4f83UMQ0=\n=f7/O\n-----END PGP SIGNATURE-----\n"
+  }
+}

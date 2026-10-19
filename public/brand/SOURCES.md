@@ -1,5 +1,10 @@
 # SVG sources
 
+- `technologies/` brand marks: Simple Icons (https://github.com/simple-icons/simple-icons/tree/develop/icons), CC0; original SVG paths preserved. `technologies/codex.svg` uses the Codex mark from [Lobe Icons](https://github.com/lobehub/lobe-icons/blob/master/packages/static-svg/icons/codex.svg) (MIT); source paths and viewBox are preserved. Icons follow the shared monochrome theme treatment.
+- `technologies/gnome.svg` represents Libadwaita with its parent GNOME project's mark; `openjdk.svg` represents Java. Zed and JetBrains IDEs were requested by the owner.
+
+Technology list expanded from public OnurByte repositories (19 October 2026): [ISPATLA](https://github.com/OnurByte/ISPATLA/blob/main/package.json) (Next.js, React, shadcn/ui, Bun, Drizzle, PostgreSQL), [DomainFinder](https://github.com/OnurByte/DomainFinder/blob/main/package.json) (web stack), [TurkishBankMCP](https://github.com/OnurByte/TurkishBankMCP/blob/main/package.json) (Node.js, MCP), [Hakikat](https://github.com/OnurByte/Hakikat/blob/master/Cargo.toml) and [LiquidGlassForLinux](https://github.com/OnurByte/LiquidGlassForLinux/blob/main/Cargo.toml) (Rust, GTK4, Libadwaita), [PSYCHOVIM](https://github.com/OnurByte/PSYCHOVIM) (Lua), [PrayerTimes](https://github.com/OnurByte/PrayerTimes) (PHP), [computerStore](https://github.com/OnurByte/computerStore) (Java), [PureDesign](https://github.com/OnurByte/PureDesign) (HTML/CSS), and [vesper](https://github.com/OnurByte/vesper) (NixOS).
+
 - `rss.svg`: existing portfolio RSS glyph extracted from the layout; loaded as a local image.
 - `search.svg`: original magnifying-glass outline glyph authored for this portfolio; loaded as a local image.
 - `search-home.svg`, `search-donate.svg`, `search-key.svg`: original outline glyphs authored for this portfolio's search results; loaded as local images.

@@ -1,4 +1,4 @@
-import { logEntries, type LogEntry } from './log';
+import { logEntries, isListedLogEntry, type LogEntry } from './log';
 import editorial from '../content/log-connections.json' with { type: 'json' };
 import { buildContentIndex } from './content-index';
 
@@ -35,18 +35,24 @@ export function logConnections(
   curated: readonly ReadingConnection[] = editorial,
 ) {
   validateConnections(curated, entries);
-  const others = entries.filter((candidate) => candidate.id !== entry.id);
+  const others = entries.filter(
+    (candidate) => isListedLogEntry(candidate) && candidate.id !== entry.id,
+  );
   const byDate = (a: LogEntry, b: LogEntry) =>
     Date.parse(b.revisions[0]!.publishedAt) -
       Date.parse(a.revisions[0]!.publishedAt) || a.id.localeCompare(b.id, 'en');
   const related = curated
-    .filter((connection) => connection.from === entry.id)
+    .filter(
+      (connection) =>
+        connection.from === entry.id &&
+        others.some((candidate) => candidate.id === connection.to),
+    )
     .map((connection) => ({
       ...others.find((candidate) => candidate.id === connection.to)!,
       reason: connection.reason,
     }));
   const referring = new Set(
-    buildContentIndex(entries, origin)
+    buildContentIndex(entries.filter(isListedLogEntry), origin)
       .referencedBy(entry.id)
       .map((document) => document.id),
   );

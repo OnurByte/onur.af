@@ -131,10 +131,12 @@ test('shared page edges stay aligned through fractional breakpoint widths', asyn
     const frame = page.frameLocator('iframe');
     await expect(frame.locator('main')).toBeVisible();
     const edges = await frame.locator('body').evaluate((body) =>
-      ['header', 'main', 'footer'].map((selector) => {
-        const rect = body.querySelector(selector)!.getBoundingClientRect();
-        return { left: rect.left, right: rect.right };
-      }),
+      ['body > header > nav', '#content > main', 'body > footer'].map(
+        (selector) => {
+          const rect = body.querySelector(selector)!.getBoundingClientRect();
+          return { left: rect.left, right: rect.right };
+        },
+      ),
     );
     for (const edge of edges.slice(1)) {
       expect(
