@@ -1,5 +1,7 @@
 import {
   logEntries,
+  listedLogEntries,
+  isListedLogEntry,
   logProofUrl,
   logUrl,
   logMetadata,
@@ -15,8 +17,8 @@ export const publicPaths: readonly string[] = [
   '/log',
 ];
 export const proofPaths = ['/pgp/x', '/pgp/github'] as const;
-export const logPaths = () =>
-  logEntries.flatMap((entry) => [logUrl(entry), logProofUrl(entry)]);
+export const logPaths = (entries: readonly LogEntry[] = logEntries) =>
+  entries.flatMap((entry) => [logUrl(entry), logProofUrl(entry)]);
 export const siteDescription = '';
 
 export function validSiteUrl(value: string | undefined): string | undefined {
@@ -74,6 +76,10 @@ export function robotsContent(
 ): string {
   if ((options.status ?? 200) !== 200 || !isPublicPage(pathname))
     return 'noindex, nofollow';
+  const entry = logEntries.find(
+    (entry) => logUrl(entry) === pathname || logProofUrl(entry) === pathname,
+  );
+  if (entry && !isListedLogEntry(entry)) return 'noindex, follow';
   const tag = logTags().find((tag) => logTagUrl(tag.slug) === pathname);
   return options.noindex ||
     (pathname.startsWith('/log/tag/') && (!tag || !tag.indexable))
@@ -101,7 +107,7 @@ export function sitemapXml(origin: string | undefined): string {
     ? [
         ...publicPaths,
         ...proofPaths,
-        ...logPaths(),
+        ...logPaths(listedLogEntries),
         ...logTags()
           .filter((tag) => tag.indexable)
           .map((tag) => logTagUrl(tag.slug)),

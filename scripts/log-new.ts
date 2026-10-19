@@ -23,10 +23,14 @@ if (
   typeof metadata !== 'object' ||
   Array.isArray(metadata) ||
   Object.keys(metadata).some(
-    (key) => !['language', 'tags', 'cover', 'sources'].includes(key),
+    (key) =>
+      !['visibility', 'language', 'tags', 'cover', 'sources'].includes(key),
   )
 )
-  throw new Error('Metadata accepts only language, tags, cover and sources');
+  throw new Error(
+    'Metadata accepts only visibility, language, tags, cover and sources',
+  );
+const { visibility, ...revisionMetadata } = metadata as Record<string, unknown>;
 const body = await readFile(markdownFile, 'utf8');
 if (!body.trim()) throw new Error('Cannot create an empty Log entry');
 
@@ -41,6 +45,7 @@ const next = [
   ...entries,
   {
     id,
+    ...(visibility === undefined ? {} : { visibility }),
     title: title.trim(),
     summary: summary.trim(),
     revisions: [
@@ -51,7 +56,7 @@ const next = [
         summary: summary.trim(),
         language: 'en',
         tags: [],
-        ...metadata,
+        ...revisionMetadata,
         body,
       },
     ],

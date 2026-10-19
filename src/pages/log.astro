@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex';
 import Layout from '../layouts/Layout.astro';
 import { styles } from '../styles/pages';
 import { logStyles } from '../styles/log';
-import { logEntries } from '../portfolio/log';
+import { listedLogEntries } from '../portfolio/log';
 import { publicPreview } from '../portfolio/previews';
 import LogCard from '../components/LogCard.astro';
 import { getLogSignatures } from '../portfolio/verified-proofs';
@@ -14,7 +14,7 @@ const signatures = await getLogSignatures();
   <main {...stylex.attrs(styles.main)}>
     <h1 {...stylex.attrs(styles.heading)}>Log</h1>
     <div {...stylex.attrs(logStyles.list)} class="h-feed">
-      {logEntries.map((entry) => (
+      {listedLogEntries.map((entry) => (
         <LogCard
           entry={entry}
           verified={Boolean(

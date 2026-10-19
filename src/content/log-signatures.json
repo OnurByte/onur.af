@@ -6,5 +6,9 @@
   "cryptic-watchtower-watches-v2": {
     "sha256": "5b31a3b96e41598b0230e06faa9230ce3e0612288ec671c414aaf45564127065",
     "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatPVGAAKCRDNHqyHSkMK\nVrPSAP9CnvrICTjmL5zhRwrc0q6XBAAkAKVTNbT25cfxt2CJbAD/aiw5mLETYxdn\nSOcEdMeQWMMjRrXLfIe+s7jQFLbOsAY=\n=XxYl\n-----END PGP SIGNATURE-----\n"
+  },
+  "obscure-archive-remembers-v1": {
+    "sha256": "3d665074002c10ddb259fa12ccdf386abb2e2a0cf9e082f216701718a34d2ec5",
+    "signature": "-----BEGIN PGP SIGNATURE-----\n\niHUEABYKAB0WIQQJbiSapGBqbVSis+LNHqyHSkMKVgUCatX8HgAKCRDNHqyHSkMK\nViPOAP9L5cRhT/wC0rMChZ5C8otLRokD70ysTcJNQnyZleaJ+wD9GpQmSHuthntn\nfPNVAioAX3BwlW5kS4OeWN7cPNbFmws=\n=pzHJ\n-----END PGP SIGNATURE-----\n"
   }
 }

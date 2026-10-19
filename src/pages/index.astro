@@ -5,17 +5,20 @@ import { edge } from '../styles/edge';
 import { logStyles } from '../styles/log';
 import Layout from '../layouts/Layout.astro';
 import HomeEmbeds from '../components/embeds/HomeEmbeds.astro';
+import Technologies from '../components/Technologies.astro';
 import { homeEmbedSources } from '../content/home-embeds';
 import { loadEmbeds } from '../portfolio/embed-sources';
 import LogCard from '../components/LogCard.astro';
-import { logEntries } from '../portfolio/log';
+import { listedLogEntries, logProofUrl } from '../portfolio/log';
 import { getLogSignatures } from '../portfolio/verified-proofs';
+import ProofBadge from '../components/ProofBadge.astro';
+import { introduction, introductionEntry } from '../portfolio/introduction';
 import { mottos } from '../portfolio/previews';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 const homeEmbeds = await loadEmbeds(homeEmbedSources, { timeoutMs: 15_000 });
 const signatures = await getLogSignatures();
-const recentLogs = logEntries.slice(0, 3);
+const recentLogs = listedLogEntries.slice(0, 3);
 const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
 ---
 
@@ -26,26 +29,36 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
       {...stylex.attrs(styles.homeIntroduction, edge.frame)}
       aria-labelledby="introduction-heading"
     >
-      <h2 id="introduction-heading" {...stylex.attrs(styles.sectionHeading)}>
-        I'm Onur.
-      </h2>
+      <div {...stylex.attrs(styles.homeIntroductionHeading)}>
+        <h2 id="introduction-heading" {...stylex.attrs(styles.sectionHeading)}>
+          {introduction.heading}
+        </h2>
+        <div {...stylex.attrs(logStyles.meta)}>
+          <a
+            href={`${logProofUrl(introductionEntry)}#timestamps`}
+            aria-label="Introduction timestamp proof"
+          >
+            <time datetime={introductionEntry.revisions[0]!.publishedAt}>
+              {introductionEntry.revisions[0]!.publishedAt.slice(0, 10)}
+            </time>
+          </a>
+          <ProofBadge
+            target="log"
+            href={logProofUrl(introductionEntry)}
+            label="Verified"
+          />
+        </div>
+      </div>
       <div {...stylex.attrs(styles.homeIntroductionCopy)}>
-        <p {...stylex.attrs(styles.prose, styles.homeIntroductionText)}>
-          I build software and shape my own tools. I want to understand what
-          runs on my machines, question the defaults, and change what gets in
-          the way. Working on a tool is often how I learn to think more clearly
-          about the problem it solves.
-        </p>
-        <p {...stylex.attrs(styles.prose, styles.homeIntroductionText)}>
-          I value independent thought and the responsibility that comes with
-          making my own choices. That shapes what I build, what I use, and what
-          I choose to share. This site is a record of that work and the ideas
-          behind it.
-        </p>
+        {introduction.paragraphs.map((paragraph) => (
+          <p {...stylex.attrs(styles.prose, styles.homeIntroductionText)}>
+            {paragraph}
+          </p>
+        ))}
       </div>
       <img
         {...stylex.attrs(styles.homeIntroductionPortrait)}
-        src="/brand/home-identity-portrait.webp"
+        src="/brand/home-identity-portrait.svg"
         width="480"
         height="480"
         alt=""
@@ -53,6 +66,7 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
         decoding="async"
       />
     </section>
+    <Technologies />
     {recentLogs.length > 0 && (
       <section
         {...stylex.attrs(logStyles.list)}

@@ -1,4 +1,9 @@
 import { expect, test } from '@playwright/test';
+import {
+  introduction,
+  introductionEntry,
+} from '../../src/portfolio/introduction';
+import { logProofUrl, logRevisionUrl } from '../../src/portfolio/log';
 
 for (const colorScheme of ['light', 'dark'] as const) {
   test(`${colorScheme} introduction remains readable without JavaScript`, async ({
@@ -11,15 +16,17 @@ for (const colorScheme of ['light', 'dark'] as const) {
     const page = await context.newPage();
     await page.goto('/');
     const card = page.locator('[aria-labelledby="introduction-heading"]');
-    await expect(card.locator('h2')).toHaveText("I'm Onur.");
-    await expect(card.locator('p')).toHaveText([
-      'I build software and shape my own tools. I want to understand what runs on my machines, question the defaults, and change what gets in the way. Working on a tool is often how I learn to think more clearly about the problem it solves.',
-      'I value independent thought and the responsibility that comes with making my own choices. That shapes what I build, what I use, and what I choose to share. This site is a record of that work and the ideas behind it.',
-    ]);
-    await expect(card.locator('img')).toHaveAttribute('alt', '');
+    await expect(card.locator('h2')).toHaveText(introduction.heading);
+    await expect(card.locator('p')).toHaveText(introduction.paragraphs);
+    await expect(
+      card.getByRole('link', { name: 'Publication PGP proof' }),
+    ).toHaveText('Verified');
+    await expect(
+      card.locator('img[src="/brand/home-identity-portrait.svg"]'),
+    ).toHaveAttribute('alt', '');
     expect(
       await card
-        .locator('img')
+        .locator('img[src="/brand/home-identity-portrait.svg"]')
         .evaluate(
           (image: HTMLImageElement) => image.complete && image.naturalWidth > 0,
         ),
@@ -27,13 +34,15 @@ for (const colorScheme of ['light', 'dark'] as const) {
     for (const width of [320, 375, 620, 621, 768, 1280, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
       const bounds = await card.boundingBox();
-      const image = await card.locator('img').boundingBox();
+      const image = await card
+        .locator('img[src="/brand/home-identity-portrait.svg"]')
+        .boundingBox();
       const text = await card.locator('p').first().boundingBox();
       const heading = await card.locator('h2').boundingBox();
       expect(heading!.y - bounds!.y).toBeLessThan(30);
       expect(
         await card
-          .locator('img')
+          .locator('img[src="/brand/home-identity-portrait.svg"]')
           .evaluate((image) => getComputedStyle(image).filter),
       ).toBe('none');
       expect(image!.x).toBeGreaterThan(bounds!.x);
@@ -58,6 +67,53 @@ for (const colorScheme of ['light', 'dark'] as const) {
       path: `test-results/introduction-${colorScheme}.png`,
       fullPage: true,
     });
+    await card.getByRole('link', { name: 'Publication PGP proof' }).click();
+    await expect(page).toHaveURL(logProofUrl(introductionEntry));
+    await expect(page.locator('h1')).toHaveText(introduction.heading);
+    await expect(
+      page.getByRole('textbox', { name: 'PGP signature' }),
+    ).toHaveValue(/-----BEGIN PGP SIGNATURE-----/);
+    const file = logRevisionUrl(
+      introductionEntry,
+      introductionEntry.revisions.at(-1)!.version,
+    );
+    const text = await page.request.get(file);
+    expect(text.ok()).toBe(true);
+    expect(await text.text()).toContain(introduction.paragraphs[0]!);
+    const signature = await page.request.get(`${file}.asc`);
+    expect(signature.ok()).toBe(true);
+    expect(await signature.text()).toContain('-----BEGIN PGP SIGNATURE-----');
+    await expect(
+      page.getByRole('heading', { name: 'Portable proof', exact: true }),
+    ).toBeVisible();
+    const timestamps = page.getByRole('region', {
+      name: 'Markdown timestamp',
+      exact: true,
+    });
+    await expect(
+      timestamps.getByRole('link', {
+        name: 'OpenTimestamps receipt',
+        exact: true,
+      }),
+    ).toHaveAttribute('href', `${file}.ots`);
+    const receipt = await page.request.get(`${file}.ots`);
+    expect(receipt.ok()).toBe(true);
+    expect((await receipt.body()).byteLength).toBeGreaterThan(0);
+    await expect(
+      page.getByRole('link', { name: 'Download archive', exact: true }),
+    ).toHaveAttribute('href', `/log/${introductionEntry.id}/archive.tar`);
+    await page.goto('/log');
+    await expect(
+      page.locator(`main a[href="/log/${introductionEntry.id}"]`),
+    ).toHaveCount(0);
+    const searchIndex = await page.request.get('/search-index.json');
+    expect(await searchIndex.text()).not.toContain(introductionEntry.id);
+    await page.goto(`/log/${introductionEntry.id}`);
+    await expect(page.locator('h1')).toContainText(introduction.heading);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      'content',
+      'noindex, follow',
+    );
     await context.close();
   });
 }

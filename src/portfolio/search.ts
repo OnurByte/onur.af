@@ -1,4 +1,9 @@
-import { logEntries, logTagDefinitions, type LogEntry } from './log';
+import {
+  logEntries,
+  isListedLogEntry,
+  logTagDefinitions,
+  type LogEntry,
+} from './log';
 import { buildContentIndex } from './content-index';
 import { logTags, logTagUrl } from './log-tags';
 import pages from '../content/public-pages.json' with { type: 'json' };
@@ -10,7 +15,9 @@ export const searchPages = pages.map(({ id, title, description }) => ({
 }));
 
 export function logSearchEntries(entries: readonly LogEntry[]) {
-  const logs = buildContentIndex(entries).documents.map((document) => ({
+  const logs = buildContentIndex(
+    entries.filter(isListedLogEntry),
+  ).documents.map((document) => ({
     url: document.url,
     meta: { title: document.title, description: document.summary },
     searchText: [

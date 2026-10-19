@@ -53,6 +53,13 @@ export const styles = stylex.create({
     borderColor: 'var(--border)',
     borderRadius: 'var(--radius-card)',
   },
+  homeIntroductionHeading: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: 4,
+    minWidth: 0,
+  },
   homeIntroductionCopy: {
     minWidth: 0,
     display: 'grid',

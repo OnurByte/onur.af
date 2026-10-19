@@ -1,0 +1,117 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { edge } from '../styles/edge';
+import { embeds } from '../styles/embeds';
+import { connect } from '../styles/connect';
+import Icon from './Icon.astro';
+import { technologies } from '../styles/technologies';
+
+const categories = [
+  {
+    name: 'Languages',
+    items: [
+      { name: 'JavaScript', icon: 'techJavascript' },
+      { name: 'TypeScript', icon: 'techTypescript' },
+      { name: 'Python', icon: 'techPython' },
+      { name: 'Bash', icon: 'techGnubash' },
+      { name: 'Rust', icon: 'techRust' },
+      { name: 'Go', icon: 'techGo' },
+      { name: 'Java', icon: 'techOpenjdk' },
+      { name: 'PHP', icon: 'techPhp' },
+      { name: 'Lua', icon: 'techLua' },
+    ],
+  },
+  {
+    name: 'Web',
+    items: [
+      { name: 'HTML', icon: 'techHtml5' },
+      { name: 'CSS', icon: 'techCss' },
+      { name: 'Astro', icon: 'techAstro' },
+      { name: 'Next.js', icon: 'techNextdotjs' },
+      { name: 'React', icon: 'techReact' },
+      { name: 'Tailwind CSS', icon: 'techTailwindcss' },
+      { name: 'shadcn/ui', icon: 'techShadcnui' },
+    ],
+  },
+  {
+    name: 'Tools',
+    items: [
+      { name: 'Linux', icon: 'techLinux' },
+      { name: 'Git', icon: 'techGit' },
+      { name: 'NixOS', icon: 'techNixos' },
+    ],
+  },
+  {
+    name: 'IDE',
+    items: [
+      { name: 'Neovim', icon: 'techNeovim' },
+      { name: 'Zed', icon: 'techZedindustries' },
+      { name: 'JetBrains IDEs', icon: 'techJetbrains' },
+    ],
+  },
+  {
+    name: 'Runtime',
+    items: [
+      { name: 'Node.js', icon: 'techNodedotjs' },
+      { name: 'Bun', icon: 'techBun' },
+    ],
+  },
+  {
+    name: 'Desktop',
+    items: [
+      { name: 'GTK4', icon: 'techGtk' },
+      { name: 'Libadwaita', icon: 'techGnome' },
+    ],
+  },
+  {
+    name: 'Database',
+    items: [
+      { name: 'SQLite', icon: 'techSqlite' },
+      { name: 'MySQL', icon: 'techMysql' },
+      { name: 'PostgreSQL', icon: 'techPostgresql' },
+      { name: 'Drizzle ORM', icon: 'techDrizzle' },
+    ],
+  },
+  {
+    name: 'AI',
+    items: [
+      { name: 'Codex', icon: 'techCodex' },
+      { name: 'Claude', icon: 'techClaude' },
+      { name: 'MCP', icon: 'techModelcontextprotocol' },
+    ],
+  },
+] as const;
+---
+
+<section
+  {...stylex.attrs(embeds.section, edge.frame, technologies.section)}
+  aria-labelledby="technologies-heading"
+>
+  <h2 id="technologies-heading" {...stylex.attrs(embeds.title)}>
+    Technologies
+  </h2>
+  <div {...stylex.attrs(technologies.categories)}>
+    {categories.map((category) => (
+      <section aria-labelledby={`technology-${category.name.toLowerCase()}`}>
+        <h3
+          id={`technology-${category.name.toLowerCase()}`}
+          {...stylex.attrs(technologies.categoryHeading)}
+        >
+          {category.name}
+        </h3>
+        <ul {...stylex.attrs(connect.list, technologies.list)}>
+          {category.items.map((item) => (
+            <li {...stylex.attrs(connect.item)}>
+              <div
+                {...stylex.attrs(connect.link, edge.frame, technologies.card)}
+              >
+                <Icon name={item.icon} />
+                <span {...stylex.attrs(technologies.name)}>{item.name}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</section>

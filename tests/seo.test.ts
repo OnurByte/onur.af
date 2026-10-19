@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { listedLogEntries } from '../src/portfolio/log';
 import {
   canonicalUrl,
   sitemapXml,
@@ -61,7 +62,11 @@ describe('public SEO URLs', () => {
     expect(sitemapXml(undefined)).not.toContain('<loc>');
     expect(
       sitemapXml('https://portfolio.example').match(/<loc>/g),
-    ).toHaveLength(publicPaths.length + proofPaths.length + logPaths().length);
+    ).toHaveLength(
+      publicPaths.length +
+        proofPaths.length +
+        logPaths(listedLogEntries).length,
+    );
     expect(sitemapXml('https://portfolio.example')).not.toContain('private-id');
     expect(sitemapXml('https://portfolio.example')).not.toContain('/identity');
   });
@@ -69,7 +74,11 @@ describe('public SEO URLs', () => {
 
 test('missing canonical configuration never blocks known public pages from indexing', async () => {
   const { robotsContent } = await import('../src/portfolio/seo');
-  for (const path of [...publicPaths, ...proofPaths, ...logPaths()])
+  for (const path of [
+    ...publicPaths,
+    ...proofPaths,
+    ...logPaths(listedLogEntries),
+  ])
     expect(robotsContent(path)).toBe('index, follow');
   expect(robotsContent('/pgp', { noindex: true })).toBe('noindex, follow');
   expect(robotsContent('/404', { status: 404 })).toBe('noindex, nofollow');
