@@ -150,6 +150,9 @@ video {
   outline: 2px solid;
   outline-offset: 3px;
 }
+#content:focus-visible {
+  outline: none;
+}
 [data-payment-qr] svg {
   display: block;
   height: auto;
