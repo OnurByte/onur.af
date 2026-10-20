@@ -281,7 +281,7 @@ test('active tooth grows and fills with section progress', async ({ page }) => {
   const tooth = first.locator('span');
   expect(
     await tooth.evaluate((node) => node.getBoundingClientRect().width),
-  ).toBe(16);
+  ).toBe(20);
   await page.evaluate((y) => window.scrollTo(0, y + 4), positions[1]!);
   await expect
     .poll(() =>
@@ -292,7 +292,7 @@ test('active tooth grows and fills with section progress', async ({ page }) => {
     .toBe('1');
   expect(
     await tooth.evaluate((node) => node.getBoundingClientRect().width),
-  ).toBe(8);
+  ).toBe(12);
 });
 
 test('short viewport keeps the contents panel below the sticky header', async ({

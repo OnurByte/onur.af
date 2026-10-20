@@ -175,7 +175,7 @@ export function initScrollRail() {
       for (const item of [link, markers[i]?.querySelector('a')]) {
         if (i === active) item?.setAttribute('aria-current', 'location');
         else item?.removeAttribute('aria-current');
-        item?.style.setProperty('--tick-width', i === active ? '16px' : '8px');
+        item?.style.setProperty('--tick-width', i === active ? '20px' : '12px');
         item?.style.setProperty('--tick-base', i === active ? '55%' : '25%');
         item?.style.setProperty('--section-progress', String(progress));
       }

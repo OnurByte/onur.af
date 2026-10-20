@@ -57,8 +57,8 @@ export const railStyles = stylex.create({
     position: 'relative',
     overflow: 'hidden',
     display: 'block',
-    width: 'var(--tick-width, 8px)',
-    height: 2,
+    width: 'var(--tick-width, 12px)',
+    height: 4,
     borderRadius: 999,
     backgroundColor:
       'color-mix(in srgb, var(--text) var(--tick-base, 25%), transparent)',
@@ -68,11 +68,15 @@ export const railStyles = stylex.create({
     inset: 0,
     borderRadius: 'inherit',
     backgroundColor: 'var(--text)',
-    transform: 'scaleX(var(--section-progress, 0))',
-    transformOrigin: 'left',
+    width: 'calc(var(--section-progress, 0) * 100%)',
   },
   border: { position: 'absolute', inset: 0, borderRadius: 'inherit' },
   panel: {
+    '--glass-fill': {
+      default: 'var(--background)',
+      '@supports (backdrop-filter: blur(1px))':
+        'color-mix(in srgb, var(--background) 88%, transparent)',
+    },
     position: 'absolute',
     right: '100%',
     top: '50%',
@@ -84,6 +88,7 @@ export const railStyles = stylex.create({
     borderColor: 'var(--border)',
     borderRadius: 'var(--radius-card)',
     padding: 12,
+    overflow: 'hidden',
     // Keep scrolling contents separate so backdrop and edge stay stationary.
     display: 'flex',
     flexDirection: 'column',
