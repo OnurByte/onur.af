@@ -15,6 +15,9 @@ export function initSmoothScroll(): void {
   let target = window.scrollY;
   let previousTime = 0;
   let writtenY = window.scrollY;
+  let position = window.scrollY;
+  let transition:
+    { from: number; started: number; duration: number } | undefined;
   const clamp = (top: number) =>
     Math.max(
       0,
@@ -24,6 +27,8 @@ export function initSmoothScroll(): void {
     cancelAnimationFrame(frame);
     frame = 0;
     target = window.scrollY;
+    position = window.scrollY;
+    transition = undefined;
   };
   const tick = (time: number) => {
     // CSS scroll locks cannot stop programmatic scrolling already in flight.
@@ -39,36 +44,60 @@ export function initSmoothScroll(): void {
     target = clamp(target);
     const elapsed = Math.min(64, time - previousTime);
     previousTime = time;
-    const remaining = target - window.scrollY;
-    const next =
-      Math.abs(remaining) < 1
-        ? target
-        : window.scrollY + remaining * (1 - Math.exp(-elapsed / response));
-    // Keep subpixel progress even where the browser rounds scroll positions.
-    const step =
-      Math.abs(next - window.scrollY) < 1 && Math.abs(remaining) >= 1
-        ? window.scrollY + Math.sign(remaining)
-        : next;
+    if (transition) {
+      const progress = Math.min(
+        1,
+        Math.max(0, (time - transition.started) / transition.duration),
+      );
+      // Quintic easing has zero velocity and acceleration at both endpoints.
+      const eased = progress ** 3 * (progress * (progress * 6 - 15) + 10);
+      position = transition.from + (target - transition.from) * eased;
+    } else {
+      // Retain fractional integration when the browser rounds scroll positions.
+      position += (target - position) * (1 - Math.exp(-elapsed / response));
+    }
+    const step = position;
     window.scrollTo({ top: step, behavior: 'instant' });
     writtenY = window.scrollY;
     if (Math.abs(target - writtenY) < 1) {
       window.scrollTo({ top: target, behavior: 'instant' });
       frame = 0;
+      position = window.scrollY;
+      transition = undefined;
     } else frame = requestAnimationFrame(tick);
   };
-  moveTo = (top) => {
+  const queue = (top: number, sectionTransition: boolean) => {
     if (reduced.matches) {
       cancel();
       window.scrollTo({ top: clamp(top), behavior: 'instant' });
       return;
     }
     target = clamp(top);
+    if (sectionTransition) {
+      transition = {
+        from: window.scrollY,
+        started: performance.now(),
+        duration: Math.min(
+          900,
+          Math.max(
+            320,
+            response * 2 + Math.sqrt(Math.abs(target - window.scrollY)) * 8,
+          ),
+        ),
+      };
+      position = window.scrollY;
+    } else if (transition) {
+      transition = undefined;
+      position = window.scrollY;
+    }
     if (!frame) {
+      position = window.scrollY;
       writtenY = window.scrollY;
       previousTime = performance.now();
       frame = requestAnimationFrame(tick);
     }
   };
+  moveTo = (top) => queue(top, true);
   const nestedScroll = (event: WheelEvent) =>
     event.composedPath().some((node) => {
       if (
@@ -108,13 +137,13 @@ export function initSmoothScroll(): void {
             : 1);
       const current = window.scrollY;
       const base =
-        frame && Math.sign(delta) === Math.sign(target - current)
+        frame && !transition && Math.sign(delta) === Math.sign(target - current)
           ? target
           : current;
       const next = clamp(base + delta);
       if (next === current && !frame) return;
       event.preventDefault();
-      moveTo?.(next);
+      queue(next, false);
     },
     { passive: false },
   );

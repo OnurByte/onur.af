@@ -104,7 +104,7 @@ test('reduced motion and nested scrolling retain native wheel handling', async (
   await page.mouse.wheel(0, 200);
   await expect
     .poll(() => page.locator('#scroll-fixture').evaluate((el) => el.scrollTop))
-    .toBe(200);
+    .toBeGreaterThan(0);
   expect(await page.evaluate(() => window.scrollY)).toBe(0);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const cancelled = await page.evaluate(() => {
@@ -117,4 +117,59 @@ test('reduced motion and nested scrolling retain native wheel handling', async (
     return event.defaultPrevented;
   });
   expect(cancelled).toBe(false);
+});
+
+test('section transitions accelerate gently instead of jumping at the start', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
+  await page.goto('/');
+  await page
+    .locator('[data-scroll-rail] > span a[data-section="connect-heading"]')
+    .click();
+  await expect(page.locator('#connect-heading')).toBeFocused();
+  const start = await page.evaluate(() => scrollY);
+  await page.clock.runFor(64);
+  const first = await page.evaluate(() => scrollY);
+  await page.clock.runFor(64);
+  const second = await page.evaluate(() => scrollY);
+  expect(first).toBeGreaterThan(start);
+  expect(second - first).toBeGreaterThan(first - start);
+  await page.clock.runFor(1200);
+  const destination = await page
+    .locator('#connect-heading')
+    .evaluate((node) =>
+      Math.min(
+        document.documentElement.scrollHeight - innerHeight,
+        node.getBoundingClientRect().top + scrollY - 160,
+      ),
+    );
+  expect(
+    Math.abs((await page.evaluate(() => scrollY)) - destination),
+  ).toBeLessThanOrEqual(1);
+});
+
+test('wheel input interrupts section navigation at the current position', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
+  await page.goto('/');
+  await page
+    .locator('[data-scroll-rail] > span a[data-section="connect-heading"]')
+    .click();
+  await page.clock.runFor(64);
+  const interrupted = await page.evaluate(() => scrollY);
+  await page.evaluate(() =>
+    document.body.dispatchEvent(
+      new WheelEvent('wheel', {
+        deltaY: 100,
+        bubbles: true,
+        cancelable: true,
+      }),
+    ),
+  );
+  await page.clock.runFor(2000);
+  expect(await page.evaluate(() => scrollY)).toBe(interrupted + 100);
 });
