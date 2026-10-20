@@ -21,12 +21,13 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await expect(
       card.getByRole('link', { name: 'Publication PGP proof' }),
     ).toHaveText('Verified');
-    await expect(
-      card.locator('img[src="/brand/home-identity-portrait.svg"]'),
-    ).toHaveAttribute('alt', '');
+    await expect(card.locator('img[data-home-portrait]')).toHaveAttribute(
+      'alt',
+      '',
+    );
     expect(
       await card
-        .locator('img[src="/brand/home-identity-portrait.svg"]')
+        .locator('img[data-home-portrait]')
         .evaluate(
           (image: HTMLImageElement) => image.complete && image.naturalWidth > 0,
         ),
@@ -34,15 +35,13 @@ for (const colorScheme of ['light', 'dark'] as const) {
     for (const width of [320, 375, 620, 621, 768, 1280, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
       const bounds = await card.boundingBox();
-      const image = await card
-        .locator('img[src="/brand/home-identity-portrait.svg"]')
-        .boundingBox();
+      const image = await card.locator('img[data-home-portrait]').boundingBox();
       const text = await card.locator('p').first().boundingBox();
       const heading = await card.locator('h2').boundingBox();
       expect(heading!.y - bounds!.y).toBeLessThan(30);
       expect(
         await card
-          .locator('img[src="/brand/home-identity-portrait.svg"]')
+          .locator('img[data-home-portrait]')
           .evaluate((image) => getComputedStyle(image).filter),
       ).toBe('none');
       expect(image!.x).toBeGreaterThan(bounds!.x);

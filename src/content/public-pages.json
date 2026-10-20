@@ -2,8 +2,8 @@
   {
     "id": "/",
     "key": "home",
-    "title": "Home",
-    "description": "What I make."
+    "title": "Onur — Personal website",
+    "description": "Onur’s personal website, with software projects, published articles, and PGP-verified accounts."
   },
   {
     "id": "/contribute",
@@ -27,6 +27,6 @@
     "id": "/log",
     "key": "log",
     "title": "Log",
-    "description": "Notes, work, and changes."
+    "description": "Articles published by Onur, with revision history and PGP signatures."
   }
 ]

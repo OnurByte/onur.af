@@ -34,3 +34,5 @@ Site typography: system sans-serif. Social cards bundle Liberation Sans regular 
 - `share-mark.svg`: original portfolio artwork; three linked diamond nodes, white monochrome.
 - `xmpp.svg`: XMPP Foundation & Nicola Spanti, user-selected black XMPP logo from https://commons.wikimedia.org/wiki/File:Xmpp-logo-dark.svg ; original SVG and viewBox preserved. MIT/Expat license, copyright XMPP Standards Foundation; see `xmpp-LICENSE.txt`. Shared CSS handles monochrome theme rendering.
 - `connect-mail.svg`: Tabler Icons `mail-fast`, https://github.com/tabler/tabler-icons/blob/main/icons/outline/mail-fast.svg ; MIT, copyright Paweł Kuna. Original paths and 24 × 24 viewBox preserved; stroke set to white for shared theme rendering. License: `tabler-LICENSE.txt`. The Share dialog retains its own mail icon.
+
+- `src/assets/home-identity-portrait.webp`: exact WebP bytes extracted from the existing `home-identity-portrait.svg` wrapper. Astro generates responsive WebP sizes for the 96/240 px display without changing the portrait or its source SVG.

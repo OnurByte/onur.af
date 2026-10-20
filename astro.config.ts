@@ -18,7 +18,18 @@ export default defineConfig({
   integrations: [logImages()],
   vite: {
     ssr: { external: ['opentimestamps'] },
-    plugins: [stylex.vite({ useCSSLayers: false, runtimeInjection: false })],
+    build: {
+      // Inline the compact shared CSS so primary text does not wait on another request.
+      assetsInlineLimit: (file, content) =>
+        file.endsWith('.css') ? content.byteLength < 40 * 1024 : undefined,
+    },
+    plugins: [
+      stylex.vite({
+        useCSSLayers: false,
+        runtimeInjection: false,
+        lightningcssOptions: { minify: true },
+      }),
+    ],
   },
   ...(site ? { site } : {}),
   output: 'server',

@@ -167,7 +167,7 @@ video {
     transition: none !important;
   }
 }
-body:has(#search-dialog[open]) {
+body:has(dialog:modal) {
   overflow: hidden;
 }
 

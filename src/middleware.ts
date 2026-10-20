@@ -1,14 +1,22 @@
 import { defineMiddleware } from 'astro:middleware';
+import { publicPathRedirect } from './portfolio/seo';
+import { compressHtml } from './server/html-compression';
 import {
   assertPublicationReadable,
   withPublicationRead,
 } from './portfolio/publication-transaction';
-export const onRequest = defineMiddleware(async (_context, next) => {
+export const onRequest = defineMiddleware(async (context, next) => {
+  if (context.request.method === 'GET' || context.request.method === 'HEAD') {
+    const pathname = publicPathRedirect(context.url.pathname);
+    if (pathname)
+      return context.redirect(`${pathname}${context.url.search}`, 308);
+  }
   // A serverless deployment has no local publisher and may have a read-only filesystem.
   if (process.env['VERCEL']) return next();
   try {
     await assertPublicationReadable(process.cwd());
-    return await withPublicationRead(process.cwd(), next);
+    const response = await withPublicationRead(process.cwd(), next);
+    return compressHtml(context.request, response);
   } catch (error) {
     if (
       error instanceof Error &&

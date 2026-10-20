@@ -1,7 +1,23 @@
 import pages from '../content/public-pages.json' with { type: 'json' };
 import { logEntries, logProofUrl, logUrl, logMetadata } from './log';
 
-export const socialImageVersion = '5';
+export const socialImageVersion = '6';
+
+const identityPreviews = [
+  {
+    id: '/pgp/x',
+    key: 'pgp-x',
+    title: 'X · PGP',
+    description: 'X verified by PGP.',
+  },
+  {
+    id: '/pgp/github',
+    key: 'pgp-github',
+    title: 'GitHub · PGP',
+    description: 'GitHub verified by PGP.',
+  },
+];
+const previewPages = [...pages, ...identityPreviews];
 
 export const mottos = [
   'The creator originates.',
@@ -32,8 +48,8 @@ function logPreview(entry: (typeof logEntries)[number], verified = false) {
 }
 
 export function publicPreview(pathname: string) {
-  const page = pages.find((page) => page.id === pathname);
-  if (page) return page.id === '/' ? { ...page, description: '' } : page;
+  const page = previewPages.find((page) => page.id === pathname);
+  if (page) return page;
   const entry = logEntries.find((entry) => logUrl(entry) === pathname);
   if (entry) return logPreview(entry);
   const verifiedEntry = logEntries.find(
@@ -43,8 +59,8 @@ export function publicPreview(pathname: string) {
 }
 
 export function publicPreviewByKey(key: string) {
-  const page = pages.find((page) => page.key === key);
-  if (page) return page.id === '/' ? { ...page, description: '' } : page;
+  const page = previewPages.find((page) => page.key === key);
+  if (page) return page;
   const entry = logEntries.find((entry) => `log-${entry.id}` === key);
   if (entry) return logPreview(entry);
   const verifiedEntry = logEntries.find(

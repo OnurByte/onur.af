@@ -15,7 +15,10 @@ const account = identityAccounts[id];
 const proof = (await getSignedIdentities()).find(
   (proof) => proof.id === id && proof.profile === account.profile,
 );
-const description = proof ? 'Verified by PGP.' : 'OpenPGP signature.';
+const accountName = id === 'x' ? 'X' : 'GitHub';
+const description = proof
+  ? `${accountName} verified by PGP.`
+  : `${accountName} OpenPGP signature.`;
 ---
 
 <Layout title={`${account.label} · PGP · Onur`} description={description}>
@@ -24,7 +27,7 @@ const description = proof ? 'Verified by PGP.' : 'OpenPGP signature.';
     <div {...stylex.attrs(styles.prose)}>
       {proof && (
         <p {...stylex.attrs(styles.paragraph)} data-page-description>
-          Verified by PGP.
+          {description}
         </p>
       )}
       <p {...stylex.attrs(styles.paragraph)}>

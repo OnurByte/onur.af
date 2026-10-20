@@ -26,6 +26,11 @@ export function initSmoothScroll(): void {
     target = window.scrollY;
   };
   const tick = (time: number) => {
+    // CSS scroll locks cannot stop programmatic scrolling already in flight.
+    if (document.querySelector('dialog:modal')) {
+      cancel();
+      return;
+    }
     // Native focus, history restoration or another script may move the page.
     if (Math.abs(window.scrollY - writtenY) > 2) {
       cancel();

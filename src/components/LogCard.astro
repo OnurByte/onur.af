@@ -26,18 +26,14 @@ const publishedAt = entry.revisions[0]!.publishedAt;
   class="h-entry"
   id={entry.id}
 >
-  <a
-    {...stylex.attrs(logStyles.cardLink)}
-    class="u-url"
-    href={logUrl(entry)}
-    aria-labelledby={`${entry.id}-title`}
-  />
   <h2
     {...stylex.attrs(logStyles.title)}
     class="p-name"
     id={`${entry.id}-title`}
   >
-    {metadata.title}
+    <a {...stylex.attrs(logStyles.cardLink)} class="u-url" href={logUrl(entry)}>
+      {metadata.title}
+    </a>
   </h2>
   <div {...stylex.attrs(logStyles.meta)}>
     {verified ? (

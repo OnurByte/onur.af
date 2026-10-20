@@ -1,0 +1,11 @@
+---
+import HomeEmbeds from './HomeEmbeds.astro';
+import { homeEmbedSources } from '../../content/home-embeds';
+import { loadEmbeds } from '../../portfolio/embed-sources';
+
+// Keep upstream requests out of the page frontmatter so Astro can stream the
+// document head and primary content while the independently cached sources load.
+const embeds = await loadEmbeds(homeEmbedSources, { timeoutMs: 15_000 });
+---
+
+<HomeEmbeds embeds={embeds} />

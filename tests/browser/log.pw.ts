@@ -233,7 +233,7 @@ test('profile names open their PGP page and display the verified signature descr
     await badge.locator('..').locator('a').first().click();
     await expect(page).toHaveURL(`/pgp/${account}`);
     await expect(page.locator('[data-page-description]')).toHaveText(
-      'Verified by PGP.',
+      `${account === 'x' ? 'X' : 'GitHub'} verified by PGP.`,
     );
     await expect(
       page.getByRole('textbox', { name: 'PGP signed URL' }),

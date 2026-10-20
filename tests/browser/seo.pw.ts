@@ -17,14 +17,10 @@ test('public HTML remains indexable without a runtime canonical origin', async (
       'index, follow',
     );
     await expect(page.locator('title')).not.toBeEmpty();
-    if (path === '/') {
-      await expect(page.locator('meta[name="description"]')).toHaveCount(0);
-    } else {
-      await expect(page.locator('meta[name="description"]')).toHaveAttribute(
-        'content',
-        /\S+/,
-      );
-    }
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      'content',
+      /\S+/,
+    );
     expect(await page.locator('head').innerHTML()).not.toContain(
       'undefined/social/',
     );
@@ -52,4 +48,47 @@ test('private, error and unapproved tag pages retain explicit indexing restricti
     'noindex, follow',
   );
   expect(await (await request.get('/robots.txt')).text()).toContain('Allow: /');
+});
+
+test('home title and description stay stable across requests', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await expect(page).toHaveTitle('Onur — Personal website');
+  const description = await page
+    .locator('meta[name="description"]')
+    .getAttribute('content');
+  await page.reload();
+  await expect(page).toHaveTitle('Onur — Personal website');
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    'content',
+    description!,
+  );
+});
+
+test('public trailing slash URLs permanently consolidate and preserve queries', async ({
+  request,
+}) => {
+  for (const path of ['/log', '/pgp', '/pgp/x', '/log/tag/development']) {
+    const response = await request.get(`${path}/?source=check`, {
+      maxRedirects: 0,
+    });
+    expect(response.status(), path).toBe(308);
+    expect(response.headers()['location']).toBe(`${path}?source=check`);
+  }
+  expect((await request.get('/unknown/', { maxRedirects: 0 })).status()).toBe(
+    404,
+  );
+});
+
+test('article cards contain the visible title in their actual link', async ({
+  page,
+}) => {
+  for (const path of ['/', '/log']) {
+    await page.goto(path);
+    const title = page.locator('main article h2').first();
+    await expect(title.locator('a[href]')).toHaveText(
+      (await title.innerText()).trim(),
+    );
+  }
 });

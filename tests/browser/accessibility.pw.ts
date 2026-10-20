@@ -81,7 +81,7 @@ test('Find descriptions match the page intros and metadata', async ({
       'content',
       description,
     );
-    await page.getByRole('button', { name: 'Search pages' }).click();
+    await page.getByRole('button', { name: 'Find' }).click();
     await expect(
       page.locator(
         `#search-results a[href="${path}"] [data-result-description]`,
@@ -133,17 +133,17 @@ for (const [query, title, href] of [
 ]) {
   test(`Local search finds ${query}`, async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('button', { name: 'Search', exact: false }).click();
+    await page.getByRole('button', { name: 'Find' }).click();
     await page.getByRole('searchbox', { name: 'Search pages' }).fill(query!);
     await expect(
-      page.locator('#search-results').getByRole('link', { name: title! }),
-    ).toHaveAttribute('href', href!);
+      page.locator(`#search-results a[href="${href}"]`),
+    ).toContainText(title!);
   });
 }
 
 test('Local search reports a missing match', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Search', exact: false }).click();
+  await page.getByRole('button', { name: 'Find' }).click();
   await page
     .getByRole('searchbox', { name: 'Search pages' })
     .fill('zzzzunfindablezzzz');
@@ -472,3 +472,13 @@ for (const width of [320, 375]) {
     });
   });
 }
+
+test('visible control labels are included in their accessible names', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const result = await new AxeBuilder({ page })
+    .withRules(['label-content-name-mismatch'])
+    .analyze();
+  expect(result.violations).toEqual([]);
+});

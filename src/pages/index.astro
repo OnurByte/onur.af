@@ -1,28 +1,27 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { Image } from 'astro:assets';
+import portrait from '../assets/home-identity-portrait.webp';
 import { styles } from '../styles/pages';
 import { edge } from '../styles/edge';
 import { logStyles } from '../styles/log';
 import Layout from '../layouts/Layout.astro';
-import HomeEmbeds from '../components/embeds/HomeEmbeds.astro';
+import HomeActivity from '../components/embeds/HomeActivity.astro';
 import Technologies from '../components/Technologies.astro';
-import { homeEmbedSources } from '../content/home-embeds';
-import { loadEmbeds } from '../portfolio/embed-sources';
 import LogCard from '../components/LogCard.astro';
 import { listedLogEntries, logProofUrl } from '../portfolio/log';
 import { getLogSignatures } from '../portfolio/verified-proofs';
 import ProofBadge from '../components/ProofBadge.astro';
 import { introduction, introductionEntry } from '../portfolio/introduction';
-import { mottos } from '../portfolio/previews';
+import { mottos, publicPreview } from '../portfolio/previews';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
-const homeEmbeds = await loadEmbeds(homeEmbedSources, { timeoutMs: 15_000 });
 const signatures = await getLogSignatures();
 const recentLogs = listedLogEntries.slice(0, 3);
 const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
 ---
 
-<Layout title={`${motto} · Onur`} motto={motto}>
+<Layout title={publicPreview('/')!.title} motto={motto}>
   <main {...stylex.attrs(styles.main)} aria-label="Portfolio">
     <h1 {...stylex.attrs(styles.heading)}>{motto}</h1>
     <section
@@ -36,7 +35,7 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
         <div {...stylex.attrs(logStyles.meta)}>
           <a
             href={`${logProofUrl(introductionEntry)}#timestamps`}
-            aria-label="Introduction timestamp proof"
+            aria-label={`Introduction timestamp proof · ${introductionEntry.revisions[0]!.publishedAt.slice(0, 10)}`}
           >
             <time datetime={introductionEntry.revisions[0]!.publishedAt}>
               {introductionEntry.revisions[0]!.publishedAt.slice(0, 10)}
@@ -56,9 +55,14 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
           </p>
         ))}
       </div>
-      <img
+      <Image
         {...stylex.attrs(styles.homeIntroductionPortrait)}
-        src="/brand/home-identity-portrait.svg"
+        src={portrait}
+        widths={[96, 192, 240, 480]}
+        sizes="(max-width: 620px) 96px, 240px"
+        data-home-portrait
+        loading="eager"
+        fetchpriority="low"
         width="480"
         height="480"
         alt=""
@@ -83,6 +87,6 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
         ))}
       </section>
     )}
-    <HomeEmbeds embeds={homeEmbeds} />
+    <HomeActivity />
   </main>
 </Layout>
