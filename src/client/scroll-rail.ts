@@ -66,7 +66,7 @@ export function initScrollRail() {
     geometryDirty = true;
     root!.style.setProperty(
       '--rail-height',
-      `${Math.max(48, Math.min(480, Math.max(sections.length, 2) * 24))}px`,
+      `${Math.max(32, Math.min(320, Math.max(sections.length, 2) * 16))}px`,
     );
     list.replaceChildren();
     markers.forEach((marker) => marker.remove());
@@ -140,7 +140,7 @@ export function initScrollRail() {
     markers.forEach((marker, i) =>
       marker.style.setProperty(
         '--marker-position',
-        `${sections.length > 1 ? (i / (sections.length - 1)) * (trackHeight - 24) : (trackHeight - 24) / 2}px`,
+        `${sections.length > 1 ? (i / (sections.length - 1)) * (trackHeight - 16) : (trackHeight - 16) / 2}px`,
       ),
     );
   }
