@@ -26,7 +26,7 @@ Canlı görünümde Log kartı ile X/GitHub yüzeyleri güçlü çerçeveler ve 
 
 ### Düzen ve ifade ayrı değerlendirilmelidir
 
-Lavie ve Tractinsky'nin dört çalışması, algılanan web estetiğinde düzen/açıklık ile yaratıcılık/özgünlük boyutlarını ayırıyor. Bu ayrım bu portfolyoya özellikle uygun: okunabilirlik ve yerleşim güçlendirilirken motto, mühür ve malzeme ayrıntıları karakter taşıyabilir. Algılanan estetik ile algılanan kullanılabilirlik ilişkisi, gerçek görev başarısına ilişkin nedensel kanıt değildir. [Makale, 2004](https://www.ise.bgu.ac.il/faculty/noam/papers/04_tl_nt_ijhcs.pdf).
+Lavie ve Tractinsky'nin dört çalışması, algılanan web estetiğinde düzen/açıklık ile yaratıcılık/özgünlük boyutlarını ayırıyor. Bu ayrım bu portfolyoya özellikle uygun: okunabilirlik ve yerleşim güçlendirilirken motto, mühür ve malzeme ayrıntıları karakter taşıyabilir. Algılanan estetik ile algılanan kullanılabilirlik ilişkisi, gerçek görev başarısına ilişkin nedensel kanıt değildir. [DOI kayıt sayfası, 2004](https://doi.org/10.1016/j.ijhcs.2003.09.002).
 
 Moshagen ve Thielsch'in VisAWI çalışması sadelik, çeşitlilik, renklilik ve işçiliği ayrı estetik boyutlar olarak ele alır. Buradan bu siteye çıkarımım: sadelik tek başına yeterli bir değerlendirme değildir; yazı ölçeği, içerik geçişleri ve ayrıntıların birbirine oturması da önemlidir. Çalışma monokrom siteye renk ekleme veya her boyutu sınırsız artırma talimatı vermez. [Makale, 2010](https://www.uni-muenster.de/OWMS/uploads/drafts_thielsch/pdf/moshagen_2010.pdf).
 
@@ -36,7 +36,7 @@ Tuch ve arkadaşları, 119 site ekran görüntüsü ve kısa gösterim süreleri
 
 ### Yorum alanı ile işlem açıklığı birlikte kurulabilir
 
-Gaver, Beaver ve Benford belirsizliği kişisel yorum ve ilişki kurmak için bir tasarım kaynağı olarak tartışır; iyi tanımlanmış görevleri engellememesi gerektiğini de belirtir. Bu deneysel bir web dönüşüm çalışması değildir. Portfolyoya çıkarımım: motto ve mühür izleyiciye yorum alanı bırakabilir. Bir hesap adına, doğrulama rozetine veya tarihe tıklanınca ne olacağı ise anlaşılmalıdır. [Yazarın yüklediği tam metin, CHI 2003](https://www.researchgate.net/publication/2903668_Ambiguity_as_a_Resource_for_Design).
+Gaver, Beaver ve Benford belirsizliği kişisel yorum ve ilişki kurmak için bir tasarım kaynağı olarak tartışır; iyi tanımlanmış görevleri engellememesi gerektiğini de belirtir. Bu deneysel bir web dönüşüm çalışması değildir. Portfolyoya çıkarımım: motto ve mühür izleyiciye yorum alanı bırakabilir. Bir hesap adına, doğrulama rozetine veya tarihe tıklanınca ne olacağı ise anlaşılmalıdır. [Northumbria University yayın kaydı ve kabul edilmiş yazar nüshası, CHI 2003](https://researchportal.northumbria.ac.uk/en/publications/ambiguity-as-a-resource-for-design/).
 
 ### Karmaşıklık yalnız öğe sayısıyla açıklanamaz
 
@@ -44,7 +44,7 @@ Rosenholtz, Li ve Nakano görsel kalabalığı çeşitli görüntü ölçüleriy
 
 ### Bağlantı, devamında ne olduğunu sezdirir
 
-Pirolli'nin bilgi arama modeli, insanların hedefleri doğrultusunda bağlantı çevresindeki ipuçlarından yararlanmasını açıklar. Bu portfolyoya çıkarımım: Log başlığı, kısa açıklama ve açık bağlantı metni, ziyaretçinin nereye devam edeceğini değerlendirmesine yardım eder. Bütün seçenekleri Find içinde toplamak veya her eylemi büyük düğmeye çevirmek bu çalışmanın gereği değildir. [Tam metin, 2005](https://onlinelibrary.wiley.com/doi/epdf/10.1207/s15516709cog0000_20).
+Pirolli'nin bilgi arama modeli, insanların hedefleri doğrultusunda bağlantı çevresindeki ipuçlarından yararlanmasını açıklar. Bu portfolyoya çıkarımım: Log başlığı, kısa açıklama ve açık bağlantı metni, ziyaretçinin nereye devam edeceğini değerlendirmesine yardım eder. Bütün seçenekleri Find içinde toplamak veya her eylemi büyük düğmeye çevirmek bu çalışmanın gereği değildir. [DOI kayıt sayfası, 2005](https://doi.org/10.1207/s15516709cog0000_20).
 
 ### Sakinlik, dikkatin önceliklerini düzenler
 
