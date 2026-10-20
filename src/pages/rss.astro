@@ -98,13 +98,13 @@ const description = publicPreview('/rss')!.description;
       </section>
       <section
         {...stylex.attrs(feedStyles.section)}
-        aria-labelledby="rss-posts-title"
+        aria-labelledby="rss-logs-title"
       >
-        <h2 id="rss-posts-title" {...stylex.attrs(feedStyles.heading)}>
-          Posts
+        <h2 id="rss-logs-title" {...stylex.attrs(feedStyles.heading)}>
+          Logs
         </h2>
         {rssEntries.length === 0 ? (
-          <p {...stylex.attrs(feedStyles.paragraph)}>No posts published yet.</p>
+          <p {...stylex.attrs(feedStyles.paragraph)}>No logs published yet.</p>
         ) : (
           <ul {...stylex.attrs(feedStyles.list)}>
             {rssEntries.map((entry) => (

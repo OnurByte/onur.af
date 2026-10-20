@@ -251,7 +251,7 @@ $$
       join(directory, 'src/content/home-embeds.ts'),
       `
       export const spotifySource = { id: 'spotify', title: 'Listening', source: 'Spotify', href: 'https://open.spotify.com', load: async () => ({ status: 'empty', items: [] }) };
-      export const homeEmbedSources = ${JSON.stringify(claims.map((claim) => ({ id: claim.id, title: claim.id === 'x' ? 'Posts' : 'Repositories', source: claim.id === 'x' ? '@onurstirner' : 'onurbyte', href: claim.profile })))}.map(source => ({ ...source, load: async () => ({ status: 'empty', items: [] }) }));
+      export const homeEmbedSources = ${JSON.stringify(claims.map((claim) => ({ id: claim.id, title: claim.id === 'x' ? 'Tweets' : 'Repositories', source: claim.id === 'x' ? '@onurstirner' : 'onurbyte', href: claim.profile })))}.map(source => ({ ...source, load: async () => ({ status: 'empty', items: [] }) }));
     `,
     );
     await writeFile(join(directory, 'src/content/rss-entries.json'), '[]');
@@ -329,7 +329,7 @@ $$
       const name =
         claim.id === 'x' ? 'X identity PGP proof' : 'GitHub identity PGP proof';
       const identityRegion = page.getByRole('region', {
-        name: claim.id === 'x' ? 'Posts' : 'Repositories',
+        name: claim.id === 'x' ? 'Tweets' : 'Repositories',
       });
       await expect(
         identityRegion.getByRole('link', { name, exact: true }),

@@ -53,7 +53,7 @@ const homeEmbedEntries = [
   {
     url: '/#connect-x',
     meta: { title: '𝕏', description: 'Connect with @onurstirner on X.' },
-    searchText: 'X posts Twitter @onurstirner embed',
+    searchText: 'X tweets Twitter @onurstirner embed',
   },
   {
     url: '/#connect-github',
