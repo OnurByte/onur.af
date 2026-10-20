@@ -1,3 +1,4 @@
+import { moneroConfiguration } from '../../donations/config';
 import { donationSubaddressPrefix } from '../../donations/protocol';
 import type { APIRoute } from 'astro';
 import { donationGateway } from '../../client/gateway';
@@ -105,10 +106,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     if (!created || typeof created !== 'object')
       throw new Error('gateway unavailable');
     const result = created as Record<string, unknown>;
-    const network =
-      import.meta.env['XMR_NETWORK'] ??
-      process.env['XMR_NETWORK'] ??
-      'stagenet';
+    const network = moneroConfiguration().network;
     const prefix = donationSubaddressPrefix(network);
     if (
       result['unavailable'] === true ||

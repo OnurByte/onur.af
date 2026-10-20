@@ -2,8 +2,10 @@
 import * as stylex from '@stylexjs/stylex';
 import { amountMarker, styles } from '../../styles/pages';
 import { publicPreview } from '../../portfolio/previews';
+import { moneroConfiguration } from '../../donations/config';
 import Layout from '../../layouts/Layout.astro';
 import { formatXmrAmount, parseXmrAmount } from '../../donations/money';
+const { openAlias } = moneroConfiguration();
 const amounts = ['0.01', '0.05', '0.1', '0.25'];
 Astro.response.headers.set('Cache-Control', 'private, no-store');
 Astro.response.headers.set('Referrer-Policy', 'no-referrer');
@@ -45,6 +47,33 @@ const description = publicPreview('/contribute')!.description;
           : 'The contribution service is temporarily unavailable. Retry this contribution or try again shortly.'}
       </p>
     )}
+    <section {...stylex.attrs(styles.prose)} aria-labelledby="openalias-title">
+      <h2 id="openalias-title" {...stylex.attrs(styles.sectionHeading)}>
+        OpenAlias
+      </h2>
+      {openAlias ? (
+        <>
+          <p {...stylex.attrs(styles.note)}>
+            Use this alias in a compatible Monero wallet. Direct contributions
+            do not appear in the payment tracker below.
+          </p>
+          <div {...stylex.attrs(styles.paymentActions)}>
+            <code id="openalias" {...stylex.attrs(styles.mono)}>
+              {openAlias}
+            </code>
+            <button
+              type="button"
+              data-copy="openalias"
+              {...stylex.attrs(styles.button, styles.secondary)}
+            >
+              Copy
+            </button>
+          </div>
+        </>
+      ) : (
+        <p {...stylex.attrs(styles.note)}>Not configured</p>
+      )}
+    </section>
     <form
       {...stylex.attrs(styles.form)}
       method="post"

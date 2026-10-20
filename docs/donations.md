@@ -35,3 +35,19 @@ Startup now verifies the opened wallet primary address against `XMR_PRIMARY_ADDR
 An opt-in offline backup test is available with `TEST_WALLET_RECOVERY=1 TEST_DATABASE_URL=<isolated-test-db> bun test tests/backup-recovery.test.ts`. It runs the real WASM wallet in a standalone Bun child, creates a temporary view-only stagenet wallet and a UUID-named PostgreSQL schema containing donation and agent records, closes the wallet, copies its data/keys/address files, and performs pg_dump/pg_restore. After discarding only its own originals, it restores both, verifies the same ID/amount/address/index/state, checks the restored address uniqueness constraint, and runs the startup wallet-ledger guard. Temporary files and its owned schema are removed afterward. pg_dump and pg_restore must be installed; connection URL query parameters are rejected.
 
 This is an actual stopped-wallet and isolated-schema round trip with synthetic donation records, not a deployed service backup or live scanning recovery. It does not prove transactions arriving during a backup, a production schema migration, full gateway restart, or an operational Tor/I2P recovery. The normal test suite skips it unless explicitly enabled.
+
+## Shared Monero identity
+
+`src/donations/config.ts` is the single reader for `XMR_NETWORK`,
+`XMR_PRIMARY_ADDRESS` and optional `XMR_OPENALIAS`. Configure them in the
+environment; do not add a second wallet address to page content. The agent
+opens and verifies that primary wallet. Checkout addresses remain unique
+subaddresses allocated by that wallet and stored in the ledger; never replace
+them with the primary address or alias.
+
+Contribute always shows OpenAlias, with “Not configured” while empty and a
+selectable alias plus Copy when configured. Set `XMR_OPENALIAS` only after
+configuring its DNS record to point to the same primary wallet. The site does
+not publish DNS records or claim to validate their resolution. Direct alias
+payments are separate from per-contribution tracking. No private key or wallet
+credential is included in the public identity.
