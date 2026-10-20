@@ -1,7 +1,7 @@
 import pages from '../content/public-pages.json' with { type: 'json' };
 import { logEntries, logProofUrl, logUrl, logMetadata } from './log';
 
-export const socialImageVersion = '6';
+export const socialImageVersion = '7';
 
 const identityPreviews = [
   {

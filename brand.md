@@ -44,6 +44,8 @@ Mevcut örnekler:
 | Anahtar indirme   | “Download”                                |
 | Anahtar kopyalama | “Copy”                                    |
 
+Ziyaretçiye görünen başlık, açıklama ve paylaşım önizlemelerinde `Onur’s personal website`, `Personal website`, `personal site` gibi genel site tanımları kullanma. Başlıkta `Onur` yeterlidir; açıklamalar kişinin ne ürettiğini, düşündüğünü veya seçtiğini kendi ağzından somut biçimde anlatsın.
+
 Kurumsal pazarlama dili, abartılı sıfatlar, sahte aciliyet, kullanıcı sayısı veya güvenlik iddiaları ekleme. Henüz bulunmayan projeler, yazılar ve başarılar için boş vitrin oluşturma. Metni, gerçekten sunulan içerik belirler.
 
 ## Görsel dil
