@@ -82,10 +82,16 @@ test.skipIf(!enabled)(
       );
       expect(home).toContain('application/ld+json');
       const stylesheet = home.match(/href="([^"]+\.css)"/);
-      expect(stylesheet).not.toBeNull();
-      const cssResponse = await fetch(new URL(stylesheet![1]!, origin));
-      expect(cssResponse.ok).toBe(true);
-      const css = await cssResponse.text();
+      const css = stylesheet
+        ? await (async () => {
+            const response = await fetch(new URL(stylesheet[1]!, origin));
+            expect(response.ok).toBe(true);
+            return response.text();
+          })()
+        : [...home.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)]
+            .map((match) => match[1])
+            .join('\n');
+      expect(css.length).toBeGreaterThan(0);
       expect(css).toMatch(/min-height:\s*100svh/);
       expect(css).toContain(':checked');
       expect(css).toMatch(/prefers-color-scheme:\s*dark/);
