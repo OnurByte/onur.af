@@ -33,6 +33,8 @@ Bu ifadeler sitenin düşünsel tonunu taşır. Her yardımcı sayfaya slogan ek
 
 ## Yazı tonu
 
+Ziyaretçiye görünen yayın etiketlerinde `Post` veya `Posts` kullanma; tekil `Log`, çoğul `Logs` kullan. RSS bölüm başlığı `Logs`, X bölüm başlığı `Tweets` olur.
+
 Sitenin görünen metinlerinde uzun çizgi (U+2014) veya orta nokta (U+00B7) kullanma. Ayraç gerektiğinde `⁜` kullan. Bu kural başlıklar, açıklamalar, kaynak adları, RSS ve paylaşım önizlemeleri için de geçerlidir. Geçmiş imzalı kayıtların baytlarını değiştirme; gerekli gösterim dönüşümünü arayüzde yap.
 
 Kısa, açık ve kişisel yaz. Bir sayfa ne sunuyorsa onu söyle. Düğme metni, tıklanınca gerçekleşecek işi adlandırır. Hata mesajı, sorunu ve mümkün olan sonraki adımı açıklar.
@@ -82,9 +84,9 @@ Boşluklar 4 px'in katlarıyla kurulur. Küçük gruplarda 8–12 px, ilişkili 
 
 Kabul edilmiş ölçüler: kartlar ve pencereler 12 px; kontroller 8 px; Connect öğeleri ve bunların odak çerçeveleri için aşağıdaki ayrı köşe geometrisi kullanılır. Değerleri sayfalar içinde tekrar tanımlamak yerine ortak tokenları kullan. Bu ölçüler Apple'ın sabit değerleri veya psikolojik bir optimum değildir; sitenin ölçülerine göre verilmiş tasarım kararlarıdır.
 
-Connect tam genişlikte, Posts ve Repositories altında, Spotify üstünde yer alır. Servis adı birincil, nick/adres ikincildir. Hesap doğrulaması nick yanındaki ortak PGP tiki üzerinden açılır. Adresi henüz tanımlanmayan Email ve XMPP görünür kalır; durum metni, sahte bağlantı veya hover ile tıklanabilirlik vaadi eklenmez.
+Connect tam genişlikte, Tweets ve Repositories altında, Spotify üstünde yer alır. Servis adı birincil, nick/adres ikincildir. Hesap doğrulaması nick yanındaki ortak PGP tiki üzerinden açılır. Adresi henüz tanımlanmayan Email ve XMPP görünür kalır; durum metni, sahte bağlantı veya hover ile tıklanabilirlik vaadi eklenmez.
 
-Connect öğeleri normal 8 px köşeler kullanır; squircle ve hareketli yükselme yoktur. Kenarlığın sağ üst ve sol alt bölgelerinde ton yoğunlaşır; ışık alan bir kenar hissi verir. Aynı kenarlık Connect öğelerinde, Posts/Repositories/Spotify yüzeylerinde, Connect dış çerçevesinde, Log kartlarında ve Find/Share pencerelerinde ortak `src/styles/edge.ts` ile kullanılır. Metin bağlantıları, PGP tikleri, rozetler, giriş alanları ve küçük kontroller bu uygulamanın dışındadır. Bu yalnız 1 px çerçeve içinde kalan monokrom bir gradient istisnasıdır; yüzeyde gradient, parıltı veya gölge yoktur. Ton geçişi, her yüzeyin kendi genişliğinin ve yüksekliğinin %50’sini kullanan eliptik gradientlerle ölçeklenir; sabit piksel ışık alanı yoktur. Pencere boyutu ve içerik yüksekliği değişince CSS otomatik hesaplar. Desteklemeyen tarayıcılarda düz çerçeve korunur. Hover yalnız nötr yüzey rengini değiştirir; kenarlık sabit kalır. Nick ve PGP tiki bağımsız hedefler olarak kalır.
+Connect öğeleri normal 8 px köşeler kullanır; squircle ve hareketli yükselme yoktur. Kenarlığın sağ üst ve sol alt bölgelerinde ton yoğunlaşır; ışık alan bir kenar hissi verir. Aynı kenarlık Connect öğelerinde, Tweets/Repositories/Spotify yüzeylerinde, Connect dış çerçevesinde, Log kartlarında ve Find/Share pencerelerinde ortak `src/styles/edge.ts` ile kullanılır. Metin bağlantıları, PGP tikleri, rozetler, giriş alanları ve küçük kontroller bu uygulamanın dışındadır. Bu yalnız 1 px çerçeve içinde kalan monokrom bir gradient istisnasıdır; yüzeyde gradient, parıltı veya gölge yoktur. Ton geçişi, her yüzeyin kendi genişliğinin ve yüksekliğinin %50’sini kullanan eliptik gradientlerle ölçeklenir; sabit piksel ışık alanı yoktur. Pencere boyutu ve içerik yüksekliği değişince CSS otomatik hesaplar. Desteklemeyen tarayıcılarda düz çerçeve korunur. Hover yalnız nötr yüzey rengini değiştirir; kenarlık sabit kalır. Nick ve PGP tiki bağımsız hedefler olarak kalır.
 
 ### Logo ve ikonlar
 

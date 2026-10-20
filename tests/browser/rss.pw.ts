@@ -8,12 +8,12 @@ test('RSS page lists feed entries and links the existing PGP page', async ({
 }) => {
   await page.goto('/rss');
   await expect(
-    page.getByRole('heading', { name: 'Posts', exact: true }),
+    page.getByRole('heading', { name: 'Logs', exact: true }),
   ).toBeVisible();
   await expect(page.locator('[data-rss-entry]')).toHaveCount(rssEntries.length);
   if (rssEntries.length === 0)
     await expect(
-      page.getByText('No posts published yet.', { exact: true }),
+      page.getByText('No logs published yet.', { exact: true }),
     ).toBeVisible();
   for (const entry of rssEntries) {
     await expect(

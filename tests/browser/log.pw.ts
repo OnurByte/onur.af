@@ -154,7 +154,7 @@ test('X and GitHub always show their PGP tick beside the account, including befo
       const pageScope =
         path === '/'
           ? page.getByRole('region', {
-              name: account === 'x' ? 'Posts' : 'Repositories',
+              name: account === 'x' ? 'Tweets' : 'Repositories',
             })
           : page;
       const badge = pageScope.getByRole('link', {

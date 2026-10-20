@@ -128,7 +128,7 @@ export function createHomeEmbedSources(
   return [
     {
       id: 'x',
-      title: 'Posts',
+      title: 'Tweets',
       source: '𝕏 ⁜ @onurstirner',
       href: 'https://x.com/onurstirner',
       async load(signal) {

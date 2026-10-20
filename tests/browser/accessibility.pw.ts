@@ -314,7 +314,7 @@ test('Find links to Connect accounts and the Spotify embed', async ({
 }) => {
   for (const item of [
     {
-      query: 'X posts',
+      query: 'X tweets',
       title: '𝕏',
       url: '/#connect-x',
       heading: '@onurstirner',
