@@ -26,7 +26,7 @@ test('log sharing preserves RSS navigation and transfers focus between dialogs',
   await expect(dialog.getByRole('status')).toBeHidden();
   await expect(dialog.getByRole('heading')).toHaveCount(0);
   await expect(
-    dialog.getByText('↑ ↓ Navigate · Enter Select · Esc Close'),
+    dialog.getByText('↑ ↓ Navigate ⁜ Enter Select ⁜ Esc Close'),
   ).toHaveCount(0);
   await expect(
     dialog.getByRole('button', { name: /Copy citation/ }),

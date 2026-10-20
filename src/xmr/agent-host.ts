@@ -1,3 +1,4 @@
+import { moneroConfiguration } from '../donations/config';
 import {
   moneroAddress as ADDRESS,
   paymentStatuses as STATUSES,
@@ -527,7 +528,8 @@ async function startXmrAgent(): Promise<{
   if (token.length < 32 || /[\r\n]/.test(token))
     throw new Error('XMR_AGENT_TOKEN must have at least 32 characters');
   const databaseUrl = required('DONATION_DATABASE_URL');
-  const primaryAddress = required('XMR_PRIMARY_ADDRESS');
+  const { primaryAddress } = moneroConfiguration();
+  if (!primaryAddress) throw new Error('XMR_PRIMARY_ADDRESS is required');
   const privateViewKey = required('XMR_VIEW_KEY');
   const walletPath = required('XMR_WALLET_PATH');
   const restoreHeightText = required('XMR_RESTORE_HEIGHT');
@@ -537,7 +539,7 @@ async function startXmrAgent(): Promise<{
   )
     throw new Error('XMR_RESTORE_HEIGHT must be a nonnegative safe integer');
   const restoreHeight = Number(restoreHeightText);
-  const network = process.env['XMR_NETWORK'] || 'stagenet';
+  const network = moneroConfiguration().network;
   if (network !== 'mainnet' && network !== 'stagenet' && network !== 'testnet')
     throw new Error('XMR_NETWORK must be mainnet, stagenet or testnet');
   const { nodesFromEnv } = require('xmr-pay/nodes') as {

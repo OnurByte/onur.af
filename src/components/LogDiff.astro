@@ -28,7 +28,7 @@ const lines = diff.hunks.flatMap((hunk) => [
 {diff.hunks.length > 0 && (
   <details class="log-diff">
     <summary {...stylex.attrs(logStyles.summary)}>
-      Changes in v{version} · {diff.added} added, {diff.removed} removed
+      Changes in v{version} ⁜ {diff.added} added, {diff.removed} removed
     </summary>
     <pre
       tabindex="0"

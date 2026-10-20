@@ -1,4 +1,4 @@
-# Onur — Marka ve tasarım dili
+# Onur ⁜ Marka ve tasarım dili
 
 Bu belge, Onur'un kişisel sitesinin kimliğini ve tasarım kararlarının arkasındaki yaklaşımı tanımlar. Mevcut siteyi temel alır; yeni bir şirket kimliği veya farklı bir görsel yön önermez. Yeni sayfa, metin ve görsel üretirken bu çizgiyi koru. Uygulama ölçüleri için [tasarım standardına](docs/design.md), StyleX kullanımı için [StyleX rehberine](docs/stylex.md) bak.
 
@@ -33,6 +33,8 @@ Bu ifadeler sitenin düşünsel tonunu taşır. Her yardımcı sayfaya slogan ek
 
 ## Yazı tonu
 
+Sitenin görünen metinlerinde uzun çizgi (U+2014) veya orta nokta (U+00B7) kullanma. Ayraç gerektiğinde `⁜` kullan. Bu kural başlıklar, açıklamalar, kaynak adları, RSS ve paylaşım önizlemeleri için de geçerlidir. Geçmiş imzalı kayıtların baytlarını değiştirme; gerekli gösterim dönüşümünü arayüzde yap.
+
 Kısa, açık ve kişisel yaz. Bir sayfa ne sunuyorsa onu söyle. Düğme metni, tıklanınca gerçekleşecek işi adlandırır. Hata mesajı, sorunu ve mümkün olan sonraki adımı açıklar.
 
 Mevcut örnekler:
@@ -43,6 +45,8 @@ Mevcut örnekler:
 | PGP açıklaması    | “Encrypt messages and verify signatures.” |
 | Anahtar indirme   | “Download”                                |
 | Anahtar kopyalama | “Copy”                                    |
+
+Ziyaretçiye görünen başlık, açıklama ve paylaşım önizlemelerinde `Onur’s personal website`, `Personal website`, `personal site` gibi genel site tanımları kullanma. Başlıkta `Onur` yeterlidir; açıklamalar kişinin ne ürettiğini, düşündüğünü veya seçtiğini kendi ağzından somut biçimde anlatsın.
 
 Kurumsal pazarlama dili, abartılı sıfatlar, sahte aciliyet, kullanıcı sayısı veya güvenlik iddiaları ekleme. Henüz bulunmayan projeler, yazılar ve başarılar için boş vitrin oluşturma. Metni, gerçekten sunulan içerik belirler.
 
@@ -91,6 +95,8 @@ Bütün sabit SVG dosyaları `public/brand/` altında bulunur. Arayüzde tek `Ic
 İkon adları ve ölçüleri ortak bileşende tanımlanır. SVG kodunu sayfaya gömme veya yeni bir ikon için ayrı render yolu kurma. Kaynak ve sahiplik bilgileri [SOURCES.md](public/brand/SOURCES.md) içinde tutulur. Favicon ve sosyal kartlar da mevcut Onur işaretini kullanır.
 
 ## Kontroller ve etkileşim
+
+RSS gibi yardımcı sayfalara istenmeden terminal komutları, yerel doğrulama öğreticileri veya teknik açıklama blokları ekleme. Gerekli durum bilgisi ve doğrudan bağlantılar yeterlidir.
 
 Kontrolün işlevi, görünümünden ve metninden anlaşılır olmalıdır. Ana eylem dolu, yardımcı eylem nötr kenarlıklı olur. Kartlar ve pencereler `--radius-card: 12px`, butonlar `--radius-control: 8px`, Connect öğeleri `--radius-control: 8px` kullanır. Standart kontrol yüksekliği en az 44 px'dir. Düğme metni 16 px ve 500 ağırlıktadır.
 

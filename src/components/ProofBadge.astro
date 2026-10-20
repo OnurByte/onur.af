@@ -19,7 +19,7 @@ const { target, href, label, aboveCardLink } = Astro.props;
     aboveCardLink ? logStyles.cardBadge : undefined,
   )}
   href={href ?? `/pgp/${target}`}
-  aria-label={`${target === 'log' ? 'Publication' : target === 'x' ? 'X identity' : 'GitHub identity'} PGP proof${label ? ` · ${label}` : ''}`}
+  aria-label={`${target === 'log' ? 'Publication' : target === 'x' ? 'X identity' : 'GitHub identity'} PGP proof${label ? ` ⁜ ${label}` : ''}`}
 >
   <Icon name="proof" />
   {label && <span>{label}</span>}

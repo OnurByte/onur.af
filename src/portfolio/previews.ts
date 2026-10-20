@@ -1,19 +1,19 @@
 import pages from '../content/public-pages.json' with { type: 'json' };
 import { logEntries, logProofUrl, logUrl, logMetadata } from './log';
 
-export const socialImageVersion = '6';
+export const socialImageVersion = '7';
 
 const identityPreviews = [
   {
     id: '/pgp/x',
     key: 'pgp-x',
-    title: 'X · PGP',
+    title: 'X ⁜ PGP',
     description: 'X verified by PGP.',
   },
   {
     id: '/pgp/github',
     key: 'pgp-github',
-    title: 'GitHub · PGP',
+    title: 'GitHub ⁜ PGP',
     description: 'GitHub verified by PGP.',
   },
 ];
@@ -37,7 +37,7 @@ function logPreview(entry: (typeof logEntries)[number], verified = false) {
     id: verified ? logProofUrl(entry) : logUrl(entry),
     key: `${verified ? 'verified' : 'log'}-${entry.id}`,
     title: verified
-      ? `${logMetadata(entry).title} · Verified`
+      ? `${logMetadata(entry).title} ⁜ Verified`
       : logMetadata(entry).title,
     description: truncateDescription(
       verified

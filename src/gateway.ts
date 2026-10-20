@@ -1,3 +1,4 @@
+import { moneroConfiguration } from './donations/config';
 import { donationSubaddressPrefix } from './donations/protocol';
 import { requiredEnv as required } from './server/env';
 import { jsonNoStore as json } from './server/http';
@@ -19,7 +20,7 @@ export async function startGateway() {
     token: required('XMR_AGENT_TOKEN'),
     timeoutMs: 15000,
   });
-  const network = process.env['XMR_NETWORK'] || 'stagenet';
+  const network = moneroConfiguration().network;
   const prefix = donationSubaddressPrefix(network);
   await store.initialize();
   let allocating = false;

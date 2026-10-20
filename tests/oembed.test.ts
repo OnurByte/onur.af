@@ -14,7 +14,7 @@ test('homepage does not replace the HTML motto with generic oEmbed text', async 
   expect(result.provider_name).toBe('Onur');
   expect(result.thumbnail_url).toBe(`${origin}/brand/icon.png`);
   const rssPage = await oembedResponse(origin, request(`${origin}/rss`)).json();
-  expect(rssPage.title).toBe('RSS · Onur');
+  expect(rssPage.title).toBe('RSS ⁜ Onur');
   expect(rssPage.description).toBe(publicPreview('/rss')!.description);
 });
 

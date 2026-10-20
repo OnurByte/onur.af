@@ -129,7 +129,7 @@ export function createHomeEmbedSources(
     {
       id: 'x',
       title: 'Posts',
-      source: '𝕏 · @onurstirner',
+      source: '𝕏 ⁜ @onurstirner',
       href: 'https://x.com/onurstirner',
       async load(signal) {
         if (!lastX) lastX = await restore('x');
@@ -179,7 +179,7 @@ export function createHomeEmbedSources(
     {
       id: 'github',
       title: 'Repositories',
-      source: 'GitHub · onurbyte',
+      source: 'GitHub ⁜ onurbyte',
       href: 'https://github.com/onurbyte',
       async load(signal) {
         if (!lastGithub) lastGithub = await restore('github');

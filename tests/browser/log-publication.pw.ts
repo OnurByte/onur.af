@@ -518,7 +518,7 @@ $$
       'datetime',
       '2026-10-14T10:30:00Z',
     );
-    await expect(page.locator('time.dt-updated')).toHaveText('v2 · 2026-10-14');
+    await expect(page.locator('time.dt-updated')).toHaveText('v2 ⁜ 2026-10-14');
     await expect(page.getByText(/sec read/)).toBeVisible();
     await expect(page.locator('.e-content .katex')).toHaveCount(2);
     await expect(page.locator('.e-content math')).toHaveCount(2);

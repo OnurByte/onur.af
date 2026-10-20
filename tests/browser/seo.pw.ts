@@ -54,12 +54,12 @@ test('home title and description stay stable across requests', async ({
   page,
 }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle('Onur — Personal website');
+  await expect(page).toHaveTitle('Onur');
   const description = await page
     .locator('meta[name="description"]')
     .getAttribute('content');
   await page.reload();
-  await expect(page).toHaveTitle('Onur — Personal website');
+  await expect(page).toHaveTitle('Onur');
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     'content',
     description!,

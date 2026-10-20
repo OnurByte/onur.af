@@ -86,7 +86,7 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
           datetime={latest.publishedAt}
           title={`Updated ${latest.publishedAt}`}
         >
-          v{latest.version} · {date(latest.publishedAt)}
+          v{latest.version} ⁜ {date(latest.publishedAt)}
         </time>
       </a>
     )}
@@ -108,7 +108,7 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
             {...stylex.attrs(logStyles.proof)}
           >
             <h2 {...stylex.attrs(logStyles.proofTitle)}>
-              v{revision.version} ·{' '}
+              v{revision.version} ⁜{' '}
               <time
                 datetime={revision.publishedAt}
                 title={revision.publishedAt}
@@ -139,7 +139,7 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
           <li>
             <a href={reference.url} rel="noreferrer">
               {reference.repository}
-              {reference.commit ? ` · ${reference.commit.slice(0, 12)}` : ''}
+              {reference.commit ? ` ⁜ ${reference.commit.slice(0, 12)}` : ''}
             </a>
           </li>
         ))}

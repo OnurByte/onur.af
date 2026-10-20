@@ -51,7 +51,7 @@ describe('public feeds', () => {
   test('publishes an empty RSS channel without invented content', async () => {
     const xml = rssXml('https://example.com')!;
     expect(xml).toContain('<channel>');
-    expect(xml).toContain('<title>Onur — RSS</title>');
+    expect(xml).toContain('<title>Onur ⁜ RSS</title>');
     expect(xml).toContain('<link>https://example.com/rss</link>');
     expect(xml).toContain(
       '<description>Follow new writing via RSS.</description>',

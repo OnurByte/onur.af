@@ -50,7 +50,7 @@ const publicationEntry = publication?.manifest.entries.find(
 ---
 
 <Layout
-  title={`${metadata.title} · Signature details · Onur`}
+  title={`${metadata.title} ⁜ Signature details ⁜ Onur`}
   description="Verify this revision with a fingerprint you trust."
 >
   <main {...stylex.attrs(styles.main)}>
@@ -65,7 +65,7 @@ const publicationEntry = publication?.manifest.entries.find(
         </time>
         <span>Revision {version}</span>
         <span>
-          OpenPGP ·{' '}
+          OpenPGP ⁜{' '}
           <span {...stylex.attrs(styles.mono)}>{signature.fingerprint}</span>
         </span>
         <a {...stylex.attrs(styles.walletLink)} href="/pgp.asc" download>
@@ -224,7 +224,7 @@ const publicationEntry = publication?.manifest.entries.find(
                     {...stylex.attrs(styles.walletLink)}
                     href={`https://blockstream.info/block-height/${timestamp.bitcoin.height}`}
                   >
-                    Bitcoin · {timestamp.bitcoin.height}
+                    Bitcoin ⁜ {timestamp.bitcoin.height}
                   </a>
                   <br />
                   <time
@@ -291,7 +291,7 @@ const publicationEntry = publication?.manifest.entries.find(
           </div>
           <p {...stylex.attrs(logStyles.hash)}>
             Publication entry {publicationEntry.id}-v{publicationEntry.version}{' '}
-            · SHA-256 {publicationEntry.sha256}
+            ⁜ SHA-256 {publicationEntry.sha256}
           </p>
         </>
       )}

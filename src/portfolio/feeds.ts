@@ -30,7 +30,7 @@ export function rssXml(
         `<item><title>${escapeXml(entry.title)}</title><link>${escapeXml(new URL(entry.url, validOrigin).href)}</link><guid isPermaLink="false">urn:onur:post:${entry.id}</guid><description>${escapeXml(entry.summary)}</description><pubDate>${new Date(entry.publishedAt).toUTCString()}</pubDate></item>`,
     )
     .join('');
-  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Onur — RSS</title><link>${escapeXml(validOrigin)}/rss</link><description>${description}</description><language>en</language>${items}</channel></rss>`;
+  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Onur ⁜ RSS</title><link>${escapeXml(validOrigin)}/rss</link><description>${description}</description><language>en</language>${items}</channel></rss>`;
 }
 
 export function wantsFeedHtml(accept: string | null): boolean {
