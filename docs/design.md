@@ -60,7 +60,7 @@ The home Connect section sits immediately above Spotify and follows the shared b
 
 ## Verification badges
 
-All identity and publication proof badges use `src/styles/proof.ts`: a 16 px decorative seal centered in a 24 px link, a 4 px gap from adjacent text, and shared hover/focus treatment. Labeled publication badges use the same 14 px text and 24 px line height. Account names and badges share one vertically centered identity row. Provider profile spacing belongs to the whole row, never just the account link. Connect uses the same identity row; proof links remain independent of the surrounding account click target.
+Proof icons always appear to the right of the text they verify, including labeled Verified links. All identity and publication proof badges use `src/styles/proof.ts`: a 16 px decorative seal centered in a 24 px link, a 4 px gap from adjacent text, and shared hover/focus treatment. Labeled publication badges use the same 14 px text and 24 px line height. Account names and badges share one vertically centered identity row. Provider profile spacing belongs to the whole row, never just the account link. Connect uses the same identity row; proof links remain independent of the surrounding account click target.
 
 ## Corner radius rationale
 
