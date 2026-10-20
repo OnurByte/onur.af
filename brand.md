@@ -96,6 +96,8 @@ Bütün sabit SVG dosyaları `public/brand/` altında bulunur. Arayüzde tek `Ic
 
 ## Kontroller ve etkileşim
 
+RSS gibi yardımcı sayfalara istenmeden terminal komutları, yerel doğrulama öğreticileri veya teknik açıklama blokları ekleme. Gerekli durum bilgisi ve doğrudan bağlantılar yeterlidir.
+
 Kontrolün işlevi, görünümünden ve metninden anlaşılır olmalıdır. Ana eylem dolu, yardımcı eylem nötr kenarlıklı olur. Kartlar ve pencereler `--radius-card: 12px`, butonlar `--radius-control: 8px`, Connect öğeleri `--radius-control: 8px` kullanır. Standart kontrol yüksekliği en az 44 px'dir. Düğme metni 16 px ve 500 ağırlıktadır.
 
 Bağlantılar bağlantı, düğmeler düğme, seçimler gerçek form kontrolleri olarak kalır. PGP gibi çok satırlı veriler salt okunur alanda sunulur. Kopyalama başarısı ve hata sonucu kısa bir durum mesajıyla bildirilir. JavaScript kullanılamadığında anahtar indirme ve elle kopyalama gibi temel yollar erişilebilir kalır.

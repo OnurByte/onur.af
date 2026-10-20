@@ -38,12 +38,4 @@ export const feedStyles = stylex.create({
     lineHeight: 'var(--leading-body)',
     overflowWrap: 'anywhere',
   },
-  command: {
-    marginTop: 'var(--space-4)',
-    fontFamily: 'monospace',
-    fontSize: 'var(--font-small)',
-    lineHeight: 'var(--leading-body)',
-    whiteSpace: 'pre-wrap',
-    overflowWrap: 'anywhere',
-  },
 });

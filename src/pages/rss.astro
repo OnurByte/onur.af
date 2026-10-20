@@ -95,25 +95,6 @@ const description = publicPreview('/rss')!.description;
             PGP key
           </a>
         </div>
-        {verification.status === 'signed' && (
-          <Fragment>
-            <p {...stylex.attrs(feedStyles.paragraph)}>
-              Download the XML feed, signature and{' '}
-              <a {...stylex.attrs(styles.walletLink)} href="/pgp.asc" download>
-                public key
-              </a>
-              , then verify locally:
-            </p>
-            <pre
-              {...stylex.attrs(feedStyles.command)}
-            ><code>{'gpg --import pgp.asc\ngpg --verify rss.xml.asc rss.xml'}</code></pre>
-            <p {...stylex.attrs(styles.note)}>
-              Check the key fingerprint against a source you trust. A valid
-              signature establishes integrity and signing-key control; it does
-              not prove that a feed is the latest version.
-            </p>
-          </Fragment>
-        )}
       </section>
       <section
         {...stylex.attrs(feedStyles.section)}
