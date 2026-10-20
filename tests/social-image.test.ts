@@ -4,14 +4,14 @@ import {
   socialImage,
   socialImageResponse,
 } from '../src/portfolio/social-image';
-import { publicPaths } from '../src/portfolio/seo';
+import { publicPaths, proofPaths } from '../src/portfolio/seo';
 import { publicPreview } from '../src/portfolio/previews';
 
 const imageUrl = (query = '') =>
   new URL(`https://portfolio.example/social/home.png${query}`);
 
 test('every public card is a readable 1200 by 630 monochrome PNG', async () => {
-  for (const path of publicPaths) {
+  for (const path of [...publicPaths, ...proofPaths]) {
     const png = await socialImage(publicPreview(path)!.key);
     const metadata = await sharp(png).metadata();
     expect(metadata).toMatchObject({ format: 'png', width: 1200, height: 630 });

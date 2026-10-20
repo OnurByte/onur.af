@@ -99,3 +99,23 @@ test('Astro site configuration supplies the canonical origin when runtime config
   ).toBeUndefined();
   expect(resolveSiteOrigin(undefined, undefined)).toBeUndefined();
 });
+
+test('only recognized public HTML paths have slash redirects', async () => {
+  const { publicPathRedirect } = await import('../src/portfolio/seo');
+  for (const path of [
+    ...publicPaths,
+    ...proofPaths,
+    ...logPaths(),
+    '/log/tag/development',
+  ])
+    if (path !== '/') expect(publicPathRedirect(`${path}/`)).toBe(path);
+  for (const path of [
+    '/',
+    '/log',
+    '/unknown/',
+    '/contribute/private/',
+    '/robots.txt/',
+    '//evil.example/',
+  ])
+    expect(publicPathRedirect(path)).toBeUndefined();
+});

@@ -3,7 +3,15 @@ import { initSmoothScroll } from './smooth-scroll';
 import { initNavGlass } from './nav-glass';
 
 initSmoothScroll();
-initNavGlass();
+// Present the readable native navbar and primary content before generating
+// its decorative displacement map. Navigation is usable throughout.
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    if ('requestIdleCallback' in window)
+      window.requestIdleCallback(() => initNavGlass(), { timeout: 1000 });
+    else initNavGlass();
+  });
+});
 
 document.addEventListener('contextmenu', (event) => {
   if (!(event.target instanceof Element && event.target.closest('.h-entry')))

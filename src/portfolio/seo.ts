@@ -1,3 +1,4 @@
+import publicPages from '../content/public-pages.json' with { type: 'json' };
 import {
   logEntries,
   listedLogEntries,
@@ -19,7 +20,9 @@ export const publicPaths: readonly string[] = [
 export const proofPaths = ['/pgp/x', '/pgp/github'] as const;
 export const logPaths = (entries: readonly LogEntry[] = logEntries) =>
   entries.flatMap((entry) => [logUrl(entry), logProofUrl(entry)]);
-export const siteDescription = '';
+export const siteDescription = publicPages.find(
+  (page) => page.id === '/',
+)!.description;
 
 export function validSiteUrl(value: string | undefined): string | undefined {
   if (!value || /[\u0000-\u0020\u007f\\]/.test(value)) return;
@@ -69,6 +72,13 @@ function isPublicPage(pathname: string): boolean {
     Object.keys(logTagDefinitions).some((slug) => logTagUrl(slug) === pathname)
   );
 }
+/** Consolidate only known HTML routes; unknown paths must retain their real 404. */
+export function publicPathRedirect(pathname: string): string | undefined {
+  if (pathname === '/' || !pathname.endsWith('/')) return;
+  const normalized = pathname.replace(/\/+$/, '');
+  return isPublicPage(normalized) ? normalized : undefined;
+}
+
 /** Indexability is a page policy, independent of whether an absolute canonical origin is configured. */
 export function robotsContent(
   pathname: string,

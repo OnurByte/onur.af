@@ -321,7 +321,9 @@ $$
       name: 'Publication PGP proof',
     });
     await expect(listedVerification).toContainText('Verified');
-    await expect(listedEntry.locator('h2 a[href^="/log/"]')).toHaveCount(0);
+    await expect(
+      listedEntry.locator('h2 a[href="/log/silent-lodge-convenes"]'),
+    ).toHaveText('Fixture note');
     await page.goto(origin);
     for (const claim of claims) {
       const name =

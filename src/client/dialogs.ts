@@ -17,11 +17,15 @@ export function openDialog(
       if (active === dialog) active = undefined;
       const target = returnFocus.get(dialog);
       returnFocus.delete(dialog);
-      if (!active?.open) target?.focus();
+      if (!active?.open) target?.focus({ preventScroll: true });
     },
     { once: true },
   );
 }
-export function closeDialog(dialog: HTMLDialogElement) {
+export function closeDialog(
+  dialog: HTMLDialogElement,
+  { restoreFocus = true }: { restoreFocus?: boolean } = {},
+) {
+  if (!restoreFocus) returnFocus.delete(dialog);
   dialog.close();
 }

@@ -31,7 +31,11 @@ export const logStyles = stylex.create({
     borderRadius: 'var(--radius-card)',
     scrollMarginTop: 24,
   },
-  cardLink: { position: 'absolute', inset: 0 },
+  cardLink: {
+    color: 'inherit',
+    textDecoration: 'none',
+    '::after': { content: '""', position: 'absolute', inset: 0 },
+  },
   cardBadge: {
     position: 'relative',
     zIndex: 1,

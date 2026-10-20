@@ -32,7 +32,7 @@ interface Props {
 }
 const {
   title = 'Onur',
-  description: suppliedDescription = siteDescription,
+  description: suppliedDescription,
   motto = mottos[0],
   noindex = false,
   language = 'en',
@@ -42,9 +42,8 @@ const {
 const links = portfolioLinks();
 const origin = siteOrigin(Astro.site);
 const preview = publicPreview(Astro.url.pathname);
-const description = article
-  ? suppliedDescription
-  : (preview?.description ?? suppliedDescription);
+const description =
+  suppliedDescription ?? preview?.description ?? siteDescription;
 const canonical = canonicalUrl(origin, Astro.url.pathname);
 const robots = robotsContent(Astro.url.pathname, {
   noindex: noindex || process.env['VERCEL_ENV'] === 'preview',
@@ -111,6 +110,9 @@ const schema =
             '@id': `${origin}/#person`,
             name: 'Onur',
             url: `${origin}/`,
+            sameAs: Object.values(identityAccounts).map(
+              (account) => account.profile,
+            ),
           },
         ],
       }

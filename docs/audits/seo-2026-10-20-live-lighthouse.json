@@ -1,0 +1,49 @@
+{
+  "fetchTime": "2026-10-20T10:20:56.279Z",
+  "requestedUrl": "https://portfolio-seven-plum-73.vercel.app/",
+  "lighthouseVersion": "12.6.1",
+  "categories": {
+    "performance": 0.99,
+    "accessibility": 1,
+    "best-practices": 1,
+    "seo": 0.92
+  },
+  "audits": {
+    "largest-contentful-paint": {
+      "title": "Largest Contentful Paint",
+      "score": 1,
+      "displayValue": "1.1 s",
+      "numericValue": 1073.9285
+    },
+    "total-blocking-time": {
+      "title": "Total Blocking Time",
+      "score": 1,
+      "displayValue": "0 ms",
+      "numericValue": 0
+    },
+    "cumulative-layout-shift": {
+      "title": "Cumulative Layout Shift",
+      "score": 1,
+      "displayValue": "0.003",
+      "numericValue": 0.003470743097455314
+    },
+    "server-response-time": {
+      "title": "Initial server response time was short",
+      "score": 1,
+      "displayValue": "Root document took 120 ms",
+      "numericValue": 116.15200000000002
+    },
+    "label-content-name-mismatch": {
+      "title": "Elements with visible text labels do not have matching accessible names.",
+      "score": 0
+    },
+    "meta-description": {
+      "title": "Document does not have a meta description",
+      "score": 0
+    },
+    "document-latency-insight": {
+      "title": "Document request latency",
+      "score": 0
+    }
+  }
+}

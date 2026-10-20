@@ -7,6 +7,8 @@ test('procedural glass preserves geometry and responds without moving controls',
   await page.clock.pauseAt(new Date(Date.now() + 1000));
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/');
+  // Advance the paused clock through first paint and deferred decorative setup.
+  await page.clock.runFor(1200);
   const nav = page.locator('[data-nav-glass]');
   await expect(nav).toHaveAttribute('data-glass-state', 'refractive');
   await page.clock.runFor(100);
@@ -60,6 +62,8 @@ test('motion pauses for preferences and bfcache while contrast becomes opaque', 
   await page.clock.install();
   await page.clock.pauseAt(new Date(Date.now() + 1000));
   await page.goto('/');
+  // Advance the paused clock through first paint and deferred decorative setup.
+  await page.clock.runFor(1200);
   const nav = page.locator('[data-nav-glass]');
   await expect(nav).toHaveAttribute('data-glass-state', 'refractive');
   await page.clock.runFor(100);

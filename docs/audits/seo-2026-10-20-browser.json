@@ -1,0 +1,2674 @@
+[
+  {
+    "label": "local",
+    "path": "/",
+    "status": 200,
+    "title": "Onur — Personal website",
+    "description": "Onur’s personal website, with software projects, published articles, and PGP-verified accounts.",
+    "canonical": "https://portfolio-seven-plum-73.vercel.app/",
+    "robots": "index, follow",
+    "lang": "en",
+    "h1": ["The creator originates."],
+    "overflow": false,
+    "mainText": "The creator originates.\nThis is Onur.\n2026-10-19\nVerified\n\nI write software, explore how the technology I use actually works, and question the defaults that come with it. I want to know what's running on my machines, who's in control, and what's happening under the hood. I'd rather build my own tools than ask permission.\n\nPrivacy isn't secrecy; it's choosing what I reveal and to whom. I make my ow",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/home-identity-portrait.svg",
+        "alt": "",
+        "width": "480",
+        "height": "480",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/javascript.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/typescript.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/python.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/gnubash.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rust.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/go.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/openjdk.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/php.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/lua.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/html5.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/css.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/astro.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/nextdotjs.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/react.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/tailwindcss.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/shadcnui.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/linux.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/git.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/nixos.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/neovim.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/zedindustries.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/jetbrains.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/nodedotjs.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/bun.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/gtk.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/gnome.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/sqlite.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/mysql.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/postgresql.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/drizzle.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/codex.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/claude.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/modelcontextprotocol.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/x.svg",
+        "alt": "",
+        "width": "52",
+        "height": "52",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/heart.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/repost.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/heart.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/repost.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/heart.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/repost.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/heart.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/repost.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/heart.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/repost.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/github.svg",
+        "alt": "",
+        "width": "52",
+        "height": "52",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/typescript.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rust.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rust.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rust.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/javascript.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/connect-mail.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/x.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/github.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/xmpp.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/spotify.svg",
+        "alt": "",
+        "width": "52",
+        "height": "52",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/chevron-down.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://portfolio-seven-plum-73.vercel.app/#website",
+            "url": "https://portfolio-seven-plum-73.vercel.app/",
+            "name": "Onur",
+            "description": "Onur’s personal website, with software projects, published articles, and PGP-verified accounts.",
+            "publisher": {
+              "@id": "https://portfolio-seven-plum-73.vercel.app/#person"
+            }
+          },
+          {
+            "@type": "Person",
+            "@id": "https://portfolio-seven-plum-73.vercel.app/#person",
+            "name": "Onur",
+            "url": "https://portfolio-seven-plum-73.vercel.app/",
+            "sameAs": [
+              "https://x.com/onurstirner",
+              "https://github.com/onurbyte"
+            ]
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "text": "2026-10-19",
+        "href": "/log/obscure-archive-remembers/verified#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/obscure-archive-remembers/verified"
+      },
+      {
+        "text": "",
+        "href": "/log/cryptic-watchtower-watches"
+      },
+      {
+        "text": "2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "#Development",
+        "href": "/log/tag/development"
+      },
+      {
+        "text": "@onurstirner",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "X identity PGP proof",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "Charlie Kirk on France, 11 years ago:",
+        "href": "https://x.com/onurstirner/status/2112236763246940669"
+      },
+      {
+        "text": "It costs $0.00 to be a kind man.",
+        "href": "https://x.com/onurstirner/status/2111805111978643509"
+      },
+      {
+        "text": "Just wanted to share, the leaked XP NT 5.1 kernel + Linux shim xfce4, now has got Chromium up and running. The chromium supports headless and normal GUI modes, it’s convenient to be used as a coding AI agentic VM cage. No GPU support, uses SwiftShader, 100% fits the VM jail/cage usage. Chromium is pre-built, patches to rebuild are included in the tree. https://github.com/merckhung/nt51_xfce4_embedded",
+        "href": "https://x.com/onurstirner/status/2111792738836643902"
+      },
+      {
+        "text": "Devletimizin bu AISlop çılgınlığına dur demesi gerektiğini düşünüyororum…",
+        "href": "https://x.com/onurstirner/status/2111912688657817681"
+      },
+      {
+        "text": "Techno-Optimism",
+        "href": "https://x.com/onurstirner/status/2111787055009395046"
+      },
+      {
+        "text": "onurbyte",
+        "href": "/pgp/github"
+      },
+      {
+        "text": "GitHub identity PGP proof",
+        "href": "/pgp/github"
+      },
+      {
+        "text": "portfolio",
+        "href": "https://github.com/OnurByte/portfolio"
+      },
+      {
+        "text": "vesperStore",
+        "href": "https://github.com/OnurByte/vesperStore"
+      },
+      {
+        "text": "vesper",
+        "href": "https://github.com/OnurByte/vesper"
+      },
+      {
+        "text": "LiquidGlassForLinux",
+        "href": "https://github.com/OnurByte/LiquidGlassForLinux"
+      },
+      {
+        "text": "Twitter-To-Prototurk",
+        "href": "https://github.com/OnurByte/Twitter-To-Prototurk"
+      },
+      {
+        "text": "@onurstirner",
+        "href": "https://x.com/onurstirner"
+      },
+      {
+        "text": "X identity PGP proof",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "onurbyte",
+        "href": "https://github.com/onurbyte"
+      },
+      {
+        "text": "GitHub identity PGP proof",
+        "href": "/pgp/github"
+      },
+      {
+        "text": "karambol",
+        "href": "https://open.spotify.com/track/1RPWMJ5ZdVR0xGu7Wpcml7"
+      },
+      {
+        "text": "bipo-love",
+        "href": "https://open.spotify.com/track/1diy0BWaQp16nBNNTO63sx"
+      },
+      {
+        "text": "Killing Strangers",
+        "href": "https://open.spotify.com/track/1f9cwoa5wB8m4ynUPHL5rc"
+      },
+      {
+        "text": "Fall Of The House Of Death",
+        "href": "https://open.spotify.com/track/41Talvm5YRLJwoQNtzxLa6"
+      },
+      {
+        "text": "Cupid Carries A Gun",
+        "href": "https://open.spotify.com/track/4cEXJPmm3adNUGWtL1qGVg"
+      }
+    ],
+    "timing": {
+      "ttfb": 1521.5999999940395,
+      "dom": 1535.199999988079
+    }
+  },
+  {
+    "label": "local",
+    "path": "/log",
+    "status": 200,
+    "title": "Log · Onur",
+    "description": "Articles published by Onur, with revision history and PGP signatures.",
+    "canonical": "https://portfolio-seven-plum-73.vercel.app/log",
+    "robots": "index, follow",
+    "lang": "en",
+    "h1": ["Log"],
+    "overflow": false,
+    "mainText": "Log\nBecome a massive value provider\n2026-10-17\nVerified\n5 min read\n\nGive people more than they came for. Build the skills to make that possible, take pride in the work, and turn useful contributions into reasons to choose you again.\n\n#Development",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [],
+    "links": [
+      {
+        "text": "",
+        "href": "/log/cryptic-watchtower-watches"
+      },
+      {
+        "text": "2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "#Development",
+        "href": "/log/tag/development"
+      }
+    ],
+    "timing": {
+      "ttfb": 6.299999982118607,
+      "dom": 21.599999994039536
+    }
+  },
+  {
+    "label": "local",
+    "path": "/log/cryptic-watchtower-watches",
+    "status": 200,
+    "title": "Become a massive value provider · Onur",
+    "description": "Give people more than they came for. Build the skills to make that possible, take pride in the work, and turn useful contributions into reasons to choose you again.",
+    "canonical": "https://portfolio-seven-plum-73.vercel.app/log/cryptic-watchtower-watches",
+    "robots": "index, follow",
+    "lang": "en",
+    "h1": ["Become a massive value provider"],
+    "overflow": false,
+    "mainText": "Become a massive value provider\n2026-10-17\nVerified\nBy Onur\n5 min read\nv2 · 2026-10-17\nRSS · Share on X · Share on Reddit · Share on Telegram\n#Development\n\nDo your work so well that people get more out of it than they thought to ask for. Enough that they stop and notice. That's a standard I want to hold myself to [1].\n\nAnyone can hand over the first thing that technically meets the request. A usab",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/shift.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/share-link.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/x.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/discord.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/reddit.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/telegram.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/share-mail.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/share.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BlogPosting",
+            "@id": "https://portfolio-seven-plum-73.vercel.app/log/cryptic-watchtower-watches#article",
+            "headline": "Become a massive value provider",
+            "description": "Give people more than they came for. Build the skills to make that possible, take pride in the work, and turn useful contributions into reasons to choose you again.",
+            "url": "https://portfolio-seven-plum-73.vercel.app/log/cryptic-watchtower-watches",
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": "https://portfolio-seven-plum-73.vercel.app/log/cryptic-watchtower-watches"
+            },
+            "datePublished": "2026-10-17T17:07:41.374Z",
+            "dateModified": "2026-10-17T20:05:44.204+00:00",
+            "inLanguage": "en",
+            "keywords": ["development"],
+            "author": {
+              "@type": "Person",
+              "name": "Onur",
+              "url": "https://portfolio-seven-plum-73.vercel.app/"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://portfolio-seven-plum-73.vercel.app/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Log",
+                "item": "https://portfolio-seven-plum-73.vercel.app/log"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Become a massive value provider",
+                "item": "https://portfolio-seven-plum-73.vercel.app/log/cryptic-watchtower-watches"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "text": "2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified?v=1#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "Onur",
+        "href": "https://portfolio-seven-plum-73.vercel.app/"
+      },
+      {
+        "text": "v2 · 2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified?v=2#timestamps"
+      },
+      {
+        "text": "RSS",
+        "href": "/rss"
+      },
+      {
+        "text": "X",
+        "href": "https://twitter.com/intent/tweet?text=Become+a+massive+value+provider&url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches"
+      },
+      {
+        "text": "Reddit",
+        "href": "https://www.reddit.com/submit?title=Become+a+massive+value+provider&url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches"
+      },
+      {
+        "text": "Telegram",
+        "href": "https://t.me/share/url?url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches&text=Become+a+massive+value+provider"
+      },
+      {
+        "text": "Mail",
+        "href": "mailto:?subject=Become%20a%20massive%20value%20provider&body=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches"
+      },
+      {
+        "text": "RSS",
+        "href": "/rss"
+      },
+      {
+        "text": "Share on X",
+        "href": "https://twitter.com/intent/tweet?text=Become+a+massive+value+provider&url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches"
+      },
+      {
+        "text": "Share on Reddit",
+        "href": "https://www.reddit.com/submit?title=Become+a+massive+value+provider&url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches"
+      },
+      {
+        "text": "Share on Telegram",
+        "href": "https://t.me/share/url?url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches&text=Become+a+massive+value+provider"
+      },
+      {
+        "text": "#Development",
+        "href": "/log/tag/development"
+      },
+      {
+        "text": "Give people more than they came for",
+        "href": "#give-people-more-than-they-came-for"
+      },
+      {
+        "text": "Get good enough to have something to give",
+        "href": "#get-good-enough-to-have-something-to-give"
+      },
+      {
+        "text": "It feels better to do the job properly",
+        "href": "#it-feels-better-to-do-the-job-properly"
+      },
+      {
+        "text": "Make yourself worth coming back to",
+        "href": "#make-yourself-worth-coming-back-to"
+      },
+      {
+        "text": "Sources",
+        "href": "#log-sources"
+      },
+      {
+        "text": "",
+        "href": "#give-people-more-than-they-came-for"
+      },
+      {
+        "text": "",
+        "href": "#get-good-enough-to-have-something-to-give"
+      },
+      {
+        "text": "",
+        "href": "#it-feels-better-to-do-the-job-properly"
+      },
+      {
+        "text": "",
+        "href": "#make-yourself-worth-coming-back-to"
+      },
+      {
+        "text": "",
+        "href": "#log-sources"
+      },
+      {
+        "text": "[1]",
+        "href": "#source-1"
+      },
+      {
+        "text": "#",
+        "href": "#give-people-more-than-they-came-for"
+      },
+      {
+        "text": "#",
+        "href": "#get-good-enough-to-have-something-to-give"
+      },
+      {
+        "text": "[2]",
+        "href": "#source-2"
+      },
+      {
+        "text": "#",
+        "href": "#it-feels-better-to-do-the-job-properly"
+      },
+      {
+        "text": "[3]",
+        "href": "#source-3"
+      },
+      {
+        "text": "#",
+        "href": "#make-yourself-worth-coming-back-to"
+      },
+      {
+        "text": "[4]",
+        "href": "#source-4"
+      },
+      {
+        "text": "",
+        "href": "https://yusufipek.me/yazilar/devasa-deger"
+      },
+      {
+        "text": "Back to citation for source 1",
+        "href": "#source-ref-1-1"
+      },
+      {
+        "text": "",
+        "href": "https://pubmed.ncbi.nlm.nih.gov/24986855/"
+      },
+      {
+        "text": "Back to citation for source 2",
+        "href": "#source-ref-2-2"
+      },
+      {
+        "text": "",
+        "href": "https://selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_SDT.pdf"
+      },
+      {
+        "text": "Back to citation for source 3",
+        "href": "#source-ref-3-3"
+      },
+      {
+        "text": "",
+        "href": "https://doi.org/10.1111/j.1468-0262.2006.00707.x"
+      },
+      {
+        "text": "Back to citation for source 4",
+        "href": "#source-ref-4-4"
+      },
+      {
+        "text": "Source 1",
+        "href": "#cryptic-watchtower-watches-v1-source-1"
+      },
+      {
+        "text": "",
+        "href": "#cryptic-watchtower-watches-v1-when-you-say-it-works"
+      },
+      {
+        "text": "",
+        "href": "#cryptic-watchtower-watches-v1-putting-in-hours-is-easy"
+      },
+      {
+        "text": "Source 2",
+        "href": "#cryptic-watchtower-watches-v1-source-2"
+      },
+      {
+        "text": "",
+        "href": "#cryptic-watchtower-watches-v1-whos-going-to-pay-you-back"
+      },
+      {
+        "text": "Source 1",
+        "href": "#cryptic-watchtower-watches-v1-source-1"
+      },
+      {
+        "text": "",
+        "href": "https://yusufipek.me/yazilar/devasa-deger"
+      },
+      {
+        "text": "Back to citation for source 1",
+        "href": "#cryptic-watchtower-watches-v1-source-ref-1-1"
+      },
+      {
+        "text": "Back to citation for source 1",
+        "href": "#cryptic-watchtower-watches-v1-source-ref-1-3"
+      },
+      {
+        "text": "",
+        "href": "https://pubmed.ncbi.nlm.nih.gov/24986855/"
+      },
+      {
+        "text": "Back to citation for source 2",
+        "href": "#cryptic-watchtower-watches-v1-source-ref-2-2"
+      },
+      {
+        "text": "Publication PGP proof",
+        "href": "/log/cryptic-watchtower-watches/verified?v=1"
+      }
+    ],
+    "timing": {
+      "ttfb": 126.69999998807907,
+      "dom": 151.39999997615814
+    }
+  },
+  {
+    "label": "local",
+    "path": "/log/tag/development",
+    "status": 200,
+    "title": "Development · Log · Onur",
+    "description": "Implementation notes and lessons from building software.",
+    "canonical": "https://portfolio-seven-plum-73.vercel.app/log/tag/development",
+    "robots": "noindex, follow",
+    "lang": "en",
+    "h1": ["Development"],
+    "overflow": false,
+    "mainText": "Log / Development\nDevelopment\n\nImplementation notes and lessons from building software.\n\nBecome a massive value provider\n2026-10-17\nVerified\n5 min read\n\nGive people more than they came for. Build the skills to make that possible, take pride in the work, and turn useful contributions into reasons to choose you again.\n\n#Development",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [],
+    "links": [
+      {
+        "text": "Log",
+        "href": "/log"
+      },
+      {
+        "text": "",
+        "href": "/log/cryptic-watchtower-watches"
+      },
+      {
+        "text": "2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "#Development",
+        "href": "/log/tag/development"
+      }
+    ],
+    "timing": {
+      "ttfb": 6.4000000059604645,
+      "dom": 21.099999994039536
+    }
+  },
+  {
+    "label": "local",
+    "path": "/pgp/",
+    "status": 200,
+    "title": "PGP · Onur",
+    "description": "Accounts and signatures verified by PGP.",
+    "robots": "noindex, nofollow",
+    "lang": "en",
+    "h1": ["PGP"],
+    "overflow": false,
+    "mainText": "PGP\n\nAccounts and signatures verified by PGP.\n\nAccount ownership\n\nSigned ownership statement\n\nCopy\nCopy\nDownload\n\n𝕏\n@onurstirner\nGitHub\nonurbyte\nLog\nBecome a massive value provider\n2026-10-17\nVerified",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [],
+    "links": [
+      {
+        "text": "Signed ownership statement",
+        "href": "/pgp/identity.asc"
+      },
+      {
+        "text": "Download",
+        "href": "/pgp.asc"
+      },
+      {
+        "text": "𝕏",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "@onurstirner",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "X identity PGP proof",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "GitHub",
+        "href": "/pgp/github"
+      },
+      {
+        "text": "onurbyte",
+        "href": "/pgp/github"
+      },
+      {
+        "text": "GitHub identity PGP proof",
+        "href": "/pgp/github"
+      },
+      {
+        "text": "Become a massive value provider",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      }
+    ],
+    "timing": {
+      "ttfb": 9.799999982118607,
+      "dom": 24.5
+    }
+  },
+  {
+    "label": "local",
+    "path": "/log/",
+    "status": 200,
+    "title": "Log · Onur",
+    "description": "Articles published by Onur, with revision history and PGP signatures.",
+    "robots": "noindex, nofollow",
+    "lang": "en",
+    "h1": ["Log"],
+    "overflow": false,
+    "mainText": "Log\nBecome a massive value provider\n2026-10-17\nVerified\n5 min read\n\nGive people more than they came for. Build the skills to make that possible, take pride in the work, and turn useful contributions into reasons to choose you again.\n\n#Development",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [],
+    "links": [
+      {
+        "text": "",
+        "href": "/log/cryptic-watchtower-watches"
+      },
+      {
+        "text": "2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "#Development",
+        "href": "/log/tag/development"
+      }
+    ],
+    "timing": {
+      "ttfb": 6.9000000059604645,
+      "dom": 26.400000005960464
+    }
+  },
+  {
+    "label": "live",
+    "path": "/",
+    "status": 200,
+    "title": "The creator originates. · Onur",
+    "canonical": "https://portfolio-seven-plum-73.vercel.app/",
+    "robots": "index, follow",
+    "lang": "en",
+    "h1": ["The creator originates."],
+    "overflow": false,
+    "mainText": "The creator originates.\nThis is Onur.\n2026-10-19\nVerified\n\nI write software, explore how the technology I use actually works, and question the defaults that come with it. I want to know what's running on my machines, who's in control, and what's happening under the hood. I'd rather build my own tools than ask permission.\n\nPrivacy isn't secrecy; it's choosing what I reveal and to whom. I make my ow",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/home-identity-portrait.svg",
+        "alt": "",
+        "width": "480",
+        "height": "480",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/javascript.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/typescript.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/python.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/gnubash.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rust.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/go.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/openjdk.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/php.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/lua.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/html5.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/css.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/astro.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/nextdotjs.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/react.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/tailwindcss.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/shadcnui.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/linux.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/git.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/nixos.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/neovim.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/zedindustries.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/jetbrains.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/nodedotjs.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/bun.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/gtk.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/gnome.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/sqlite.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/mysql.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/postgresql.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/drizzle.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/codex.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/claude.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/technologies/modelcontextprotocol.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/x.svg",
+        "alt": "",
+        "width": "52",
+        "height": "52",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/heart.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/repost.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/heart.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/repost.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/heart.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/repost.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/heart.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/repost.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/heart.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/repost.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/github.svg",
+        "alt": "",
+        "width": "52",
+        "height": "52",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/typescript.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rust.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rust.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rust.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/javascript.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/connect-mail.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/x.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/github.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/xmpp.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/spotify.svg",
+        "alt": "",
+        "width": "52",
+        "height": "52",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/chevron-down.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://portfolio-seven-plum-73.vercel.app/#website",
+            "url": "https://portfolio-seven-plum-73.vercel.app/",
+            "name": "Onur",
+            "publisher": {
+              "@id": "https://portfolio-seven-plum-73.vercel.app/#person"
+            }
+          },
+          {
+            "@type": "Person",
+            "@id": "https://portfolio-seven-plum-73.vercel.app/#person",
+            "name": "Onur",
+            "url": "https://portfolio-seven-plum-73.vercel.app/"
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "text": "2026-10-19",
+        "href": "/log/obscure-archive-remembers/verified#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/obscure-archive-remembers/verified"
+      },
+      {
+        "text": "",
+        "href": "/log/cryptic-watchtower-watches"
+      },
+      {
+        "text": "2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "#Development",
+        "href": "/log/tag/development"
+      },
+      {
+        "text": "@onurstirner",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "X identity PGP proof",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "Charlie Kirk on France, 11 years ago:",
+        "href": "https://x.com/onurstirner/status/2112236763246940669"
+      },
+      {
+        "text": "It costs $0.00 to be a kind man.",
+        "href": "https://x.com/onurstirner/status/2111805111978643509"
+      },
+      {
+        "text": "Just wanted to share, the leaked XP NT 5.1 kernel + Linux shim xfce4, now has got Chromium up and running. The chromium supports headless and normal GUI modes, it’s convenient to be used as a coding AI agentic VM cage. No GPU support, uses SwiftShader, 100% fits the VM jail/cage usage. Chromium is pre-built, patches to rebuild are included in the tree. https://github.com/merckhung/nt51_xfce4_embedded",
+        "href": "https://x.com/onurstirner/status/2111792738836643902"
+      },
+      {
+        "text": "Devletimizin bu AISlop çılgınlığına dur demesi gerektiğini düşünüyororum…",
+        "href": "https://x.com/onurstirner/status/2111912688657817681"
+      },
+      {
+        "text": "Techno-Optimism",
+        "href": "https://x.com/onurstirner/status/2111787055009395046"
+      },
+      {
+        "text": "onurbyte",
+        "href": "/pgp/github"
+      },
+      {
+        "text": "GitHub identity PGP proof",
+        "href": "/pgp/github"
+      },
+      {
+        "text": "portfolio",
+        "href": "https://github.com/OnurByte/portfolio"
+      },
+      {
+        "text": "vesperStore",
+        "href": "https://github.com/OnurByte/vesperStore"
+      },
+      {
+        "text": "vesper",
+        "href": "https://github.com/OnurByte/vesper"
+      },
+      {
+        "text": "LiquidGlassForLinux",
+        "href": "https://github.com/OnurByte/LiquidGlassForLinux"
+      },
+      {
+        "text": "Twitter-To-Prototurk",
+        "href": "https://github.com/OnurByte/Twitter-To-Prototurk"
+      },
+      {
+        "text": "@onurstirner",
+        "href": "https://x.com/onurstirner"
+      },
+      {
+        "text": "X identity PGP proof",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "onurbyte",
+        "href": "https://github.com/onurbyte"
+      },
+      {
+        "text": "GitHub identity PGP proof",
+        "href": "/pgp/github"
+      }
+    ],
+    "timing": {
+      "ttfb": 363.59999999403954,
+      "dom": 665.0999999940395
+    }
+  },
+  {
+    "label": "live",
+    "path": "/log",
+    "status": 200,
+    "title": "Log · Onur",
+    "description": "Notes, work, and changes.",
+    "canonical": "https://portfolio-seven-plum-73.vercel.app/log",
+    "robots": "index, follow",
+    "lang": "en",
+    "h1": ["Log"],
+    "overflow": false,
+    "mainText": "Log\nBecome a massive value provider\n2026-10-17\nVerified\n5 min read\n\nGive people more than they came for. Build the skills to make that possible, take pride in the work, and turn useful contributions into reasons to choose you again.\n\n#Development",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [],
+    "links": [
+      {
+        "text": "",
+        "href": "/log/cryptic-watchtower-watches"
+      },
+      {
+        "text": "2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "#Development",
+        "href": "/log/tag/development"
+      }
+    ],
+    "timing": {
+      "ttfb": 91.19999998807907,
+      "dom": 245.80000001192093
+    }
+  },
+  {
+    "label": "live",
+    "path": "/log/cryptic-watchtower-watches",
+    "status": 200,
+    "title": "Become a massive value provider · Onur",
+    "description": "Give people more than they came for. Build the skills to make that possible, take pride in the work, and turn useful contributions into reasons to choose you again.",
+    "canonical": "https://portfolio-seven-plum-73.vercel.app/log/cryptic-watchtower-watches",
+    "robots": "index, follow",
+    "lang": "en",
+    "h1": ["Become a massive value provider"],
+    "overflow": false,
+    "mainText": "Become a massive value provider\n2026-10-17\nVerified\nBy Onur\n5 min read\nv2 · 2026-10-17\nRSS · Share on X · Share on Reddit · Share on Telegram\n#Development\n\nDo your work so well that people get more out of it than they thought to ask for. Enough that they stop and notice. That's a standard I want to hold myself to [1].\n\nAnyone can hand over the first thing that technically meets the request. A usab",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/shift.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/share-link.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/x.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/discord.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/reddit.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/telegram.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/share-mail.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/share.svg",
+        "alt": "",
+        "width": "24",
+        "height": "24",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BlogPosting",
+            "@id": "https://portfolio-seven-plum-73.vercel.app/log/cryptic-watchtower-watches#article",
+            "headline": "Become a massive value provider",
+            "description": "Give people more than they came for. Build the skills to make that possible, take pride in the work, and turn useful contributions into reasons to choose you again.",
+            "url": "https://portfolio-seven-plum-73.vercel.app/log/cryptic-watchtower-watches",
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": "https://portfolio-seven-plum-73.vercel.app/log/cryptic-watchtower-watches"
+            },
+            "datePublished": "2026-10-17T17:07:41.374Z",
+            "dateModified": "2026-10-17T20:05:44.204+00:00",
+            "inLanguage": "en",
+            "keywords": ["development"],
+            "author": {
+              "@type": "Person",
+              "name": "Onur",
+              "url": "https://portfolio-seven-plum-73.vercel.app/"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://portfolio-seven-plum-73.vercel.app/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Log",
+                "item": "https://portfolio-seven-plum-73.vercel.app/log"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Become a massive value provider",
+                "item": "https://portfolio-seven-plum-73.vercel.app/log/cryptic-watchtower-watches"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "links": [
+      {
+        "text": "2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified?v=1#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "Onur",
+        "href": "https://portfolio-seven-plum-73.vercel.app/"
+      },
+      {
+        "text": "v2 · 2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified?v=2#timestamps"
+      },
+      {
+        "text": "RSS",
+        "href": "/rss"
+      },
+      {
+        "text": "X",
+        "href": "https://twitter.com/intent/tweet?text=Become+a+massive+value+provider&url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches"
+      },
+      {
+        "text": "Reddit",
+        "href": "https://www.reddit.com/submit?title=Become+a+massive+value+provider&url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches"
+      },
+      {
+        "text": "Telegram",
+        "href": "https://t.me/share/url?url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches&text=Become+a+massive+value+provider"
+      },
+      {
+        "text": "Mail",
+        "href": "mailto:?subject=Become%20a%20massive%20value%20provider&body=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches"
+      },
+      {
+        "text": "RSS",
+        "href": "/rss"
+      },
+      {
+        "text": "Share on X",
+        "href": "https://twitter.com/intent/tweet?text=Become+a+massive+value+provider&url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches"
+      },
+      {
+        "text": "Share on Reddit",
+        "href": "https://www.reddit.com/submit?title=Become+a+massive+value+provider&url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches"
+      },
+      {
+        "text": "Share on Telegram",
+        "href": "https://t.me/share/url?url=https%3A%2F%2Fportfolio-seven-plum-73.vercel.app%2Flog%2Fcryptic-watchtower-watches&text=Become+a+massive+value+provider"
+      },
+      {
+        "text": "#Development",
+        "href": "/log/tag/development"
+      },
+      {
+        "text": "Give people more than they came for",
+        "href": "#give-people-more-than-they-came-for"
+      },
+      {
+        "text": "Get good enough to have something to give",
+        "href": "#get-good-enough-to-have-something-to-give"
+      },
+      {
+        "text": "It feels better to do the job properly",
+        "href": "#it-feels-better-to-do-the-job-properly"
+      },
+      {
+        "text": "Make yourself worth coming back to",
+        "href": "#make-yourself-worth-coming-back-to"
+      },
+      {
+        "text": "Sources",
+        "href": "#log-sources"
+      },
+      {
+        "text": "",
+        "href": "#give-people-more-than-they-came-for"
+      },
+      {
+        "text": "",
+        "href": "#get-good-enough-to-have-something-to-give"
+      },
+      {
+        "text": "",
+        "href": "#it-feels-better-to-do-the-job-properly"
+      },
+      {
+        "text": "",
+        "href": "#make-yourself-worth-coming-back-to"
+      },
+      {
+        "text": "",
+        "href": "#log-sources"
+      },
+      {
+        "text": "[1]",
+        "href": "#source-1"
+      },
+      {
+        "text": "#",
+        "href": "#give-people-more-than-they-came-for"
+      },
+      {
+        "text": "#",
+        "href": "#get-good-enough-to-have-something-to-give"
+      },
+      {
+        "text": "[2]",
+        "href": "#source-2"
+      },
+      {
+        "text": "#",
+        "href": "#it-feels-better-to-do-the-job-properly"
+      },
+      {
+        "text": "[3]",
+        "href": "#source-3"
+      },
+      {
+        "text": "#",
+        "href": "#make-yourself-worth-coming-back-to"
+      },
+      {
+        "text": "[4]",
+        "href": "#source-4"
+      },
+      {
+        "text": "",
+        "href": "https://yusufipek.me/yazilar/devasa-deger"
+      },
+      {
+        "text": "Back to citation for source 1",
+        "href": "#source-ref-1-1"
+      },
+      {
+        "text": "",
+        "href": "https://pubmed.ncbi.nlm.nih.gov/24986855/"
+      },
+      {
+        "text": "Back to citation for source 2",
+        "href": "#source-ref-2-2"
+      },
+      {
+        "text": "",
+        "href": "https://selfdeterminationtheory.org/SDT/documents/2000_RyanDeci_SDT.pdf"
+      },
+      {
+        "text": "Back to citation for source 3",
+        "href": "#source-ref-3-3"
+      },
+      {
+        "text": "",
+        "href": "https://doi.org/10.1111/j.1468-0262.2006.00707.x"
+      },
+      {
+        "text": "Back to citation for source 4",
+        "href": "#source-ref-4-4"
+      },
+      {
+        "text": "Source 1",
+        "href": "#cryptic-watchtower-watches-v1-source-1"
+      },
+      {
+        "text": "",
+        "href": "#cryptic-watchtower-watches-v1-when-you-say-it-works"
+      },
+      {
+        "text": "",
+        "href": "#cryptic-watchtower-watches-v1-putting-in-hours-is-easy"
+      },
+      {
+        "text": "Source 2",
+        "href": "#cryptic-watchtower-watches-v1-source-2"
+      },
+      {
+        "text": "",
+        "href": "#cryptic-watchtower-watches-v1-whos-going-to-pay-you-back"
+      },
+      {
+        "text": "Source 1",
+        "href": "#cryptic-watchtower-watches-v1-source-1"
+      },
+      {
+        "text": "",
+        "href": "https://yusufipek.me/yazilar/devasa-deger"
+      },
+      {
+        "text": "Back to citation for source 1",
+        "href": "#cryptic-watchtower-watches-v1-source-ref-1-1"
+      },
+      {
+        "text": "Back to citation for source 1",
+        "href": "#cryptic-watchtower-watches-v1-source-ref-1-3"
+      },
+      {
+        "text": "",
+        "href": "https://pubmed.ncbi.nlm.nih.gov/24986855/"
+      },
+      {
+        "text": "Back to citation for source 2",
+        "href": "#cryptic-watchtower-watches-v1-source-ref-2-2"
+      },
+      {
+        "text": "Publication PGP proof",
+        "href": "/log/cryptic-watchtower-watches/verified?v=1"
+      }
+    ],
+    "timing": {
+      "ttfb": 55.5,
+      "dom": 410.5
+    }
+  },
+  {
+    "label": "live",
+    "path": "/log/tag/development",
+    "status": 200,
+    "title": "Development · Log · Onur",
+    "description": "Implementation notes and lessons from building software.",
+    "canonical": "https://portfolio-seven-plum-73.vercel.app/log/tag/development",
+    "robots": "noindex, follow",
+    "lang": "en",
+    "h1": ["Development"],
+    "overflow": false,
+    "mainText": "Log / Development\nDevelopment\n\nImplementation notes and lessons from building software.\n\nBecome a massive value provider\n2026-10-17\nVerified\n5 min read\n\nGive people more than they came for. Build the skills to make that possible, take pride in the work, and turn useful contributions into reasons to choose you again.\n\n#Development",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [],
+    "links": [
+      {
+        "text": "Log",
+        "href": "/log"
+      },
+      {
+        "text": "",
+        "href": "/log/cryptic-watchtower-watches"
+      },
+      {
+        "text": "2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "#Development",
+        "href": "/log/tag/development"
+      }
+    ],
+    "timing": {
+      "ttfb": 177.2999999821186,
+      "dom": 286.69999998807907
+    }
+  },
+  {
+    "label": "live",
+    "path": "/pgp/",
+    "status": 200,
+    "title": "PGP · Onur",
+    "description": "Accounts and signatures verified by PGP.",
+    "robots": "noindex, nofollow",
+    "lang": "en",
+    "h1": ["PGP"],
+    "overflow": false,
+    "mainText": "PGP\n\nAccounts and signatures verified by PGP.\n\nAccount ownership\n\nSigned ownership statement\n\nCopy\nCopy\nDownload\n\n𝕏\n@onurstirner\nGitHub\nonurbyte\nLog\nBecome a massive value provider\n2026-10-17\nVerified",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [],
+    "links": [
+      {
+        "text": "Signed ownership statement",
+        "href": "/pgp/identity.asc"
+      },
+      {
+        "text": "Download",
+        "href": "/pgp.asc"
+      },
+      {
+        "text": "𝕏",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "@onurstirner",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "X identity PGP proof",
+        "href": "/pgp/x"
+      },
+      {
+        "text": "GitHub",
+        "href": "/pgp/github"
+      },
+      {
+        "text": "onurbyte",
+        "href": "/pgp/github"
+      },
+      {
+        "text": "GitHub identity PGP proof",
+        "href": "/pgp/github"
+      },
+      {
+        "text": "Become a massive value provider",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      }
+    ],
+    "timing": {
+      "ttfb": 159.30000001192093,
+      "dom": 389.40000000596046
+    }
+  },
+  {
+    "label": "live",
+    "path": "/log/",
+    "status": 200,
+    "title": "Log · Onur",
+    "description": "Notes, work, and changes.",
+    "robots": "noindex, nofollow",
+    "lang": "en",
+    "h1": ["Log"],
+    "overflow": false,
+    "mainText": "Log\nBecome a massive value provider\n2026-10-17\nVerified\n5 min read\n\nGive people more than they came for. Build the skills to make that possible, take pride in the work, and turn useful contributions into reasons to choose you again.\n\n#Development",
+    "images": [
+      {
+        "src": "/brand/onur.svg",
+        "alt": "",
+        "width": "56",
+        "height": "56",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/proof.svg",
+        "alt": "",
+        "width": "16",
+        "height": "16",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/rss.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/tor.svg",
+        "alt": "",
+        "width": "32",
+        "height": "32",
+        "loading": "auto"
+      },
+      {
+        "src": "/brand/i2p.svg",
+        "alt": "",
+        "width": "64",
+        "height": "32",
+        "loading": "auto"
+      }
+    ],
+    "schema": [],
+    "links": [
+      {
+        "text": "",
+        "href": "/log/cryptic-watchtower-watches"
+      },
+      {
+        "text": "2026-10-17",
+        "href": "/log/cryptic-watchtower-watches/verified#timestamps"
+      },
+      {
+        "text": "Verified",
+        "href": "/log/cryptic-watchtower-watches/verified"
+      },
+      {
+        "text": "#Development",
+        "href": "/log/tag/development"
+      }
+    ],
+    "timing": {
+      "ttfb": 151.59999999403954,
+      "dom": 265.2000000178814
+    }
+  }
+]

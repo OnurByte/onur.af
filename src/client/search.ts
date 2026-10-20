@@ -31,6 +31,30 @@ function open() {
 }
 trigger?.addEventListener('click', open);
 if (trigger && dialog) trigger.hidden = false;
+results?.addEventListener('click', (event) => {
+  if (
+    !dialog ||
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.shiftKey ||
+    event.altKey
+  )
+    return;
+  const link =
+    event.target instanceof Element
+      ? event.target.closest<HTMLAnchorElement>('a[href]')
+      : null;
+  if (
+    !link ||
+    link.hasAttribute('download') ||
+    (link.target && link.target !== '_self')
+  )
+    return;
+  // Let same-page navigation focus the destination after it is no longer inert.
+  closeDialog(dialog, { restoreFocus: false });
+});
 document.addEventListener('keydown', (event) => {
   if (
     (event.ctrlKey || event.metaKey) &&
