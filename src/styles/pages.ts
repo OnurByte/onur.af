@@ -8,6 +8,7 @@ export const styles = stylex.create({
     width: 'calc(100% - var(--page-gutter) * 2)',
     maxWidth: 'var(--page-max-width)',
     flex: 1,
+    paddingRight: { default: 4, '@media (min-width: 621px)': 0 },
     paddingTop: 'var(--page-start)',
     paddingBottom: 'var(--page-end)',
   },

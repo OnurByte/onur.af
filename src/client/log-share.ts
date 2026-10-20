@@ -1,6 +1,26 @@
 import { openDialog, closeDialog } from './dialogs';
 const trigger = document.querySelector<HTMLButtonElement>('#open-share');
 const dialog = document.querySelector<HTMLDialogElement>('#share-dialog');
+const query = document.querySelector<HTMLInputElement>('#share-query');
+const rows = [
+  ...(dialog?.querySelectorAll<HTMLElement>('[data-share-label]') ?? []),
+];
+function filterActions() {
+  const term = query?.value.trim().toLowerCase() ?? '';
+  let count = 0;
+  for (const row of rows) {
+    row.hidden =
+      (row.hasAttribute('data-native-row') &&
+        typeof navigator.share !== 'function') ||
+      !row.dataset['shareLabel']!.includes(term);
+    if (!row.hidden) count++;
+  }
+  if (status) {
+    status.textContent = count ? '' : 'No results';
+    status.hidden = count > 0;
+  }
+}
+query?.addEventListener('input', filterActions);
 const status = document.querySelector<HTMLElement>('#share-status');
 function open() {
   if (!dialog) return;
@@ -8,8 +28,12 @@ function open() {
     status.textContent = '';
     status.hidden = true;
   }
+  if (query) query.value = '';
+  filterActions();
   openDialog(dialog, trigger);
-  dialog.querySelector<HTMLAnchorElement>('a')?.focus();
+  const viewport = dialog.querySelector<HTMLElement>('[data-dialog-scroll]');
+  if (viewport) viewport.scrollTop = 0;
+  query?.focus();
 }
 if (trigger && dialog) trigger.parentElement?.removeAttribute('hidden');
 trigger?.addEventListener('click', open);
@@ -31,7 +55,7 @@ document.addEventListener('keydown', (event) => {
     target.closest(
       'input, textarea, select, [contenteditable]:not([contenteditable="false"])',
     ) &&
-    !target.closest('#search-dialog');
+    !target.closest('#search-dialog, #share-dialog');
   shareChord =
     !event.defaultPrevented &&
     !event.isComposing &&
@@ -121,6 +145,19 @@ dialog?.addEventListener('click', async (event) => {
   }
 });
 dialog?.addEventListener('keydown', (event) => {
+  if (event.isComposing) return;
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeDialog(dialog);
+    return;
+  }
+  if (event.key === 'Enter' && event.target === query) {
+    event.preventDefault();
+    dialog
+      .querySelector<HTMLElement>('li:not([hidden]) a, li:not([hidden]) button')
+      ?.click();
+    return;
+  }
   if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
   const actions = [
     ...dialog.querySelectorAll<HTMLElement>(

@@ -155,7 +155,10 @@ test('Spotify refreshes recent tracks, playback timing and the empty player', as
     await page.setViewportSize({ width, height: 900 });
     const spotify = await page.locator('#spotify-embed').boundingBox();
     const main = await page.locator('main').boundingBox();
-    expect(spotify!.width).toBeCloseTo(main!.width, 0);
+    const padding = await page
+      .locator('main')
+      .evaluate((node) => parseFloat(getComputedStyle(node).paddingRight));
+    expect(spotify!.width).toBeCloseTo(main!.width - padding, 0);
     const toggleBox = await summary.boundingBox();
     const headerBox = await page.locator('#spotify-embed header').boundingBox();
     const topBox = await summary.locator('..').boundingBox();

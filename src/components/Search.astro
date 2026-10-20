@@ -1,5 +1,7 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import ScrollBar from './ScrollBar.astro';
+import { localScroll } from '../styles/local-scroll';
 import { edge } from '../styles/edge';
 import { dialogStyles } from '../styles/dialog';
 import { searchStyles } from '../styles/search';
@@ -14,7 +16,8 @@ const groups = [
 <button
   id="open-search"
   type="button"
-  hidden
+  commandfor="search-dialog"
+  command="show-modal"
   aria-haspopup="dialog"
   aria-controls="search-dialog"
   aria-keyshortcuts="Control+K Meta+K"
@@ -32,49 +35,57 @@ const groups = [
   aria-label="Search pages"
   {...stylex.attrs(dialogStyles.dialog, edge.frame)}
 >
-  <form method="dialog">
-    <button type="submit" {...stylex.attrs(dialogStyles.accessibleClose)}>
-      Close search
-    </button>
-  </form>
-  <div {...stylex.attrs(searchStyles.field)}>
-    <input
-      id="search-query"
-      type="search"
-      aria-label="Search pages"
-      placeholder="Where to?"
-      maxlength="200"
-      autocomplete="off"
-      autofocus
-      {...stylex.attrs(searchStyles.input)}
-    />
+  <div
+    id="search-scroll"
+    data-dialog-scroll
+    {...stylex.attrs(localScroll.viewport)}
+  >
+    <form method="dialog">
+      <button type="submit" {...stylex.attrs(dialogStyles.accessibleClose)}>
+        Close search
+      </button>
+    </form>
+    <div {...stylex.attrs(searchStyles.field)}>
+      <input
+        id="search-query"
+        type="search"
+        disabled
+        aria-label="Search pages"
+        placeholder="Where to?"
+        maxlength="200"
+        autocomplete="off"
+        autofocus
+        {...stylex.attrs(searchStyles.input)}
+      />
+    </div>
+    <p
+      id="search-status"
+      role="status"
+      hidden
+      {...stylex.attrs(searchStyles.status)}
+    ></p>
+    <ul id="search-results" {...stylex.attrs(searchStyles.results)}>
+      {groups.map((entries, group) => (
+        <>
+          {entries.map(({ url, meta, searchText }) => (
+            <li data-search-text={searchText} hidden={url.includes('#')}>
+              <a href={url} {...stylex.attrs(searchStyles.result)}>
+                <span data-result-title>{meta.title}</span>
+                <small
+                  data-result-description
+                  {...stylex.attrs(searchStyles.detail)}
+                >
+                  {meta.description}
+                </small>
+              </a>
+            </li>
+          ))}
+          {group === 0 && <SearchNetworks />}
+        </>
+      ))}
+    </ul>
   </div>
-  <p
-    id="search-status"
-    role="status"
-    hidden
-    {...stylex.attrs(searchStyles.status)}
-  ></p>
-  <ul id="search-results" {...stylex.attrs(searchStyles.results)}>
-    {groups.map((entries, group) => (
-      <>
-        {entries.map(({ url, meta, searchText }) => (
-          <li data-search-text={searchText}>
-            <a href={url} {...stylex.attrs(searchStyles.result)}>
-              <span data-result-title>{meta.title}</span>
-              <small
-                data-result-description
-                {...stylex.attrs(searchStyles.detail)}
-              >
-                {meta.description}
-              </small>
-            </a>
-          </li>
-        ))}
-        {group === 0 && <SearchNetworks />}
-      </>
-    ))}
-  </ul>
+  <ScrollBar target="search-scroll" label="Search results scroll" />
 </dialog>
 <script>
   import '../client/search';

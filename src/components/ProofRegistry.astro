@@ -19,7 +19,11 @@ const signatures = await getLogSignatures();
         {...stylex.attrs(logStyles.proof)}
         aria-labelledby={`${id}-title`}
       >
-        <h2 id={`${id}-title`} {...stylex.attrs(logStyles.proofTitle)}>
+        <h2
+          id={`${id}-title`}
+          data-scroll-section
+          {...stylex.attrs(logStyles.proofTitle)}
+        >
           <a href={`/pgp/${id}`}>{account.label}</a>
         </h2>
         <div {...stylex.attrs(logStyles.links)}>
@@ -32,7 +36,11 @@ const signatures = await getLogSignatures();
     {...stylex.attrs(logStyles.proof)}
     aria-labelledby="log-title"
   >
-    <h2 id="log-title" {...stylex.attrs(logStyles.proofTitle)}>
+    <h2
+      id="log-title"
+      data-scroll-section
+      {...stylex.attrs(logStyles.proofTitle)}
+    >
       Log
     </h2>
     {listedLogEntries.length > 0 ? (

@@ -14,6 +14,8 @@ import {
 } from '../portfolio/previews';
 import Brand from '../components/Brand.astro';
 import Search from '../components/Search.astro';
+import ScrollRail from '../components/ScrollRail.astro';
+import { glassSurface } from '../styles/glass-surface';
 import Icon from '../components/Icon.astro';
 import {
   canonicalUrl,
@@ -250,7 +252,11 @@ const schema =
   <body {...stylex.attrs(shell.body)}>
     <header {...stylex.attrs(shell.header)}>
       <nav
-        {...stylex.attrs(shell.container, shell.navigation)}
+        {...stylex.attrs(
+          shell.container,
+          shell.navigation,
+          glassSurface.material,
+        )}
         aria-label="Main navigation"
         data-nav-glass
       >
@@ -284,6 +290,7 @@ const schema =
     <div id="content" {...stylex.attrs(shell.content)} tabindex="-1">
       <slot />
     </div>
+    <ScrollRail />
     <footer
       {...stylex.attrs(shell.container, shell.footer)}
       aria-label="Contact and contribution links"

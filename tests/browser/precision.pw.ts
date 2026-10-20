@@ -90,7 +90,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
           if (row.id !== 'public-key') {
             expect(Math.abs(row.height - 48), row.id).toBeLessThanOrEqual(0.5);
           } else if (width === 320) {
-            expect(row.width).toBeGreaterThanOrEqual(176);
+            expect(row.width).toBeGreaterThanOrEqual(172);
           }
         }
         if (path === '/pgp') {
@@ -130,6 +130,7 @@ test('shared page edges stay aligned through fractional breakpoint widths', asyn
     }, width);
     const frame = page.frameLocator('iframe');
     await expect(frame.locator('main')).toBeVisible();
+    await expect(frame.locator('body > footer')).toBeVisible();
     const edges = await frame.locator('body').evaluate((body) =>
       ['body > header > nav', '#content > main', 'body > footer'].map(
         (selector) => {

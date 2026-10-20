@@ -61,7 +61,9 @@ test('short Share dialog scrolls internally without moving the article', async (
   await dialog.hover();
   await page.mouse.wheel(0, 300);
   await expect
-    .poll(() => dialog.evaluate((node) => node.scrollTop))
+    .poll(() =>
+      dialog.locator('[data-dialog-scroll]').evaluate((node) => node.scrollTop),
+    )
     .toBeGreaterThan(0);
   expect(await page.evaluate(() => scrollY)).toBe(initialScroll);
   await page.keyboard.press('Escape');

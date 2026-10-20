@@ -29,7 +29,11 @@ const time = (ms: number) =>
       <div {...stylex.attrs(styles.identity)}>
         <Icon name="spotify" />
         <div {...stylex.attrs(styles.headingGroup)}>
-          <h2 id="embed-spotify" {...stylex.attrs(styles.title)}>
+          <h2
+            id="embed-spotify"
+            data-scroll-section
+            {...stylex.attrs(styles.title)}
+          >
             {track
               ? 'Listening'
               : embed.playbackState === 'idle'

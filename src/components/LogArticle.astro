@@ -14,8 +14,6 @@ import { buildContentIndex } from '../portfolio/content-index';
 import { logConnections } from '../portfolio/log-connections';
 import { siteOrigin } from '../portfolio/seo';
 import LogShare from './LogShare.astro';
-import LogContents from './LogContents.astro';
-import { renderLogContent } from '../portfolio/log-markdown';
 import LogDiff from './LogDiff.astro';
 import LogRevision from './LogRevision.astro';
 import LogTags from './LogTags.astro';
@@ -28,11 +26,6 @@ const { entry } = Astro.props;
 const metadata = logMetadata(entry);
 const signatures = await getLogSignatures();
 const latest = entry.revisions.at(-1)!;
-const headings = renderLogContent(
-  latest.body,
-  '',
-  metadata.sources.length,
-).headings;
 const origin = siteOrigin(Astro.site);
 const references = buildContentIndex([entry], origin).documents[0]!
   .repositories;
@@ -93,7 +86,6 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
     <LogShare entry={entry} />
   </div>
   <LogTags tags={metadata.tags} />
-  <LogContents headings={headings} sources={metadata.sources.length > 0} />
   <LogRevision entry={entry} version={latest.version} />
   {latest.version > 1 && (
     <details {...stylex.attrs(logStyles.details)}>
@@ -196,11 +188,6 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
     .log-heading {
       grid-template-columns: minmax(0, 1fr) 64px;
       gap: 12px;
-    }
-  }
-  @media (max-width: 1023px) {
-    .h-entry:has([data-log-contents]) {
-      max-width: min(var(--reading-width), calc(100% - 32px));
     }
   }
   .log-connections {

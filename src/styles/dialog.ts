@@ -18,7 +18,11 @@ export const dialogStyles = stylex.create({
     borderRadius: 'var(--radius-card, 12px)',
     backgroundColor: 'var(--background)',
     color: 'var(--text)',
-    overflowY: 'auto',
+    '--dialog-height': {
+      default: '84svh',
+      '@media (min-width: 621px)': '72svh',
+    },
+    overflowY: 'hidden',
     '::backdrop': { backgroundColor: 'rgba(0,0,0,0.45)' },
   },
   accessibleClose: {

@@ -411,67 +411,38 @@ $$
       inLanguage: 'tr',
       keywords: ['pgp', 'cryptography'],
     });
-    const contents = page.locator('[data-log-contents]');
-    const rail = contents.locator('.contents-rail');
-    const panel = contents.locator('.contents-panel');
-    const firstSection = rail.locator('a[data-section="details"]');
-    const secondSection = rail.locator('a[data-section="sources"]');
-    const firstPanelSection = panel.locator('a[data-section="details"]');
-    const secondPanelSection = panel.locator('a[data-section="sources"]');
-    const articlePosition = await page
-      .locator('.log-body.e-content')
-      .boundingBox();
+    const contents = page.locator('[data-scroll-rail]');
+    const trigger = contents.locator('[data-scroll-track]');
+    const panel = contents.locator('#scroll-sections');
+    const firstSection = panel.locator('a[data-section="details"]');
+    const secondSection = panel.locator('a[data-section="sources"]');
     await expect(panel).not.toBeVisible();
-    await expect(contents.getByRole('button')).toHaveCount(0);
-    await expect(contents.locator('a[href="/log"]')).toHaveCount(0);
-    await firstSection.hover();
+    await contents.hover();
     await expect(panel).toBeVisible();
-    expect((await page.locator('.log-body.e-content').boundingBox())?.x).toBe(
-      articlePosition?.x,
-    );
-    expect(
-      (await page.locator('.log-body.e-content').boundingBox())?.width,
-    ).toBe(articlePosition?.width);
-    await page.mouse.move(0, 0);
-    await expect(panel).not.toBeVisible();
     await secondSection.click();
     await expect(page).toHaveURL(/#sources$/);
     await expect(secondSection).toHaveAttribute('aria-current', 'location');
-    await expect
-      .poll(() =>
-        firstSection.evaluate((link) =>
-          link.style.getPropertyValue('--section-progress'),
-        ),
-      )
-      .toBe('1');
-    await firstSection.hover();
-    await expect(panel).toBeVisible();
-    await secondPanelSection.click();
-    await expect(page).toHaveURL(/#sources$/);
-    await expect(panel).toBeVisible();
-    await firstPanelSection.click();
-    await expect(page).toHaveURL(/#details$/);
+    await trigger.focus();
     await firstSection.click();
     await expect(page).toHaveURL(/#details$/);
     await expect(firstSection).toHaveAttribute('aria-current', 'location');
-    await firstSection.focus();
-    await expect(panel).toBeVisible();
+    await trigger.focus();
     await page.keyboard.press('Escape');
     await expect(panel).not.toBeVisible();
     await page.evaluate(() =>
       window.scrollTo(0, document.documentElement.scrollHeight),
     );
-    await expect(rail.locator('a[data-section="log-sources"]')).toHaveAttribute(
-      'aria-current',
-      'location',
-    );
+    await expect(
+      panel.locator('a[data-section="log-sources"]'),
+    ).toHaveAttribute('aria-current', 'location');
     await page.setViewportSize({ width: 390, height: 900 });
+    await trigger.press('Enter');
     await secondSection.click();
     await expect(page).toHaveURL(/#sources$/);
     await expect(secondSection).toHaveAttribute('aria-current', 'location');
+    await trigger.focus();
     await firstSection.click();
     await expect(page).toHaveURL(/#details$/);
-    await firstSection.click();
     await expect(firstSection).toHaveAttribute('aria-current', 'location');
     expect(
       await page.evaluate(

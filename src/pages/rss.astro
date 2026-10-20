@@ -66,7 +66,11 @@ const description = publicPreview('/rss')!.description;
         {...stylex.attrs(feedStyles.section)}
         aria-labelledby="feed-verification-title"
       >
-        <h2 id="feed-verification-title" {...stylex.attrs(feedStyles.heading)}>
+        <h2
+          id="feed-verification-title"
+          data-scroll-section
+          {...stylex.attrs(feedStyles.heading)}
+        >
           Verification
         </h2>
         <p {...stylex.attrs(feedStyles.paragraph)}>
@@ -100,7 +104,11 @@ const description = publicPreview('/rss')!.description;
         {...stylex.attrs(feedStyles.section)}
         aria-labelledby="rss-logs-title"
       >
-        <h2 id="rss-logs-title" {...stylex.attrs(feedStyles.heading)}>
+        <h2
+          id="rss-logs-title"
+          data-scroll-section
+          {...stylex.attrs(feedStyles.heading)}
+        >
           Logs
         </h2>
         {rssEntries.length === 0 ? (

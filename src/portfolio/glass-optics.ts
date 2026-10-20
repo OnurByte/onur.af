@@ -51,7 +51,8 @@ export function createGlassField(
     inputWidth < 2 ||
     inputHeight < 2 ||
     inputWidth > 2048 ||
-    inputHeight > 256 ||
+    inputHeight > 2048 ||
+    inputWidth * inputHeight * resolution ** 2 > 2097152 ||
     inputRadius < 0
   )
     throw new RangeError('Invalid glass geometry');
@@ -112,19 +113,23 @@ export function createGlassField(
   return { width, height, displacement, maxOffset };
 }
 
-let motionField:
-  { seed: number; field: ReturnType<typeof createSpectralField> } | undefined;
+const motionFields = new Map<number, ReturnType<typeof createSpectralField>>();
 
 export function glassMotion(
   seed: number,
   milliseconds: number,
   velocity: number,
 ) {
-  if (!motionField || motionField.seed !== seed)
-    motionField = { seed, field: createSpectralField(seed) };
+  let field = motionFields.get(seed);
+  if (!field) {
+    field = createSpectralField(seed);
+    if (motionFields.size >= 8)
+      motionFields.delete(motionFields.keys().next().value!);
+    motionFields.set(seed, field);
+  }
   const t = milliseconds / 1000;
-  const drift = motionField.field.sample(0, 0, t).value;
-  const vertical = motionField.field.sample(123, 71, t).value;
+  const drift = field.sample(0, 0, t).value;
+  const vertical = field.sample(123, 71, t).value;
   const v = Math.tanh(velocity);
   // Smooth bounded scroll energy: no abs cusp or clamp discontinuity at rest.
   const energy = 1 - Math.exp(-8 * v * v);

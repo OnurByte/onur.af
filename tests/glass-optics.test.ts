@@ -75,3 +75,24 @@ test('high-density sampling adds edge detail without changing optical dimensions
     ),
   ).toThrow();
 });
+
+test('tall panel maps keep a neutral plateau with a bounded allocation', () => {
+  const field = createGlassField(
+    { width: 296, height: 640, radius: 12, resolution: 2 },
+    71,
+  );
+  expect(field.width * field.height).toBeLessThanOrEqual(2097152);
+  const center = (640 * field.width + 296) * 4;
+  expect(field.displacement[center]).toBe(128);
+  expect(field.displacement[center + 1]).toBe(128);
+  expect(field.maxOffset).toBeLessThanOrEqual(0.6);
+  expect(() =>
+    createGlassField({ width: 2048, height: 2048, radius: 12 }, 71),
+  ).toThrow();
+});
+
+test('interleaved glass seeds preserve deterministic motion', () => {
+  const first = glassMotion(17, 5000, 0.2);
+  glassMotion(18, 9000, 0.8);
+  expect(glassMotion(17, 5000, 0.2)).toEqual(first);
+});

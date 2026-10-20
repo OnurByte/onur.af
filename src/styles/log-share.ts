@@ -15,7 +15,6 @@ export const shareStyles = stylex.create({
     borderColor: 'var(--border)',
     borderRadius: 'var(--radius-control, 8px)',
   },
-  results: { padding: 8 },
   row: {
     width: '100%',
     textAlign: 'left',

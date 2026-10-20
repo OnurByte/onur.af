@@ -85,6 +85,7 @@ const publicationEntry = publication?.manifest.entries.find(
       >
         <h2
           id="signed-markdown-heading"
+          data-scroll-section
           {...stylex.attrs(logStyles.proofTitle)}
         >
           Signed Markdown
@@ -136,7 +137,11 @@ const publicationEntry = publication?.manifest.entries.find(
         {...stylex.attrs(logStyles.proof)}
         aria-labelledby="portable-proof-heading"
       >
-        <h2 id="portable-proof-heading" {...stylex.attrs(logStyles.proofTitle)}>
+        <h2
+          id="portable-proof-heading"
+          data-scroll-section
+          {...stylex.attrs(logStyles.proofTitle)}
+        >
           Portable proof
         </h2>
         <p {...stylex.attrs(styles.paragraph)}>
@@ -203,7 +208,11 @@ const publicationEntry = publication?.manifest.entries.find(
         {...stylex.attrs(logStyles.proof)}
         aria-labelledby="timestamps-heading"
       >
-        <h2 id="timestamps-heading" {...stylex.attrs(logStyles.proofTitle)}>
+        <h2
+          id="timestamps-heading"
+          data-scroll-section
+          {...stylex.attrs(logStyles.proofTitle)}
+        >
           Markdown timestamp
         </h2>
         {timestamp ? (

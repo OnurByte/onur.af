@@ -87,7 +87,11 @@ const categories = [
   {...stylex.attrs(embeds.section, edge.frame, technologies.section)}
   aria-labelledby="technologies-heading"
 >
-  <h2 id="technologies-heading" {...stylex.attrs(embeds.title)}>
+  <h2
+    id="technologies-heading"
+    data-scroll-section
+    {...stylex.attrs(embeds.title)}
+  >
     Technologies
   </h2>
   <div {...stylex.attrs(technologies.categories)}>

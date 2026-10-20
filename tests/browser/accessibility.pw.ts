@@ -279,15 +279,25 @@ test('404 has correct status, indexing and reduced-motion behavior', async ({
   await expect(page).toHaveURL('http://127.0.0.1:14323/');
 });
 
-test('search stays unavailable without JavaScript and cannot transmit a query', async ({
+test('Find opens native page links without JavaScript and cannot transmit a query', async ({
   browser,
 }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false });
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    baseURL: test.info().project.use.baseURL!,
+  });
   try {
     const page = await context.newPage();
-    await page.goto('http://127.0.0.1:14323/');
-    await expect(page.locator('#open-search')).toBeHidden();
-    await expect(page.locator('#search-query')).toBeHidden();
+    await page.goto('/');
+    await expect(page.locator('#open-search')).toBeVisible();
+    await page.locator('#open-search').click();
+    const dialog = page.getByRole('dialog', { name: 'Search pages' });
+    await expect(dialog).toBeVisible();
+    await expect(page.locator('#search-query')).toBeDisabled();
+    await expect(dialog.locator('a[href="/contribute"]')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+    await expect(page.locator('#open-search')).toBeVisible();
     expect(await page.locator('#search-query').getAttribute('name')).toBeNull();
   } finally {
     await context.close();

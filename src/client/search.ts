@@ -6,14 +6,19 @@ const dialog = document.querySelector<HTMLDialogElement>('#search-dialog');
 const input = document.querySelector<HTMLInputElement>('#search-query');
 const status = document.querySelector<HTMLElement>('#search-status');
 const results = document.querySelector<HTMLUListElement>('#search-results');
-const entries = [...(results?.children ?? [])].map((item) => ({
-  text: (
-    (item as HTMLElement).dataset['searchText'] ??
-    item.textContent ??
-    ''
-  ).toLowerCase(),
-  node: item.cloneNode(true),
-}));
+const entries = [...(results?.children ?? [])].map((item) => {
+  const node = item.cloneNode(true) as HTMLElement;
+  // Fragment destinations need the enhanced close-before-navigation handler.
+  node.hidden = false;
+  return {
+    text: (
+      (item as HTMLElement).dataset['searchText'] ??
+      item.textContent ??
+      ''
+    ).toLowerCase(),
+    node,
+  };
+});
 const index = new MiniSearch({ idField: 'id', fields: ['text'] });
 index.addAll(entries.map(({ text }, id) => ({ id, text })));
 const rankedSearch = (query: string) =>
@@ -29,8 +34,13 @@ function open() {
   input.select();
   search();
 }
-trigger?.addEventListener('click', open);
-if (trigger && dialog) trigger.hidden = false;
+trigger?.addEventListener('click', (event) => {
+  // The native command is the fallback; the enhanced controller owns focus
+  // and exclusive dialogs once this module has loaded.
+  event.preventDefault();
+  open();
+});
+if (input) input.disabled = false;
 results?.addEventListener('click', (event) => {
   if (
     !dialog ||

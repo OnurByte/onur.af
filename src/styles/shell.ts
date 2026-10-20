@@ -38,43 +38,7 @@ export const shell = stylex.create({
       '@media (min-width: 401px)': 16,
       '@media (min-width: 621px)': 16,
     },
-    '::before': {
-      content: '""',
-      position: 'absolute',
-      inset: '-4px -12px',
-      pointerEvents: 'none',
-      borderRadius: 'var(--radius-card)',
-      backgroundColor: {
-        default: 'var(--background)',
-        '@supports (backdrop-filter: blur(1px))':
-          'color-mix(in srgb, var(--background) 18%, transparent)',
-        '@media (prefers-reduced-transparency: reduce)': 'var(--background)',
-        '@media (prefers-contrast: more)': 'var(--background)',
-      },
-      backgroundImage:
-        'linear-gradient(135deg, color-mix(in srgb, var(--text) 5%, transparent), transparent 35%, color-mix(in srgb, var(--text) 2%, transparent))',
-      backdropFilter: {
-        default: 'var(--glass-optics, blur(6px) grayscale(1))',
-        '@media (prefers-reduced-transparency: reduce)': 'none',
-        '@media (prefers-contrast: more)': 'none',
-      },
-    },
-    '::after': {
-      content: '""',
-      position: 'absolute',
-      inset: '-4px -12px',
-      pointerEvents: 'none',
-      borderRadius: 'var(--radius-card)',
-      backgroundImage:
-        'radial-gradient(ellipse 45% 130% at var(--glass-light-x, 50%) var(--glass-light-y, 40%), rgb(255 255 255 / 4%), transparent 75%)',
-      backgroundSize: '100% 100%',
-      backgroundRepeat: 'no-repeat',
-      opacity: {
-        default: 1,
-        '@media (prefers-reduced-transparency: reduce)': 0,
-        '@media (prefers-contrast: more)': 0,
-      },
-    },
+    '--glass-inset': '-4px -12px',
   },
   navigationBorder: {
     position: 'absolute',

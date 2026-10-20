@@ -18,7 +18,7 @@ Do not add page-specific button radii, fonts or colors. Keep the existing StyleX
 
 ## Glass navigation material
 
-The sticky navbar preserves its original dimensions: 104 px high on desktop, 96 px through 360 px, 24 px vertical padding, 48/56 px brand mark, 32/40 px name and 48 px controls. Its content keeps the common page alignment. A stationary, noninteractive surface extends 12 px beyond that content, using the existing 12 px card radius, 68% neutral tint and subtle zero-blur optical refraction without a raised rim or specular border highlight. This navbar-only material is an exception to the general no-gradient/no-shadow rule; it adds no outer shadow, chromatic fringe, pointer tracking or runtime library. Reduced transparency, increased contrast and unsupported backdrop filtering use a solid surface. The border and Log/Find controls share the Connect corner-light treatment; the Onur mark links home. See [procedural optics](procedural-glass.md) and [research and source comparison](liquid-glass-navbar-research.md).
+The sticky navbar preserves its original dimensions: 104 px high on desktop, 96 px through 360 px, 24 px vertical padding, 48/56 px brand mark, 32/40 px name and 48 px controls. Its content keeps the common page alignment. A stationary, noninteractive surface extends 12 px beyond that content, using the existing 12 px card radius, 68% neutral tint and subtle zero-blur optical refraction without a raised rim or specular border highlight. This shared navigation material is an exception to the general no-gradient/no-shadow rule; it adds no outer shadow, chromatic fringe, pointer tracking or runtime library. Reduced transparency, increased contrast and unsupported backdrop filtering use a solid surface. The border and Log/Find controls share the Connect corner-light treatment; the Onur mark links home. See [procedural optics](procedural-glass.md) and [research and source comparison](liquid-glass-navbar-research.md).
 
 ## Static icons
 
@@ -52,7 +52,17 @@ Individual Log pages expose Share beside their metadata. Find and Share use the 
 
 Log and Log proof social cards reuse the complete deterministic seal renderer from the list cards. The existing 1200 × 630 monochrome composition remains, with text constrained beside a 240 px seal. Other public cards retain their existing layout.
 
-Log contents indicators remain a fixed vertical rail at the right edge at every viewport width. The rail respects the shared page gutter (20 px on mobile, 24 px above 620 px). Narrow article layouts reserve 32 px beside the reading column so the rail never covers prose; the contents panel opens inward beside it.
+Every page mounts one progressive-enhancement Scroll Rail at the viewport’s right edge, below the navbar (z-index 20 versus the header’s 30). The compact vertical teeth are centered in the external page gutter, with a 24 px interaction area. Mobile main content reserves 4 px inside its existing right gutter so the rail does not cover cards or text; desktop already has the required 24 px gutter. There is no hamburger control or full-height editor-style track. The active section tooth grows from 8 to 16 px; a foreground fill advances within that section and completed sections stay filled. Home’s Log section is labelled “Logs”.
+
+Native document scrolling, the existing smooth-scroll engine, hash/history and target focus remain authoritative. JavaScript hides the native scrollbar’s visual track after the rail is ready. Without JavaScript the document retains its styled native scrollbar. The rail supports drag seeking and Arrow/Page/Home/End keys; Enter or ArrowLeft opens the contents panel. Modal dialogs hide and disable the background rail.
+
+Only explicit `data-scroll-section` targets and current-revision `data-scroll-headings` Markdown headings enter the contents model. Cards, code blocks and archived revisions do not. Pages without meaningful sections retain a minimal scroll indicator with no empty panel. Heading changes refresh the model without replacing unchanged links or losing keyboard focus; unrelated live clocks do not rebuild navigation. Section positions are cached and refreshed on content layout, font and viewport changes. Ordinary scroll events do not measure headings.
+
+The inward-opening panel uses unnumbered native anchors, depth indentation, shared 12 px card geometry and a separate `edge.ring` corner-light border. The border is separate because opaque `edge.frame` layers would conceal the backdrop through a translucent fill. Hover and focus open the panel, the pointer can move into it, and Escape dismisses it until a new entry, focus action or explicit keyboard opening. Heading selection preserves hash history and focuses the actual destination.
+
+Navbar and rail share `src/styles/glass-surface.ts` and the optical runtime. Tall panels use a static refractive field with at most 2,097,152 source pixels and dimensions up to 2048 px, preserving the physical bezel instead of stretching a short map. Only the navbar runs continuous motion; the rail adds no continuous loop. Firefox/WebKit use the same translucent material without SVG backdrop displacement. Reduced transparency, increased contrast and unsupported backdrop filtering retain an opaque readable monochrome surface.
+
+Find, Share and the contents panel use the shared `ScrollBar.astro` and `local-scroll.ts` for overflow. Their native scroll viewports retain wheel, touch, focus and keyboard behavior while a custom monochrome thumb provides pointer/keyboard seeking. The native visual track is hidden only after enhancement. Code, tables, text fields and no-JavaScript fallbacks use the shared thin monochrome scrollbar styling rather than browser-default colors and geometry. Filtering, resizing and opening a dialog refresh scrollbar geometry; no continuous loop is added.
 
 ## Connect
 
@@ -71,3 +81,15 @@ Connect geometry: ordinary 8 px rounded corners; no squircle, translate, scale o
 Shared edge treatment: `src/styles/edge.ts` renders corner-anchored specular borders with layered CSS backgrounds, avoiding pseudo-elements that could conflict with card links or scroll inside dialogs. Apply to Log cards, home source sections, Connect items and Find/Share dialogs. Do not apply to text links, proof badges, form fields, QR codes, separators or small controls. The normal border remains the unsupported-browser fallback; shared fill/line custom properties support Connect hover and focus.
 
 Responsive edge lighting uses corner-anchored `ellipse 50% 50%` gradients: each lighting field scales independently with the element’s own width and height. Stops run from 0% to 100%, with no fixed pixel fade distance, DOM measurement or resize listener. Browser layout automatically recalculates the field on content and viewport changes.
+
+## Find availability
+
+Find is server-rendered and always visible. Its native `commandfor` /
+`show-modal` button opens the page-link dialog without waiting for the search
+module. JavaScript enhances it with filtering, shortcuts and shared dialog
+coordination. Keep the query input disabled until filtering is ready; a failed
+module request must not hide navigation or present a working search field.
+
+In fallback mode, show document destinations only. Same-page fragment links
+become available when the enhancement can close the modal before scrolling;
+otherwise their destinations would remain inert behind an open dialog.

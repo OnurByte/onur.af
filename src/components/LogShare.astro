@@ -1,5 +1,7 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import ScrollBar from './ScrollBar.astro';
+import { localScroll } from '../styles/local-scroll';
 import { edge } from '../styles/edge';
 import Icon from './Icon.astro';
 import { dialogStyles } from '../styles/dialog';
@@ -79,60 +81,80 @@ const rows = [
   data-title={title}
   {...stylex.attrs(dialogStyles.dialog, edge.frame)}
 >
-  <form method="dialog">
-    <button type="submit" {...stylex.attrs(dialogStyles.accessibleClose)}>
-      Close share
-    </button>
-  </form>
-  <ul {...stylex.attrs(searchStyles.results, shareStyles.results)}>
-    {rows.map((row, index) => (
-      <li
-        hidden={'action' in row && row.action === 'native'}
-        data-native-row={
-          'action' in row && row.action === 'native' ? '' : undefined
-        }
-      >
-        {'href' in row ? (
-          <a
-            href={row.href}
-            target={
-              index === 0 || row.href.startsWith('mailto:')
-                ? undefined
-                : '_blank'
-            }
-            rel={
-              index === 0 || row.href.startsWith('mailto:')
-                ? undefined
-                : 'noopener noreferrer'
-            }
-            {...stylex.attrs(searchStyles.result)}
-          >
-            <span {...stylex.attrs(shareStyles.icon)}>
-              <Icon name={row.icon} />
-            </span>
-            <span>{row.label}</span>
-          </a>
-        ) : (
-          <button
-            type="button"
-            data-share-action={row.action}
-            {...stylex.attrs(searchStyles.result, shareStyles.row)}
-          >
-            <span {...stylex.attrs(shareStyles.icon)}>
-              <Icon name={row.icon} />
-            </span>
-            <span>{row.label}</span>
-          </button>
-        )}
-      </li>
-    ))}
-  </ul>
-  <p
-    id="share-status"
-    hidden
-    role="status"
-    {...stylex.attrs(searchStyles.status)}
-  ></p>
+  <div
+    id="share-scroll"
+    data-dialog-scroll
+    {...stylex.attrs(localScroll.viewport)}
+  >
+    <form method="dialog">
+      <button type="submit" {...stylex.attrs(dialogStyles.accessibleClose)}>
+        Close share
+      </button>
+    </form>
+    <div {...stylex.attrs(searchStyles.field)}>
+      <input
+        id="share-query"
+        type="search"
+        aria-label="Search sharing options"
+        placeholder="Share to?"
+        maxlength="200"
+        autocomplete="off"
+        autofocus
+        {...stylex.attrs(searchStyles.input)}
+      />
+    </div>
+    <ul {...stylex.attrs(searchStyles.results)}>
+      {rows.map((row, index) => (
+        <li
+          data-share-label={row.label.toLowerCase()}
+          hidden={'action' in row && row.action === 'native'}
+          data-native-row={
+            'action' in row && row.action === 'native' ? '' : undefined
+          }
+        >
+          {'href' in row ? (
+            <a
+              href={row.href}
+              target={
+                index === 0 || row.href.startsWith('mailto:')
+                  ? undefined
+                  : '_blank'
+              }
+              rel={
+                index === 0 || row.href.startsWith('mailto:')
+                  ? undefined
+                  : 'noopener noreferrer'
+              }
+              {...stylex.attrs(searchStyles.result)}
+            >
+              <span {...stylex.attrs(shareStyles.icon)}>
+                <Icon name={row.icon} />
+              </span>
+              <span>{row.label}</span>
+            </a>
+          ) : (
+            <button
+              type="button"
+              data-share-action={row.action}
+              {...stylex.attrs(searchStyles.result, shareStyles.row)}
+            >
+              <span {...stylex.attrs(shareStyles.icon)}>
+                <Icon name={row.icon} />
+              </span>
+              <span>{row.label}</span>
+            </button>
+          )}
+        </li>
+      ))}
+    </ul>
+    <p
+      id="share-status"
+      hidden
+      role="status"
+      {...stylex.attrs(searchStyles.status)}
+    ></p>
+  </div>
+  <ScrollBar target="share-scroll" label="Sharing options scroll" />
 </dialog>
 <noscript>
   <div {...stylex.attrs(shareStyles.fallback)}>

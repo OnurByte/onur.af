@@ -29,7 +29,11 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
       aria-labelledby="introduction-heading"
     >
       <div {...stylex.attrs(styles.homeIntroductionHeading)}>
-        <h2 id="introduction-heading" {...stylex.attrs(styles.sectionHeading)}>
+        <h2
+          id="introduction-heading"
+          data-scroll-section
+          {...stylex.attrs(styles.sectionHeading)}
+        >
           {introduction.heading}
         </h2>
         <div {...stylex.attrs(logStyles.meta)}>
@@ -74,6 +78,9 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
     {recentLogs.length > 0 && (
       <section
         {...stylex.attrs(logStyles.list)}
+        id="recent-logs"
+        data-scroll-section
+        data-scroll-label="Logs"
         aria-label="Recent Log entries"
         class="h-feed"
       >

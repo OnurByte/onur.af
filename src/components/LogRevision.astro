@@ -42,6 +42,8 @@ const coverImage = metadata.cover ? images[metadata.cover.src] : undefined;
 )}
 
 <div
+  data-scroll-headings={archived ? undefined : ''}
+  data-scroll-archive={archived ? '' : undefined}
   lang={metadata.language}
   class:list={['log-body', !archived && 'e-content']}
   set:html={applyLogImages(content.html, images)}

@@ -1,0 +1,29 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { localScroll } from '../styles/local-scroll';
+interface Props {
+  target: string;
+  label: string;
+}
+const { target, label } = Astro.props;
+---
+
+<div
+  data-local-scroll={target}
+  role="scrollbar"
+  aria-label={label}
+  aria-controls={target}
+  aria-orientation="vertical"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  aria-valuenow="0"
+  tabindex="0"
+  hidden
+  {...stylex.attrs(localScroll.track)}
+>
+  <span {...stylex.attrs(localScroll.thumb)}></span>
+</div>
+<script>
+  import { initLocalScrollbars } from '../client/local-scroll';
+  initLocalScrollbars();
+</script>

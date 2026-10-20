@@ -1,0 +1,57 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { railStyles as styles } from '../styles/scroll-rail';
+import { glassSurface } from '../styles/glass-surface';
+import ScrollBar from './ScrollBar.astro';
+import { edge } from '../styles/edge';
+---
+
+<aside
+  aria-label="Page navigation"
+  data-scroll-rail
+  hidden
+  {...stylex.attrs(styles.root)}
+>
+  <div
+    data-scroll-track
+    role="scrollbar"
+    aria-label="Page scroll"
+    aria-controls="content"
+    aria-orientation="vertical"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="0"
+    tabindex="0"
+    {...stylex.attrs(styles.track)}
+  >
+    <span data-scroll-thumb {...stylex.attrs(styles.thumb)}></span>
+  </div>
+  <nav
+    id="scroll-sections"
+    aria-label="Page sections"
+    hidden
+    {...stylex.attrs(styles.panel, glassSurface.material)}
+  >
+    <i aria-hidden="true" {...stylex.attrs(styles.border, edge.ring)}></i>
+    <ScrollBar target="section-list" label="Page sections scroll" />
+    <ul id="section-list" data-scroll-list {...stylex.attrs(styles.list)}></ul>
+  </nav>
+  <template data-scroll-entry>
+    <li>
+      <a {...stylex.attrs(styles.link)}></a>
+    </li>
+  </template>
+  <template data-scroll-marker>
+    <span {...stylex.attrs(styles.marker)}>
+      <a {...stylex.attrs(styles.tick)}>
+        <span {...stylex.attrs(styles.tooth)}>
+          <i {...stylex.attrs(styles.progress)}></i>
+        </span>
+      </a>
+    </span>
+  </template>
+</aside>
+<script>
+  import { initScrollRail } from '../client/scroll-rail';
+  initScrollRail();
+</script>

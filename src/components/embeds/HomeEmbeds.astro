@@ -48,7 +48,11 @@ const timestamp = (value: string) =>
                 <Icon name={embed.id} />
               )}
               <div {...stylex.attrs(styles.headingGroup)}>
-                <h2 id={`embed-${embed.id}`} {...stylex.attrs(styles.title)}>
+                <h2
+                  id={`embed-${embed.id}`}
+                  data-scroll-section
+                  {...stylex.attrs(styles.title)}
+                >
                   {embed.title}
                 </h2>
                 {embed.id === 'x' || embed.id === 'github' ? (

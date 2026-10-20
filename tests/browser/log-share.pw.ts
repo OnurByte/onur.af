@@ -15,7 +15,7 @@ test('log sharing preserves RSS navigation and transfers focus between dialogs',
     'href',
     '/rss',
   );
-  await expect(dialog.getByRole('link', { name: /RSS/ })).toBeFocused();
+  await expect(dialog.getByRole('searchbox')).toBeFocused();
   await dialog.getByRole('button', { name: 'Copy link', exact: true }).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     'http://127.0.0.1:14323/log/cryptic-watchtower-watches',
@@ -61,7 +61,7 @@ test('log sharing preserves RSS navigation and transfers focus between dialogs',
   await expect(dialog).not.toBeVisible();
   await page.keyboard.press('Control+Shift');
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole('link', { name: /RSS/ })).toBeFocused();
+  await expect(dialog.getByRole('searchbox')).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(share).toBeFocused();
   await page.keyboard.press('Control+Shift+Period');
@@ -95,6 +95,10 @@ test('share is usable on narrow screens in both themes and handles clipboard fai
     await page.screenshot({
       path: `/tmp/portfolio-share-balanced-${colorScheme}.png`,
     });
+    await page.keyboard.press('ArrowDown');
+    await expect(
+      dialog.getByRole('link', { name: 'RSS', exact: true }),
+    ).toBeFocused();
     await page.keyboard.press('ArrowDown');
     await expect(
       dialog.getByRole('button', { name: 'Copy link', exact: true }),
@@ -161,42 +165,26 @@ test('RSS and platform links remain reachable without JavaScript', async ({
   await context.close();
 });
 
-test('contents rail stays beside the article while scrolling on narrow screens', async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 320, height: 700 });
-  await page.goto('/log/cryptic-watchtower-watches');
-  const rail = page.locator('.contents-rail');
-  const before = (await rail.boundingBox())!;
-  expect(before.x).toBeGreaterThanOrEqual(280);
-  expect(before.x + before.width).toBeLessThanOrEqual(300);
-  const text = (await page
-    .locator('.log-body.e-content p')
-    .first()
-    .boundingBox())!;
-  expect(text.x + text.width).toBeLessThan(before.x);
-  expect(before.y).toBeGreaterThan(200);
-  const first = (await rail.locator('a').first().boundingBox())!;
-  const last = (await rail.locator('a').last().boundingBox())!;
-  expect(last.y).toBeGreaterThan(first.y);
-  await page.evaluate(() =>
-    window.scrollTo(0, document.documentElement.scrollHeight),
-  );
-  const after = (await rail.boundingBox())!;
-  expect(Math.abs(after.y - before.y)).toBeLessThan(1);
-  expect(after.x + after.width).toBeLessThanOrEqual(320);
-});
-
 for (const width of [320, 1280]) {
-  test(`contents returns from section two to one on a log at ${width}px`, async ({
+  test(`global contents returns from section two to one at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/log/cryptic-watchtower-watches');
-    const links = page.locator('.contents-rail a');
+    const rail = page.locator('[data-scroll-rail]');
+    const bounds = (await rail.boundingBox())!;
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(width);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await rail.locator('[data-scroll-track]').focus();
+    const links = rail.locator('nav a');
     await links.nth(1).click();
     await expect(links.nth(1)).toHaveAttribute('aria-current', 'location');
     const secondScroll = await page.evaluate(() => scrollY);
+    await rail.locator('[data-scroll-track]').focus();
     await links.nth(0).click();
     await expect(page).toHaveURL(
       (url) =>
@@ -216,3 +204,46 @@ for (const width of [320, 1280]) {
       .toBeLessThanOrEqual(1);
   });
 }
+
+test('share filters actions, handles empty results and resets on reopen', async ({
+  page,
+}) => {
+  await page.addInitScript(() =>
+    Object.defineProperty(navigator, 'share', { value: undefined }),
+  );
+  await page.goto('/log/cryptic-watchtower-watches');
+  const trigger = page.getByRole('button', { name: 'Share log' });
+  await trigger.click();
+  const dialog = page.getByRole('dialog', { name: 'Share log' });
+  const query = dialog.getByRole('searchbox', {
+    name: 'Search sharing options',
+  });
+  await expect(query).toBeFocused();
+  await query.fill('  TeLE  ');
+  await expect(dialog.getByRole('link')).toHaveCount(1);
+  await expect(
+    dialog.getByRole('link', { name: 'Telegram', exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press('ArrowDown');
+  await expect(
+    dialog.getByRole('link', { name: 'Telegram', exact: true }),
+  ).toBeFocused();
+  await query.fill('no-such-option');
+  await expect(dialog.getByRole('status')).toHaveText('No results');
+  await expect(dialog.getByRole('link')).toHaveCount(0);
+  await query.fill('copy');
+  await expect(dialog.getByRole('status')).toBeHidden();
+  await expect(
+    dialog.getByRole('button', { name: 'Copy link', exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
+  await trigger.click();
+  await expect(query).toHaveValue('');
+  await expect(query).toBeFocused();
+  await expect(
+    dialog.getByRole('link', { name: 'RSS', exact: true }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole('button', { name: 'More options', exact: true }),
+  ).toHaveCount(0);
+});

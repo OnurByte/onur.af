@@ -59,7 +59,7 @@ test('PGP reports a clipboard failure without claiming it copied', async ({
   const button = page.locator('#copy-key');
   const key = page.locator('#public-key');
   const keyWidth = (await key.boundingBox())!.width;
-  expect(keyWidth).toBeGreaterThanOrEqual(176);
+  expect(keyWidth).toBeGreaterThanOrEqual(172);
   const before = await button.boundingBox();
   await button.click();
   await expect(button).toHaveText('Copy failed');

@@ -48,7 +48,11 @@ const description = publicPreview('/contribute')!.description;
       </p>
     )}
     <section {...stylex.attrs(styles.prose)} aria-labelledby="openalias-title">
-      <h2 id="openalias-title" {...stylex.attrs(styles.sectionHeading)}>
+      <h2
+        id="openalias-title"
+        data-scroll-section
+        {...stylex.attrs(styles.sectionHeading)}
+      >
         OpenAlias
       </h2>
       {openAlias ? (
