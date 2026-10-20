@@ -1,4 +1,4 @@
-# Onur — Marka ve tasarım dili
+# Onur ⁜ Marka ve tasarım dili
 
 Bu belge, Onur'un kişisel sitesinin kimliğini ve tasarım kararlarının arkasındaki yaklaşımı tanımlar. Mevcut siteyi temel alır; yeni bir şirket kimliği veya farklı bir görsel yön önermez. Yeni sayfa, metin ve görsel üretirken bu çizgiyi koru. Uygulama ölçüleri için [tasarım standardına](docs/design.md), StyleX kullanımı için [StyleX rehberine](docs/stylex.md) bak.
 
@@ -32,6 +32,8 @@ Ana sayfa şu ifadeleri kullanır:
 Bu ifadeler sitenin düşünsel tonunu taşır. Her yardımcı sayfaya slogan ekleme; PGP, RSS ve bağış sayfalarında ziyaretçinin yapmak istediği işi açıkça anlat.
 
 ## Yazı tonu
+
+Sitenin görünen metinlerinde uzun çizgi (U+2014) veya orta nokta (U+00B7) kullanma. Ayraç gerektiğinde `⁜` kullan. Bu kural başlıklar, açıklamalar, kaynak adları, RSS ve paylaşım önizlemeleri için de geçerlidir. Geçmiş imzalı kayıtların baytlarını değiştirme; gerekli gösterim dönüşümünü arayüzde yap.
 
 Kısa, açık ve kişisel yaz. Bir sayfa ne sunuyorsa onu söyle. Düğme metni, tıklanınca gerçekleşecek işi adlandırır. Hata mesajı, sorunu ve mümkün olan sonraki adımı açıklar.
 

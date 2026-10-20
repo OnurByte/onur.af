@@ -19,7 +19,7 @@ const { sources, references, prefix } = Astro.props;
     <ol>
       {sources.map((source, index) => (
         <li id={`${prefix}source-${index + 1}`}>
-          <a href={source.url}>{source.title}</a>
+          <a href={source.url}>{source.title.replaceAll('\u2014', '⁜')}</a>
           {archiveForSource(source.url) && (
             <a
               class="log-source-backlink"

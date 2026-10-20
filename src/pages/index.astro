@@ -35,7 +35,7 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
         <div {...stylex.attrs(logStyles.meta)}>
           <a
             href={`${logProofUrl(introductionEntry)}#timestamps`}
-            aria-label={`Introduction timestamp proof · ${introductionEntry.revisions[0]!.publishedAt.slice(0, 10)}`}
+            aria-label={`Introduction timestamp proof ⁜ ${introductionEntry.revisions[0]!.publishedAt.slice(0, 10)}`}
           >
             <time datetime={introductionEntry.revisions[0]!.publishedAt}>
               {introductionEntry.revisions[0]!.publishedAt.slice(0, 10)}

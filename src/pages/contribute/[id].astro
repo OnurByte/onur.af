@@ -90,7 +90,7 @@ const statusText = (
     unavailable: 'Payment status unavailable',
     paid: 'Contribution received',
     partial: 'Partial payment received',
-    confirming: 'Payment detected · confirming',
+    confirming: 'Payment detected ⁜ confirming',
     waiting: 'Waiting for payment',
     syncing: 'Payment network syncing',
   } as const
@@ -99,23 +99,23 @@ const shownStatus =
   state === 'confirming' &&
   donation?.confirmations !== undefined &&
   donation.minConfirmations !== undefined
-    ? `Payment detected · confirming ${donation.confirmations}/${donation.minConfirmations}`
+    ? `Payment detected ⁜ confirming ${donation.confirmations}/${donation.minConfirmations}`
     : statusText;
 const partialDetails =
   state === 'partial' &&
   donation?.received !== undefined &&
   donation.shortfall !== undefined
-    ? `Received ${donation.received} XMR · Remaining ${donation.shortfall} XMR`
+    ? `Received ${donation.received} XMR ⁜ Remaining ${donation.shortfall} XMR`
     : undefined;
 ---
 
 <Layout
-  title="XMR contribution · Onur"
+  title="XMR contribution ⁜ Onur"
   description="View the status of your private Monero contribution."
   noindex
 >
   <main {...stylex.attrs(styles.main)}>
-    <p {...stylex.attrs(styles.kicker)}>MONERO · {network.toUpperCase()}</p>
+    <p {...stylex.attrs(styles.kicker)}>MONERO ⁜ {network.toUpperCase()}</p>
     <h1 {...stylex.attrs(styles.heading)}>Your contribution</h1>
     <p
       {...stylex.attrs(styles.status, state === 'paid' && styles.paid)}

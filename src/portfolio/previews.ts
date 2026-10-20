@@ -7,13 +7,13 @@ const identityPreviews = [
   {
     id: '/pgp/x',
     key: 'pgp-x',
-    title: 'X · PGP',
+    title: 'X ⁜ PGP',
     description: 'X verified by PGP.',
   },
   {
     id: '/pgp/github',
     key: 'pgp-github',
-    title: 'GitHub · PGP',
+    title: 'GitHub ⁜ PGP',
     description: 'GitHub verified by PGP.',
   },
 ];
@@ -37,7 +37,7 @@ function logPreview(entry: (typeof logEntries)[number], verified = false) {
     id: verified ? logProofUrl(entry) : logUrl(entry),
     key: `${verified ? 'verified' : 'log'}-${entry.id}`,
     title: verified
-      ? `${logMetadata(entry).title} · Verified`
+      ? `${logMetadata(entry).title} ⁜ Verified`
       : logMetadata(entry).title,
     description: truncateDescription(
       verified

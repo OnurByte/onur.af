@@ -57,7 +57,7 @@ export function oembedResponse(
       author_url: `${origin}/`,
       ...(target.pathname === '/'
         ? {}
-        : { title: `${title} · Onur`, description }),
+        : { title: `${title} ⁜ Onur`, description }),
       ...(size
         ? {
             thumbnail_url: `${origin}/brand/${size === 512 ? 'icon.png' : 'apple-touch-icon.png'}`,

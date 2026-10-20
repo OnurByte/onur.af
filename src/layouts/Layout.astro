@@ -57,7 +57,7 @@ const socialImage =
 const imageAlt =
   preview?.key === 'home'
     ? motto
-    : [preview?.title ?? title, description].filter(Boolean).join(' — ');
+    : [preview?.title ?? title, description].filter(Boolean).join(' ⁜ ');
 const oembedUrl =
   indexable && preview && canonical
     ? `${origin}/oembed.json?url=${encodeURIComponent(canonical)}&format=json`
@@ -222,7 +222,7 @@ const schema =
     <link
       rel="alternate"
       type="application/rss+xml"
-      title="Onur — RSS"
+      title="Onur ⁜ RSS"
       href="/rss.xml"
     />
     <link rel="icon" type="image/png" sizes="512x512" href={iconUrl} />

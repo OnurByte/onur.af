@@ -20,7 +20,7 @@ const feedUrl = new URL('/rss', siteOrigin(Astro.site) ?? Astro.url.origin)
 const description = publicPreview('/rss')!.description;
 ---
 
-<Layout title="RSS · Onur" description={description}>
+<Layout title="RSS ⁜ Onur" description={description}>
   <main {...stylex.attrs(styles.main)}>
     <h1 {...stylex.attrs(styles.heading)}>RSS</h1>
     <div {...stylex.attrs(styles.prose)}>
