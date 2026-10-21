@@ -27,6 +27,9 @@ const escapeMarkup = (value: string) =>
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;');
 
+// Keys are restricted to bundled public previews and three motto variants.
+// Share in-flight work as well as completed renders within this deployment.
+const renderedCards = new Map<string, Promise<Buffer>>();
 export async function socialImage(page: string, mottoIndex = 0) {
   const preview = publicPreviewByKey(page);
   if (!preview) throw new RangeError('Unknown public page');
@@ -36,6 +39,22 @@ export async function socialImage(page: string, mottoIndex = 0) {
     mottoIndex >= mottos.length
   )
     throw new RangeError('Invalid motto');
+  const key = `${page}:${mottoIndex}`;
+  let result = renderedCards.get(key);
+  if (!result) {
+    result = renderSocialImage(preview, mottoIndex).catch((error) => {
+      renderedCards.delete(key);
+      throw error;
+    });
+    renderedCards.set(key, result);
+  }
+  return result;
+}
+
+async function renderSocialImage(
+  preview: NonNullable<ReturnType<typeof publicPreviewByKey>>,
+  mottoIndex: number,
+) {
   const font = await cardFonts();
   const text = async (
     value: string,

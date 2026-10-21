@@ -4,16 +4,32 @@ const states = ['waiting', 'partial', 'confirming', 'paid', 'syncing'];
 const gateway = Bun.serve({
   hostname: '127.0.0.1',
   port: 0,
-  fetch(request) {
+  async fetch(request) {
     if (request.headers.get('authorization') !== 'Bearer browser-fixture') {
       return new Response(null, { status: 401 });
     }
-    const id = new URL(request.url).pathname.split('/').at(-1) ?? '';
+    const url = new URL(request.url);
+    let id = url.pathname.split('/').at(-1) ?? '';
+    let amount = '0.05';
+    if (request.method === 'POST' && url.pathname === '/donations') {
+      try {
+        const body = (await request.json()) as {
+          id?: unknown;
+          amount?: unknown;
+        };
+        if (typeof body.id !== 'string' || typeof body.amount !== 'string')
+          return new Response(null, { status: 400 });
+        id = body.id;
+        amount = body.amount;
+      } catch {
+        return new Response(null, { status: 400 });
+      }
+    }
     const state = states[Number(id.at(-1))];
     if (!state) return new Response(null, { status: 503 });
     return Response.json({
       id,
-      amount: '0.05',
+      amount,
       address:
         '75a4WYbeKsdGjdFHqxpgNMSi3oqb1z9yx9m6qvNt3ZbTBpoFnD7EqicUZtCVsQoNPKXF5cMcTLJaTCkYiZVzddby9zc7bFV',
       status: {
@@ -49,7 +65,7 @@ const server = Bun.spawn(['node', 'dist/server/entry.mjs'], {
 });
 function stop() {
   server.kill();
-  gateway.stop(true);
+  void gateway.stop(true);
 }
 process.on('SIGTERM', stop);
 process.on('SIGINT', stop);

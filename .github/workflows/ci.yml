@@ -42,6 +42,9 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run deadcode:check
       - run: bun run format:check
+      - run: bun run lint
+      - run: bun run type-coverage:check
+      - run: bun run architecture:check
       - run: bun run check
       - run: bun run build
       - name: Install QR verification tools

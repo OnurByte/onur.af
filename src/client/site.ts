@@ -70,7 +70,10 @@ document
     button.style.height = `${bounds.height}px`;
     button.style.whiteSpace = 'nowrap';
     button.setAttribute('aria-live', 'polite');
-    button.addEventListener('click', async () => {
+    button.addEventListener('click', () => {
+      void copy();
+    });
+    async function copy() {
       const target = document.getElementById(button.dataset['copy'] ?? '');
       if (!target) return;
       const status = document.getElementById(
@@ -94,7 +97,7 @@ document
         if (status)
           status.textContent = 'Copy failed. Download the public key instead.';
       }
-    });
+    }
   });
 
 document.querySelectorAll<HTMLAnchorElement>('a[download]').forEach((link) => {

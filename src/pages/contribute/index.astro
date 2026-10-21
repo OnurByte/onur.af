@@ -8,7 +8,9 @@ import { formatXmrAmount, parseXmrAmount } from '../../donations/money';
 const { openAlias } = moneroConfiguration();
 const amounts = ['0.01', '0.05', '0.1', '0.25'];
 Astro.response.headers.set('Cache-Control', 'private, no-store');
-Astro.response.headers.set('Referrer-Policy', 'no-referrer');
+// Same-origin keeps the form Origin header; no-referrer makes browsers send
+// `Origin: null`, which the POST handler must reject.
+Astro.response.headers.set('Referrer-Policy', 'same-origin');
 const query = Astro.url.searchParams;
 const retryId = query.get('retry') ?? '';
 const id =

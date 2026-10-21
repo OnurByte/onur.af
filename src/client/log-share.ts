@@ -74,7 +74,17 @@ document.addEventListener('keyup', (event) => {
 window.addEventListener('blur', () => {
   shareChord = false;
 });
-dialog?.addEventListener('click', async (event) => {
+dialog?.addEventListener('click', (event) => {
+  void share(event).catch(() => {
+    if (status) {
+      status.hidden = false;
+      status.textContent =
+        'Could not share. Copy the address from your browser.';
+    }
+  });
+});
+async function share(event: MouseEvent) {
+  if (!dialog || !(event.target instanceof Element)) return;
   if (event.target === dialog) {
     const rect = dialog.getBoundingClientRect();
     if (
@@ -86,20 +96,23 @@ dialog?.addEventListener('click', async (event) => {
       closeDialog(dialog);
     return;
   }
-  if ((event.target as Element).closest('a[href]')) {
+  if (event.target.closest('a[href]')) {
     closeDialog(dialog);
     return;
   }
-  const action = (event.target as Element).closest<HTMLElement>(
-    '[data-share-action]',
-  )?.dataset['shareAction'];
+  const action = event.target.closest<HTMLElement>('[data-share-action]')
+    ?.dataset['shareAction'];
   if (!action || !status) return;
   status.textContent = '';
   status.hidden = true;
-  const url = dialog.dataset['url']!;
+  const url = dialog.dataset['url'];
+  if (!url) return;
   try {
     if (action === 'native') {
-      await navigator.share({ title: dialog.dataset['title']!, url });
+      await navigator.share({
+        title: dialog.dataset['title'] ?? document.title,
+        url,
+      });
       closeDialog(dialog);
       return;
     }
@@ -109,7 +122,10 @@ dialog?.addEventListener('click', async (event) => {
         (navigator.maxTouchPoints > 1 &&
           /Macintosh/i.test(navigator.userAgent));
       if (isMobile && typeof navigator.share === 'function') {
-        await navigator.share({ title: dialog.dataset['title']!, url });
+        await navigator.share({
+          title: dialog.dataset['title'] ?? document.title,
+          url,
+        });
         closeDialog(dialog);
         return;
       }
@@ -143,7 +159,7 @@ dialog?.addEventListener('click', async (event) => {
           ? 'Copy failed. Copy the address from your browser and paste it into Discord.'
           : 'Copy failed. Copy the address from your browser.';
   }
-});
+}
 dialog?.addEventListener('keydown', (event) => {
   if (event.isComposing) return;
   if (event.key === 'Escape') {

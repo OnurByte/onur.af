@@ -10,6 +10,21 @@ import { publicPreview } from '../src/portfolio/previews';
 const imageUrl = (query = '') =>
   new URL(`https://portfolio.example/social/home.png${query}`);
 
+test('identical concurrent and warm cards reuse rendered bytes, keeping variants distinct', async () => {
+  const [first, concurrent] = await Promise.all([
+    socialImage('home', 2),
+    socialImage('home', 2),
+  ]);
+  expect(concurrent).toBe(first);
+  expect(await socialImage('home', 2)).toBe(first);
+  expect(await socialImage('home', 1)).not.toEqual(first);
+  expect(await socialImage('rss', 2)).not.toEqual(first);
+  await expect(socialImage('unknown', 2)).rejects.toThrow(
+    'Unknown public page',
+  );
+  await expect(socialImage('home', 3)).rejects.toThrow('Invalid motto');
+});
+
 test('every public card is a readable 1200 by 630 monochrome PNG', async () => {
   for (const path of [...publicPaths, ...proofPaths]) {
     const png = await socialImage(publicPreview(path)!.key);

@@ -15,3 +15,8 @@ wallets/
 backups/
 *.keys
 *.cache
+
+# Local agent/browser observation artifacts
+.playwright-mcp/
+.serena/
+.code-graph/

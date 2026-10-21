@@ -1,5 +1,25 @@
 import { expect, test } from '@playwright/test';
 
+test('the contribution form sends a same-origin Origin header and reaches checkout', async ({
+  page,
+}) => {
+  const post = page.waitForRequest(
+    (request) =>
+      request.method() === 'POST' &&
+      new URL(request.url()).pathname === '/contribute/create',
+  );
+  await page.goto('/contribute?retry=00000000-0000-4000-8000-000000000000');
+  await page.getByRole('button', { name: /Continue to payment/ }).click();
+  const request = await post;
+  expect(request.headers()['origin']).toBe('http://127.0.0.1:14323');
+  expect(request.postData()).toContain(
+    'id=00000000-0000-4000-8000-000000000000',
+  );
+  await expect(page).toHaveURL(
+    '/contribute/00000000-0000-4000-8000-000000000000',
+  );
+});
+
 test('OpenAlias placeholder remains visible beside the contribution flow', async ({
   page,
 }) => {

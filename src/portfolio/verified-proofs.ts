@@ -88,9 +88,18 @@ import {
 } from './log-proof';
 import { verifyBytes } from './proofs';
 import { assertPublicationReadable } from './publication-transaction';
+let logProofCache: ReturnType<typeof verifyLogProofs> | undefined;
 /** Build verifies original media; runtime additionally verifies signed statement/publication bindings. */
 export async function getLogProofs() {
+  // Publication state can change even when the bundled proof data cannot.
   await assertPublicationReadable(process.cwd());
+  return (logProofCache ??= verifyLogProofs().catch((error) => {
+    logProofCache = undefined;
+    throw error;
+  }));
+}
+
+async function verifyLogProofs() {
   const store = logProofStoreSchema.parse(logProofArtifacts);
   const [trust, publications, signatures] = await Promise.all([
     keyTrust,

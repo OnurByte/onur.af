@@ -8,6 +8,9 @@ import { logTags, logTagIndexable } from '../../../portfolio/log-tags';
 import { logTagDefinitions } from '../../../portfolio/log';
 import { logTagUrl } from '../../../portfolio/log-tags';
 import { getLogSignatures } from '../../../portfolio/verified-proofs';
+export function getStaticPaths() {
+  return Object.keys(logTagDefinitions).map((tag) => ({ params: { tag } }));
+}
 const tag = logTags().find((tag) => tag.slug === Astro.params['tag']);
 const slug = Astro.params['tag']!;
 const definition = logTagDefinitions[slug];

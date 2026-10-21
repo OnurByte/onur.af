@@ -25,6 +25,51 @@ test('normalizes X posts with dates and caps the timeline at five', async () => 
     publishedAt: new Date(1729000000000).toISOString(),
   });
 });
+test('X drops empty posts and duplicate ids before the five-post cap', async () => {
+  const sources = createHomeEmbedSources(async () =>
+    Response.json({
+      code: 200,
+      results: [
+        { type: 'status', id: '1', text: 'One', created_timestamp: 1729000000 },
+        { type: 'status', id: '2', text: '  ', created_timestamp: 1729000001 },
+        {
+          type: 'status',
+          id: '1',
+          text: 'One repeated',
+          created_timestamp: 1729000002,
+        },
+        { type: 'status', id: '2', text: 'Two', created_timestamp: 1729000003 },
+        {
+          type: 'status',
+          id: '3',
+          text: 'Three',
+          created_timestamp: 1729000004,
+        },
+        {
+          type: 'status',
+          id: '4',
+          text: 'Four',
+          created_timestamp: 1729000005,
+        },
+        {
+          type: 'status',
+          id: '5',
+          text: 'Five',
+          created_timestamp: 1729000006,
+        },
+        { type: 'status', id: '6', text: 'Six', created_timestamp: 1729000007 },
+      ],
+    }),
+  );
+  const result = await loadEmbeds([sources[0]!]);
+  expect(result[0]?.status).toBe('ready');
+  expect(
+    result[0]?.items.map((item) =>
+      item.kind === 'post' ? item.text : item.kind,
+    ),
+  ).toEqual(['One', 'Two', 'Three', 'Four', 'Five']);
+});
+
 test('X provider errors are unavailable, even with HTTP 200 and empty results', async () => {
   const sources = createHomeEmbedSources(async () =>
     Response.json({ code: 404, results: [] }),

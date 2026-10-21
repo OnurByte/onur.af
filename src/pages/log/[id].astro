@@ -2,9 +2,12 @@
 import * as stylex from '@stylexjs/stylex';
 import Layout from '../../layouts/Layout.astro';
 import { styles } from '../../styles/pages';
-import { logMetadata, getLogEntryById } from '../../portfolio/log';
+import { logEntries, logMetadata, getLogEntryById } from '../../portfolio/log';
 import LogArticle from '../../components/LogArticle.astro';
 import { logArticleSchema, siteOrigin } from '../../portfolio/seo';
+export function getStaticPaths() {
+  return logEntries.map(({ id }) => ({ params: { id } }));
+}
 const entry = getLogEntryById(Astro.params['id']);
 if (!entry) return Astro.rewrite('/404');
 const metadata = logMetadata(entry);

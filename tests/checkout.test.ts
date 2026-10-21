@@ -251,7 +251,8 @@ test.skipIf(!enabled)(
       const checkout = await fetch(`${origin}/contribute/${id}`);
       const html = await checkout.text();
       expect(checkout.headers.get('cache-control')).toBe('private, no-store');
-      expect(checkout.headers.get('referrer-policy')).toBe('no-referrer');
+      // Contribution retries preserve the same-origin form Origin header.
+      expect(checkout.headers.get('referrer-policy')).toBe('same-origin');
       expect(checkout.headers.get('x-robots-tag')).toBe('noindex, nofollow');
       expect(html).toContain('name="robots" content="noindex, nofollow"');
       expect(html).toContain('Partial payment received');
@@ -291,7 +292,7 @@ test.skipIf(!enabled)(
     } finally {
       server.kill();
       await server.exited;
-      gateway.stop(true);
+      await gateway.stop(true);
     }
   },
   15000,

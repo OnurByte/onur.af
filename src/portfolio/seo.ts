@@ -20,9 +20,9 @@ export const publicPaths: readonly string[] = [
 export const proofPaths = ['/pgp/x', '/pgp/github'] as const;
 export const logPaths = (entries: readonly LogEntry[] = logEntries) =>
   entries.flatMap((entry) => [logUrl(entry), logProofUrl(entry)]);
-export const siteDescription = publicPages.find(
-  (page) => page.id === '/',
-)!.description;
+const homePage = publicPages.find((page) => page.id === '/');
+if (!homePage) throw new Error('Homepage metadata missing');
+export const siteDescription = homePage.description;
 
 export function validSiteUrl(value: string | undefined): string | undefined {
   if (!value || /[\u0000-\u0020\u007f\\]/.test(value)) return;

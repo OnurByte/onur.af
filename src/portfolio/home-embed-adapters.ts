@@ -36,6 +36,7 @@ export function createHomeEmbedSources(
     | undefined;
   let xRefresh: Promise<unknown> | undefined;
   let githubRefresh: Promise<unknown> | undefined;
+  const cacheVersion = 3;
   const cacheSchema = z.object({
     snapshot: embedSnapshotSchema,
     fetchedAt: z.number().nonnegative(),
@@ -54,7 +55,7 @@ export function createHomeEmbedSources(
             const parsed = cacheSchema.safeParse(await cache?.read(id));
             if (!parsed.success || parsed.data.fetchedAt > now())
               return undefined;
-            if (id === 'x' && parsed.data.version !== 2)
+            if (id === 'x' && parsed.data.version !== cacheVersion)
               return { ...parsed.data, fetchedAt: now() - 1_800_000 };
             return parsed.data;
           } catch {
@@ -69,7 +70,7 @@ export function createHomeEmbedSources(
     value: z.infer<typeof cacheSchema>,
   ) {
     try {
-      await cache?.write(id, { ...value, version: 2 });
+      await cache?.write(id, { ...value, version: cacheVersion });
     } catch {
       /* Read-only storage must not discard valid upstream data. */
     }
@@ -114,6 +115,19 @@ export function createHomeEmbedSources(
     }
     throw new Error('X timeline unavailable');
   }
+  function uniquePosts(
+    timeline: z.infer<typeof timelineSchema>,
+  ): z.infer<typeof timelineSchema>['results'] {
+    const seen = new Set<string>();
+    const posts: z.infer<typeof timelineSchema>['results'] = [];
+    for (const post of timeline.results) {
+      if (!post.text.trim() || seen.has(post.id)) continue;
+      seen.add(post.id);
+      posts.push(post);
+      if (posts.length === 5) break;
+    }
+    return posts;
+  }
   async function json(url: string, signal: AbortSignal) {
     const response = await request(url, {
       signal,
@@ -138,22 +152,17 @@ export function createHomeEmbedSources(
         xRefresh = (async () => {
           try {
             const timeline = await xTimeline(signal);
-            const items = timeline.results
-              .filter((post) => post.text.trim())
-              .slice(0, 5)
-              .map((post) => ({
-                kind: 'post' as const,
-                title: '@onurstirner',
-                href: `https://x.com/onurstirner/status/${post.id}`,
-                text: post.text.trim().slice(0, 5000),
-                ...(post.likes !== undefined ? { likes: post.likes } : {}),
-                ...(post.reposts !== undefined
-                  ? { reposts: post.reposts }
-                  : {}),
-                publishedAt: new Date(
-                  post.created_timestamp * 1000,
-                ).toISOString(),
-              }));
+            const items = uniquePosts(timeline).map((post) => ({
+              kind: 'post' as const,
+              title: '@onurstirner',
+              href: `https://x.com/onurstirner/status/${post.id}`,
+              text: post.text.trim().slice(0, 5000),
+              ...(post.likes !== undefined ? { likes: post.likes } : {}),
+              ...(post.reposts !== undefined ? { reposts: post.reposts } : {}),
+              publishedAt: new Date(
+                post.created_timestamp * 1000,
+              ).toISOString(),
+            }));
             const fetchedAt = now();
             const snapshot = embedSnapshotSchema.parse({
               status: items.length ? 'ready' : 'empty',

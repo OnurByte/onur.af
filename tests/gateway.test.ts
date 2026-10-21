@@ -93,8 +93,8 @@ test.skipIf(!Bun.env['TEST_DATABASE_URL'])(
       expect((await recovered.json()).address).toBe(saved.get(ids[2])!.address);
       expect(allocations).toBe(3);
     } finally {
-      gateway.stop(true);
-      agent.stop(true);
+      await gateway.stop(true);
+      await agent.stop(true);
       for (const id of ids)
         await sql`DELETE FROM donations WHERE donation_id=${id}::uuid`;
       await sql.close();

@@ -1,5 +1,9 @@
 import { moneroConfiguration } from './donations/config';
 import { donationSubaddressPrefix } from './donations/protocol';
+import {
+  donationRequestSchema,
+  readyDonationSchema,
+} from './donations/contracts';
 import { requiredEnv as required } from './server/env';
 import { jsonNoStore as json } from './server/http';
 import { timingSafeEqual } from 'node:crypto';
@@ -22,6 +26,8 @@ export async function startGateway() {
   });
   const network = moneroConfiguration().network;
   const prefix = donationSubaddressPrefix(network);
+  const ready = (donation: unknown, id: string, amount: string) =>
+    readyDonationSchema({ id, amount, network }).parse(donation);
   await store.initialize();
   let allocating = false;
   return Bun.serve({
@@ -45,20 +51,15 @@ export async function startGateway() {
           ) {
             return json({ error: 'JSON required' }, 415);
           }
-          let body: { id?: unknown; amount?: unknown };
+          let input: unknown;
           try {
-            body = await request.json();
+            input = await request.json();
           } catch {
             return json({ error: 'invalid request' }, 400);
           }
-          if (
-            !body ||
-            typeof body.id !== 'string' ||
-            !UUID.test(body.id) ||
-            typeof body.amount !== 'string'
-          ) {
-            return json({ error: 'invalid donation' }, 400);
-          }
+          const parsed = donationRequestSchema.safeParse(input);
+          if (!parsed.success) return json({ error: 'invalid donation' }, 400);
+          const body = parsed.data;
           const id = body.id.toLowerCase();
           let amount: string;
           try {
@@ -75,12 +76,15 @@ export async function startGateway() {
           try {
             const { donation, created } = await store.reserve(id, amount);
             if (!created) {
-              if (donation.state === 'ready') return json(donation);
+              if (donation.state === 'ready')
+                return json(ready(donation, id, amount));
               try {
                 const recovered = await agent.recover(id, amount);
                 if (!recovered.address.startsWith(prefix))
                   throw new Error('agent network mismatch');
-                return json(await store.attach(id, recovered.address));
+                return json(
+                  ready(await store.attach(id, recovered.address), id, amount),
+                );
               } catch {
                 return json(
                   { error: 'donation requires recovery', id: donation.id },
@@ -93,7 +97,7 @@ export async function startGateway() {
             if (!order.address.startsWith(prefix))
               throw new Error('agent network mismatch');
             await store.attach(id, order.address);
-            return json(await store.get(id), 201);
+            return json(ready(await store.get(id), id, amount), 201);
           } finally {
             allocating = false;
           }

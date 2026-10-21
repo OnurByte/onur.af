@@ -136,15 +136,15 @@ export function createDonationAgentClient({
     path: string,
     init: RequestInit = {},
   ): Promise<unknown> {
+    const headers = new Headers(init.headers);
+    headers.set('authorization', `Bearer ${token}`);
+    if (init.body && !headers.has('content-type'))
+      headers.set('content-type', 'application/json');
     const response = await fetch(new URL(path, base), {
       ...init,
       redirect: 'error',
       signal: AbortSignal.timeout(timeoutMs),
-      headers: {
-        authorization: `Bearer ${token}`,
-        ...(init.body ? { 'content-type': 'application/json' } : {}),
-        ...init.headers,
-      },
+      headers,
     });
     if (!response.ok)
       throw new Error(`payment agent returned HTTP ${response.status}`);

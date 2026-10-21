@@ -1,5 +1,5 @@
 import { moneroConfiguration } from '../../donations/config';
-import { donationSubaddressPrefix } from '../../donations/protocol';
+import { readyDonationSchema } from '../../donations/contracts';
 import type { APIRoute } from 'astro';
 import { donationGateway } from '../../client/gateway';
 import { formatXmrAmount, parseXmrAmount } from '../../donations/money';
@@ -103,20 +103,11 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     });
     if (!response.ok) throw new Error('gateway unavailable');
     const created: unknown = await response.json();
-    if (!created || typeof created !== 'object')
-      throw new Error('gateway unavailable');
-    const result = created as Record<string, unknown>;
-    const network = moneroConfiguration().network;
-    const prefix = donationSubaddressPrefix(network);
-    if (
-      result['unavailable'] === true ||
-      result['id'] !== id ||
-      result['amount'] !== amount ||
-      typeof result['address'] !== 'string' ||
-      !new RegExp(`^${prefix}[1-9A-HJ-NP-Za-km-z]{94}$`).test(result['address'])
-    ) {
-      throw new Error('gateway unavailable');
-    }
+    readyDonationSchema({
+      id,
+      amount,
+      network: moneroConfiguration().network,
+    }).parse(created);
     return redirect(`/contribute/${id}`, 303);
   } catch {
     if (retryId && retryChoice)

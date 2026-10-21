@@ -7,6 +7,9 @@ import { identityAccounts } from '../../portfolio/proofs';
 import { getSignedIdentities } from '../../portfolio/verified-proofs';
 import AccountLink from '../../components/AccountLink.astro';
 import SignedMessage from '../../components/SignedMessage.astro';
+export function getStaticPaths() {
+  return Object.keys(identityAccounts).map((proof) => ({ params: { proof } }));
+}
 const id = Astro.params['proof'];
 if (id !== 'x' && id !== 'github') {
   return Astro.rewrite('/404');

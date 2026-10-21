@@ -1,4 +1,5 @@
 import logImages from './integrations/log-images';
+import staticContent from './integrations/static-content';
 import { defineConfig } from 'astro/config';
 import node from '@astrojs/node';
 import vercel from '@astrojs/vercel';
@@ -15,7 +16,13 @@ const site = validSiteUrl(
 
 export default defineConfig({
   devToolbar: { enabled: false },
-  integrations: [logImages()],
+  integrations: [
+    logImages(),
+    staticContent({
+      immutableDeployment: Boolean(process.env['VERCEL']),
+      canonicalOrigin: site,
+    }),
+  ],
   vite: {
     ssr: { external: ['opentimestamps'] },
     build: {
