@@ -99,7 +99,7 @@
     "uuid": "11.1.1"
   },
   "engines": {
-    "node": ">=26.4.0",
+    "node": "24.x",
     "bun": "1.4.0"
   },
   "packageManager": "bun@1.4.0",

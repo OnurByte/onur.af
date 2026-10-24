@@ -8,7 +8,7 @@ A personal portfolio built with Astro, TypeScript and StyleX. The interface foll
 
 ## Develop
 
-Use the Node version in `.node-version` (at least 26.4.0) and Bun 1.4.0 or newer compatible 1.4.x.
+Use Node 24 as specified in `.node-version` and Bun 1.4.0 or newer compatible 1.4.x. Node 24 matches the supported Vercel production runtime.
 
 ```sh
 bun install --frozen-lockfile
