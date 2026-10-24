@@ -10,12 +10,12 @@ test('all copy actions confirm only after copying the correct value', async ({
     { path: '/pgp', button: '#copy-key', target: '#public-key' },
     { path: '/rss', button: '#copy-feed', target: '#feed-address' },
     {
-      path: '/donate/00000000-0000-4000-8000-000000000000',
+      path: '/contribute/00000000-0000-4000-8000-000000000000',
       button: '[data-copy="amount"]',
       target: '#amount',
     },
     {
-      path: '/donate/00000000-0000-4000-8000-000000000000',
+      path: '/contribute/00000000-0000-4000-8000-000000000000',
       button: '[data-copy="address"]',
       target: '#address',
     },

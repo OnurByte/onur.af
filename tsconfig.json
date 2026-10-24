@@ -11,7 +11,8 @@
     "tests/**/*.ts",
     "scripts/**/*.ts",
     "astro.config.ts",
-    "playwright.config.ts"
+    "playwright.config.ts",
+    "playwright.smoke.config.ts"
   ],
   "exclude": ["dist", "node_modules"]
 }

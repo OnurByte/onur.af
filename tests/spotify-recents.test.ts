@@ -78,9 +78,43 @@ test('Spotify history survives restart and refresh errors without claiming a son
     { cache },
   );
   const result = (await loadEmbeds([restarted]))[0]!;
+  expect(result.status).toBe('stale');
+  expect(result.updatedAt).toBe(new Date(30_000).toISOString());
   expect(result.items).toEqual([]);
   expect(result.recentTracks?.map((item) => item.title)).toEqual([
     'Track 2',
     'Track 1',
   ]);
+});
+
+test('Spotify rejects corrupt and future history during cold-start outages', async () => {
+  for (const record of [
+    {
+      recent: [
+        { kind: 'track', title: 'Invalid', href: 'javascript:alert(1)' },
+      ],
+    },
+    {
+      updatedAt: new Date(1001).toISOString(),
+      recent: [
+        {
+          kind: 'track',
+          title: 'Future',
+          href: 'https://open.spotify.com/track/0000000000000000000001',
+        },
+      ],
+    },
+  ]) {
+    const source = createSpotifySource(
+      () => Promise.reject(new Error('Offline')),
+      () => 1000,
+      {
+        cache: {
+          read: () => Promise.resolve(record),
+          write: () => Promise.resolve(),
+        },
+      },
+    );
+    expect((await loadEmbeds([source]))[0]?.status).toBe('unavailable');
+  }
 });

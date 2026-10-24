@@ -15,14 +15,13 @@ dist/
 .log-publication-stage-*
 .log-publication-backup-*
 
-work/
+/work/
 
 .vercel
 .lighthouseci/
 lychee/
 playwright-report/
 test-results/
-public/pagefind/
 
 # Build-time Log image variants
 public/log-media/
@@ -32,3 +31,6 @@ public/log-media/
 
 # Generated independent proof verifier
 public/proof-verifier.mjs
+
+# Generated public source/check evidence
+public/build-evidence.json

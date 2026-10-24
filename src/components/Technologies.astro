@@ -2,7 +2,6 @@
 import * as stylex from '@stylexjs/stylex';
 import { edge } from '../styles/edge';
 import { embeds } from '../styles/embeds';
-import { connect } from '../styles/connect';
 import Icon from './Icon.astro';
 import { technologies } from '../styles/technologies';
 
@@ -103,15 +102,11 @@ const categories = [
         >
           {category.name}
         </h3>
-        <ul {...stylex.attrs(connect.list, technologies.list)}>
+        <ul {...stylex.attrs(technologies.names)}>
           {category.items.map((item) => (
-            <li {...stylex.attrs(connect.item)}>
-              <div
-                {...stylex.attrs(connect.link, edge.frame, technologies.card)}
-              >
-                <Icon name={item.icon} />
-                <span {...stylex.attrs(technologies.name)}>{item.name}</span>
-              </div>
+            <li {...stylex.attrs(technologies.name)}>
+              <Icon name={item.icon} size="small" />
+              <span>{item.name}</span>
             </li>
           ))}
         </ul>

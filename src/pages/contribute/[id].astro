@@ -5,7 +5,7 @@ import { styles } from '../../styles/pages';
 import Layout from '../../layouts/Layout.astro';
 import { makePaymentURI, qrSvg } from 'xmr-pay/core';
 import { parseCheckoutDonation } from '../../donations/checkout';
-import { donationGateway } from '../../client/gateway';
+import { donationGateway } from '../../server/donation-gateway';
 export const prerender = false;
 Astro.response.headers.set('Cache-Control', 'private, no-store');
 Astro.response.headers.set('Referrer-Policy', 'same-origin');

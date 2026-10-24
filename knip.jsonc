@@ -3,6 +3,7 @@
   "includeEntryExports": true,
   "entry": [
     "src/gateway.ts",
+    "tests/browser/**/*.smoke.ts",
     "src/xmr/agent-host.ts",
     "scripts/log-new.ts",
     "scripts/verify-log-bundle.ts",
@@ -14,6 +15,9 @@
     "scripts/rss-sign.ts",
     "tests/browser/**/*.pw.ts",
   ],
+  "playwright": {
+    "config": ["playwright.config.ts", "playwright.smoke.config.ts"],
+  },
   "project": [
     "src/**/*.{astro,ts,js}",
     "scripts/**/*.ts",

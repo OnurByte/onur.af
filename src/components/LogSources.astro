@@ -1,5 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { logLayout } from '../styles/log-layout';
 import { logStyles } from '../styles/log';
 import { archiveForSource } from '../portfolio/source-archives';
 import type { LogEntry } from '../portfolio/log';
@@ -13,21 +14,27 @@ const { sources, references, prefix } = Astro.props;
 
 {sources.length > 0 && (
   <details
-    class="log-sources"
+    class:list={['log-sources', stylex.attrs(logLayout.sources).class]}
     id={`${prefix}log-sources`}
     data-scroll-section={prefix ? undefined : ''}
     data-scroll-label="Sources"
   >
-    <summary {...stylex.attrs(logStyles.summary)}>
-      Sources <span>({sources.length})</span>
+    <summary {...stylex.attrs(logStyles.summary, logLayout.summary)}>
+      Sources{' '}
+      <span {...stylex.attrs(logLayout.sourceCount)}>({sources.length})</span>
     </summary>
-    <ol>
+    <ol {...stylex.attrs(logLayout.sourceList)}>
       {sources.map((source, index) => (
         <li id={`${prefix}source-${index + 1}`}>
-          <a href={source.url}>{source.title.replaceAll('\u2014', '⁜')}</a>
+          <a {...stylex.attrs(logLayout.link)} href={source.url}>
+            {source.title.replaceAll('\u2014', '⁜')}
+          </a>
           {archiveForSource(source.url) && (
             <a
-              class="log-source-backlink"
+              class:list={[
+                'log-source-backlink',
+                stylex.attrs(logLayout.link, logLayout.backlink).class,
+              ]}
               href={archiveForSource(source.url)?.url}
               title={`Archived ${archiveForSource(source.url)?.capturedAt}`}
             >
@@ -38,7 +45,10 @@ const { sources, references, prefix } = Astro.props;
             .filter((reference) => reference.source === index + 1)
             .map((reference) => (
               <a
-                class="log-source-backlink"
+                class:list={[
+                  'log-source-backlink',
+                  stylex.attrs(logLayout.link, logLayout.backlink).class,
+                ]}
                 href={`#${reference.id}`}
                 aria-label={`Back to citation for source ${index + 1}`}
               >
@@ -50,40 +60,7 @@ const { sources, references, prefix } = Astro.props;
     </ol>
   </details>
 )}
-<style>
-  .log-sources {
-    margin-top: 24px;
-    padding-top: 8px;
-    border-top: 1px solid var(--border);
-    line-height: 1.8;
-  }
-  summary {
-    cursor: pointer;
-    width: fit-content;
-    padding-block: 8px;
-  }
-  summary span {
-    color: var(--muted);
-    font-size: 0.875rem;
-  }
-  ol {
-    list-style: decimal;
-    padding-left: 24px;
-    margin-top: 8px;
-  }
-  li + li {
-    margin-top: 8px;
-  }
-  a {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-    overflow-wrap: anywhere;
-  }
-  .log-source-backlink {
-    margin-inline-start: 8px;
-    text-decoration: none;
-  }
-</style>
+
 <script>
   const openLinkedSource = () => {
     const id = decodeURIComponent(window.location.hash.slice(1));

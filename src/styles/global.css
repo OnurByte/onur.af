@@ -171,20 +171,6 @@ body:has(dialog:modal) {
   overflow: hidden;
 }
 
-body,
-body * {
-  -webkit-user-select: none !important;
-  user-select: none !important;
-}
-
-.h-entry,
-.h-entry *,
-.log-body,
-.log-body * {
-  -webkit-user-select: text !important;
-  user-select: text !important;
-}
-
 /* Native scrolling stays in place; hide only its visual track after enhancement. */
 html[data-scroll-enhanced] {
   scrollbar-width: none;

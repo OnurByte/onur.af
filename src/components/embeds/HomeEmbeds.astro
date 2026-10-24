@@ -5,27 +5,17 @@ import { embeds as styles } from '../../styles/embeds';
 import Icon from '../Icon.astro';
 import AccountLink from '../AccountLink.astro';
 import SpotifyEmbed from './SpotifyEmbed.astro';
-import Connect from '../Connect.astro';
-import { contentIndex, githubReference } from '../../portfolio/content-index';
+import EmbedItem from './EmbedItem.astro';
 import type { Embed } from '../../portfolio/embeds';
 interface Props {
   embeds: readonly Embed[];
 }
 const { embeds } = Astro.props;
 const spotifyEmbed = embeds.find((embed) => embed.id === 'spotify');
-const languageIcons = {
-  Rust: 'rust',
-  TypeScript: 'typescript',
-  JavaScript: 'javascript',
-} as const;
-const languageIcon = (language: string) =>
-  languageIcons[language as keyof typeof languageIcons];
 const messages = {
   empty: 'Nothing to show yet.',
   unavailable: 'This source is currently unavailable.',
 };
-const timestamp = (value: string) =>
-  new Date(value).toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
 ---
 
 {embeds.length > 0 && (
@@ -77,12 +67,9 @@ const timestamp = (value: string) =>
           {(embed.status === 'empty' || embed.status === 'unavailable') && (
             <p {...stylex.attrs(styles.meta)}>{messages[embed.status]}</p>
           )}
-          {embed.id !== 'x' && embed.updatedAt && (
+          {embed.status === 'stale' && (
             <p {...stylex.attrs(styles.meta)}>
-              Updated{' '}
-              <time datetime={embed.updatedAt}>
-                {timestamp(embed.updatedAt)}
-              </time>
+              Source unavailable; showing saved data.
             </p>
           )}
           {embed.items.length > 0 && (
@@ -93,134 +80,29 @@ const timestamp = (value: string) =>
                   styles.activityList,
               )}
             >
-              {embed.items.map((item) => (
-                <li
-                  {...stylex.attrs(
-                    styles.item,
-                    (item.kind === 'post' || item.kind === 'repository') &&
-                      styles.activityItem,
-                  )}
-                >
-                  {item.kind !== 'post' && (
-                    <a
-                      {...stylex.attrs(
-                        styles.link,
-                        item.kind === 'repository' && styles.repositoryTitle,
-                      )}
-                      href={item.href}
-                      rel="noreferrer"
-                    >
-                      {item.title}
-                    </a>
-                  )}
-                  {item.detail && (
-                    <span
-                      {...stylex.attrs(
-                        styles.detail,
-                        item.kind === 'repository' && styles.repositoryDetail,
-                      )}
-                    >
-                      {item.detail}
-                    </span>
-                  )}
-                  {item.kind === 'post' && (
-                    <p {...stylex.attrs(styles.post)}>
-                      <a
-                        {...stylex.attrs(styles.link, styles.postLink)}
-                        href={item.href}
-                        rel="noreferrer"
-                      >
-                        {item.text}
-                      </a>
-                    </p>
-                  )}
-                  {item.kind === 'post' &&
-                    (item.likes !== undefined ||
-                      item.reposts !== undefined) && (
-                      <div {...stylex.attrs(styles.postStats)}>
-                        {item.likes !== undefined && (
-                          <span
-                            {...stylex.attrs(styles.postStat)}
-                            role="img"
-                            aria-label={`${item.likes.toLocaleString('en-US')} likes`}
-                          >
-                            <Icon name="heart" />
-                            {item.likes.toLocaleString('en-US')}
-                          </span>
-                        )}
-                        {item.reposts !== undefined && (
-                          <span
-                            {...stylex.attrs(styles.postStat)}
-                            role="img"
-                            aria-label={`${item.reposts.toLocaleString('en-US')} reposts`}
-                          >
-                            <Icon name="repost" />
-                            {item.reposts.toLocaleString('en-US')}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  {item.kind === 'track' && item.playedAt && (
-                    <time
-                      {...stylex.attrs(styles.detail)}
-                      datetime={item.playedAt}
-                    >
-                      {timestamp(item.playedAt)}
-                    </time>
-                  )}
-                  {item.kind === 'repository' &&
-                    (item.language ||
-                      item.commits !== undefined ||
-                      contentIndex.forRepository(
-                        githubReference(item.href)?.repository ?? '',
-                      ).length > 0) && (
-                      <div
-                        {...stylex.attrs(styles.detail, styles.repositoryMeta)}
-                      >
-                        {item.language && (
-                          <span {...stylex.attrs(styles.language)}>
-                            {languageIcon(item.language) && (
-                              <Icon name={languageIcon(item.language)} />
-                            )}
-                            {item.language}
-                          </span>
-                        )}
-                        {item.commits !== undefined && (
-                          <span
-                            title={
-                              item.commitWeeks
-                                ? `Commits in the last ${item.commitWeeks} weeks`
-                                : undefined
-                            }
-                          >
-                            {item.commits}{' '}
-                            {item.commits === 1 ? 'commit' : 'commits'}
-                          </span>
-                        )}
-                        <span {...stylex.attrs(styles.repositoryLogs)}>
-                          {contentIndex
-                            .forRepository(
-                              githubReference(item.href)?.repository ?? '',
-                            )
-                            .map((document, index) => (
-                              <a
-                                href={document.url}
-                                title={document.title}
-                                {...stylex.attrs(styles.link)}
-                              >
-                                Log{index > 0 ? ` ${index + 1}` : ''}
-                              </a>
-                            ))}
-                        </span>
-                      </div>
-                    )}
-                </li>
+              {embed.items.slice(0, 2).map((item) => (
+                <EmbedItem item={item} />
               ))}
             </ul>
           )}
+          {embed.items.length > 2 && (
+            <details {...stylex.attrs(styles.more)}>
+              <summary {...stylex.attrs(styles.moreSummary)}>
+                Show more
+                <span {...stylex.attrs(styles.srOnly)}>
+                  {' '}
+                  {embed.title.toLowerCase()}
+                </span>
+              </summary>
+              <ul {...stylex.attrs(styles.list, styles.activityList)}>
+                {embed.items.slice(2).map((item) => (
+                  <EmbedItem item={item} />
+                ))}
+              </ul>
+            </details>
+          )}
         </section>
       ))}
-    <Connect />
     {spotifyEmbed && <SpotifyEmbed embed={spotifyEmbed} />}
   </div>
 )}

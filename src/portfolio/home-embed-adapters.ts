@@ -53,11 +53,22 @@ export function createHomeEmbedSources(
         (async () => {
           try {
             const parsed = cacheSchema.safeParse(await cache?.read(id));
-            if (!parsed.success || parsed.data.fetchedAt > now())
+            if (
+              !parsed.success ||
+              parsed.data.fetchedAt > now() ||
+              (parsed.data.snapshot.updatedAt &&
+                Date.parse(parsed.data.snapshot.updatedAt) > now())
+            )
               return undefined;
             if (id === 'x' && parsed.data.version !== cacheVersion)
               return { ...parsed.data, fetchedAt: now() - 1_800_000 };
-            return parsed.data;
+            return {
+              ...parsed.data,
+              snapshot: {
+                ...parsed.data.snapshot,
+                updatedAt: new Date(parsed.data.fetchedAt).toISOString(),
+              },
+            };
           } catch {
             return undefined;
           }
@@ -235,6 +246,7 @@ export function createHomeEmbedSources(
             const snapshot = embedSnapshotSchema.parse({
               status: items.length ? 'ready' : 'empty',
               items,
+              updatedAt: new Date(fetchedAt).toISOString(),
             });
             lastGithub = { snapshot, fetchedAt };
             await persist('github', lastGithub);

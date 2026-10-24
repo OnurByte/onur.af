@@ -26,10 +26,11 @@ jobs:
         with:
           bun-version: 1.4.0
       - run: bun install --frozen-lockfile
-      - run: bunx playwright install --with-deps chromium
+      - run: bunx playwright install --with-deps chromium firefox webkit
       - run: bun run build
         env:
           XMR_NETWORK: stagenet
+      - run: bun run test:smoke
       - run: bun run test:browser
       - run: bun run test:lighthouse
         env:

@@ -30,7 +30,7 @@ Favicons remain document metadata links. Payment QR codes are generated per dona
 
 ## Native home embeds
 
-Home source sections follow the [native embed contract](home-embeds.md). Providers supply normalized data only; all typography, layout, status text and links are rendered by the portfolio. No iframe, provider UI, raw HTML or provider scripts. Use sections with a 1 px outer border in the shared border color, 12 px corners, 16 px mobile / 24 px desktop padding, local monochrome provider icons, normal-weight 18 px section heading, 14 px secondary text and 32 px column gaps. Start 40 px below the motto, one column through 900 px and two above. Empty registry renders nothing. Keep every provider-independent state accessible in the existing system themes.
+Home source sections follow the [native embed contract](home-embeds.md). Providers supply normalized data only; all typography, layout, status text and links are rendered by the portfolio. No iframe, provider UI, raw HTML or provider scripts. Use sections with a 1 px outer border in the shared border color, 12 px corners, 16 px mobile / 24 px desktop padding, local monochrome provider icons, normal-weight 18 px section heading, 14 px secondary text and 32 px column gaps. Place these secondary sources after the introduction, Logs, Connect and compact Technologies; use one column through 900 px and two above. Empty registry renders nothing. Keep every provider-independent state accessible in the existing system themes.
 
 Embed provider icons share a non-shrinking square sized to the combined title line height, 4 px gap and profile line height (51.6 px at the default font size), with contained SVG artwork and no inner padding. Header titles and 14 px profile links stack together beside that box so profile length cannot change icon sizing or header alignment. Entries use 24 px spacing; secondary text uses 14 px / 1.6 line height. All colors inherit shared theme tokens.
 
@@ -66,7 +66,7 @@ Find, Share and the contents panel use the shared `ScrollBar.astro` and `local-s
 
 ## Connect
 
-The home Connect section sits immediately above Spotify and follows the shared bordered card, monochrome icon registry and responsive spacing. Email, X, GitHub and XMPP remain visible. Service labels are primary; account names and configured addresses are secondary. Unconfigured Email and XMPP show only their service label, without placeholder status text or a link. PGP identity verification is available through the account proof badges; no separate Verify identity link is shown. Proof badges remain direct links without popups. Set `PUBLIC_CONTACT_EMAIL` and `PUBLIC_CONTACT_XMPP` to publish the owner's addresses; XMPP uses a native `xmpp:` URI. X and GitHub reuse the existing identity account registry. PGP links to the site's identity verification page. Links remain keyboard accessible and at least 44 px high.
+The home Connect section follows Logs, before Technologies and provider activity, and renders independently of provider availability and follows the shared bordered card, monochrome icon registry and responsive spacing. Email, X, GitHub and XMPP remain visible. Service labels are primary; account names and configured addresses are secondary. Unconfigured Email and XMPP show only their service label, without placeholder status text or a link. PGP identity verification is available through the account proof badges; no separate Verify identity link is shown. Proof badges remain direct links without popups. Set `PUBLIC_CONTACT_EMAIL` and `PUBLIC_CONTACT_XMPP` to publish the owner's addresses; XMPP uses a native `xmpp:` URI. X and GitHub reuse the existing identity account registry. PGP links to the site's identity verification page. Links remain keyboard accessible and at least 44 px high.
 
 ## Verification badges
 
@@ -93,3 +93,9 @@ module request must not hide navigation or present a working search field.
 In fallback mode, show document destinations only. Same-page fragment links
 become available when the enhancement can close the modal before scrolling;
 otherwise their destinations would remain inert behind an open dialog.
+
+## Home content hierarchy
+
+Preserve the signed introduction, portrait, motto, published Logs and identity proofs. Connect precedes secondary catalogs. Technologies keeps every existing name with its existing 16 px monochrome icon in eight readable groups (one column on mobile, two above 620 px) instead of individual bordered tool cards. Do not shrink body type or remove values to shorten the page.
+
+Provider sections show two primary entries initially. A native details/summary labeled Show more exposes the remaining entries without JavaScript; its accessible name identifies the source. Keep all item links, counters and status messages. Collapsed rows are not part of visual row-height comparisons. No inner scrollbar, carousel or new animation is added. Spotify retains its existing independent recent-track disclosure.

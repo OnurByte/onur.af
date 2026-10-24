@@ -4,7 +4,11 @@ export const technologies = stylex.create({
   section: { marginTop: 'var(--section-space)' },
   categories: {
     display: 'grid',
-    gap: 'var(--space-6)',
+    gridTemplateColumns: {
+      default: 'minmax(0, 1fr)',
+      '@media (min-width: 621px)': 'repeat(2, minmax(0, 1fr))',
+    },
+    gap: 'var(--space-4)',
     marginTop: 'var(--space-6)',
   },
   categoryHeading: {
@@ -13,20 +17,17 @@ export const technologies = stylex.create({
     fontWeight: 500,
     lineHeight: 'var(--leading-body)',
   },
-  list: {
-    marginTop: 'var(--space-3)',
-    gridTemplateColumns: {
-      default: 'repeat(2, minmax(0, 1fr))',
-      '@media (min-width: 621px)': 'repeat(3, minmax(0, 1fr))',
-      '@media (min-width: 1101px)': 'repeat(4, minmax(0, 1fr))',
-    },
-  },
-  card: { justifyContent: 'flex-start', gap: 12 },
-  name: {
-    minWidth: 0,
-    overflowWrap: 'anywhere',
+  names: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    columnGap: 12,
+    rowGap: 4,
+    listStyle: 'none',
+    padding: 0,
+    marginTop: 4,
     fontSize: 'var(--font-body)',
-    lineHeight: 1.4,
-    fontWeight: 500,
+    lineHeight: 'var(--leading-body)',
+    overflowWrap: 'anywhere',
   },
+  name: { display: 'inline-flex', alignItems: 'center', gap: 4 },
 });

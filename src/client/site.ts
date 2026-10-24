@@ -13,16 +13,6 @@ requestAnimationFrame(() => {
   });
 });
 
-document.addEventListener('contextmenu', (event) => {
-  if (!(event.target instanceof Element && event.target.closest('.h-entry')))
-    event.preventDefault();
-});
-document.addEventListener('copy', (event) => {
-  const anchor = window.getSelection()?.anchorNode;
-  const element = anchor instanceof Element ? anchor : anchor?.parentElement;
-  if (!element?.closest('.h-entry')) event.preventDefault();
-});
-
 const codeCopyTemplate = document.querySelector<HTMLTemplateElement>(
   'template[data-log-code-copy]',
 );
@@ -30,13 +20,14 @@ if (codeCopyTemplate) {
   document
     .querySelectorAll<HTMLElement>('.log-body pre > code')
     .forEach((code, index) => {
-      const pre = code.parentElement!;
+      const pre = code.parentElement;
+      const wrapper =
+        codeCopyTemplate.content.firstElementChild?.cloneNode(true);
+      if (!pre || !(wrapper instanceof HTMLElement)) return;
+      const button = wrapper.querySelector<HTMLButtonElement>('button');
+      if (!button) return;
       pre.tabIndex = 0;
-      const wrapper = codeCopyTemplate.content.firstElementChild!.cloneNode(
-        true,
-      ) as HTMLElement;
-      const button = wrapper.querySelector<HTMLButtonElement>('button')!;
-      code.id = `log-code-${index}`;
+      code.id = `log-code-${String(index)}`;
       button.dataset['copy'] = code.id;
       pre.before(wrapper);
       wrapper.append(pre);

@@ -11,8 +11,9 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
+
 (Bun.which('gpg') && Bun.which('gpgconf') ? test : test.skip)(
-  'isolated owner publication prepares and verifies a complete portable proof without live calendars',
+  'isolated Log publication prepares and verifies a complete portable proof without live calendars',
   async () => {
     const repository = process.cwd();
     const sandbox = await mkdtemp(join(tmpdir(), 'portable-pipeline-'));
@@ -47,7 +48,9 @@ import { execFileSync } from 'node:child_process';
         'astro.config.ts',
         'tsconfig.json',
       ])
-        await cp(join(repository, name), join(root, name), { recursive: true });
+        await cp(join(repository, name), join(root, name), {
+          recursive: true,
+        });
       await symlink(
         join(repository, 'node_modules'),
         join(root, 'node_modules'),
@@ -121,7 +124,8 @@ import { execFileSync } from 'node:child_process';
         { mode: 0o755 },
       );
       run(['scripts/proofs.ts', 'identity-statement']);
-      const published = run(['scripts/publish-log.ts', 'veiled-compass-turns']);
+      const publisher = ['scripts/publish-log.ts', 'veiled-compass-turns'];
+      const published = run(publisher);
       expect(published).toContain('staged proofs');
       const proof = JSON.parse(
         await readFile(join(root, 'src/content/log-proofs.json'), 'utf8'),
@@ -181,7 +185,7 @@ import { execFileSync } from 'node:child_process';
         join(root, 'src/content/log-signatures.json'),
         'utf8',
       );
-      run(['scripts/publish-log.ts', 'veiled-compass-turns']);
+      run(publisher);
       expect(
         await readFile(join(root, 'src/content/log-signatures.json'), 'utf8'),
       ).toBe(retained);

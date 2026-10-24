@@ -32,17 +32,26 @@ export function createFileEmbedCache(directory: string): EmbedCache {
   };
 }
 
-/** Spotify history is shared across Vercel function instances via private Blob storage. */
-export function createVercelBlobEmbedCache(): EmbedCache {
-  const pathname = 'portfolio/embeds/spotify-history.json';
+/** Provider snapshots are shared across Vercel instances via private Blob storage. */
+export function createVercelBlobEmbedCache(
+  blob: Pick<{ get: typeof get; put: typeof put }, 'get' | 'put'> = {
+    get,
+    put,
+  },
+): EmbedCache {
+  const pathname = (id: 'x' | 'github' | 'spotify') =>
+    `portfolio/embeds/${id === 'spotify' ? 'spotify-history' : id}.json`;
   return {
-    async read() {
-      const blob = await get(pathname, { access: 'private', useCache: false });
-      if (!blob || blob.statusCode !== 200) return undefined;
-      return JSON.parse(await new Response(blob.stream).text());
+    async read(id) {
+      const result = await blob.get(pathname(id), {
+        access: 'private',
+        useCache: false,
+      });
+      if (!result || result.statusCode !== 200) return undefined;
+      return JSON.parse(await new Response(result.stream).text());
     },
-    async write(_id, value) {
-      await put(pathname, JSON.stringify(value), {
+    async write(id, value) {
+      await blob.put(pathname(id), JSON.stringify(value), {
         access: 'private',
         addRandomSuffix: false,
         allowOverwrite: true,

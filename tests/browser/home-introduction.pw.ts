@@ -38,18 +38,23 @@ for (const colorScheme of ['light', 'dark'] as const) {
       const image = await card.locator('img[data-home-portrait]').boundingBox();
       const text = await card.locator('p').first().boundingBox();
       const heading = await card.locator('h2').boundingBox();
-      expect(heading!.y - bounds!.y).toBeLessThan(30);
+      if (!bounds || !image || !text || !heading)
+        throw new Error('Introduction geometry is unavailable');
+      expect(heading.y - bounds.y).toBeLessThan(30);
       expect(
         await card
           .locator('img[data-home-portrait]')
           .evaluate((image) => getComputedStyle(image).filter),
       ).toBe('none');
-      expect(image!.x).toBeGreaterThan(bounds!.x);
-      expect(image!.x + image!.width).toBeLessThan(bounds!.x + bounds!.width);
-      expect(image!.y + image!.height).toBeLessThan(bounds!.y + bounds!.height);
+      expect(image.x).toBeGreaterThan(bounds.x);
+      expect(image.x + image.width).toBeLessThan(bounds.x + bounds.width);
+      expect(image.y + image.height).toBeLessThan(bounds.y + bounds.height);
       if (width <= 620)
-        expect(text!.y).toBeGreaterThanOrEqual(image!.y + image!.height);
-      else expect(text!.x + text!.width).toBeLessThanOrEqual(image!.x);
+        expect(text.y).toBeGreaterThanOrEqual(image.y + image.height);
+      else {
+        expect(text.x + text.width).toBeLessThanOrEqual(image.x);
+        expect(text.y - heading.y).toBeLessThan(120);
+      }
       if (width === 375)
         await page.screenshot({
           path: `test-results/introduction-${colorScheme}-mobile.png`,

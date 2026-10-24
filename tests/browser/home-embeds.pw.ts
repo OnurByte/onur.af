@@ -6,6 +6,9 @@ for (const colorScheme of ['light', 'dark'] as const) {
   }) => {
     await page.emulateMedia({ colorScheme });
     await page.goto('/');
+    await expect(
+      page.getByText('Last successful update', { exact: false }),
+    ).toHaveCount(0);
     for (const width of [320, 621, 900, 901, 1280]) {
       await page.setViewportSize({ width, height: 900 });
       const x = await page.locator('[aria-labelledby="embed-x"]').boundingBox();
@@ -14,7 +17,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
         .boundingBox();
       expect(
         await page
-          .locator('[aria-labelledby="embed-x"] li')
+          .locator('[aria-labelledby="embed-x"] li:visible')
           .evaluateAll((items) =>
             items.every(
               (item) => getComputedStyle(item).borderTopWidth === '0px',
@@ -30,12 +33,12 @@ for (const colorScheme of ['light', 'dark'] as const) {
         expect(github!.height).toBeCloseTo(x!.height, 0);
       }
       const postRows = await page
-        .locator('[aria-labelledby="embed-x"] li')
+        .locator('[aria-labelledby="embed-x"] li:visible')
         .evaluateAll((items) =>
           items.map((item) => item.getBoundingClientRect().height),
         );
       const repositoryRows = await page
-        .locator('[aria-labelledby="embed-github"] li')
+        .locator('[aria-labelledby="embed-github"] li:visible')
         .evaluateAll((items) =>
           items.map((item) => item.getBoundingClientRect().height),
         );
@@ -50,7 +53,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       ).toBe(true);
       expect(
         await page
-          .locator('[aria-labelledby="embed-x"] li a')
+          .locator('[aria-labelledby="embed-x"] li:visible a')
           .evaluateAll((links) =>
             links.every(
               (link) =>

@@ -1,6 +1,6 @@
 # Portable Log proofs
 
-Log evidence is available at `/log/{id}/verified`, with `?v=N` for an exact revision. Old `/pgp/log/{id}` links redirect and retain the query. `/pgp/identity.json` exposes signed identity statements, the pinned root key, key history and proof download URLs. These are the owner's claims and evidence, not an independent endorsement by the website.
+Log evidence is available at `/log/{id}/verified`, with `?v=N` for an exact revision. `/pgp/identity.json` exposes signed identity statements, the pinned root key, key history and proof download URLs. These are the owner's claims and evidence, not an independent endorsement by the website.
 
 ## Owner publication
 
@@ -78,3 +78,9 @@ bun scripts/proofs.ts --check-remote
 Archives use a narrow deterministic ustar profile with regular files only, bounded input sizes, validated checksums and unique safe paths. They include readable Markdown, raw signatures, legacy receipts, v2 statements/receipts where available, original media, root certificate, complete key transitions and signed publication editions. `bundle.json` inventory hashes detect damage; they are not themselves an authorship proof. The signed artifacts carry that authority.
 
 Key loss or compromise cannot automatically prove a recovery key belongs to the same person. Expiry, revocation and trusted-time policies are not disabled or bypassed by trusting attacker-supplied dates. An unverifiable historical artifact fails rather than silently receiving current authorization.
+
+## Log drafts and publication
+
+The site has one article model and one public route family: Log. `src/content/log.json` contains published records. The two prepared records in `src/content/log-drafts.json` are retained as unpublished local material; they are not imported into routes, navigation, search, RSS, social previews or the sitemap. Removing the former Work catalog does not publish or sign these drafts.
+
+Prepare future articles through the ordinary Log workflow and the existing `log:publish` transaction. Keep existing signed revisions immutable. There is no Work registry, alternative article route or separate publication command. Deployment remains separate.

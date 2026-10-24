@@ -67,7 +67,7 @@ test.skipIf(!enabled)(
       let ready = false;
       for (let attempt = 0; attempt < 40; attempt++) {
         try {
-          ready = (await fetch(`${origin}/donate`)).ok;
+          ready = (await fetch(`${origin}/contribute`)).ok;
         } catch {}
         if (ready) break;
         await Bun.sleep(100);
@@ -154,7 +154,7 @@ test.skipIf(!enabled)(
           expect(main).toContain('aria-labelledby="embed-github"');
         } else if (path === '/log') {
           expect(page).toContain('class="h-feed"');
-          expect(page).toContain('class="h-entry"');
+          expect(page).toMatch(/class="[^"]*\bh-entry\b[^"]*"/);
         } else {
           expect(
             page
@@ -233,14 +233,14 @@ test.skipIf(!enabled)(
         amount: 'custom',
         customAmount: '0.0750',
       });
-      const wrongOrigin = await fetch(`${origin}/donate/create`, {
+      const wrongOrigin = await fetch(`${origin}/contribute/create`, {
         method: 'POST',
         headers: { origin: 'http://evil.invalid' },
         body: form,
         redirect: 'manual',
       });
       expect(wrongOrigin.status).toBe(403);
-      const response = await fetch(`${origin}/donate/create`, {
+      const response = await fetch(`${origin}/contribute/create`, {
         method: 'POST',
         headers: { origin },
         body: form,
@@ -288,7 +288,7 @@ test.skipIf(!enabled)(
       ).text();
       expect(unknownRemaining).toContain('id="amount">Unavailable</span>');
       expect(unknownRemaining).not.toContain('href="monero:');
-      expect((await fetch(`${origin}/donate/not-a-uuid`)).status).toBe(404);
+      expect((await fetch(`${origin}/contribute/not-a-uuid`)).status).toBe(404);
     } finally {
       server.kill();
       await server.exited;

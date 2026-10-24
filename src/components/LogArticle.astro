@@ -1,5 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
+import { logLayout } from '../styles/log-layout';
 import { styles } from '../styles/pages';
 import { logStyles } from '../styles/log';
 import {
@@ -23,6 +24,7 @@ interface Props {
   entry: LogEntry;
 }
 const { entry } = Astro.props;
+const href = logUrl(entry);
 const metadata = logMetadata(entry);
 const signatures = await getLogSignatures();
 const latest = entry.revisions.at(-1)!;
@@ -33,16 +35,21 @@ const connections = logConnections(entry, undefined, origin);
 const date = (value: string) => new Date(value).toISOString().slice(0, 10);
 ---
 
-<article id={entry.id} class="h-entry" data-log-version={latest.version}>
-  <link
-    class="u-url"
-    href={origin ? new URL(logUrl(entry), origin).href : logUrl(entry)}
-  />
-  <header class="log-heading">
-    <h1 {...stylex.attrs(logStyles.title, styles.heading)}>
+<article
+  id={entry.id}
+  class:list={['h-entry', stylex.attrs(logLayout.article).class]}
+  data-log-version={latest.version}
+>
+  <link class="u-url" href={origin ? new URL(href, origin).href : href} />
+  <header class:list={['log-heading', stylex.attrs(logLayout.heading).class]}>
+    <h1
+      {...stylex.attrs(logStyles.title, styles.heading, logLayout.headingTitle)}
+    >
       <span class="p-name">{metadata.title}</span>
     </h1>
-    <div class="log-heading-sigil">
+    <div
+      class:list={['log-heading-sigil', stylex.attrs(logLayout.sigil).class]}
+    >
       <LogSigil id={entry.id} />
     </div>
   </header>
@@ -59,6 +66,7 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
         {date(entry.revisions[0]!.publishedAt)}
       </time>
     </a>
+
     {signatures[`${entry.id}-v${latest.version}`] && (
       <ProofBadge target="log" href={logProofUrl(entry)} label="Verified" />
     )}
@@ -124,12 +132,22 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
     </details>
   )}
   {references.length > 0 && (
-    <nav class="log-connections" aria-label="Referenced code">
-      <h2>Referenced code</h2>
-      <ul>
+    <nav
+      class:list={[
+        'log-connections',
+        stylex.attrs(logLayout.connections).class,
+      ]}
+      aria-label="Referenced code"
+    >
+      <h2 {...stylex.attrs(logLayout.connectionHeading)}>Referenced code</h2>
+      <ul {...stylex.attrs(logLayout.list)}>
         {references.map((reference) => (
           <li>
-            <a href={reference.url} rel="noreferrer">
+            <a
+              {...stylex.attrs(logLayout.link)}
+              href={reference.url}
+              rel="noreferrer"
+            >
               {reference.repository}
               {reference.commit ? ` ⁜ ${reference.commit.slice(0, 12)}` : ''}
             </a>
@@ -139,12 +157,20 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
     </nav>
   )}
   {connections.related.length > 0 && (
-    <nav class="log-connections" aria-label="Further reading">
-      <h2>Further reading</h2>
-      <ul>
+    <nav
+      class:list={[
+        'log-connections',
+        stylex.attrs(logLayout.connections).class,
+      ]}
+      aria-label="Further reading"
+    >
+      <h2 {...stylex.attrs(logLayout.connectionHeading)}>Further reading</h2>
+      <ul {...stylex.attrs(logLayout.list)}>
         {connections.related.map((related) => (
           <li>
-            <a href={logUrl(related)}>{logMetadata(related).title}</a>
+            <a {...stylex.attrs(logLayout.link)} href={logUrl(related)}>
+              {logMetadata(related).title}
+            </a>
             {'reason' in related && <p>{related.reason}</p>}
           </li>
         ))}
@@ -152,59 +178,23 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
     </nav>
   )}
   {connections.referencedBy.length > 0 && (
-    <nav class="log-connections" aria-label="Referenced by">
-      <h2>Referenced by</h2>
-      <ul>
+    <nav
+      class:list={[
+        'log-connections',
+        stylex.attrs(logLayout.connections).class,
+      ]}
+      aria-label="Referenced by"
+    >
+      <h2 {...stylex.attrs(logLayout.connectionHeading)}>Referenced by</h2>
+      <ul {...stylex.attrs(logLayout.list)}>
         {connections.referencedBy.map((related) => (
           <li>
-            <a href={logUrl(related)}>{logMetadata(related).title}</a>
+            <a {...stylex.attrs(logLayout.link)} href={logUrl(related)}>
+              {logMetadata(related).title}
+            </a>
           </li>
         ))}
       </ul>
     </nav>
   )}
 </article>
-<style>
-  .h-entry {
-    max-width: var(--reading-width);
-  }
-  .log-heading {
-    display: grid;
-    grid-template-columns: minmax(0, 1.618034fr) minmax(0, 1fr);
-    align-items: center;
-    gap: 24px;
-  }
-  .log-heading h1 {
-    min-width: 0;
-    margin: 0;
-  }
-  .log-heading-sigil {
-    justify-self: end;
-    width: min(100%, 136px);
-    color: var(--text);
-    pointer-events: none;
-  }
-  @media (max-width: 480px) {
-    .log-heading {
-      grid-template-columns: minmax(0, 1fr) 64px;
-      gap: 12px;
-    }
-  }
-  .log-connections {
-    margin-top: 32px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-    line-height: 1.8;
-  }
-  .log-connections h2 {
-    margin-bottom: 8px;
-    font-size: 1.125rem;
-  }
-  .log-connections a {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-  .log-connections li + li {
-    margin-top: 8px;
-  }
-</style>

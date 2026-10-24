@@ -1,0 +1,39 @@
+name: Dependency audit and inventory
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '47 5 * * 1'
+permissions:
+  contents: read
+jobs:
+  dependencies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.0
+      - run: bun install --frozen-lockfile
+      - run: bun run dependencies:inventory
+      - name: Report dependency advisories
+        id: audit
+        continue-on-error: true
+        run: bun audit --json > .local/dependency-audit.json
+      - name: Retain dependency evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: dependency-evidence
+          path: |
+            .local/sbom.cdx.json
+            .local/dependency-audit.json
+          include-hidden-files: true
+          retention-days: 30
+      - name: Fail on dependency advisory or audit errors
+        if: always() && steps.audit.outcome == 'failure'
+        run: exit 1

@@ -202,7 +202,7 @@ test('header search aligns with Contribute and supports keyboard navigation', as
   await expect(page.locator('#search-results a')).toHaveCount(1);
   await expect(page.locator('#search-status')).toBeHidden();
   await expect(page.locator('#search-results a img')).toHaveCount(0);
-  const row = page.locator('#search-results a');
+  const row = page.locator('#search-results a[href="/contribute"]');
   const titleBox = await row.locator('[data-result-title]').boundingBox();
   const detailBox = await row
     .locator('[data-result-description]')
@@ -219,7 +219,9 @@ test('header search aligns with Contribute and supports keyboard navigation', as
     fullPage: true,
   });
   await page.keyboard.press('ArrowDown');
-  await expect(page.locator('#search-results a')).toBeFocused();
+  await expect(
+    page.locator('#search-results a[href="/contribute"]'),
+  ).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/contribute$/);
   await page.waitForLoadState('load');
@@ -313,10 +315,9 @@ test('reopening search preserves the immediately filtered query', async ({
   await page.keyboard.press('Escape');
   await page.locator('#open-search').click();
   await expect(page.locator('#search-results a')).toHaveCount(1);
-  await expect(page.locator('#search-results a')).toHaveAttribute(
-    'href',
-    '/contribute',
-  );
+  await expect(
+    page.locator('#search-results a[href="/contribute"]'),
+  ).toBeVisible();
 });
 
 test('Find links to Connect accounts and the Spotify embed', async ({
@@ -408,7 +409,7 @@ for (const width of [320, 375]) {
   }) => {
     await page.setViewportSize({ width, height: 640 });
     const indexRequests: string[] = [];
-    await page.route('**/pagefind/**', async (route) => {
+    await page.route('**/search-index.json', async (route) => {
       indexRequests.push(route.request().url());
       await route.abort();
     });

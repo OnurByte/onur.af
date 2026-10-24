@@ -1,5 +1,6 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type APIResponse } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { z } from 'astro/zod';
 import { decodeProofArchive } from '../../src/portfolio/proof-archive';
 
 test('PGP lists signed Log entries directly and remains usable on mobile', async ({
@@ -66,27 +67,34 @@ test('PGP lists signed Log entries directly and remains usable on mobile', async
   }
 });
 
-test('legacy signed Log URLs redirect and retain their selected revision', async ({
-  request,
-}) => {
-  const response = await request.get(
-    '/pgp/log/cryptic-watchtower-watches?v=1',
-    { maxRedirects: 0 },
-  );
-  expect(response.status()).toBe(301);
-  const redirect = new URL(response.headers()['location']!);
-  expect(redirect.pathname + redirect.search).toBe(
-    '/log/cryptic-watchtower-watches/verified?v=1',
-  );
-});
+for (const path of [
+  '/pgp/log/cryptic-watchtower-watches?v=1',
+  '/introduction/verified',
+  '/introduction/statement.txt',
+  '/introduction/statement.txt.asc',
+]) {
+  test(`removed compatibility route ${path} returns 404`, async ({
+    request,
+  }) => {
+    const response: APIResponse = await request.get(path, { maxRedirects: 0 });
+    expect(response.status()).toBe(404);
+    expect(response.headers()['location']).toBeUndefined();
+  });
+}
 
 test('machine-readable PGP discovery exposes signed identity, key and Log proof URLs', async ({
   request,
 }) => {
-  const response = await request.get('/pgp/identity.json');
+  const response: APIResponse = await request.get('/pgp/identity.json');
   expect(response.ok()).toBe(true);
   expect(response.headers()['content-type']).toContain('application/json');
-  const discovery = await response.json();
+  const discovery = z
+    .object({
+      identity: z.object({ statementUrl: z.string(), statement: z.string() }),
+      key: z.object({ url: z.string(), fingerprint: z.string() }),
+      logProofs: z.array(z.unknown()),
+    })
+    .parse(await response.json());
   expect(discovery.identity.statementUrl).toBe('/pgp/identity.asc');
   expect(discovery.identity.statement).toContain(
     '-----BEGIN PGP SIGNED MESSAGE-----',
@@ -107,7 +115,9 @@ test('legacy proof routes offer a readable TAR and keep absent v2 artifacts abse
   request,
 }) => {
   const id = 'cryptic-watchtower-watches';
-  const archiveResponse = await request.get(`/log/${id}/archive.tar`);
+  const archiveResponse: APIResponse = await request.get(
+    `/log/${id}/archive.tar`,
+  );
   expect(archiveResponse.ok()).toBe(true);
   expect(archiveResponse.headers()['content-type']).toContain(
     'application/x-tar',
@@ -187,7 +197,7 @@ test('X and GitHub always show their PGP tick beside the account, including befo
   }
 });
 
-test('Log sits to the left of Find in the shared navbar and is absent from home content', async ({
+test('Log sits to the left of Find and home exposes a single Logs archive link', async ({
   page,
 }) => {
   for (const width of [320, 375, 1280]) {
@@ -198,7 +208,10 @@ test('Log sits to the left of Find in the shared navbar and is absent from home 
       .locator('header nav')
       .getByRole('link', { name: 'Log', exact: true });
     await expect(log).toBeVisible();
-    await expect(page.locator('main a[href="/log"]')).toHaveCount(0);
+    await expect(page.locator('main a[href="/log"]')).toHaveCount(1);
+    await expect(page.locator('#recent-logs h2 a[href="/log"]')).toHaveText(
+      'Logs',
+    );
     const findBox = await find.boundingBox();
     const logBox = await log.boundingBox();
     expect(logBox!.x + logBox!.width).toBeLessThan(findBox!.x);

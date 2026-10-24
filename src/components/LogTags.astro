@@ -1,4 +1,6 @@
 ---
+import * as stylex from '@stylexjs/stylex';
+import { logLayout } from '../styles/log-layout';
 import { logTagDefinitions } from '../portfolio/log';
 import { logTagUrl } from '../portfolio/log-tags';
 interface Props {
@@ -8,30 +10,18 @@ const { tags } = Astro.props;
 ---
 
 {tags.length > 0 && (
-  <nav class="log-tags" aria-label="Subjects">
+  <nav
+    class:list={['log-tags', stylex.attrs(logLayout.tags).class]}
+    aria-label="Subjects"
+  >
     {tags.map((tag) => (
-      <a href={logTagUrl(tag)} rel="tag" class="p-category">
+      <a
+        href={logTagUrl(tag)}
+        rel="tag"
+        class:list={['p-category', stylex.attrs(logLayout.tag).class]}
+      >
         #{logTagDefinitions[tag]!.title}
       </a>
     ))}
   </nav>
 )}
-<style>
-  .log-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 12px;
-    position: relative;
-    z-index: 1;
-    font-size: 0.875rem;
-  }
-  .log-tags a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 24px;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-style: italic;
-    text-decoration: none;
-  }
-</style>
