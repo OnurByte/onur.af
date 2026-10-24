@@ -118,3 +118,50 @@ test('Spotify rejects corrupt and future history during cold-start outages', asy
     expect((await loadEmbeds([source]))[0]?.status).toBe('unavailable');
   }
 });
+
+test('unchanged Spotify polls refresh observation time without rewriting history', async () => {
+  let now = 0;
+  let track: number | null = 1;
+  let offline = false;
+  const writes: unknown[] = [];
+  const source = createSpotifySource(
+    () => {
+      if (offline) return Promise.reject(new Error('Offline'));
+      return Promise.resolve(Response.json(presence(track)));
+    },
+    () => now,
+    {
+      cache: {
+        read: () => Promise.resolve(undefined),
+        write: (_id, value) => {
+          writes.push(structuredClone(value));
+          return Promise.resolve();
+        },
+      },
+    },
+  );
+  await loadEmbeds([source]);
+  expect(writes).toHaveLength(1);
+
+  now = 6000;
+  const unchanged = (await loadEmbeds([source]))[0];
+  expect(unchanged?.updatedAt).toBe('1970-01-01T00:00:06.000Z');
+  expect(writes).toHaveLength(1);
+
+  track = null;
+  now = 12000;
+  await loadEmbeds([source]);
+  expect(writes).toHaveLength(2);
+
+  now = 18000;
+  await loadEmbeds([source]);
+  expect(writes).toHaveLength(2);
+
+  offline = true;
+  now = 24000;
+  const stale = (await loadEmbeds([source]))[0];
+  expect(stale?.status).toBe('stale');
+  expect(stale?.updatedAt).toBe('1970-01-01T00:00:18.000Z');
+  expect(stale?.recentTracks?.map((item) => item.title)).toEqual(['Track 1']);
+  expect(writes).toHaveLength(2);
+});

@@ -131,8 +131,15 @@ export function createSpotifySource(
           ...(current ? { current } : {}),
           recent: recentTracks,
         };
-        if (JSON.stringify(nextHistory) !== JSON.stringify(history)) {
-          history = nextHistory;
+        const historyChanged =
+          !history.updatedAt ||
+          JSON.stringify({ current, recent: recentTracks }) !==
+            JSON.stringify({
+              current: history.current,
+              recent: history.recent,
+            });
+        history = nextHistory;
+        if (historyChanged) {
           try {
             await cache?.write('spotify', history);
           } catch {
