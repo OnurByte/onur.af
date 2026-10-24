@@ -106,8 +106,9 @@ const icons = {
 
 interface Props {
   name: keyof typeof icons;
+  size?: 'small';
 }
-const { name } = Astro.props;
+const { name, size } = Astro.props;
 const { filename, width, height } = icons[name];
 ---
 
@@ -142,6 +143,7 @@ const { filename, width, height } = icons[name];
       shell.smallIcon,
     name === 'onur' && shell.brandIcon,
     name === 'i2p' && shell.wideIcon,
+    size === 'small' && shell.smallIcon,
   )}
   data-icon={name}
   alt=""

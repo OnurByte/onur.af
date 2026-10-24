@@ -43,6 +43,9 @@ test('Find remains open while its delayed enhancement becomes ready', async ({
   await expect(dialog).toBeVisible();
   await page.getByRole('searchbox').fill('Monero');
   await expect(dialog.locator('#search-results a')).toHaveCount(1);
+  await expect(
+    dialog.locator('#search-results a[href="/contribute"]'),
+  ).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(trigger).toBeVisible();
   await trigger.click();

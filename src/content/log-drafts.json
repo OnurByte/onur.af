@@ -1,0 +1,94 @@
+[
+  {
+    "id": "shadowed-gate-opens",
+    "title": "Signed Log publication",
+    "summary": "I built revisioned publishing with portable evidence and recoverable local transactions.",
+    "revisions": [
+      {
+        "version": 1,
+        "publishedAt": "2026-10-21T13:43:24.564441Z",
+        "body": "I built revisioned publishing with portable evidence and recoverable local transactions.\n\n## Problem\n\nA page can change after publication. I wanted readers to inspect the exact Markdown, signatures and revision history behind my writing.\n\n## Approach\n\nI keep signed revision bytes immutable, derive the search and preview data, and activate prepared publication stores through a recoverable transaction. [1]\n\n## Decisions\n\n- Portable archives carry the evidence needed for offline inspection.\n- A pinned root and signed key transitions keep identity continuity explicit.\n- Timestamp digest binding and Bitcoin confirmation are separate claims.\n\n## Checks\n\nI keep the checks alongside the implementation [5], [6], [7].\n\n## Limitations\n\n- A signature identifies signed bytes and a signing key; it does not establish that the writing is true.\n- An independently retained checkpoint needs an actual external observer. The site cannot witness itself.",
+        "title": "Signed Log publication",
+        "summary": "I built revisioned publishing with portable evidence and recoverable local transactions.",
+        "language": "en",
+        "tags": [],
+        "sources": [
+          {
+            "title": "src/portfolio/publication-transaction.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/src/portfolio/publication-transaction.ts"
+          },
+          {
+            "title": "src/portfolio/log-proof.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/src/portfolio/log-proof.ts"
+          },
+          {
+            "title": "src/portfolio/log-bundle.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/src/portfolio/log-bundle.ts"
+          },
+          {
+            "title": "scripts/publish-log.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/scripts/publish-log.ts"
+          },
+          {
+            "title": "tests/publication-transaction.test.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/tests/publication-transaction.test.ts"
+          },
+          {
+            "title": "tests/log-bundle.test.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/tests/log-bundle.test.ts"
+          },
+          {
+            "title": "tests/log-proof.test.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/tests/log-proof.test.ts"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "veiled-bell-echoes",
+    "title": "Monero contribution ledger",
+    "summary": "I separated the public contribution flow from a durable payment ledger and a view-only wallet agent.",
+    "revisions": [
+      {
+        "version": 1,
+        "publishedAt": "2026-10-21T13:43:24.564472Z",
+        "body": "I separated the public contribution flow from a durable payment ledger and a view-only wallet agent.\n\n## Problem\n\nA retry or lost response must not give a visitor a different payment address or turn uncertain chain state into a paid claim.\n\n## Approach\n\nI reserve the contribution ID before allocation, persist the canonical amount and unique subaddress, and recover matching orders through authenticated read-only requests. [1]\n\n## Decisions\n\n- Amounts use integer piconero rather than floating-point arithmetic.\n- The public site calls a loopback gateway; wallet credentials stay in the agent.\n- Uncertain allocation and stale chain health fail closed instead of inventing a replacement address or successful payment.\n\n## Checks\n\nI keep the checks alongside the implementation [5], [6], [7].\n\n## Limitations\n\n- Synthetic checkout and scanner tests do not prove real Monero settlement.\n- Live stagenet partial payments, reorgs and operational backup/restart remain deployment gates.",
+        "title": "Monero contribution ledger",
+        "summary": "I separated the public contribution flow from a durable payment ledger and a view-only wallet agent.",
+        "language": "en",
+        "tags": [],
+        "sources": [
+          {
+            "title": "src/gateway.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/src/gateway.ts"
+          },
+          {
+            "title": "src/donations/store.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/src/donations/store.ts"
+          },
+          {
+            "title": "src/donations/agent.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/src/donations/agent.ts"
+          },
+          {
+            "title": "src/xmr/agent-host.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/src/xmr/agent-host.ts"
+          },
+          {
+            "title": "tests/donations.test.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/tests/donations.test.ts"
+          },
+          {
+            "title": "tests/payment-security.test.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/tests/payment-security.test.ts"
+          },
+          {
+            "title": "tests/checkout.test.ts",
+            "url": "https://github.com/OnurByte/onur.af/blob/79bd487c3fe6edc0c0fb710f1c5d7ac0d1dee61d/tests/checkout.test.ts"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,6 +1,6 @@
 ---
 import * as stylex from '@stylexjs/stylex';
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import portrait from '../assets/home-identity-portrait.webp';
 import { styles } from '../styles/pages';
 import { edge } from '../styles/edge';
@@ -8,6 +8,7 @@ import { logStyles } from '../styles/log';
 import Layout from '../layouts/Layout.astro';
 import HomeActivity from '../components/embeds/HomeActivity.astro';
 import Technologies from '../components/Technologies.astro';
+import Connect from '../components/Connect.astro';
 import LogCard from '../components/LogCard.astro';
 import { listedLogEntries, logProofUrl } from '../portfolio/log';
 import { getLogSignatures } from '../portfolio/verified-proofs';
@@ -59,7 +60,10 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
           </p>
         ))}
       </div>
-      <Image
+      <Picture
+        pictureAttributes={stylex.attrs(styles.homeIntroductionPortrait)}
+        formats={['avif', 'webp']}
+        fallbackFormat="webp"
         {...stylex.attrs(styles.homeIntroductionPortrait)}
         src={portrait}
         widths={[96, 192, 240, 480]}
@@ -74,7 +78,6 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
         decoding="async"
       />
     </section>
-    <Technologies />
     {recentLogs.length > 0 && (
       <section
         {...stylex.attrs(logStyles.list)}
@@ -84,6 +87,9 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
         aria-label="Recent Log entries"
         class="h-feed"
       >
+        <h2 {...stylex.attrs(styles.sectionHeading)}>
+          <a href="/log">Logs</a>
+        </h2>
         {recentLogs.map((entry) => (
           <LogCard
             entry={entry}
@@ -94,6 +100,10 @@ const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
         ))}
       </section>
     )}
+    <div {...stylex.attrs(styles.homeContact)}>
+      <Connect />
+    </div>
+    <Technologies />
     <HomeActivity />
   </main>
 </Layout>

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type APIResponse } from '@playwright/test';
 
 test('the contribution form sends a same-origin Origin header and reaches checkout', async ({
   page,
@@ -39,4 +39,24 @@ test('OpenAlias placeholder remains visible beside the contribution flow', async
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
+});
+
+test('removed donation aliases return 404 instead of forwarding to contributions', async ({
+  request,
+}) => {
+  for (const path of [
+    '/donate',
+    '/donate/00000000-0000-4000-8000-000000000000',
+  ]) {
+    const response: APIResponse = await request.get(path, { maxRedirects: 0 });
+    expect(response.status()).toBe(404);
+    expect(response.headers()['location']).toBeUndefined();
+  }
+  const response: APIResponse = await request.post('/donate/create', {
+    headers: { origin: 'http://127.0.0.1:14323' },
+    form: { id: '00000000-0000-4000-8000-000000000000', amount: '0.05' },
+    maxRedirects: 0,
+  });
+  expect(response.status()).toBe(404);
+  expect(response.headers()['location']).toBeUndefined();
 });

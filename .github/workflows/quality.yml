@@ -26,10 +26,11 @@ jobs:
         with:
           bun-version: 1.4.0
       - run: bun install --frozen-lockfile
-      - run: bunx playwright install --with-deps chromium
+      - run: bunx playwright install --with-deps chromium firefox webkit
       - run: bun run build
         env:
           XMR_NETWORK: stagenet
+      - run: bun run test:smoke
       - run: bun run test:browser
       - run: bun run test:lighthouse
         env:
@@ -37,6 +38,15 @@ jobs:
           PORT: '14324'
           SITE_URL: http://portfolio.example:14324
           CHROME_PATH: /usr/bin/google-chrome
+      - name: Retain Lighthouse diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          include-hidden-files: true
+          retention-days: 7
+          if-no-files-found: ignore
   links:
     runs-on: ubuntu-latest
     timeout-minutes: 10

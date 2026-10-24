@@ -46,3 +46,9 @@ TEST_CHECKOUT=1 bun test tests/checkout.test.ts
 ```
 
 Inspect the built HTML and its linked CSS as well as development output: SSR class attributes alone do not prove CSS was emitted. Check narrow/wide viewports, system light/dark themes, keyboard focus and checked amount choices. Checkout tests use a fake gateway; real payments and production deployment require their own verification.
+
+## Generated Log markup exceptions
+
+Log article layout, headings, tags, source disclosures, history diffs and subject relationships use shared `src/styles/log-layout.ts`. Keep their presentation in StyleX. Stable semantic classes remain as microformat, browser-test and source-navigation hooks.
+
+`src/styles/log-content.css`, used by `LogRevision.astro`, retains global descendant selectors for sanitized/generated Markdown and KaTeX markup, whose nodes do not pass through Astro component templates. `LogSigil.astro` retains the small structural SVG descendant rule for generated deterministic artwork. These are documented producer-specific exceptions; do not use them as permission to add unrelated page layout CSS.

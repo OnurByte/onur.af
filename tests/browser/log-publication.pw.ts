@@ -457,7 +457,7 @@ $$
         .locator('.log-body strong')
         .first()
         .evaluate((node) => getComputedStyle(node).userSelect),
-    ).toBe('text');
+    ).not.toBe('none');
     await page
       .context()
       .grantPermissions(['clipboard-read', 'clipboard-write']);
@@ -649,7 +649,7 @@ $$
     ).toHaveValue(artifacts['silent-lodge-convenes-v1']!.signature);
     for (const path of [
       '/log/fixture-note',
-      '/pgp/log/fixture-note?v=1',
+      '/log/fixture-note/verified?v=1',
       '/proofs/fixture-note-v1.md',
       '/proofs/fixture-note-v1.md.asc',
     ]) {

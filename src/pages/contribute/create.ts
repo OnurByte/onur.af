@@ -1,7 +1,7 @@
 import { moneroConfiguration } from '../../donations/config';
 import { readyDonationSchema } from '../../donations/contracts';
 import type { APIRoute } from 'astro';
-import { donationGateway } from '../../client/gateway';
+import { donationGateway } from '../../server/donation-gateway';
 import { formatXmrAmount, parseXmrAmount } from '../../donations/money';
 
 const UUID =

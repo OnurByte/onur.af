@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "test": "bun test",
-    "build": "bun run key-history:verify && bun run proofs:verify && bun run rss:verify && bun run timestamps:verify && bun run log-publications:verify && bun run checkpoints --check && bun run sources --check && bun run derived:verify && bun run log-proofs:verify && bun run proof-verifier:build && astro build",
+    "build": "bun run key-history:verify && bun run proofs:verify && bun run rss:verify && bun run timestamps:verify && bun run log-publications:verify && bun run checkpoints --check && bun run sources --check && bun run derived:verify && bun run log-proofs:verify && bun run proof-verifier:build && bun run evidence:build && astro build",
     "gateway": "bun src/gateway.ts",
     "preview": "astro preview",
     "start": "node --env-file-if-exists=.env ./dist/server/entry.mjs",
@@ -37,9 +37,14 @@
     "log:archive": "bun scripts/log-bundle.ts",
     "keys": "bun scripts/key-history.ts",
     "proof-verifier:build": "bun build scripts/verify-log-bundle.ts --target=node --outfile=public/proof-verifier.mjs --banner 'import { createRequire as __proofCreateRequire } from \"node:module\"; const require = __proofCreateRequire(import.meta.url);'",
-    "lint": "eslint src tests scripts integrations astro.config.ts playwright.config.ts --max-warnings 0",
-    "type-coverage:check": "type-coverage --strict --at-least 98.08",
-    "architecture:check": "depcruise src --config .dependency-cruiser.cjs --output-type err"
+    "lint": "astro sync && eslint src tests scripts integrations astro.config.ts playwright.config.ts playwright.smoke.config.ts --max-warnings 0",
+    "type-coverage:check": "astro sync && type-coverage --strict --at-least 98.08",
+    "architecture:check": "depcruise src --config .dependency-cruiser.cjs --output-type err",
+    "test:smoke": "playwright test --config playwright.smoke.config.ts",
+    "evidence:build": "bun scripts/build-evidence.ts generate",
+    "evidence:verify": "bun scripts/build-evidence.ts record verify",
+    "dependencies:inventory": "bun scripts/dependency-inventory.ts",
+    "measure:home": "bun scripts/measure-home.ts"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.7",
@@ -65,6 +70,7 @@
     "sharp": "0.35.5",
     "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0",
+    "web-vitals": "6.2.3",
     "xmr-pay": "github:SlowBearDigger/xmr-pay#26d25eea800b831c6a90d180c698a4ac6426502c"
   },
   "devDependencies": {
@@ -93,7 +99,7 @@
     "uuid": "11.1.1"
   },
   "engines": {
-    "node": ">=26.4.0",
+    "node": "24.x",
     "bun": "1.4.0"
   },
   "packageManager": "bun@1.4.0",

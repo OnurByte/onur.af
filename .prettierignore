@@ -6,7 +6,6 @@ dist/
 lychee/
 playwright-report/
 test-results/
-public/pagefind/
 .env
 .env.*
 bun.lock
@@ -20,3 +19,5 @@ backups/
 .playwright-mcp/
 .serena/
 .code-graph/
+
+public/build-evidence.json

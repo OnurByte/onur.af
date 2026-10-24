@@ -195,17 +195,11 @@
     "@typescript-eslint/no-confusing-void-expression": {
       "count": 1
     },
-    "@typescript-eslint/no-non-null-assertion": {
-      "count": 3
-    },
     "@typescript-eslint/no-unnecessary-condition": {
       "count": 3
     },
-    "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 1
-    },
     "@typescript-eslint/restrict-template-expressions": {
-      "count": 5
+      "count": 4
     }
   },
   "src/client/smooth-scroll.ts": {
@@ -299,11 +293,6 @@
       "count": 4
     },
     "@typescript-eslint/no-unnecessary-condition": {
-      "count": 1
-    }
-  },
-  "src/pages/introduction/[file].ts": {
-    "@typescript-eslint/no-non-null-assertion": {
       "count": 1
     }
   },
@@ -891,7 +880,7 @@
   },
   "tests/browser/home-introduction.pw.ts": {
     "@typescript-eslint/no-non-null-assertion": {
-      "count": 20
+      "count": 2
     }
   },
   "tests/browser/identity-markup.pw.ts": {
@@ -944,13 +933,7 @@
   },
   "tests/browser/log.pw.ts": {
     "@typescript-eslint/no-non-null-assertion": {
-      "count": 15
-    },
-    "@typescript-eslint/no-unsafe-assignment": {
-      "count": 1
-    },
-    "@typescript-eslint/no-unsafe-member-access": {
-      "count": 5
+      "count": 14
     }
   },
   "tests/browser/nav-glass.pw.ts": {

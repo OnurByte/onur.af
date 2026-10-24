@@ -26,6 +26,7 @@ const presenceSchema = z.object({
   }),
 });
 const historySchema = z.object({
+  updatedAt: z.iso.datetime({ offset: true }).optional(),
   current: trackItemSchema.optional(),
   recent: z.array(trackItemSchema).max(5),
 });
@@ -69,7 +70,12 @@ export function createSpotifySource(
             const parsed = historySchema.safeParse(
               await cache?.read('spotify'),
             );
-            if (parsed.success) history = parsed.data;
+            if (
+              parsed.success &&
+              (!parsed.data.updatedAt ||
+                Date.parse(parsed.data.updatedAt) <= now())
+            )
+              history = parsed.data;
           } catch {
             /* An unavailable history store must not block live presence. */
           }
@@ -109,7 +115,8 @@ export function createSpotifySource(
           const recentTracks = previousTracks();
           if (!recentTracks.length) throw error;
           const snapshot = embedSnapshotSchema.parse({
-            status: 'ready',
+            status: 'stale',
+            updatedAt: history.updatedAt,
             playbackState: 'unknown',
             items: [],
             recentTracks,
@@ -118,12 +125,21 @@ export function createSpotifySource(
           return snapshot;
         }
         const recentTracks = previousTracks(current);
+        const updatedAt = new Date(now()).toISOString();
         const nextHistory = {
+          updatedAt,
           ...(current ? { current } : {}),
           recent: recentTracks,
         };
-        if (JSON.stringify(nextHistory) !== JSON.stringify(history)) {
-          history = nextHistory;
+        const historyChanged =
+          !history.updatedAt ||
+          JSON.stringify({ current, recent: recentTracks }) !==
+            JSON.stringify({
+              current: history.current,
+              recent: history.recent,
+            });
+        history = nextHistory;
+        if (historyChanged) {
           try {
             await cache?.write('spotify', history);
           } catch {
@@ -132,6 +148,7 @@ export function createSpotifySource(
         }
         const snapshot = embedSnapshotSchema.parse({
           status: current || recentTracks.length ? 'ready' : 'empty',
+          updatedAt,
           playbackState: current ? 'playing' : 'idle',
           items: current ? [current] : [],
           recentTracks,

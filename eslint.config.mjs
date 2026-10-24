@@ -21,6 +21,7 @@ export default defineConfig([
       'scripts/**/*.ts',
       'astro.config.ts',
       'playwright.config.ts',
+      'playwright.smoke.config.ts',
       'integrations/**/*.ts',
     ],
     extends: [

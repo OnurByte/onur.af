@@ -1,7 +1,6 @@
 const { builtinModules } = require('node:module');
 const core = `^(node:|bun$|bun:|${builtinModules.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$').join('|')})`;
-/** Browser entrypoints exclude gateway.ts, a server-only legacy location. */
-const browser = '^src/client/(?!gateway\\.ts$)';
+const browser = '^src/client/';
 module.exports = {
   forbidden: [
     {
@@ -18,7 +17,7 @@ module.exports = {
       severity: 'error',
       from: { path: browser },
       to: {
-        path: '^src/(server/|xmr/|donations/|gateway\\.ts$|client/gateway\\.ts$)',
+        path: '^src/(server/|xmr/|donations/|gateway\\.ts$)',
         reachable: true,
       },
     },

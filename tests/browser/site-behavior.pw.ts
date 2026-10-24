@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { readKey } from 'openpgp';
 import { expect, test } from '@playwright/test';
 
-test('site blocks native copy everywhere while the PGP copy button still works', async ({
+test('native selection, copy and context menus remain available alongside Copy buttons', async ({
   page,
   context,
 }) => {
@@ -19,7 +19,7 @@ test('site blocks native copy everywhere while the PGP copy button still works',
     await page
       .locator('main h1')
       .evaluate((element) => getComputedStyle(element).userSelect),
-  ).toBe('none');
+  ).not.toBe('none');
   expect(
     await page
       .locator('main h1')
@@ -28,7 +28,7 @@ test('site blocks native copy everywhere while the PGP copy button still works',
           new ClipboardEvent('copy', { bubbles: true, cancelable: true }),
         ),
       ),
-  ).toBe(false);
+  ).toBe(true);
   expect(
     await page
       .locator('main h1')
@@ -37,7 +37,7 @@ test('site blocks native copy everywhere while the PGP copy button still works',
           new MouseEvent('contextmenu', { bubbles: true, cancelable: true }),
         ),
       ),
-  ).toBe(false);
+  ).toBe(true);
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/pgp');
   const key = page.locator('#public-key');
@@ -56,7 +56,7 @@ test('site blocks native copy everywhere while the PGP copy button still works',
   }
   expect(
     await key.evaluate((element) => getComputedStyle(element).userSelect),
-  ).toBe('none');
+  ).not.toBe('none');
   const actions = page.locator('#key-actions');
   await expect(actions.getByRole('button', { name: 'Copy' })).toBeVisible();
   await expect(actions.getByRole('link', { name: 'Download' })).toHaveAttribute(
@@ -102,14 +102,14 @@ test('site blocks native copy everywhere while the PGP copy button still works',
         new ClipboardEvent('copy', { bubbles: true, cancelable: true }),
       ),
     ),
-  ).toBe(false);
+  ).toBe(true);
   expect(
     await key.evaluate((element) =>
       element.dispatchEvent(
         new MouseEvent('contextmenu', { bubbles: true, cancelable: true }),
       ),
     ),
-  ).toBe(false);
+  ).toBe(true);
   await page.locator('#copy-key').click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
     await key.inputValue(),

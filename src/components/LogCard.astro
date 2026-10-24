@@ -1,6 +1,5 @@
 ---
 import * as stylex from '@stylexjs/stylex';
-import { edge } from '../styles/edge';
 import { logStyles } from '../styles/log';
 import {
   logMetadata,
@@ -11,6 +10,7 @@ import {
 } from '../portfolio/log';
 import LogTags from './LogTags.astro';
 import ProofBadge from './ProofBadge.astro';
+import { edge } from '../styles/edge';
 import LogSigil from './LogSigil.astro';
 interface Props {
   entry: LogEntry;
@@ -22,16 +22,17 @@ const publishedAt = entry.revisions[0]!.publishedAt;
 ---
 
 <article
-  {...stylex.attrs(logStyles.entryCard, edge.frame)}
-  class="h-entry"
+  class:list={['h-entry', stylex.attrs(logStyles.entryCard, edge.frame).class]}
   id={entry.id}
 >
   <h2
-    {...stylex.attrs(logStyles.title)}
-    class="p-name"
+    class:list={['p-name', stylex.attrs(logStyles.title).class]}
     id={`${entry.id}-title`}
   >
-    <a {...stylex.attrs(logStyles.cardLink)} class="u-url" href={logUrl(entry)}>
+    <a
+      class:list={['u-url', stylex.attrs(logStyles.cardLink).class]}
+      href={logUrl(entry)}
+    >
       {metadata.title}
     </a>
   </h2>
@@ -61,7 +62,7 @@ const publishedAt = entry.revisions[0]!.publishedAt;
     )}
     <span>{readingTime(entry.revisions.at(-1)!.body)}</span>
   </div>
-  <p {...stylex.attrs(logStyles.excerpt)} class="p-summary">
+  <p class:list={['p-summary', stylex.attrs(logStyles.excerpt).class]}>
     {metadata.summary}
   </p>
   <LogTags tags={metadata.tags} />

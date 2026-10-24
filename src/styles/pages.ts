@@ -36,6 +36,7 @@ export const styles = stylex.create({
     maxWidth: 'var(--reading-width)',
     lineHeight: 'var(--leading-reading)',
   },
+  homeContact: { marginTop: 'var(--section-space)' },
   homeIntroduction: {
     display: 'grid',
     gridTemplateColumns: {

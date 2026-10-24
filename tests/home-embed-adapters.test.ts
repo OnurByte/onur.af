@@ -390,3 +390,62 @@ test('X keeps real like and repost counts, including zero', async () => {
     reposts: 17,
   });
 });
+
+test('expired persisted providers retain the last observation during a cold-start outage', async () => {
+  const fetchedAt = 1000;
+  const updatedAt = new Date(fetchedAt).toISOString();
+  const sources = createHomeEmbedSources(
+    () => Promise.reject(new Error('Offline')),
+    () => 1_801_000,
+    {
+      cache: {
+        read: (id) =>
+          Promise.resolve({
+            version: 3,
+            fetchedAt,
+            snapshot: {
+              status: 'ready',
+              updatedAt,
+              items: [{ kind: 'link', title: id, href: 'https://example.com' }],
+            },
+          }),
+        write: () => Promise.resolve(),
+      },
+    },
+  );
+  const results = await loadEmbeds(sources);
+  expect(
+    results.map(({ status, updatedAt }) => ({ status, updatedAt })),
+  ).toEqual([
+    { status: 'stale', updatedAt },
+    { status: 'stale', updatedAt },
+  ]);
+});
+
+test('cold-start adapters reject corrupt and future persisted snapshots', async () => {
+  for (const record of [
+    { fetchedAt: 0, snapshot: { status: 'ready', items: [] } },
+    {
+      fetchedAt: 1001,
+      snapshot: {
+        status: 'ready',
+        items: [{ kind: 'link', title: 'Future', href: 'https://example.com' }],
+      },
+    },
+  ]) {
+    const sources = createHomeEmbedSources(
+      () => Promise.reject(new Error('Offline')),
+      () => 1000,
+      {
+        cache: {
+          read: () => Promise.resolve(record),
+          write: () => Promise.resolve(),
+        },
+      },
+    );
+    expect((await loadEmbeds(sources)).map(({ status }) => status)).toEqual([
+      'unavailable',
+      'unavailable',
+    ]);
+  }
+});

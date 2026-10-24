@@ -125,6 +125,15 @@ const time = (ms: number) =>
       ))}
     </ol>
   </div>
+  <p
+    data-spotify-health
+    {...stylex.attrs(styles.meta)}
+    hidden={embed.status !== 'stale' && embed.status !== 'unavailable'}
+  >
+    {embed.status === 'stale'
+      ? 'Source unavailable; showing saved data.'
+      : 'This source is currently unavailable.'}
+  </p>
   <template data-spotify-track-template>
     <li {...stylex.attrs(styles.recentItem)}>
       <a {...stylex.attrs(styles.link)} rel="noreferrer"></a>
@@ -136,6 +145,7 @@ const time = (ms: number) =>
   import type { Embed } from '../../portfolio/embeds';
   const section = document.querySelector<HTMLElement>('#spotify-embed');
   if (section) {
+    const health = section.querySelector<HTMLElement>('[data-spotify-health]')!;
     const current = section.querySelector<HTMLElement>(
       '[data-spotify-current]',
     )!;
@@ -245,6 +255,13 @@ const time = (ms: number) =>
         });
         if (!response.ok) throw new Error('Spotify refresh failed');
         const embed: Embed = await response.json();
+        health.hidden =
+          embed.status !== 'stale' && embed.status !== 'unavailable';
+        health.textContent =
+          embed.status === 'stale'
+            ? 'Source unavailable; showing saved data.'
+            : 'This source is currently unavailable.';
+
         const payload = JSON.stringify([
           embed.items,
           embed.recentTracks,
@@ -264,6 +281,8 @@ const time = (ms: number) =>
         }
       } catch {
         // Keep the observed history, but never leave an unverified song labelled current.
+        health.hidden = false;
+        health.textContent = 'Source unavailable; showing saved data.';
         fill(current, []);
         heading.textContent = 'Spotify';
         label.hidden = true;
