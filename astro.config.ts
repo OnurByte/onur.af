@@ -16,6 +16,7 @@ const site = validSiteUrl(
 
 export default defineConfig({
   devToolbar: { enabled: false },
+  trailingSlash: 'never',
   integrations: [
     logImages(),
     staticContent({
