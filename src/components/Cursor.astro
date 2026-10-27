@@ -1,0 +1,14 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { cursorStyles } from '../styles/cursor';
+---
+
+<div
+  data-cursor-ring
+  aria-hidden="true"
+  {...stylex.attrs(cursorStyles.ring)}
+></div>
+<script>
+  import { initCursor } from '../client/cursor';
+  initCursor();
+</script>

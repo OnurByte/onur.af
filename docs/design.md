@@ -99,3 +99,7 @@ otherwise their destinations would remain inert behind an open dialog.
 Preserve the signed introduction, portrait, motto, published Logs and identity proofs. Connect precedes secondary catalogs. Technologies keeps every existing name with its existing 16 px monochrome icon in eight readable groups (one column on mobile, two above 620 px) instead of individual bordered tool cards. Do not shrink body type or remove values to shorten the page.
 
 Provider sections show two primary entries initially. A native details/summary labeled Show more exposes the remaining entries without JavaScript; its accessible name identifies the source. Keep all item links, counters and status messages. Collapsed rows are not part of visual row-height comparisons. No inner scrollbar, carousel or new animation is added. Spotify retains its existing independent recent-track disclosure.
+
+## Custom pointer
+
+The pointer is a filled 24 px circle using white with difference blending, so the content beneath it is inverted. Enabled actions expand it to 32 px; pressing contracts it by 4 px. Text inputs and editable content use a 4 × 24 px form. Pointer position updates immediately. Reduced motion disables size transitions while preserving the custom pointer. Disabled controls retain the resting circle. The CSS circular cursor covers initial loading, keyboard mode and JavaScript-free pages; system arrows, hands and text pointers are suppressed throughout the document and dialog backdrops. Touch input adds no pointer. Native browser chrome remains outside the site's control.

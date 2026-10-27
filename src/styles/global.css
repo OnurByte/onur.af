@@ -210,3 +210,24 @@ body:has(dialog:modal) [data-scroll-rail] {
   width: 16px;
   opacity: 1;
 }
+
+/* The CSS circle covers loading, keyboard mode and JavaScript-free pages.
+   The live inverted cursor replaces it without exposing system cursors. */
+@media (any-hover: hover) and (any-pointer: fine) {
+  html,
+  html *,
+  html *::before,
+  html *::after,
+  dialog::backdrop {
+    cursor:
+      url('/brand/cursor.svg') 12 12,
+      none !important;
+  }
+  html[data-custom-cursor='active'],
+  html[data-custom-cursor='active'] *,
+  html[data-custom-cursor='active'] *::before,
+  html[data-custom-cursor='active'] *::after,
+  html[data-custom-cursor='active'] dialog::backdrop {
+    cursor: none !important;
+  }
+}
