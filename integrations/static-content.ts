@@ -11,9 +11,11 @@ const contentRoutes = new Set([
 export default function staticContent({
   immutableDeployment,
   canonicalOrigin,
+  dynamicLogs = false,
 }: {
   immutableDeployment: boolean;
   canonicalOrigin: string | undefined;
+  dynamicLogs?: boolean;
 }): AstroIntegration {
   return {
     name: 'static-content',
@@ -24,7 +26,8 @@ export default function staticContent({
         if (
           immutableDeployment &&
           canonicalOrigin &&
-          contentRoutes.has(route.component)
+          contentRoutes.has(route.component) &&
+          !(dynamicLogs && route.component === 'src/pages/log/[id].astro')
         )
           route.prerender = true;
       },

@@ -1,5 +1,7 @@
 ---
 import '../styles/log-content.css';
+import Annotations from './Annotations.astro';
+import { getLogSignatures } from '../portfolio/verified-proofs';
 import LogSources from './LogSources.astro';
 import 'katex/dist/katex.min.css';
 import images from 'virtual:log-images';
@@ -21,6 +23,7 @@ const content = renderLogContent(
   archived ? `${entry.id}-v${version}-` : '',
   metadata.sources.length,
 );
+const revisionSignature = (await getLogSignatures())[`${entry.id}-v${version}`];
 const coverImage = metadata.cover ? images[metadata.cover.src] : undefined;
 ---
 
@@ -43,12 +46,21 @@ const coverImage = metadata.cover ? images[metadata.cover.src] : undefined;
 )}
 
 <div
+  id={`${entry.id}-v${version}-body`}
+  data-annotation-revision={version}
   data-scroll-headings={archived ? undefined : ''}
   data-scroll-archive={archived ? '' : undefined}
   lang={metadata.language}
   class:list={['log-body', !archived && 'e-content']}
   set:html={applyLogImages(content.html, images)}
 />
+{revisionSignature && (
+  <Annotations
+    logId={entry.id}
+    revision={version}
+    revisionHash={revisionSignature.sha256}
+  />
+)}
 <LogSources
   sources={metadata.sources}
   references={content.sourceReferences}

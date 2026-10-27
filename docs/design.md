@@ -103,3 +103,7 @@ Provider sections show two primary entries initially. A native details/summary l
 ## Custom pointer
 
 The pointer is a filled 24 px circle using white with difference blending, so the content beneath it is inverted. Enabled actions expand it to 32 px; pressing contracts it by 4 px. Text inputs and editable content use a 4 × 24 px form. Pointer position updates immediately. Reduced motion disables size transitions while preserving the custom pointer. Disabled controls retain the resting circle. The CSS circular cursor covers initial loading, keyboard mode and JavaScript-free pages; system arrows, hands and text pointers are suppressed throughout the document and dialog backdrops. Touch input adds no pointer. Native browser chrome remains outside the site's control.
+
+## Selection and home motto
+
+Text selection uses one connected monochrome outline, a 4 px horizontal / 3 px vertical outside inset and the shared 8 px control radius. Round only the outside contour, not every inline fragment independently. Preserve native selection, copy and context menus; editable fields and unsupported modes retain the native monochrome fallback. The shared layout applies selection rendering site-wide, while annotation controls mount only inside Log revisions. Each new homepage response excludes the previous motto for that browser session, storing only the previous variant index in an HTTP-only same-site functional cookie. The motto remains server-rendered; it does not change after first paint.

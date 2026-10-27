@@ -63,6 +63,12 @@ html {
     --surface: #222;
   }
 }
+::selection {
+  background-color: var(--text);
+  color: var(--background);
+  text-shadow: none;
+}
+
 body,
 h1,
 h2,
@@ -230,4 +236,16 @@ body:has(dialog:modal) [data-scroll-rail] {
   html[data-custom-cursor='active'] dialog::backdrop {
     cursor: none !important;
   }
+}
+
+html[data-rounded-selection] ::selection {
+  background-color: transparent;
+  color: currentColor;
+}
+
+/* A filled difference cursor masks letters when it crosses the inverted selection. */
+html[data-rounded-selection] {
+  --cursor-fill: transparent;
+  --cursor-border-width: 1px;
+  --cursor-border-color: #fff;
 }

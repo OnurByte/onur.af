@@ -1,0 +1,16 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { selectionStyles } from '../styles/selection';
+---
+
+<svg
+  data-selection-layer
+  aria-hidden="true"
+  {...stylex.attrs(selectionStyles.layer)}
+>
+  <path data-selection-path fill="white" />
+</svg>
+<script>
+  import { initTextSelection } from '../client/text-selection';
+  initTextSelection();
+</script>

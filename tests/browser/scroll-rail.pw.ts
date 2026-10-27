@@ -151,6 +151,7 @@ test('verified Log uses real proof headings and current article excludes archive
   await page.locator('[data-scroll-track]').focus();
   const links = page.locator('[data-scroll-list] a');
   await expect(links).toHaveText([
+    'Statistics',
     'Signed Markdown',
     'Portable proof',
     'Markdown timestamp',

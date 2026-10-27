@@ -14,12 +14,20 @@ import { listedLogEntries, logProofUrl } from '../portfolio/log';
 import { getLogSignatures } from '../portfolio/verified-proofs';
 import ProofBadge from '../components/ProofBadge.astro';
 import { introduction, introductionEntry } from '../portfolio/introduction';
-import { mottos, publicPreview } from '../portfolio/previews';
+import { mottos, nextMottoIndex, publicPreview } from '../portfolio/previews';
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 const signatures = await getLogSignatures();
 const recentLogs = listedLogEntries.slice(0, 3);
-const motto = mottos[Math.floor(Math.random() * mottos.length)]!;
+const previousMotto = Astro.cookies.get('onur-motto')?.number();
+const mottoIndex = nextMottoIndex(previousMotto);
+Astro.cookies.set('onur-motto', String(mottoIndex), {
+  path: '/',
+  httpOnly: true,
+  sameSite: 'lax',
+  secure: Astro.url.protocol === 'https:',
+});
+const motto = mottos[mottoIndex]!;
 ---
 
 <Layout title={publicPreview('/')!.title} motto={motto}>

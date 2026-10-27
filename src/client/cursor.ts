@@ -36,7 +36,8 @@ export function initCursor(): void {
     ring.style.top = `${String(y)}px`;
     ring.style.opacity = '1';
     // Difference blending needs the actual content's stacking context.
-    const surface = target.closest('dialog[open]') ?? document.body;
+    const surface =
+      target.closest('dialog[open], :popover-open') ?? document.body;
     if (ring.parentElement !== surface) surface.append(ring);
     document.documentElement.dataset['customCursor'] = 'active';
   };
@@ -79,6 +80,7 @@ export function initCursor(): void {
     capture: true,
   });
   document.addEventListener('close', refresh, { capture: true });
+  document.addEventListener('toggle', refresh, { capture: true });
   window.addEventListener('blur', hide);
   document.addEventListener('visibilitychange', hide);
   pointer.addEventListener('change', hide);

@@ -1,7 +1,6 @@
 import { logEntries, logFeedEntries } from './log';
 import { z } from 'astro/zod';
 import { rssEntrySchema } from '../content/schema';
-import rawEntries from '../content/rss-entries.json' with { type: 'json' };
 
 export type RssEntry = z.infer<typeof rssEntrySchema>;
 export function parseRssEntries(input: unknown): RssEntry[] {
@@ -18,7 +17,4 @@ export function parseRssEntries(input: unknown): RssEntry[] {
       a.id.localeCompare(b.id, 'en'),
   );
 }
-export const rssEntries = parseRssEntries([
-  ...rawEntries,
-  ...logFeedEntries(logEntries),
-]);
+export const rssEntries = parseRssEntries(logFeedEntries(logEntries));

@@ -1,6 +1,7 @@
 import { expect, test } from 'bun:test';
 import {
   mottos,
+  nextMottoIndex,
   publicPreview,
   publicPreviewByKey,
 } from '../src/portfolio/previews';
@@ -86,4 +87,20 @@ test('identity proof previews have account-specific metadata and image keys', ()
     expect(preview?.description).toBe(`${name} verified by PGP.`);
     expect(publicPreviewByKey(`pgp-${account}`)).toEqual(preview);
   }
+});
+
+test('motto selection excludes the previous motto and keeps both alternatives reachable', () => {
+  for (let previous = 0; previous < mottos.length; previous++) {
+    const seen = new Set<number>();
+    for (const random of [0, 0.1, 0.49, 0.5, 0.9, 0.999999]) {
+      const next = nextMottoIndex(previous, random);
+      expect(next).not.toBe(previous);
+      expect(next).toBeGreaterThanOrEqual(0);
+      expect(next).toBeLessThan(mottos.length);
+      seen.add(next);
+    }
+    expect(seen.size).toBe(mottos.length - 1);
+  }
+  for (const previous of [undefined, -1, 100, Number.NaN])
+    expect(nextMottoIndex(previous, 0)).toBe(0);
 });

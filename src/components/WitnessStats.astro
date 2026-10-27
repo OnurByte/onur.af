@@ -1,0 +1,445 @@
+---
+import { verifiedStyles } from '../styles/verified';
+import { edge } from '../styles/edge';
+import * as stylex from '@stylexjs/stylex';
+import { witnessStyles } from '../styles/witness';
+import { dailySeries } from '../portfolio/witness/chart';
+import { styles } from '../styles/pages';
+import { logStyles } from '../styles/log';
+import {
+  annotationsEnabled,
+  annotationStore,
+} from '../server/annotations/service';
+import { witnessStats } from '../server/witness/service';
+import { periodDays, parseDateRange } from '../server/witness/http';
+interface Props {
+  logId: string;
+}
+const { logId } = Astro.props;
+const period = Astro.url.searchParams.get('period');
+let range: ReturnType<typeof parseDateRange>;
+let rangeError = false;
+try {
+  range = parseDateRange(Astro.url.searchParams);
+} catch {
+  rangeError = true;
+}
+const state = await witnessStats(logId, periodDays(period), range);
+const chart =
+  state.status === 'available'
+    ? dailySeries(
+        state.stats.days,
+        range
+          ? Math.round(
+              (Date.parse(range.to) - Date.parse(range.from)) / 86400000,
+            ) + 1
+          : periodDays(period),
+        range?.to ?? state.stats.asOf.slice(0, 10),
+      )
+    : undefined;
+let annotationCount: number | undefined;
+if (annotationsEnabled()) {
+  try {
+    const result = await annotationStore().pool.query<{ count: number }>(
+      "SELECT count(*)::integer count FROM annotations WHERE log_id=$1 AND status='published'",
+      [logId],
+    );
+    annotationCount = result.rows[0]?.count;
+  } catch {
+    /* Independent annotation failures do not hide witness evidence. */
+  }
+}
+const activeDays = state.status === 'available' ? state.stats.days.length : 0;
+const peak =
+  state.status === 'available'
+    ? [...state.stats.days].sort(
+        (a, b) => b.count - a.count || a.day.localeCompare(b.day),
+      )[0]
+    : undefined;
+const periodDaysCount = chart?.days.length ?? 0;
+const average =
+  state.status === 'available' && periodDaysCount
+    ? state.stats.unique / periodDaysCount
+    : 0;
+const share = (count: number, total: number) =>
+  total
+    ? `${((count / total) * 100).toLocaleString('en-US', { maximumFractionDigits: 1 })}%`
+    : '0%';
+const periodLabel = range
+  ? `${range.from} to ${range.to}`
+  : period === 'all'
+    ? 'All time'
+    : `Last ${String(periodDays(period))} days`;
+const chartMax =
+  state.status === 'available'
+    ? Math.max(1, ...state.stats.days.map((day) => day.count))
+    : 1;
+const number = (value: number) => value.toLocaleString('en-US');
+---
+
+<section
+  aria-labelledby="stats"
+  data-verified-card
+  {...stylex.attrs(verifiedStyles.card, edge.frame)}
+>
+  <header {...stylex.attrs(verifiedStyles.cardHeader)}>
+    <h2 id="stats" data-scroll-section {...stylex.attrs(styles.sectionHeading)}>
+      Statistics
+    </h2>
+    <span {...stylex.attrs(verifiedStyles.muted)}>All revisions ⁜ UTC</span>
+  </header>
+  <p {...stylex.attrs(verifiedStyles.muted)}>
+    Views estimate unique browsers per Log; published evidence lets you verify
+    the recorded history.
+  </p>
+  {state.status === 'disabled' ? (
+    <p {...stylex.attrs(verifiedStyles.state)}>
+      Measurement disabled. No visits are being recorded.
+    </p>
+  ) : state.status === 'unavailable' ? (
+    <p role="status" {...stylex.attrs(verifiedStyles.state)}>
+      Statistics unavailable
+    </p>
+  ) : (
+    <>
+      <nav
+        aria-label="Statistics period"
+        {...stylex.attrs(verifiedStyles.periodNav)}
+      >
+        {['7', '30', '90', 'all'].map((value) => (
+          <a
+            href={`?${new URLSearchParams({ ...(Astro.url.searchParams.has('v') ? { v: Astro.url.searchParams.get('v')! } : {}), period: value })}#stats`}
+            aria-current={
+              !range && (period ?? '30') === value ? 'true' : undefined
+            }
+            {...stylex.attrs(
+              verifiedStyles.period,
+              !range && (period ?? '30') === value && verifiedStyles.selected,
+            )}
+          >
+            {value === 'all' ? 'All time' : `${value} days`}
+          </a>
+        ))}
+      </nav>
+      <p {...stylex.attrs(verifiedStyles.periodContext)}>{periodLabel}</p>
+      <dl {...stylex.attrs(verifiedStyles.metrics)}>
+        <div {...stylex.attrs(verifiedStyles.metric)}>
+          <dt {...stylex.attrs(verifiedStyles.metricLabel)}>Unique views</dt>
+          <dd {...stylex.attrs(verifiedStyles.metricValue)}>
+            {number(state.stats.unique)}
+          </dd>
+        </div>
+        <div {...stylex.attrs(verifiedStyles.metric)}>
+          <dt {...stylex.attrs(verifiedStyles.metricLabel)}>
+            All-time witnesses
+          </dt>
+          <dd {...stylex.attrs(verifiedStyles.metricValue)}>
+            {number(state.stats.allTime)}
+          </dd>
+        </div>
+        {annotationCount !== undefined && (
+          <div {...stylex.attrs(verifiedStyles.metric)}>
+            <dt {...stylex.attrs(verifiedStyles.metricLabel)}>
+              Annotations (all time)
+            </dt>
+            <dd {...stylex.attrs(verifiedStyles.metricValue)}>
+              {number(annotationCount)}
+            </dd>
+          </div>
+        )}
+      </dl>
+      <dl {...stylex.attrs(verifiedStyles.detailMetrics)}>
+        <div>
+          <dt {...stylex.attrs(verifiedStyles.metricLabel)}>Daily average</dt>
+          <dd {...stylex.attrs(verifiedStyles.coverageValue)}>
+            {average > 0 && average < 0.01
+              ? '<0.01'
+              : average.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+          </dd>
+        </div>
+        <div>
+          <dt {...stylex.attrs(verifiedStyles.metricLabel)}>
+            Days with first visits
+          </dt>
+          <dd {...stylex.attrs(verifiedStyles.coverageValue)}>
+            {activeDays} / {periodDaysCount}
+          </dd>
+        </div>
+        <div>
+          <dt {...stylex.attrs(verifiedStyles.metricLabel)}>
+            Share of all-time views
+          </dt>
+          <dd {...stylex.attrs(verifiedStyles.coverageValue)}>
+            {share(state.stats.unique, state.stats.allTime)}
+          </dd>
+        </div>
+        <div>
+          <dt {...stylex.attrs(verifiedStyles.metricLabel)}>Peak day</dt>
+          <dd {...stylex.attrs(verifiedStyles.coverageValue)}>
+            {peak ? number(peak.count) : '0'}{' '}
+            <span {...stylex.attrs(verifiedStyles.muted)}>
+              {peak?.day ?? 'No visits'}
+            </span>
+          </dd>
+        </div>
+      </dl>
+      <details open={Boolean(range) || rangeError}>
+        <summary {...stylex.attrs(verifiedStyles.summary)}>
+          Custom dates (UTC)
+        </summary>
+        <form
+          method="get"
+          action="#stats"
+          {...stylex.attrs(witnessStyles.filters)}
+        >
+          <label {...stylex.attrs(witnessStyles.label)}>
+            From
+            <input
+              type="date"
+              {...stylex.attrs(styles.keyInput, styles.singleLineInput)}
+              name="from"
+              value={range?.from}
+              required
+            />
+          </label>
+          <label {...stylex.attrs(witnessStyles.label)}>
+            To
+            <input
+              type="date"
+              {...stylex.attrs(styles.keyInput, styles.singleLineInput)}
+              name="to"
+              value={range?.to}
+              required
+            />
+          </label>
+          {Astro.url.searchParams.has('v') && (
+            <input
+              type="hidden"
+              name="v"
+              value={Astro.url.searchParams.get('v')}
+            />
+          )}
+          <button
+            type="submit"
+            {...stylex.attrs(styles.button, styles.secondary)}
+          >
+            Apply dates
+          </button>
+        </form>
+      </details>
+      {rangeError && (
+        <p role="status">Choose a valid UTC date range of up to ten years.</p>
+      )}
+      <div {...stylex.attrs(verifiedStyles.group)}>
+        <h3 {...stylex.attrs(logStyles.proofTitle)}>First-time views</h3>
+        {state.stats.days.length ? (
+          <>
+            <svg
+              viewBox="-40 -12 650 132"
+              role="img"
+              aria-label="Daily first-time views in UTC"
+              {...stylex.attrs(witnessStyles.chart)}
+            >
+              <line
+                x1="0"
+                x2="600"
+                y1="0"
+                y2="0"
+                {...stylex.attrs(verifiedStyles.gridLine)}
+              />
+              <line
+                x1="0"
+                x2="600"
+                y1="100"
+                y2="100"
+                {...stylex.attrs(verifiedStyles.gridLine)}
+              />
+              <text
+                x="-10"
+                y="4"
+                text-anchor="end"
+                {...stylex.attrs(verifiedStyles.chartText)}
+              >
+                {number(chartMax)}
+              </text>
+              <text
+                x="-10"
+                y="104"
+                text-anchor="end"
+                {...stylex.attrs(verifiedStyles.chartText)}
+              >
+                0
+              </text>
+              <polyline
+                points={chart!.points}
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                vector-effect="non-scaling-stroke"
+              />
+            </svg>
+            <div {...stylex.attrs(verifiedStyles.chartLabels)}>
+              <span>{chart!.days[0]?.day}</span>
+              <span>{chart!.days.at(-1)?.day}</span>
+            </div>
+            <details>
+              <summary {...stylex.attrs(verifiedStyles.summary)}>
+                Daily data
+              </summary>
+              <div {...stylex.attrs(verifiedStyles.tableViewport)}>
+                <table {...stylex.attrs(witnessStyles.table)}>
+                  <caption>Daily first visits (UTC)</caption>
+                  <thead>
+                    <tr>
+                      <th {...stylex.attrs(witnessStyles.cell)} scope="col">
+                        Date
+                      </th>
+                      <th {...stylex.attrs(witnessStyles.cell)} scope="col">
+                        Views
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {chart!.days.map((row) => (
+                      <tr>
+                        <th {...stylex.attrs(witnessStyles.cell)} scope="row">
+                          {row.day}
+                        </th>
+                        <td {...stylex.attrs(witnessStyles.cell)}>
+                          {number(row.count)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          </>
+        ) : (
+          <p {...stylex.attrs(verifiedStyles.state)}>
+            No accepted visits in this period.
+          </p>
+        )}
+      </div>
+      <div {...stylex.attrs(verifiedStyles.group, verifiedStyles.split)}>
+        <div>
+          <h3 {...stylex.attrs(logStyles.proofTitle)}>Traffic sources</h3>
+          <ul {...stylex.attrs(verifiedStyles.rows)}>
+            {state.stats.sources.map((row) => (
+              <li>
+                <div {...stylex.attrs(verifiedStyles.row)}>
+                  <span>{row.source}</span>
+                  <span {...stylex.attrs(verifiedStyles.rowValue)}>
+                    {number(row.count)}{' '}
+                    <span {...stylex.attrs(verifiedStyles.muted)}>
+                      {share(row.count, state.stats.unique)}
+                    </span>
+                  </span>
+                </div>
+                <progress
+                  {...stylex.attrs(witnessStyles.bar)}
+                  aria-label={`${row.source} first visits`}
+                  value={row.count}
+                  max={Math.max(
+                    1,
+                    ...state.stats.sources.map((source) => source.count),
+                  )}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 {...stylex.attrs(logStyles.proofTitle)}>First seen revision</h3>
+          <ul {...stylex.attrs(verifiedStyles.rows)}>
+            {state.stats.revisions.map((row) => (
+              <li {...stylex.attrs(verifiedStyles.row)}>
+                <span>v{row.revision}</span>
+                <span {...stylex.attrs(verifiedStyles.rowValue)}>
+                  {number(row.count)}{' '}
+                  <span {...stylex.attrs(verifiedStyles.muted)}>
+                    {share(row.count, state.stats.unique)}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <details>
+            <summary {...stylex.attrs(verifiedStyles.summary)}>
+              Peak days
+            </summary>
+            <ol {...stylex.attrs(verifiedStyles.rows)}>
+              {[...state.stats.days]
+                .sort((a, b) => b.count - a.count || a.day.localeCompare(b.day))
+                .slice(0, 5)
+                .map((row) => (
+                  <li {...stylex.attrs(verifiedStyles.row)}>
+                    <span>{row.day}</span>
+                    <span {...stylex.attrs(verifiedStyles.rowValue)}>
+                      {number(row.count)}{' '}
+                      <span {...stylex.attrs(verifiedStyles.muted)}>
+                        {share(row.count, state.stats.unique)}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+            </ol>
+          </details>
+        </div>
+      </div>
+      <div {...stylex.attrs(verifiedStyles.group)}>
+        <h3 {...stylex.attrs(logStyles.proofTitle)}>Evidence coverage</h3>
+        <dl {...stylex.attrs(verifiedStyles.coverage)}>
+          {[
+            { label: 'Recorded', value: state.stats.recorded },
+            { label: 'Sealed', value: state.stats.sealed },
+            { label: 'Bitcoin verified', value: state.stats.verified },
+            {
+              label: 'Pending',
+              value: state.stats.recorded - state.stats.verified,
+            },
+          ].map((metric) => (
+            <div>
+              <dt {...stylex.attrs(verifiedStyles.metricLabel)}>
+                {metric.label}
+              </dt>
+              <dd {...stylex.attrs(verifiedStyles.coverageValue)}>
+                {number(metric.value)}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <p {...stylex.attrs(verifiedStyles.muted)}>
+          {share(state.stats.verified, state.stats.recorded)} Bitcoin verified ⁜{' '}
+          {share(state.stats.sealed, state.stats.recorded)} sealed
+        </p>
+        <progress
+          {...stylex.attrs(witnessStyles.bar)}
+          aria-label="Bitcoin verified coverage"
+          value={state.stats.verified}
+          max={Math.max(1, state.stats.recorded)}
+        />
+        <p {...stylex.attrs(verifiedStyles.muted)}>
+          Last checkpoint:{' '}
+          {state.stats.checkpoint ? (
+            <a href={`/api/witness/batches/${state.stats.checkpoint.id}`}>
+              {state.stats.checkpoint.createdAt} UTC
+            </a>
+          ) : (
+            'No checkpoint published'
+          )}
+        </p>
+        <p {...stylex.attrs(verifiedStyles.muted)}>
+          Updated{' '}
+          <time datetime={state.stats.asOf}>{state.stats.asOf} UTC</time>
+        </p>
+      </div>
+    </>
+  )}
+  {state.status === 'available' && (
+    <footer {...stylex.attrs(verifiedStyles.footer)}>
+      <a href="/api/witness/batches?format=evidence">Download evidence</a>
+      <a href="/api/witness/batches">Published batches</a>
+    </footer>
+  )}
+</section>

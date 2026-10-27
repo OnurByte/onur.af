@@ -4,21 +4,9 @@ The same validated entries drive `/rss` (HTML) and both RSS URLs: `/rss.xml` and
 
 ## Publish entries
 
-Edit `src/content/rss-entries.json`. The list is initially empty because no writing has been published. Do not populate it with placeholder articles. Every published entry has:
+RSS entries are derived from published Logs in `src/content/log.json`. There is no separate manual feed registry. Use the [Log writing guide](log-markdown-guide.md) and [publication workflow](integrated-publication.md) to create and publish writing; drafts and unlisted revisions are not added to the feed.
 
-```json
-{
-  "id": "my-first-post",
-  "title": "My first post",
-  "url": "/writing/my-first-post",
-  "summary": "A plain text summary of the published post.",
-  "publishedAt": "2026-10-15T10:00:00Z"
-}
-```
-
-This is a schema example, not a published post. Create the actual destination before adding its entry; the feed does not create article pages. Local URLs must be absolute paths without queries, fragments or dot-segment normalization; external URLs must use HTTPS without embedded credentials. Text is escaped separately in HTML and XML. No raw HTML is accepted as markup. IDs are unique, stable GUID identifiers: retain the ID when correcting a post and never reuse it for different writing. Entries are listed newest first, with stable ID ordering for equal timestamps. `publishedAt` is an explicit ISO timestamp; publication is controlled by inclusion in this file, not a scheduler.
-
-Astro Content Collections validates the entry schema. The shared parser additionally rejects duplicate IDs before generating the feed or HTML list. The feed and list contain the same entries.
+The shared parser validates entries, rejects duplicate IDs and sorts newest first with stable ID ordering for equal timestamps. HTML and XML use the same entries. Titles and summaries are escaped as text. Updating published Log content changes the exact XML and requires refreshing its signature through the publication workflow.
 
 ## Sign the XML locally
 

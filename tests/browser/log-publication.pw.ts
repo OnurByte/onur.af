@@ -254,7 +254,6 @@ $$
       export const homeEmbedSources = ${JSON.stringify(claims.map((claim) => ({ id: claim.id, title: claim.id === 'x' ? 'Tweets' : 'Repositories', source: claim.id === 'x' ? '@onurstirner' : 'onurbyte', href: claim.profile })))}.map(source => ({ ...source, load: async () => ({ status: 'empty', items: [] }) }));
     `,
     );
-    await writeFile(join(directory, 'src/content/rss-entries.json'), '[]');
     await writeFile(join(directory, 'src/content/rss-signature.json'), 'null');
     await writeFile(join(directory, 'src/content/log-timestamps.json'), '{}');
     await writeFile(

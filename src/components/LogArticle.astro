@@ -14,6 +14,11 @@ import { getLogSignatures } from '../portfolio/verified-proofs';
 import { buildContentIndex } from '../portfolio/content-index';
 import { logConnections } from '../portfolio/log-connections';
 import { siteOrigin } from '../portfolio/seo';
+import {
+  witnessStats,
+  witnessMeasurementReady,
+} from '../server/witness/service';
+import { viewCountLabel } from '../portfolio/witness/presentation';
 import LogShare from './LogShare.astro';
 import LogDiff from './LogDiff.astro';
 import LogRevision from './LogRevision.astro';
@@ -25,6 +30,13 @@ interface Props {
 }
 const { entry } = Astro.props;
 const href = logUrl(entry);
+const statsState = await witnessStats(entry.id, null);
+const viewsLabel = viewCountLabel(
+  Astro.url.hostname,
+  statsState.status === 'available'
+    ? { status: 'available', count: statsState.stats.allTime }
+    : statsState,
+);
 const metadata = logMetadata(entry);
 const signatures = await getLogSignatures();
 const latest = entry.revisions.at(-1)!;
@@ -91,8 +103,40 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
         </time>
       </a>
     )}
+    <a
+      href={`${href}/verified#stats`}
+      aria-label={
+        viewsLabel === '- views'
+          ? 'View statistics'
+          : `${viewsLabel}, view statistics`
+      }
+    >
+      {viewsLabel}
+    </a>
     <LogShare entry={entry} />
   </div>
+  {witnessMeasurementReady() && (
+    <div data-witness-log={entry.id} data-witness-revision={latest.version}>
+      <p>
+        Allow a Log-specific browser identifier to count this visit, retained
+        for up to {Number(process.env['WITNESS_RETENTION_DAYS'])} days.
+      </p>{' '}
+      <button
+        type="button"
+        data-witness-opt-in
+        disabled
+        {...stylex.attrs(styles.button, styles.secondary)}
+      >
+        Allow this measurement
+      </button>
+      <noscript>
+        <p>
+          Optional measurement requires JavaScript. The Log remains readable.
+        </p>
+      </noscript>
+      <p data-witness-status role="status"></p>
+    </div>
+  )}
   <LogTags tags={metadata.tags} />
   <LogRevision entry={entry} version={latest.version} />
   {latest.version > 1 && (
@@ -198,3 +242,15 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
     </nav>
   )}
 </article>
+
+<script>
+  if (document.querySelector('[data-witness-log]')) {
+    void import('../client/witness')
+      .then(({ initWitness }) => {
+        initWitness();
+      })
+      .catch(() => {
+        /* Measurement remains disabled. */
+      });
+  }
+</script>

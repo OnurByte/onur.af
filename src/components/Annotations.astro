@@ -1,0 +1,144 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { witnessStyles } from '../styles/witness';
+import { styles } from '../styles/pages';
+import { edge } from '../styles/edge';
+import { annotationsEnabled } from '../server/annotations/service';
+interface Props {
+  logId: string;
+  revision: number;
+  revisionHash: string;
+}
+const { logId, revision, revisionHash } = Astro.props;
+---
+
+{annotationsEnabled() && (
+  <aside
+    data-annotations
+    data-log={logId}
+    data-revision={revision}
+    data-revision-hash={revisionHash}
+    aria-label="Text annotations"
+  >
+    <noscript>
+      <p>
+        Text annotations require JavaScript. This revision remains readable.
+      </p>
+    </noscript>
+    <div data-annotation-controls hidden>
+      <button
+        type="button"
+        data-annotation-select
+        {...stylex.attrs(
+          styles.button,
+          styles.secondary,
+          witnessStyles.annotationTrigger,
+        )}
+      >
+        Annotate selection
+      </button>
+      <form
+        data-annotation-form
+        popover="manual"
+        aria-label="Annotation editor"
+        hidden
+        {...stylex.attrs(witnessStyles.composer, edge.frame)}
+      >
+        <p
+          data-annotation-revision-label
+          {...stylex.attrs(witnessStyles.compactText)}
+        >
+          Revision {revision}
+        </p>
+        <blockquote
+          data-annotation-quote
+          {...stylex.attrs(witnessStyles.quote)}
+        ></blockquote>
+        <details data-annotation-related hidden>
+          <summary>Notes on this text</summary>
+          <div
+            data-annotation-notes
+            {...stylex.attrs(witnessStyles.tools)}
+          ></div>
+        </details>
+        <label
+          data-annotation-action
+          hidden
+          {...stylex.attrs(witnessStyles.field)}
+        >
+          Action
+          <select name="action">
+            <option value="edit">Edit</option>
+            <option value="withdraw">Withdraw</option>
+          </select>
+        </label>
+        <label {...stylex.attrs(witnessStyles.field)}>
+          Note{' '}
+          <textarea
+            name="note"
+            maxlength="2000"
+            required
+            {...stylex.attrs(styles.keyInput, witnessStyles.noteInput)}
+          />
+        </label>
+        <label data-annotation-pgp-label {...stylex.attrs(witnessStyles.field)}>
+          PGP public key
+          <textarea
+            name="pgp"
+            maxlength="32768"
+            required
+            spellcheck="false"
+            placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----"
+            {...stylex.attrs(styles.keyInput, witnessStyles.noteInput)}
+          />
+        </label>
+        <div {...stylex.attrs(witnessStyles.actions)}>
+          <button
+            type="submit"
+            {...stylex.attrs(styles.button, styles.primary)}
+          >
+            Publish annotation
+          </button>
+          <button
+            type="button"
+            data-annotation-cancel
+            {...stylex.attrs(styles.button, styles.secondary)}
+          >
+            Cancel
+          </button>
+        </div>
+        <p data-annotation-status role="status"></p>
+      </form>
+      <div
+        popover="auto"
+        data-annotation-viewer
+        aria-label="Annotation"
+        {...stylex.attrs(styles.prose, witnessStyles.popover, edge.frame)}
+      ></div>
+      <template data-annotation-action-template>
+        <button
+          type="button"
+          {...stylex.attrs(styles.button, styles.secondary)}
+        ></button>
+      </template>
+      <template data-annotation-marker-template>
+        <button
+          type="button"
+          data-annotation-marker
+          {...stylex.attrs(styles.button, styles.secondary)}
+        ></button>
+      </template>
+    </div>
+  </aside>
+)}
+<script>
+  if (document.querySelector('[data-annotations]')) {
+    void import('../client/annotations')
+      .then(({ initAnnotations }) => {
+        initAnnotations();
+      })
+      .catch(() => {
+        /* Readable revision is the fallback. */
+      });
+  }
+</script>

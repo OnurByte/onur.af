@@ -16,12 +16,17 @@ const site = validSiteUrl(
 
 export default defineConfig({
   devToolbar: { enabled: false },
-  trailingSlash: 'never',
+  // Canonical HTML redirects belong to middleware; the Node static layer otherwise
+  // intercepts directories created by immutable archive assets with a 301.
+  trailingSlash: 'ignore',
   integrations: [
     logImages(),
     staticContent({
       immutableDeployment: Boolean(process.env['VERCEL']),
       canonicalOrigin: site,
+      dynamicLogs:
+        process.env['WITNESS_ENABLED'] === '1' ||
+        process.env['ANNOTATIONS_ENABLED'] === '1',
     }),
   ],
   vite: {

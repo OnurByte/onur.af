@@ -5,8 +5,13 @@ import type { AstroIntegrationLogger, RouteOptions } from 'astro';
 async function routePolicy(
   immutableDeployment: boolean,
   canonicalOrigin?: string,
+  dynamicLogs = false,
 ) {
-  const integration = staticContent({ immutableDeployment, canonicalOrigin });
+  const integration = staticContent({
+    immutableDeployment,
+    canonicalOrigin,
+    dynamicLogs,
+  });
   const hook = integration.hooks['astro:route:setup']!;
   const routes = [
     'src/pages/log.astro',
@@ -42,4 +47,10 @@ test('immutable deployments prerender only selected content routes with a fixed 
 test('local servers and deployments without a canonical origin retain request rendering', async () => {
   expect(await routePolicy(false, 'https://portfolio.example')).toEqual([]);
   expect(await routePolicy(true)).toEqual([]);
+});
+
+test('interactive Log modules retain request rendering on immutable deployments', async () => {
+  expect(
+    await routePolicy(true, 'https://portfolio.example', true),
+  ).not.toContain('src/pages/log/[id].astro');
 });

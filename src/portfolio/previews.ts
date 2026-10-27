@@ -25,6 +25,19 @@ export const mottos = [
   'To think is an act of choice.',
 ] as const;
 
+export function nextMottoIndex(
+  previous: number | undefined,
+  random = Math.random(),
+): number {
+  const valid =
+    previous !== undefined &&
+    Number.isInteger(previous) &&
+    previous >= 0 &&
+    previous < mottos.length;
+  const candidate = Math.floor(random * (mottos.length - (valid ? 1 : 0)));
+  return valid && candidate >= previous ? candidate + 1 : candidate;
+}
+
 const truncateDescription = (value: string) => {
   const characters = Array.from(value);
   return characters.length <= 160

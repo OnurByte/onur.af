@@ -141,7 +141,7 @@ export const shell = stylex.create({
     borderRadius: 'var(--radius-control)',
     gap: 8,
   },
-  unavailable: { cursor: 'default', color: 'var(--muted)', opacity: 0.45 },
+  unavailable: { cursor: 'default', color: 'var(--muted)' },
   monochrome: {
     filter: {
       default: 'brightness(0)',
