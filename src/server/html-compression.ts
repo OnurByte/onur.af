@@ -2,7 +2,11 @@ import { Readable, pipeline } from 'node:stream';
 import { constants, createGzip } from 'node:zlib';
 
 /** Standalone Node has no CDN compression; flush each chunk to preserve SSR streaming. */
-export function compressHtml(request: Request, response: Response): Response {
+export function compressHtml(
+  request: Request,
+  response: Response,
+  onError?: (error: Error) => void,
+): Response {
   if (
     request.method !== 'GET' ||
     response.status !== 200 ||
@@ -49,7 +53,14 @@ export function compressHtml(request: Request, response: Response): Response {
   const output = createGzip({ flush: constants.Z_SYNC_FLUSH });
   // Pipeline propagates producer errors and consumer cancellation across both
   // streams; the Web Stream carries any failure to the HTTP response consumer.
-  pipeline(Readable.fromWeb(input), output, () => {});
+  pipeline(Readable.fromWeb(input), output, (error) => {
+    if (
+      error &&
+      error.code !== 'ERR_STREAM_PREMATURE_CLOSE' &&
+      error.code !== 'ABORT_ERR'
+    )
+      onError?.(error);
+  });
   const body = Readable.toWeb(output) as unknown as ReadableStream<Uint8Array>;
   return new Response(body, {
     status: response.status,

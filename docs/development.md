@@ -25,6 +25,12 @@ Use `bun install --frozen-lockfile`, then `bun run dev`. `bun run lint` and `bun
 
 Browser tests use `tests/browser/server.ts` and a synthetic gateway bound to loopback. Optional database tests require an isolated `TEST_DATABASE_URL`. Never point tests at a live payment database. Read [acceptance.md](acceptance.md) before operating payment infrastructure.
 
+## Debug diagnostics
+
+Private server diagnostics are written to `.local/debug.log` locally. See
+[debugging](debugging.md) for levels, rotation, redaction and Vercel Runtime Logs.
+Trailing-slash redirects are informational events, not application errors.
+
 ## Storage and external sources
 
 Activity adapters return normalized data only. GitShow/FxTwitter/Lanyard are optional data sources, not proof of ownership or availability. File snapshots use `PORTFOLIO_EMBED_CACHE_DIR` or local `data/embeds`; Vercel uses private Blob when configured. Last successful data can be stale. Cache corruption and unavailable storage must not produce invented content or erase valid upstream data.

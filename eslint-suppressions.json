@@ -709,9 +709,6 @@
     }
   },
   "src/server/html-compression.ts": {
-    "@typescript-eslint/no-empty-function": {
-      "count": 1
-    },
     "@typescript-eslint/no-unsafe-type-assertion": {
       "count": 2
     }
