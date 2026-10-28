@@ -59,6 +59,8 @@ const server = Bun.spawn(['node', 'dist/server/entry.mjs'], {
     XMR_NETWORK: 'stagenet',
     PORTFOLIO_TOR_URL: '',
     PORTFOLIO_I2P_URL: '',
+    ANNOTATIONS_ENABLED: '1',
+    ANNOTATIONS_RATE_SECRET: crypto.randomUUID() + crypto.randomUUID(),
   },
   stdout: 'inherit',
   stderr: 'inherit',

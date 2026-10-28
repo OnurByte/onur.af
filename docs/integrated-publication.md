@@ -17,7 +17,7 @@ An OTS receipt may be pending. Offline verification establishes the digest bindi
 
 ## Search and code relationships
 
-`content-index.ts` resolves current Markdown links and structured sources against each canonical Log URL. It extracts GitHub repository names and preserves full commit SHA references. Find builds its MiniSearch index from server-rendered navigation entries when its client module loads, then filters synchronously without fetching `/search-index.json`. The JSON endpoint remains available for derived-content verification and other consumers. If the client module fails to load, Find retains its native page-link dialog with the search input disabled. No checkout or payment information is indexed.
+`content-index.ts` resolves current Markdown links and structured sources against each canonical Log URL. It extracts GitHub repository names and preserves full commit SHA references. Find filters server-rendered navigation entries locally, including offline. On focus, pointer intent or opening, it loads the optional MiniSearch ranking engine; failed ranking loads retain substring filtering. It never fetches `/search-index.json`. The JSON endpoint remains available for derived-content verification and other consumers. If the client module fails to load, Find retains its native page-link dialog with the search input disabled. No checkout or payment information is indexed.
 
 Repository cards show links to actual Log references. Log pages expose referenced repositories and pinned commits; branch references remain branch references. The system does not pretend an unpinned URL was pinned at publication time.
 

@@ -14,7 +14,7 @@ test('public HTML remains indexable without a runtime canonical origin', async (
     expect(response?.status(), path).toBe(200);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
       'content',
-      'index, follow',
+      'index, follow, max-image-preview:large',
     );
     await expect(page.locator('title')).not.toBeEmpty();
     await expect(page.locator('meta[name="description"]')).toHaveAttribute(

@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { required } from '../src/portfolio/required';
 import { listedLogEntries } from '../src/portfolio/log';
 import {
   canonicalUrl,
@@ -118,4 +119,59 @@ test('only recognized public HTML paths have slash redirects', async () => {
     '//evil.example/',
   ])
     expect(publicPathRedirect(path)).toBeUndefined();
+});
+
+test('large-image robots directives preserve the independent indexing decision', async () => {
+  const { robotsMetaContent, isIndexableRobots } =
+    await import('../src/portfolio/seo');
+  expect(robotsMetaContent('index, follow')).toBe(
+    'index, follow, max-image-preview:large',
+  );
+  expect(isIndexableRobots(robotsMetaContent('index, follow'))).toBe(true);
+  for (const policy of [
+    'noindex, follow',
+    'noindex, nofollow',
+    'none',
+    'NOINDEX, follow',
+  ]) {
+    expect(isIndexableRobots(policy)).toBe(false);
+    expect(robotsMetaContent(policy)).toBe(policy);
+  }
+});
+
+test('home and articles describe one real person with consistent graph identifiers', async () => {
+  const { homePageSchema, logArticleSchema } =
+    await import('../src/portfolio/seo');
+  const origin = 'https://portfolio.example';
+  const home = homePageSchema(origin);
+  const article = logArticleSchema(origin, required(listedLogEntries[0]));
+  expect(homePageSchema(undefined)).toBeUndefined();
+  const nodes = home?.['@graph'];
+  expect(
+    nodes?.find(
+      (node) =>
+        typeof node === 'object' &&
+        '@type' in node &&
+        node['@type'] === 'Person',
+    ),
+  ).toMatchObject({
+    '@id': `${origin}/#person`,
+    alternateName: ['onurstirner', 'onurbyte'],
+  });
+  expect(
+    nodes?.find(
+      (node) =>
+        typeof node === 'object' &&
+        '@type' in node &&
+        node['@type'] === 'ProfilePage',
+    ),
+  ).toMatchObject({ mainEntity: { '@id': `${origin}/#person` } });
+  expect(
+    article?.['@graph'].find(
+      (node) =>
+        typeof node === 'object' &&
+        '@type' in node &&
+        node['@type'] === 'BlogPosting',
+    ),
+  ).toMatchObject({ author: { '@id': `${origin}/#person` } });
 });

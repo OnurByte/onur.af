@@ -78,3 +78,12 @@ test('thumbnail dimensions respect both limits using real available variants', a
     expect(oembedResponse(origin, request(undefined, extra)).status).toBe(404);
   }
 });
+
+test('historical proof oEmbed reflects the selected revision without accepting arbitrary queries', async () => {
+  const path = `${origin}/log/cryptic-watchtower-watches/verified`;
+  expect(
+    await oembedResponse(origin, request(`${path}?v=1`)).json(),
+  ).toMatchObject({ title: 'Build something useful ⁜ Verified ⁜ Onur' });
+  for (const query of ['?v=0', '?v=999', '?v=1&v=2', '?v=1&secret=private'])
+    expect(oembedResponse(origin, request(path + query)).status).toBe(404);
+});

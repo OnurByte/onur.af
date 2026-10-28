@@ -15,6 +15,20 @@ jobs:
   browser:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: portfolio
+          POSTGRES_PASSWORD: portfolio
+          POSTGRES_DB: portfolio_browser
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U portfolio -d portfolio_browser"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
@@ -31,7 +45,13 @@ jobs:
         env:
           XMR_NETWORK: stagenet
       - run: bun run test:smoke
+      - name: Prepare isolated annotation database
+        run: bun run annotations migrate
+        env:
+          ANNOTATIONS_DATABASE_URL: postgres://portfolio:portfolio@127.0.0.1:5432/portfolio_browser
       - run: bun run test:browser
+        env:
+          ANNOTATIONS_DATABASE_URL: postgres://portfolio:portfolio@127.0.0.1:5432/portfolio_browser
       - run: bun run test:lighthouse
         env:
           HOST: 127.0.0.1

@@ -5,6 +5,7 @@ import sharp from 'sharp';
 import { logSigilSvg } from './log-sigil-svg';
 import assets from './fonts/card-assets.json';
 import { mottos, publicPreviewByKey } from './previews';
+import { isIndexableRobots, robotsContent } from './seo';
 
 let fonts: Promise<{ regular: string; bold: string }> | undefined;
 function cardFonts() {
@@ -30,8 +31,12 @@ const escapeMarkup = (value: string) =>
 // Keys are restricted to bundled public previews and three motto variants.
 // Share in-flight work as well as completed renders within this deployment.
 const renderedCards = new Map<string, Promise<Buffer>>();
-export async function socialImage(page: string, mottoIndex = 0) {
-  const preview = publicPreviewByKey(page);
+export async function socialImage(
+  page: string,
+  mottoIndex = 0,
+  revision?: number,
+) {
+  const preview = publicPreviewByKey(page, revision);
   if (!preview) throw new RangeError('Unknown public page');
   if (
     !Number.isInteger(mottoIndex) ||
@@ -39,7 +44,7 @@ export async function socialImage(page: string, mottoIndex = 0) {
     mottoIndex >= mottos.length
   )
     throw new RangeError('Invalid motto');
-  const key = `${page}:${mottoIndex}`;
+  const key = `${page}:${String(mottoIndex)}:${'revision' in preview ? String(preview.revision) : ''}`;
   let result = renderedCards.get(key);
   if (!result) {
     result = renderSocialImage(preview, mottoIndex).catch((error) => {
@@ -157,13 +162,28 @@ export async function socialImageResponse(page: string | undefined, url: URL) {
   const indices = url.searchParams.getAll('m');
   if (indices.length > 1 || (indices.length && !/^[0-2]$/.test(indices[0]!)))
     return new Response('Invalid motto', { status: 400 });
-  const png = await socialImage(page!, Number(indices[0] ?? 0));
+  const revisions = url.searchParams.getAll('r');
+  const initial = publicPreviewByKey(page);
+  if (
+    revisions.length > 1 ||
+    (revisions.length &&
+      (!/^[1-9][0-9]*$/.test(revisions[0]!) ||
+        !initial ||
+        !('revision' in initial)))
+  )
+    return new Response('Invalid revision', { status: 400 });
+  const revision = revisions.length ? Number(revisions[0]) : undefined;
+  const preview = publicPreviewByKey(page, revision);
+  if (!preview) return new Response('Not found', { status: 404 });
+  const png = await socialImage(page, Number(indices[0] ?? 0), revision);
   return new Response(new Uint8Array(png), {
     headers: {
       'Content-Type': 'image/png',
       'Cache-Control': 'public, max-age=86400',
       'X-Content-Type-Options': 'nosniff',
-      'X-Robots-Tag': 'noindex',
+      ...(isIndexableRobots(robotsContent(preview.id))
+        ? {}
+        : { 'X-Robots-Tag': 'noindex' }),
     },
   });
 }

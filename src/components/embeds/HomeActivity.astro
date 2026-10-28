@@ -1,11 +1,20 @@
 ---
+import * as stylex from '@stylexjs/stylex';
+import { embeds as styles } from '../../styles/embeds';
+import { homeEmbedFallbacks } from '../../content/home-embeds';
+import HomeSource from './HomeSource.astro';
 import HomeEmbeds from './HomeEmbeds.astro';
-import { homeEmbedSources } from '../../content/home-embeds';
-import { loadEmbeds } from '../../portfolio/embed-sources';
-
-// Keep upstream requests out of the page frontmatter so Astro can stream the
-// document head and primary content while the independently cached sources load.
-const embeds = await loadEmbeds(homeEmbedSources, { timeoutMs: 15_000 });
+const fallbacks = await homeEmbedFallbacks();
 ---
 
-<HomeEmbeds embeds={embeds} />
+<div {...stylex.attrs(styles.grid)}>
+  {fallbacks.map((embed) =>
+    embed.id === 'spotify' ? (
+      <HomeEmbeds embeds={[embed]} />
+    ) : (
+      <HomeSource sourceId={embed.id} server:defer>
+        <HomeEmbeds slot="fallback" embeds={[embed]} />
+      </HomeSource>
+    ),
+  )}
+</div>

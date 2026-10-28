@@ -29,13 +29,10 @@ export default defineConfig({
         process.env['ANNOTATIONS_ENABLED'] === '1',
     }),
   ],
+  // The shared stylesheet is bounded by the opening-performance browser budget.
+  build: { inlineStylesheets: 'always' },
   vite: {
     ssr: { external: ['opentimestamps'] },
-    build: {
-      // Inline the compact shared CSS so primary text does not wait on another request.
-      assetsInlineLimit: (file, content) =>
-        file.endsWith('.css') ? content.byteLength < 40 * 1024 : undefined,
-    },
     plugins: [
       stylex.vite({
         useCSSLayers: false,

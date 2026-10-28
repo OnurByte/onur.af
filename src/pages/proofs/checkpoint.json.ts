@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getLogPublications } from '../../portfolio/verified-proofs';
+import { getLogPublications } from '../../portfolio/verified-signatures';
 import { publicationCheckpoint } from '../../portfolio/publication-checkpoints';
 export const GET: APIRoute = async () => {
   const chain = await getLogPublications();

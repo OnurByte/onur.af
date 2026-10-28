@@ -1,4 +1,6 @@
 import publicPages from '../content/public-pages.json' with { type: 'json' };
+import type { Graph, Person, WebSite } from 'schema-dts';
+import { identityAccounts } from './identity-accounts';
 import {
   logEntries,
   listedLogEntries,
@@ -97,6 +99,70 @@ export function robotsContent(
     : 'index, follow';
 }
 
+/** Treat index policy as tokens, independently of additional preview directives. */
+export function isIndexableRobots(content: string): boolean {
+  return !content
+    .split(',')
+    .some((rule) => ['noindex', 'none'].includes(rule.trim().toLowerCase()));
+}
+
+export function robotsMetaContent(policy: string): string {
+  return isIndexableRobots(policy)
+    ? `${policy}, max-image-preview:large`
+    : policy;
+}
+
+function personSchema(origin: string): Person {
+  return {
+    '@type': 'Person',
+    '@id': `${origin}/#person`,
+    name: 'Onur',
+    url: `${origin}/`,
+    description: siteDescription,
+    alternateName: Object.values(identityAccounts).map((account) =>
+      account.name.replace(/^@/, ''),
+    ),
+    sameAs: Object.values(identityAccounts).map((account) => account.profile),
+    image: {
+      '@type': 'ImageObject',
+      url: `${origin}/brand/home-identity-portrait.webp`,
+    },
+  };
+}
+
+function websiteSchema(origin: string): WebSite {
+  return {
+    '@type': 'WebSite',
+    '@id': `${origin}/#website`,
+    url: `${origin}/`,
+    name: 'Onur',
+    description: siteDescription,
+    inLanguage: 'en',
+    publisher: { '@id': `${origin}/#person` },
+  };
+}
+
+export function homePageSchema(origin: string | undefined): Graph | undefined {
+  if (!origin) return;
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      websiteSchema(origin),
+      personSchema(origin),
+      {
+        '@type': 'ProfilePage',
+        '@id': `${origin}/#webpage`,
+        url: `${origin}/`,
+        name: 'Onur',
+        description: siteDescription,
+        inLanguage: 'en',
+        isPartOf: { '@id': `${origin}/#website` },
+        mainEntity: { '@id': `${origin}/#person` },
+      },
+    ],
+  };
+}
+
 export function canonicalUrl(
   origin: string | undefined,
   pathname: string,
@@ -139,7 +205,10 @@ export function sitemapXml(origin: string | undefined): string {
   return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`;
 }
 
-export function logArticleSchema(origin: string | undefined, entry: LogEntry) {
+export function logArticleSchema(
+  origin: string | undefined,
+  entry: LogEntry,
+): Graph | undefined {
   if (!origin) return;
   const metadata = logMetadata(entry);
   const url = new URL(logUrl(entry), origin).href;
@@ -156,8 +225,9 @@ export function logArticleSchema(origin: string | undefined, entry: LogEntry) {
         datePublished: entry.revisions[0]!.publishedAt,
         dateModified: entry.revisions.at(-1)!.publishedAt,
         inLanguage: metadata.language,
+        isPartOf: { '@id': `${origin}/#website` },
         keywords: metadata.tags,
-        author: { '@type': 'Person', name: 'Onur', url: `${origin}/` },
+        author: { '@id': `${origin}/#person` },
         ...(metadata.cover
           ? { image: new URL(metadata.cover.src, origin).href }
           : {}),
@@ -180,6 +250,8 @@ export function logArticleSchema(origin: string | undefined, entry: LogEntry) {
           { '@type': 'ListItem', position: 3, name: metadata.title, item: url },
         ],
       },
+      websiteSchema(origin),
+      personSchema(origin),
     ],
   };
 }

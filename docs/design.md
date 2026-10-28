@@ -4,7 +4,7 @@ The site uses one restrained, monochrome design implemented with StyleX. The off
 
 - Utility pages (RSS, Donate, PGP): one plain `h1`, followed by a short introduction in the prose-width container, then the controls or empty state. Use the common main alignment.
 - Typeface: Helvetica Neue, Helvetica, Arial. Body: 16 px, line height 1.6. Machine addresses use monospace for readability.
-- Theme: system preference, white/black backgrounds. No shadows, gradients or theme selector. The brand stays monochrome.
+- Theme: system preference, white/black backgrounds. No theme selector. Shadows and gradients are limited to the documented shared edge, navigation and icon materials. The brand stays monochrome.
 - Corners: 12 px on cards and dialogs through `--radius-card`; 8 px on buttons, inputs, amount choices and status labels through `--radius-control`; Connect uses the shared 8 px control radius.
 - Borders: 1 px for controls and separators. Keyboard focus: 2 px outline, 3 px offset.
 - Controls: at least 44 px high, 16 px text, weight 500, line height 1.4. Buttons use 12 px vertical and 16 px horizontal padding.
@@ -25,6 +25,8 @@ The sticky navbar preserves its original dimensions: 104 px high on desktop, 96 
 All static SVG assets live in `public/brand/`, with lowercase filenames and their provenance in `public/brand/SOURCES.md`. Render them through `src/components/Icon.astro`; its typed name registry owns each asset URL and dimensions. Do not inline SVG markup, import icons with `?raw`, or duplicate image rendering in page templates.
 
 The shared StyleX icon rule controls monochrome system-theme rendering. Icons are decorative (`alt=""`, `aria-hidden="true"`); the containing link or text provides the accessible name. Preserve source proportions: Onur 56 × 56 px, TOR and RSS 32 × 32 px, I2P 64 × 32 px. New icons follow this same registry and asset convention.
+
+Icon depth uses `src/styles/icon-material.ts`. A nested mask takes the original SVG alpha and preserves contain/center proportions; a monochrome surface gradient supplies upper-left illumination. The outer icon applies a thin extrusion edge and soft directional alpha shadows. Sizes, hit targets and silhouettes stay unchanged. No box, hover movement or animation is added. High-contrast and forced-color modes remove depth and use a solid symbol; forced colors use CanvasText. Technology masks are activated near viewport visibility with a noscript mask fallback. The shared mark is preloaded. SVGO reduces SVG source overhead without changing the material; `icons:optimize` retains source IDs and descriptions.
 
 Favicons remain document metadata links. Payment QR codes are generated per donation and are not static icons.
 

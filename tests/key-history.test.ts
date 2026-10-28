@@ -16,10 +16,10 @@ import {
 import { verifyBytes } from '../src/portfolio/proofs';
 import {
   canonicalIdentityStatement,
-  identityStatementText,
   verifyIdentitySignature,
   verifyIdentityStatement,
 } from '../src/portfolio/proofs';
+import { identityStatementText } from '../src/portfolio/identity-accounts';
 import {
   canonicalRssAuthorization,
   rssDigest,

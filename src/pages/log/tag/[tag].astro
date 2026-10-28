@@ -8,7 +8,7 @@ import { logStyles } from '../../../styles/log';
 import { logTags, logTagIndexable } from '../../../portfolio/log-tags';
 import { logTagDefinitions } from '../../../portfolio/log';
 import { logTagUrl } from '../../../portfolio/log-tags';
-import { getLogSignatures } from '../../../portfolio/verified-proofs';
+import { getLogSignatures } from '../../../portfolio/verified-signatures';
 export function getStaticPaths() {
   return Object.keys(logTagDefinitions).map((tag) => ({ params: { tag } }));
 }

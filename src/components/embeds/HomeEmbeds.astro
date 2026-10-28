@@ -19,7 +19,7 @@ const messages = {
 ---
 
 {embeds.length > 0 && (
-  <div {...stylex.attrs(styles.grid)}>
+  <>
     {embeds
       .filter((embed) => embed.id !== 'spotify')
       .map((embed) => (
@@ -30,6 +30,7 @@ const messages = {
             (embed.id === 'x' || embed.id === 'github') &&
               styles.activitySection,
           )}
+          data-nosnippet
           aria-labelledby={`embed-${embed.id}`}
         >
           <header {...stylex.attrs(styles.header)}>
@@ -104,5 +105,5 @@ const messages = {
         </section>
       ))}
     {spotifyEmbed && <SpotifyEmbed embed={spotifyEmbed} />}
-  </div>
+  </>
 )}

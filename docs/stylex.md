@@ -16,7 +16,7 @@ These links are the upstream authority. Recheck them when upgrading; this docume
 
 ## Build and authoring
 
-`astro.config.ts` registers `stylex.vite({ useCSSLayers: false, runtimeInjection: false, lightningcssOptions: { minify: true } })`. Production CSS below 40 KiB is inlined to avoid a render-blocking request; larger stylesheets remain external. StyleX definitions live in `src/styles/*.ts`, where the compiler can process them. Keep compiler-only APIs (`stylex.create()`, `stylex.defaultMarker()`, `stylex.when.*` and theme definitions) in these TypeScript modules, exporting markers for templates as needed. Do not call them in `.astro` frontmatter: the plugin's JavaScript/TypeScript transform does not process Astro source files directly.
+`astro.config.ts` registers `stylex.vite({ useCSSLayers: false, runtimeInjection: false, lightningcssOptions: { minify: true } })`. The bounded shared production CSS is inlined with Astro’s `build.inlineStylesheets: 'always'` to avoid a render-blocking request. The opening-performance browser gate enforces a 48 KiB budget; future growth requires splitting styles rather than silently increasing that limit. StyleX definitions live in `src/styles/*.ts`, where the compiler can process them. Keep compiler-only APIs (`stylex.create()`, `stylex.defaultMarker()`, `stylex.when.*` and theme definitions) in these TypeScript modules, exporting markers for templates as needed. Do not call them in `.astro` frontmatter: the plugin's JavaScript/TypeScript transform does not process Astro source files directly.
 
 Import definitions and the runtime in frontmatter, then spread HTML attributes:
 

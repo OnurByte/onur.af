@@ -1,7 +1,7 @@
 import pages from '../content/public-pages.json' with { type: 'json' };
 import { logEntries, logProofUrl, logUrl, logMetadata } from './log';
 
-export const socialImageVersion = '7';
+const socialImageVersion = '8';
 
 const identityPreviews = [
   {
@@ -45,39 +45,56 @@ const truncateDescription = (value: string) => {
     : `${characters.slice(0, 159).join('')}…`;
 };
 
-function logPreview(entry: (typeof logEntries)[number], verified = false) {
+function logPreview(
+  entry: (typeof logEntries)[number],
+  verified = false,
+  version = entry.revisions.at(-1)?.version,
+) {
+  if (!entry.revisions.some((revision) => revision.version === version)) return;
+  const metadata = logMetadata(entry, version);
   return {
     id: verified ? logProofUrl(entry) : logUrl(entry),
     key: `${verified ? 'verified' : 'log'}-${entry.id}`,
-    title: verified
-      ? `${logMetadata(entry).title} ⁜ Verified`
-      : logMetadata(entry).title,
+    title: verified ? `${metadata.title} ⁜ Verified` : metadata.title,
+    revision: version,
     description: truncateDescription(
       verified
-        ? `PGP-verified Log revision. ${logMetadata(entry).summary}`
-        : logMetadata(entry).summary,
+        ? `PGP-verified Log revision ${String(version)}. ${metadata.summary}`
+        : metadata.summary,
     ),
   };
 }
 
-export function publicPreview(pathname: string) {
+export function publicPreview(pathname: string, version?: number) {
   const page = previewPages.find((page) => page.id === pathname);
   if (page) return page;
   const entry = logEntries.find((entry) => logUrl(entry) === pathname);
-  if (entry) return logPreview(entry);
+  if (entry) return logPreview(entry, false, version);
   const verifiedEntry = logEntries.find(
     (entry) => logProofUrl(entry) === pathname,
   );
-  return verifiedEntry ? logPreview(verifiedEntry, true) : undefined;
+  return verifiedEntry ? logPreview(verifiedEntry, true, version) : undefined;
 }
 
-export function publicPreviewByKey(key: string) {
+export function publicPreviewByKey(key: string, version?: number) {
   const page = previewPages.find((page) => page.key === key);
   if (page) return page;
   const entry = logEntries.find((entry) => `log-${entry.id}` === key);
-  if (entry) return logPreview(entry);
+  if (entry) return logPreview(entry, false, version);
   const verifiedEntry = logEntries.find(
     (entry) => `verified-${entry.id}` === key,
   );
-  return verifiedEntry ? logPreview(verifiedEntry, true) : undefined;
+  return verifiedEntry ? logPreview(verifiedEntry, true, version) : undefined;
+}
+
+/** The visible home motto can vary; crawler-facing preview identity stays stable. */
+export function socialPreviewUrl(
+  origin: string,
+  preview: NonNullable<ReturnType<typeof publicPreview>>,
+) {
+  const url = new URL(`/social/${preview.key}.png`, origin);
+  url.searchParams.set('v', socialImageVersion);
+  if ('revision' in preview)
+    url.searchParams.set('r', String(preview.revision));
+  return url.href;
 }

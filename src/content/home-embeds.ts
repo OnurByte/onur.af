@@ -21,3 +21,18 @@ export const homeEmbedSources = [
   ...createHomeEmbedSources(undefined, undefined, { cache }),
   spotifySource,
 ];
+
+/** No upstream fetch in the document response; independently bounded snapshot reads only. */
+export async function homeEmbedFallbacks() {
+  const { readEmbedFallback } = await import('../portfolio/embed-fallback');
+  return Promise.all(
+    homeEmbedSources.map((source) => {
+      const { id, title, href } = source;
+      if (id !== 'x' && id !== 'github' && id !== 'spotify')
+        throw new Error('Unknown home source');
+      return readEmbedFallback({ id, title, href, source: source.source }, () =>
+        cache.read(id),
+      );
+    }),
+  );
+}

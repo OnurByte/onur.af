@@ -4,9 +4,9 @@ import { styles } from '../styles/pages';
 import { logStyles } from '../styles/log';
 import AccountLink from './AccountLink.astro';
 import ProofBadge from './ProofBadge.astro';
-import { identityAccounts } from '../portfolio/proofs';
+import { identityAccounts } from '../portfolio/identity-accounts';
 import { listedLogEntries, logProofUrl, logMetadata } from '../portfolio/log';
-import { getLogSignatures } from '../portfolio/verified-proofs';
+import { getLogSignatures } from '../portfolio/verified-signatures';
 const signatures = await getLogSignatures();
 ---
 

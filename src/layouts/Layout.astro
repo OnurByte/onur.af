@@ -5,13 +5,9 @@ import { scrollProfileForPath } from '../portfolio/scroll';
 import { shell } from '../styles/shell';
 import { edge } from '../styles/edge';
 import '../styles/global.css';
-import { identityAccounts } from '../portfolio/proofs';
+import { identityAccounts } from '../portfolio/identity-accounts';
 import { portfolioLinks } from '../portfolio/links';
-import {
-  mottos,
-  publicPreview,
-  socialImageVersion,
-} from '../portfolio/previews';
+import { mottos, publicPreview, socialPreviewUrl } from '../portfolio/previews';
 import Brand from '../components/Brand.astro';
 import Search from '../components/Search.astro';
 import ScrollRail from '../components/ScrollRail.astro';
@@ -24,47 +20,56 @@ import {
   siteDescription,
   siteOrigin,
   robotsContent,
+  robotsMetaContent,
+  isIndexableRobots,
+  homePageSchema,
 } from '../portfolio/seo';
 interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
-  motto?: string;
   language?: string;
+  previewRevision?: number;
   article?: { publishedAt: string; modifiedAt: string; tags: string[] };
   structuredData?: object | undefined;
 }
 const {
   title = 'Onur',
   description: suppliedDescription,
-  motto = mottos[0],
   noindex = false,
   language = 'en',
   article,
   structuredData,
+  previewRevision,
 } = Astro.props;
 const links = portfolioLinks();
 const origin = siteOrigin(Astro.site);
-const preview = publicPreview(Astro.url.pathname);
+const preview = publicPreview(Astro.url.pathname, previewRevision);
 const description =
   suppliedDescription ?? preview?.description ?? siteDescription;
 const canonical = canonicalUrl(origin, Astro.url.pathname);
-const robots = robotsContent(Astro.url.pathname, {
-  noindex: noindex || process.env['VERCEL_ENV'] === 'preview',
-  status: Astro.response.status ?? 200,
-});
-const indexable = robots === 'index, follow' && Boolean(canonical);
+const robots = robotsMetaContent(
+  robotsContent(Astro.url.pathname, {
+    noindex: noindex || process.env['VERCEL_ENV'] === 'preview',
+    status: Astro.response.status ?? 200,
+  }),
+);
+const indexable = isIndexableRobots(robots) && Boolean(canonical);
 const socialImage =
-  indexable && preview
-    ? `${origin}/social/${preview.key}.png?v=${socialImageVersion}&m=${mottos.indexOf(motto as (typeof mottos)[number])}`
+  indexable && origin && preview
+    ? socialPreviewUrl(origin, preview)
     : undefined;
+const shareUrl =
+  canonical && previewRevision
+    ? `${canonical}?v=${String(previewRevision)}`
+    : canonical;
 const imageAlt =
   preview?.key === 'home'
-    ? motto
+    ? mottos[0]
     : [preview?.title ?? title, description].filter(Boolean).join(' ⁜ ');
 const oembedUrl =
-  indexable && preview && canonical
-    ? `${origin}/oembed.json?url=${encodeURIComponent(canonical)}&format=json`
+  indexable && preview && shareUrl
+    ? `${origin}/oembed.json?url=${encodeURIComponent(shareUrl)}&format=json`
     : undefined;
 const iconUrl = origin ? `${origin}/brand/icon.png` : '/brand/icon.png';
 const discordEmbed =
@@ -81,7 +86,7 @@ const discordEmbed =
             {
               type: 1,
               components: [
-                { type: 2, style: 5, label: 'Open page', url: canonical },
+                { type: 2, style: 5, label: 'Open page', url: shareUrl },
                 { type: 2, style: 5, label: 'PGP', url: `${origin}/pgp` },
                 { type: 2, style: 5, label: 'RSS', url: `${origin}/rss` },
                 {
@@ -96,31 +101,7 @@ const discordEmbed =
         },
       }
     : undefined;
-const schema =
-  indexable && Astro.url.pathname === '/'
-    ? {
-        '@context': 'https://schema.org',
-        '@graph': [
-          {
-            '@type': 'WebSite',
-            '@id': `${origin}/#website`,
-            url: `${origin}/`,
-            name: 'Onur',
-            ...(description ? { description } : {}),
-            publisher: { '@id': `${origin}/#person` },
-          },
-          {
-            '@type': 'Person',
-            '@id': `${origin}/#person`,
-            name: 'Onur',
-            url: `${origin}/`,
-            sameAs: Object.values(identityAccounts).map(
-              (account) => account.profile,
-            ),
-          },
-        ],
-      }
-    : undefined;
+const schema = Astro.url.pathname === '/' ? homePageSchema(origin) : undefined;
 ---
 
 <!doctype html>
@@ -131,6 +112,7 @@ const schema =
   data-scroll-profile={scrollProfileForPath(Astro.url.pathname)}
 >
   <head>
+    <link rel="preload" as="image" href="/brand/onur.svg" />
     {process.env['PORTFOLIO_VITALS_ENABLED'] === '1' && (
       <meta name="portfolio-vitals" content="enabled" />
     )}
@@ -162,6 +144,7 @@ const schema =
       <>
         <meta property="article:published_time" content={article.publishedAt} />
         <meta property="article:modified_time" content={article.modifiedAt} />
+        {origin && <meta property="article:author" content={`${origin}/`} />}
         {article.tags.map((tag) => (
           <meta property="article:tag" content={tag} />
         ))}
@@ -180,7 +163,7 @@ const schema =
             : language.replace('-', '_')
       }
     />
-    {indexable && <meta property="og:url" content={canonical} />}
+    {indexable && <meta property="og:url" content={shareUrl} />}
     {socialImage && (
       <>
         <meta property="og:image" content={socialImage} />

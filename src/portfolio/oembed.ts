@@ -27,11 +27,22 @@ export function oembedResponse(
     target.origin !== origin ||
     target.username ||
     target.password ||
-    target.search ||
     target.hash
   )
     return error(404);
-  const preview = publicPreview(target.pathname);
+  const revisions = target.searchParams.getAll('v');
+  const revision =
+    revisions.length === 1 && /^[1-9][0-9]*$/.test(revisions[0] ?? '')
+      ? Number(revisions[0])
+      : undefined;
+  if (
+    target.search &&
+    (revision === undefined ||
+      !target.pathname.endsWith('/verified') ||
+      [...target.searchParams.keys()].some((key) => key !== 'v'))
+  )
+    return error(404);
+  const preview = publicPreview(target.pathname, revision);
   if (!preview) return error(404);
 
   const limits = ['maxwidth', 'maxheight'].map((key) => {
