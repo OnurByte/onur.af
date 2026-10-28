@@ -95,7 +95,7 @@ test.skipIf(!enabled)(
       expect(css).toMatch(/min-height:\s*100svh/);
       expect(css).toContain(':checked');
       expect(css).toMatch(/prefers-color-scheme:\s*dark/);
-      for (const icon of home.matchAll(/<img[^>]*data-icon[^>]*>/g)) {
+      for (const icon of home.matchAll(/<span[^>]*data-icon[^>]*>/g)) {
         expect(icon[0].match(/\bclass="/g)?.length).toBe(1);
       }
 
@@ -106,9 +106,11 @@ test.skipIf(!enabled)(
           'To think is an act of choice.',
         ].some((motto) => home.match(/<h1\b[^>]*>(.*?)<\/h1>/s)?.[1] === motto),
       ).toBe(true);
-      expect(home).toContain('src="/brand/onur.svg"');
+      expect(home).toContain('--icon-source: url(&quot;/brand/onur.svg&quot;)');
       for (const name of ['tor', 'i2p', 'rss']) {
-        expect(home).toContain(`src="/brand/${name}.svg"`);
+        expect(home).toContain(
+          `--icon-source: url(&quot;/brand/${name}.svg&quot;)`,
+        );
         const asset = await fetch(`${origin}/brand/${name}.svg`);
         expect(asset.ok).toBe(true);
         expect(await asset.text()).toContain('<svg');
@@ -116,10 +118,14 @@ test.skipIf(!enabled)(
       const inlineSvgs = [...home.matchAll(/<svg\b[^>]*>/g)];
       expect(inlineSvgs.length).toBeGreaterThan(0);
       expect(
-        inlineSvgs.every((svg) => svg[0].includes('class="log-sigil"')),
+        inlineSvgs.every(
+          (svg) =>
+            svg[0].includes('class="log-sigil"') ||
+            svg[0].includes('data-selection-layer'),
+        ),
       ).toBe(true);
       expect([
-        ...home.matchAll(/<img[^>]*data-icon="(?:onur|rss|tor|i2p)"/g),
+        ...home.matchAll(/<span[^>]*data-icon="(?:onur|rss|tor|i2p)"/g),
       ]).toHaveLength(4);
       expect(home).toContain('aria-label="Onur home"');
       const discord = JSON.parse(
@@ -258,7 +264,7 @@ test.skipIf(!enabled)(
       expect(html).toContain('Partial payment received');
       expect(html).not.toContain('Stirner');
       expect(html).toContain('recipient_name=Onur');
-      expect(html).toContain('src="/brand/onur.svg"');
+      expect(html).toContain('--icon-source: url(&quot;/brand/onur.svg&quot;)');
       expect(html).toContain('href="/" aria-label="Onur home"');
       expect(html).toContain('aria-label="I2P"');
       expect(html).toContain('aria-label="Alternate sites and contact"');

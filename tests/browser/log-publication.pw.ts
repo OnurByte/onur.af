@@ -250,6 +250,7 @@ $$
     await writeFile(
       join(directory, 'src/content/home-embeds.ts'),
       `
+      export const homeEmbedFallbacks = async () => homeEmbedSources.map(({ id, title, source, href }) => ({ id, title, source, href, status: 'empty', items: [] }));
       export const spotifySource = { id: 'spotify', title: 'Listening', source: 'Spotify', href: 'https://open.spotify.com', load: async () => ({ status: 'empty', items: [] }) };
       export const homeEmbedSources = ${JSON.stringify(claims.map((claim) => ({ id: claim.id, title: claim.id === 'x' ? 'Tweets' : 'Repositories', source: claim.id === 'x' ? '@onurstirner' : 'onurbyte', href: claim.profile })))}.map(source => ({ ...source, load: async () => ({ status: 'empty', items: [] }) }));
     `,
@@ -641,7 +642,7 @@ $$
     ).toHaveValue(artifacts['silent-lodge-convenes-v2']!.signature);
     await page.getByRole('link', { name: 'v1', exact: true }).click();
     await expect(page).toHaveURL(
-      `${origin}/log/silent-lodge-convenes/verified?v=1`,
+      `${origin}/log/silent-lodge-convenes/verified?v=1#publication-evidence`,
     );
     await expect(
       page.getByRole('textbox', { name: 'PGP signature' }),
