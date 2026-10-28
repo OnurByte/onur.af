@@ -3,7 +3,7 @@
 The site uses one restrained, monochrome design implemented with StyleX. The official Vite plugin compiles TypeScript style definitions into atomic CSS. Astro templates apply these definitions with `stylex.attrs()`. Global CSS owns only the reset, inherited system color tokens, keyboard focus, reduced motion and injected QR SVG defaults. See [StyleX](stylex.md) for setup and authoring rules.
 
 - Utility pages (RSS, Donate, PGP): one plain `h1`, followed by a short introduction in the prose-width container, then the controls or empty state. Use the common main alignment.
-- Typeface: Helvetica Neue, Helvetica, Arial. Body: 16 px, line height 1.6. Machine addresses use monospace for readability.
+- Typeface: Helvetica Neue, Helvetica, Arial. Body: 16 px, line height 1.7; Log reading text uses 1.8. Machine addresses use monospace for readability.
 - Theme: system preference, white/black backgrounds. No theme selector. Shadows and gradients are limited to the documented shared edge, navigation and icon materials. The brand stays monochrome.
 - Corners: 12 px on cards and dialogs through `--radius-card`; 8 px on buttons, inputs, amount choices and status labels through `--radius-control`; Connect uses the shared 8 px control radius.
 - Borders: 1 px for controls and separators. Keyboard focus: 2 px outline, 3 px offset.

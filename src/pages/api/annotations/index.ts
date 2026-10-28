@@ -1,3 +1,7 @@
+import {
+  readRequestBody,
+  RequestBodyTooLarge,
+} from '../../../server/request-body';
 import { requestLimitKey, takeRateLimit } from '../../../server/request-limits';
 import type { APIRoute } from 'astro';
 import { createHash } from 'node:crypto';
@@ -62,26 +66,14 @@ export const POST: APIRoute = async ({ request, url, clientAddress }) => {
       ))
     )
       return jsonResponse({ error: 'Annotation rate limit' }, 429);
-    const reader = request.body?.getReader();
-    if (!reader) return jsonResponse({ error: 'Invalid request' }, 400);
-    let size = 0;
-    const chunks: Uint8Array[] = [];
-    for (;;) {
-      const p = await reader.read();
-      if (p.done) break;
-      size += p.value.length;
-      if (size > 512_000) {
-        await reader.cancel();
-        return jsonResponse({ error: 'Request too large' }, 413);
-      }
-      chunks.push(p.value);
-    }
+    const bytes = await readRequestBody(request, 512_000);
+    if (bytes === null) return jsonResponse({ error: 'Invalid request' }, 400);
     const body = z
       .object({
         payload: annotationSchema,
         signature: z.string().max(256),
       })
-      .parse(JSON.parse(Buffer.concat(chunks).toString('utf8')));
+      .parse(JSON.parse(Buffer.from(bytes).toString('utf8')));
     if (!verifyAnnotation(body.payload, body.signature))
       return jsonResponse({ error: 'Invalid annotation signature' }, 400);
     const p = body.payload;
@@ -114,7 +106,9 @@ export const POST: APIRoute = async ({ request, url, clientAddress }) => {
       },
       201,
     );
-  } catch {
+  } catch (error) {
+    if (error instanceof RequestBodyTooLarge)
+      return jsonResponse({ error: 'Request too large' }, 413);
     return jsonResponse({ error: 'Annotation unavailable or invalid' }, 400);
   }
 };

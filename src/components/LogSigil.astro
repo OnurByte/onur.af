@@ -1,18 +1,15 @@
 ---
+import * as stylex from '@stylexjs/stylex';
+import { logContent } from '../styles/log-content';
 import { logSigilSvg } from '../portfolio/log-sigil-svg';
 const { id } = Astro.props;
 ---
 
-<div class="log-sigil" set:html={logSigilSvg(id)} />
-<style>
-  .log-sigil {
-    display: block;
-    width: 100%;
-    opacity: 0.86;
-  }
-  .log-sigil :global(svg) {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-</style>
+<div
+  class:list={['log-sigil', stylex.attrs(logContent.sigil).class]}
+  set:html={logSigilSvg(
+    id,
+    'currentColor',
+    `log-sigil ${stylex.attrs(logContent.sigilImage).class}`,
+  )}
+/>

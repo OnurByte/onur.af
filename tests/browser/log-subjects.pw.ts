@@ -12,10 +12,10 @@ for (const colorScheme of ['light', 'dark'] as const) {
       exact: true,
     });
     await expect(
-      subjects.getByRole('link', { name: '#Development', exact: true }),
+      subjects.getByRole('link', { name: '⟐ Development', exact: true }),
     ).toHaveAttribute('rel', 'tag');
     await subjects
-      .getByRole('link', { name: '#Development', exact: true })
+      .getByRole('link', { name: '⟐ Development', exact: true })
       .click();
     await expect(
       page.getByRole('heading', { name: 'Development', exact: true }),

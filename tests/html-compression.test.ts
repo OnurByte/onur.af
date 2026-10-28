@@ -64,6 +64,7 @@ test('flushes primary HTML before a slow activity section completes', async () =
 });
 
 test('a failed HTML producer rejects the response instead of escaping as a process error', async () => {
+  const observed: Error[] = [];
   const body = new ReadableStream<Uint8Array>({
     pull(controller) {
       controller.error(new Error('HTML producer failed'));
@@ -72,6 +73,12 @@ test('a failed HTML producer rejects the response instead of escaping as a proce
   const response = compressHtml(
     request('gzip'),
     new Response(body, { headers: { 'Content-Type': 'text/html' } }),
+    (error) => {
+      observed.push(error);
+    },
   );
   await expect(response.arrayBuffer()).rejects.toThrow('HTML producer failed');
+  expect(observed.map((error) => error.message)).toEqual([
+    'HTML producer failed',
+  ]);
 });

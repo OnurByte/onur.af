@@ -1,5 +1,6 @@
 ---
-import '../styles/log-content.css';
+import { logContent } from '../styles/log-content';
+import { presentLogContent } from '../portfolio/log-presentation';
 import Annotations from './Annotations.astro';
 import { getLogSignatures } from '../portfolio/verified-signatures';
 import LogSources from './LogSources.astro';
@@ -28,7 +29,7 @@ const coverImage = metadata.cover ? images[metadata.cover.src] : undefined;
 ---
 
 {metadata.cover && (
-  <figure class="log-cover">
+  <figure class:list={['log-cover', stylex.attrs(logContent.cover).class]}>
     <img
       src={coverImage?.src ?? metadata.cover.src}
       srcset={coverImage?.srcset}
@@ -40,7 +41,9 @@ const coverImage = metadata.cover ? images[metadata.cover.src] : undefined;
       loading={archived ? 'lazy' : 'eager'}
     />
     {metadata.cover.caption && (
-      <figcaption>{metadata.cover.caption}</figcaption>
+      <figcaption {...stylex.attrs(logContent.caption)}>
+        {metadata.cover.caption}
+      </figcaption>
     )}
   </figure>
 )}
@@ -51,8 +54,12 @@ const coverImage = metadata.cover ? images[metadata.cover.src] : undefined;
   data-scroll-headings={archived ? undefined : ''}
   data-scroll-archive={archived ? '' : undefined}
   lang={metadata.language}
-  class:list={['log-body', !archived && 'e-content']}
-  set:html={applyLogImages(content.html, images)}
+  class:list={[
+    'log-body',
+    !archived && 'e-content',
+    stylex.attrs(logContent.body).class,
+  ]}
+  set:html={presentLogContent(applyLogImages(content.html, images))}
 />
 {revisionSignature && (
   <Annotations
@@ -67,10 +74,17 @@ const coverImage = metadata.cover ? images[metadata.cover.src] : undefined;
   prefix={archived ? `${entry.id}-v${version}-` : ''}
 />
 <template data-log-code-copy>
-  <div class="log-code-block">
-    <div {...stylex.attrs(styles.keyActions)}>
+  <div
+    class:list={['log-code-block', stylex.attrs(logContent.codeBlock).class]}
+  >
+    <div {...stylex.attrs(styles.keyActions, logContent.codeActions)}>
       <button
-        {...stylex.attrs(styles.button, styles.secondary, styles.compactAction)}
+        {...stylex.attrs(
+          styles.button,
+          styles.secondary,
+          styles.compactAction,
+          logContent.copyButton,
+        )}
         type="button"
       >
         Copy

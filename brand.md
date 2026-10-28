@@ -70,7 +70,7 @@ Renkleri sayfa bazında yeniden icat etme. Dekoratif vurgu rengi ve parıltı ku
 
 ### Tipografi
 
-Ana yazı ailesi `Helvetica Neue`, ardından `Helvetica`, `Arial` ve sistem sans-serif fallback'idir. Gövde metni 16 px, satır yüksekliği 1.6'dır. Başlıklar yalın, normal ağırlıkta ve belirgin hiyerarşiye sahiptir; aşırı büyük pazarlama başlıkları kullanılmaz.
+Ana yazı ailesi `Helvetica Neue`, ardından `Helvetica`, `Arial` ve sistem sans-serif fallback'idir. Gövde metni 16 px, genel satır yüksekliği 1.7, Log okuma metninde 1.8'dir. Başlıklar yalın, normal ağırlıkta ve belirgin hiyerarşiye sahiptir; aşırı büyük pazarlama başlıkları kullanılmaz.
 
 PGP anahtarı, parmak izi ve ödeme adresi gibi makine verileri monospace ile gösterilir. Bu bilgiler rahat seçilebilir ve kopyalanabilir olmalıdır. Sosyal paylaşım kartlarının sunucu tarafındaki üretimi, mevcut paketlenmiş Liberation Sans fontlarını kullanır.
 

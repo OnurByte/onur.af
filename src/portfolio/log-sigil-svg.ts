@@ -2,6 +2,7 @@ import { logSigilGeometry } from './log-sigil';
 export function logSigilSvg(
   id: string,
   color: 'currentColor' | '#fff' = 'currentColor',
+  classes = 'log-sigil',
 ) {
   const geometry = logSigilGeometry(id);
   const point = (angle: number, radius: number) => {
@@ -32,7 +33,7 @@ export function logSigilSvg(
     '',
   ][geometry.centerMark]!;
   return `<svg
-  class="log-sigil"
+  class="${classes.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;')}"
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 160 160"
   fill="none"

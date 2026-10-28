@@ -1,7 +1,7 @@
 import { expect, test } from 'bun:test';
 import { z } from 'astro/zod';
 import { existsSync } from 'node:fs';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fromHtml } from 'hast-util-from-html';
@@ -59,6 +59,8 @@ test.skipIf(!existsSync('dist/server/entry.mjs'))(
         PORT: '0',
         SITE_URL: origin,
         PORTFOLIO_EMBED_CACHE_DIR: directory,
+        PORTFOLIO_DEBUG_ENABLED: '1',
+        PORTFOLIO_DEBUG_FILE: join(directory, 'debug.log'),
         VERCEL: '',
         VERCEL_ENV: '',
         WITNESS_ENABLED: '0',
@@ -135,6 +137,20 @@ test.skipIf(!existsSync('dist/server/entry.mjs'))(
       );
       expect(unlisted.meta.get('robots')).toEqual(['noindex, follow']);
       expect(unlisted.schemas).toEqual([]);
+      const redirect = await fetch(
+        `${address}/log/cryptic-watchtower-watches/?token=fixture-private-token`,
+        { redirect: 'manual' },
+      );
+      expect(redirect.status).toBe(308);
+      const missing = await fetch(
+        `${address}/fixture-private-path?token=fixture-private-token`,
+      );
+      expect(missing.status).toBe(404);
+      const diagnostics = await readFile(join(directory, 'debug.log'), 'utf8');
+      expect(diagnostics).toContain('http.redirect');
+      expect(diagnostics).toContain('http.response');
+      expect(diagnostics).not.toContain('fixture-private-token');
+      expect(diagnostics).not.toContain('fixture-private-path');
     } finally {
       clearTimeout(timer);
       child.kill();
