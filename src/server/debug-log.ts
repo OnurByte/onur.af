@@ -1,4 +1,5 @@
-import { appendFile, mkdir, rename, stat } from 'node:fs/promises';
+import { mkdir, open } from 'node:fs/promises';
+import { constants } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -138,19 +139,53 @@ export function createDebugLogger({
     pending = pending
       .then(async () => {
         await mkdir(dirname(file), { recursive: true, mode: 0o700 });
-        let size = 0;
+        // Stat, rotation and append target the same descriptor, not a re-opened path.
+        const active = await open(
+          file,
+          constants.O_RDWR |
+            constants.O_APPEND |
+            constants.O_CREAT |
+            constants.O_NOFOLLOW,
+          0o600,
+        );
         try {
-          size = (await stat(file)).size;
-        } catch (error) {
-          if (!(
-            error instanceof Error &&
-            'code' in error &&
-            error.code === 'ENOENT'
-          ))
-            throw error;
+          const info = await active.stat();
+          if (!info.isFile())
+            throw new Error('Debug destination is not a regular file');
+          if (info.size >= maxBytes) {
+            const previous = Buffer.alloc(
+              Math.min(info.size, maxBytes + 16_384),
+            );
+            let offset = 0;
+            while (offset < previous.length) {
+              const { bytesRead } = await active.read(
+                previous,
+                offset,
+                previous.length - offset,
+                offset,
+              );
+              if (bytesRead === 0) break;
+              offset += bytesRead;
+            }
+            const backup = await open(
+              `${file}.1`,
+              constants.O_WRONLY | constants.O_CREAT | constants.O_NOFOLLOW,
+              0o600,
+            );
+            try {
+              if (!(await backup.stat()).isFile())
+                throw new Error('Debug backup is not a regular file');
+              await backup.truncate(0);
+              await backup.writeFile(previous.subarray(0, offset));
+            } finally {
+              await backup.close();
+            }
+            await active.truncate(0);
+          }
+          await active.appendFile(`${line}\n`);
+        } finally {
+          await active.close();
         }
-        if (size >= maxBytes) await rename(file, `${file}.1`);
-        await appendFile(file, `${line}\n`, { mode: 0o600 });
       })
       .catch(warn)
       .finally(() => {

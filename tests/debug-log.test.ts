@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { createDebugLogger } from '../src/server/debug-log';
@@ -93,12 +93,13 @@ test.skipIf(process.platform === 'win32')(
     const file = join(directory, 'debug.log');
     let deadline: ReturnType<typeof setTimeout> | undefined;
     try {
-      const fifo = Bun.spawn(['mkfifo', file], {
+      await writeFile(file, 'Existing log entry.');
+      const fifo = Bun.spawn(['mkfifo', `${file}.1`], {
         stdout: 'ignore',
         stderr: 'ignore',
       });
       expect(await fifo.exited).toBe(0);
-      const log = createDebugLogger({ file });
+      const log = createDebugLogger({ file, maxBytes: 1 });
       const write = log({
         event: 'http.response',
         level: 'error',
@@ -118,7 +119,7 @@ test.skipIf(process.platform === 'win32')(
         expect(returned).toBe(true);
       } finally {
         // Drain the named pipe so the test leaves no blocked filesystem operation.
-        await readFile(file, 'utf8');
+        await readFile(`${file}.1`, 'utf8');
         await write;
       }
     } finally {
@@ -127,3 +128,38 @@ test.skipIf(process.platform === 'win32')(
     }
   },
 );
+
+for (const destination of ['active', 'backup'] as const) {
+  test.skipIf(process.platform === 'win32')(
+    `debug logging refuses a symlink at the ${destination} destination`,
+    async () => {
+      const directory = await mkdtemp(join(tmpdir(), 'onur-debug-symlink-'));
+      try {
+        const file = join(directory, 'debug.log');
+        const target = join(directory, 'unrelated.txt');
+        await writeFile(target, 'Unrelated private file.');
+        if (destination === 'active') await symlink(target, file);
+        else {
+          await writeFile(file, 'Existing log entry.');
+          await symlink(target, `${file}.1`);
+        }
+        const log = createDebugLogger({
+          file,
+          maxBytes: destination === 'active' ? 1024 : 1,
+        });
+        await log({
+          event: 'http.response',
+          level: 'error',
+          method: 'GET',
+          route: '/log/[id]',
+          status: 500,
+        });
+        expect(await readFile(target, 'utf8')).toBe('Unrelated private file.');
+        if (destination === 'backup')
+          expect(await readFile(file, 'utf8')).toBe('Existing log entry.');
+      } finally {
+        await rm(directory, { recursive: true, force: true });
+      }
+    },
+  );
+}

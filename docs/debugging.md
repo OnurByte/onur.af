@@ -44,8 +44,10 @@ bilerek genel hata cevabına dönüştürdüğü iç istisnayı geriye doğru ç
 
 ## Dosya sınırı ve ayarlar
 
-Dosya yaklaşık 1 MiB sınırında `debug.log.1` olarak döndürülür; önceki yedek
-üzerine yazılır. En çok güncel dosya ve bir önceki dosya saklanır. Yazmalar
+Dosya yaklaşık 1 MiB sınırında `debug.log.1` dosyasına yedeklenip aynı açık
+dosya üzerinden sıfırlanır; önceki yedek
+üzerine yazılır. Sembolik bağlantılar ve normal dosya olmayan hedefler
+reddedilir. En çok güncel dosya ve bir önceki dosya saklanır. Yazmalar
 aynı süreç içinde sıraya alınır; disk yavaşlarsa bekleyen kayıt sayısı 100 ile
 sınırlanır ve fazlası atılır. Kayıtlar tanı amaçlıdır, eksiksiz denetim defteri
 veya analitik değildir. Her istek dosya yazımı için en fazla 250 ms bekler; alttaki sınırlı yazma kuyruğu
