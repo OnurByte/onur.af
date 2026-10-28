@@ -31,6 +31,7 @@ const execute = promisify(execFile);
 
 test('signed Log renders revisions, feeds and exact independently verifiable downloads', async ({
   page,
+  browser,
 }) => {
   test.setTimeout(120000);
   const directory = await mkdtemp(join(tmpdir(), 'portfolio-log-browser-'));
@@ -493,6 +494,62 @@ $$
     await expect(page.getByText(/sec read/)).toBeVisible();
     await expect(page.locator('.e-content .katex')).toHaveCount(2);
     await expect(page.locator('.e-content math')).toHaveCount(2);
+    // Verify emitted StyleX rules on generated Markdown, not class names alone.
+    await expect(page.locator('.e-content')).toHaveCSS('line-height', '28.8px');
+    await expect(page.locator('.e-content h2').first()).toHaveCSS(
+      'font-size',
+      '24px',
+    );
+    await expect(page.locator('.e-content strong').first()).toHaveCSS(
+      'font-weight',
+      '700',
+    );
+    await expect(page.locator('.e-content table')).toHaveCSS(
+      'overflow-x',
+      'auto',
+    );
+    await expect(page.locator('.e-content th').first()).toHaveCSS(
+      'padding-left',
+      '12px',
+    );
+    await expect(page.locator('.e-content .math-display')).toHaveCSS(
+      'overflow-x',
+      'auto',
+    );
+    await expect(page.locator('.e-content [data-callout]')).toHaveCSS(
+      'padding-top',
+      '12px',
+    );
+    await expect(page.locator('.e-content .log-code-block')).toHaveCSS(
+      'display',
+      'grid',
+    );
+    await expect(page.locator('.e-content pre')).toHaveCSS('font-size', '14px');
+    await expect(page.locator('.e-content .log-code-block')).toHaveCSS(
+      'margin-top',
+      '16px',
+    );
+    await expect(page.locator('.e-content pre')).toHaveCSS('margin-top', '8px');
+    const withoutJs = await browser.newContext({ javaScriptEnabled: false });
+    try {
+      const readable = await withoutJs.newPage();
+      await readable.goto(`${origin}/log/silent-lodge-convenes`);
+      await expect(readable.locator('.e-content pre')).toHaveCSS(
+        'margin-top',
+        '16px',
+      );
+      await expect(readable.locator('.e-content .log-code-block')).toHaveCount(
+        0,
+      );
+    } finally {
+      await withoutJs.close();
+    }
+
+    await expect(page.locator('.log-cover figcaption')).toHaveCSS(
+      'font-size',
+      '14px',
+    );
+
     const bodyImage = page.locator('.e-content img');
     await expect(bodyImage).toHaveAttribute(
       'src',

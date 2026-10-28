@@ -207,23 +207,20 @@ export function initAnnotations(): void {
     }
     form.addEventListener('change', updateAction);
     const ownKey = `annotation-own:${required(root.dataset['log'])}`;
-    let own: AnnotationPayload[] = [];
-    try {
-      own = z
+    function readOwn(): AnnotationPayload[] {
+      return z
         .array(annotationSchema)
         .parse(JSON.parse(localStorage.getItem(ownKey) ?? '[]'));
-    } catch {
-      /* Reading public notes does not require local key storage. */
     }
+    let own: AnnotationPayload[] = [];
     function syncOwn(): void {
       try {
-        own = z
-          .array(annotationSchema)
-          .parse(JSON.parse(localStorage.getItem(ownKey) ?? '[]'));
+        own = readOwn();
       } catch {
         /* Invalid local metadata cannot grant ownership. */
       }
     }
+    syncOwn();
     window.addEventListener('annotation-owned-changed', syncOwn);
     window.addEventListener('storage', (event) => {
       if (event.key === ownKey) syncOwn();
@@ -384,9 +381,7 @@ export function initAnnotations(): void {
         if (!response.ok) throw new Error('Unavailable');
         if (!reporting) {
           if (pgp) localStorage.setItem('annotation-pgp-public-key', pgp);
-          const latest = z
-            .array(annotationSchema)
-            .parse(JSON.parse(localStorage.getItem(ownKey) ?? '[]'));
+          const latest = readOwn();
           own = mergeOwned(latest, [payload]);
           localStorage.setItem(ownKey, JSON.stringify(own));
           window.dispatchEvent(new Event('annotation-owned-changed'));

@@ -51,4 +51,10 @@ Inspect the built HTML and its linked CSS as well as development output: SSR cla
 
 Log article layout, headings, tags, source disclosures, history diffs and subject relationships use shared `src/styles/log-layout.ts`. Keep their presentation in StyleX. Stable semantic classes remain as microformat, browser-test and source-navigation hooks.
 
-`src/styles/log-content.css`, used by `LogRevision.astro`, retains global descendant selectors for sanitized/generated Markdown and KaTeX markup, whose nodes do not pass through Astro component templates. `LogSigil.astro` retains the small structural SVG descendant rule for generated deterministic artwork. These are documented producer-specific exceptions; do not use them as permission to add unrelated page layout CSS.
+`src/styles/log-content.ts` defines the generated Markdown presentation. The server-only
+`src/portfolio/log-presentation.ts` assigns its compiled classes to rendered HTML
+without changing the Markdown parser, authored text, source selectors or signed
+bytes. `LogRevision.astro` uses the same definitions for cover/copy controls;
+`LogSigil.astro` uses StyleX for its container and generated SVG. No Log-specific
+CSS file or component `<style>` block remains. Keep KaTeX's upstream stylesheet
+for mathematical typesetting and the shared global reset/theme infrastructure.

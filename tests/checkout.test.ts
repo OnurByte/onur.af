@@ -120,7 +120,7 @@ test.skipIf(!enabled)(
       expect(
         inlineSvgs.every(
           (svg) =>
-            svg[0].includes('class="log-sigil"') ||
+            /\bclass="log-sigil(?: |")/.test(svg[0]) ||
             svg[0].includes('data-selection-layer'),
         ),
       ).toBe(true);

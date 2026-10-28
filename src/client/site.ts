@@ -26,6 +26,12 @@ if (codeCopyTemplate) {
       if (!pre || !(wrapper instanceof HTMLElement)) return;
       const button = wrapper.querySelector<HTMLButtonElement>('button');
       if (!button) return;
+      wrapper.style.setProperty(
+        '--log-code-block-margin',
+        pre.parentElement?.matches('.log-body') && pre.previousElementSibling
+          ? '16px'
+          : '0px',
+      );
       pre.tabIndex = 0;
       code.id = `log-code-${String(index)}`;
       button.dataset['copy'] = code.id;

@@ -1,3 +1,4 @@
+import { readRequestBody } from '../../server/request-body';
 import { moneroConfiguration } from '../../donations/config';
 import { readyDonationSchema } from '../../donations/contracts';
 import type { APIRoute } from 'astro';
@@ -8,34 +9,6 @@ const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const AMOUNTS = new Set(['0.01', '0.05', '0.1', '0.25']);
 const MAX_BODY = 2048;
-
-async function readBoundedBody(request: Request): Promise<string> {
-  const reader = request.body?.getReader();
-  if (!reader) return '';
-  const chunks: Uint8Array[] = [];
-  let size = 0;
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      size += value.byteLength;
-      if (size > MAX_BODY) {
-        await reader.cancel();
-        throw new Error('form too large');
-      }
-      chunks.push(value);
-    }
-  } finally {
-    reader.releaseLock();
-  }
-  const body = new Uint8Array(size);
-  let offset = 0;
-  for (const chunk of chunks) {
-    body.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return new TextDecoder('utf-8', { fatal: true }).decode(body);
-}
 
 function retryUrl(
   id: string,
@@ -64,7 +37,10 @@ export const POST: APIRoute = async ({ request, redirect }) => {
       return new Response('Request too large.', { status: 413 });
     let data: URLSearchParams;
     try {
-      data = new URLSearchParams(await readBoundedBody(request));
+      const body = await readRequestBody(request, MAX_BODY);
+      data = new URLSearchParams(
+        new TextDecoder('utf-8', { fatal: true }).decode(body ?? undefined),
+      );
     } catch {
       return new Response('Invalid request.', { status: 400 });
     }

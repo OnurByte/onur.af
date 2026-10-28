@@ -1,3 +1,7 @@
+import {
+  readRequestBody,
+  RequestBodyTooLarge,
+} from '../../../server/request-body';
 import { required } from '../../../portfolio/required';
 import { requestLimitKey, takeRateLimit } from '../../../server/request-limits';
 import type { APIRoute } from 'astro';
@@ -23,22 +27,12 @@ export const POST: APIRoute = async ({ request, url, clientAddress }) => {
     return jsonResponse({ error: 'Request too large' }, 413);
   let input;
   try {
-    const reader = request.body?.getReader();
-    if (!reader) return jsonResponse({ error: 'Invalid request' }, 400);
-    let size = 0;
-    const chunks: Uint8Array[] = [];
-    for (;;) {
-      const part = await reader.read();
-      if (part.done) break;
-      size += part.value.length;
-      if (size > 4096) {
-        await reader.cancel();
-        return jsonResponse({ error: 'Request too large' }, 413);
-      }
-      chunks.push(part.value);
-    }
-    input = parseVisit(JSON.parse(Buffer.concat(chunks).toString('utf8')));
-  } catch {
+    const bytes = await readRequestBody(request, 4096);
+    if (bytes === null) return jsonResponse({ error: 'Invalid request' }, 400);
+    input = parseVisit(JSON.parse(Buffer.from(bytes).toString('utf8')));
+  } catch (error) {
+    if (error instanceof RequestBodyTooLarge)
+      return jsonResponse({ error: 'Request too large' }, 413);
     return jsonResponse({ error: 'Invalid visit' }, 400);
   }
   const entry = getLogEntryById(input.logId);

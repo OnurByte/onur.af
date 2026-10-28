@@ -7,7 +7,7 @@
 Create a new entry using a Markdown file. A cryptographically random generator combines a curated esoteric adjective, noun and grammatically suitable verb; it checks existing IDs for collisions:
 
 ```sh
-bun run log:new "A title" "Short summary" article.md
+bun run log:new "A title" "Short summary" article.md metadata.json
 ```
 
 The command writes an **unsigned** entry to `src/content/log.json`. Sign it locally before committing or deploying, otherwise the build intentionally fails. For reference, each entry follows this structure:

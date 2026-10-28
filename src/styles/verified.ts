@@ -63,7 +63,6 @@ export const verifiedStyles = stylex.create({
     gap: 8,
     maxWidth: 360,
   },
-  compactPeriod: { paddingInline: 8, minWidth: 0, textAlign: 'center' },
   selected: { backgroundColor: 'var(--surface)', borderColor: 'var(--text)' },
   periodContext: { fontSize: 14, color: 'var(--muted)', marginTop: 20 },
   detailMetrics: {
