@@ -4,8 +4,10 @@ import type { APIRoute } from 'astro';
 import { getLogEntryById, revisionMarkdown } from '../../portfolio/log';
 import {
   getLogSignatures,
-  getLogTimestampProofs,
   getLogPublications,
+} from '../../portfolio/verified-signatures';
+import {
+  getLogTimestampProofs,
   getLogProofs,
 } from '../../portfolio/verified-proofs';
 export const GET: APIRoute = async ({ params }) => {

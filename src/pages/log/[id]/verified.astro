@@ -15,8 +15,10 @@ import {
 } from '../../../portfolio/log';
 import {
   getLogPublications,
-  getLogProofs,
   getLogSignatures,
+} from '../../../portfolio/verified-signatures';
+import {
+  getLogProofs,
   getLogTimestampProofs,
 } from '../../../portfolio/verified-proofs';
 import { validateProofTimestamp } from '../../../portfolio/log-proof';
@@ -62,7 +64,9 @@ const revisionHref = (selected: number) => {
 
 <Layout
   title={`${metadata.title} ⁜ Verified ⁜ Onur`}
-  description="Verify this revision with a fingerprint you trust."
+  description={`Verify revision ${String(version)} of ${metadata.title} with PGP and a fingerprint you trust.`}
+  previewRevision={version}
+  language={metadata.language}
 >
   <main {...stylex.attrs(styles.main)}>
     <header {...stylex.attrs(verifiedStyles.header)}>

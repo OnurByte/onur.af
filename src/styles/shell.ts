@@ -142,12 +142,6 @@ export const shell = stylex.create({
     gap: 8,
   },
   unavailable: { cursor: 'default', color: 'var(--muted)' },
-  monochrome: {
-    filter: {
-      default: 'brightness(0)',
-      '@media (prefers-color-scheme: dark)': 'brightness(0) invert(1)',
-    },
-  },
   brand: {
     display: 'inline-flex',
     alignItems: 'center',

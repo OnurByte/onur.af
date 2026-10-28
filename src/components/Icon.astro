@@ -1,6 +1,7 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import { shell } from '../styles/shell';
+import { iconMaterial } from '../styles/icon-material';
 
 const icons = {
   techJavascript: { filename: 'javascript.svg', width: 24, height: 24 },
@@ -109,16 +110,15 @@ interface Props {
   size?: 'small';
 }
 const { name, size } = Astro.props;
-const { filename, width, height } = icons[name];
+const { filename } = icons[name];
+const source = `/brand/${filename}`;
+const deferred = name.startsWith('tech');
 ---
 
-<img
-  src={`/brand/${filename}`}
-  width={width}
-  height={height}
+<span
   {...stylex.attrs(
     shell.icon,
-    shell.monochrome,
+    iconMaterial.depth,
     (name.startsWith('tech') ||
       name.startsWith('share') ||
       name === 'connectMail' ||
@@ -146,6 +146,50 @@ const { filename, width, height } = icons[name];
     size === 'small' && shell.smallIcon,
   )}
   data-icon={name}
-  alt=""
+  style={deferred ? undefined : `--icon-source: url("${source}")`}
   aria-hidden="true"
-/>
+>
+  <span
+    {...stylex.attrs(iconMaterial.face)}
+    hidden={deferred}
+    data-icon-source={deferred ? source : undefined}
+  ></span>
+  {deferred && (
+    <noscript>
+      <span
+        {...stylex.attrs(iconMaterial.face)}
+        style={`--icon-source: url("${source}")`}
+      ></span>
+    </noscript>
+  )}
+</span>
+
+<script>
+  const reveal = (element: HTMLElement) => {
+    const source = element.dataset['iconSource'];
+    if (!source) return;
+    element.style.setProperty('--icon-source', `url("${source}")`);
+    element.hidden = false;
+  };
+  const icons = document.querySelectorAll<HTMLElement>('[data-icon-source]');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries)
+          if (entry.isIntersecting) {
+            const face =
+              entry.target.querySelector<HTMLElement>('[data-icon-source]');
+            if (face) reveal(face);
+            observer.unobserve(entry.target);
+          }
+      },
+      { rootMargin: '160px' },
+    );
+    for (const icon of icons) {
+      const parent = icon.parentElement;
+      if (parent) observer.observe(parent);
+    }
+  } else {
+    for (const icon of icons) reveal(icon);
+  }
+</script>

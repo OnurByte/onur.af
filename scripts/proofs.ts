@@ -22,13 +22,13 @@ import {
   identityProofs,
   identityStatement,
   canonicalIdentityStatement,
-  identityAccounts,
   verifyIdentitySignature,
   verifyIdentityStatement,
   verifyProofs,
   checkAccountProof,
   type IdentityClaim,
 } from '../src/portfolio/proofs';
+import { identityAccounts } from '../src/portfolio/identity-accounts';
 import {
   signXmlWithGpg as signWithGpg,
   clearSignWithGpg,

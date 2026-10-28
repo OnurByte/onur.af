@@ -11,7 +11,7 @@ import Technologies from '../components/Technologies.astro';
 import Connect from '../components/Connect.astro';
 import LogCard from '../components/LogCard.astro';
 import { listedLogEntries, logProofUrl } from '../portfolio/log';
-import { getLogSignatures } from '../portfolio/verified-proofs';
+import { getLogSignatures } from '../portfolio/verified-signatures';
 import ProofBadge from '../components/ProofBadge.astro';
 import { introduction, introductionEntry } from '../portfolio/introduction';
 import { mottos, nextMottoIndex, publicPreview } from '../portfolio/previews';
@@ -30,7 +30,7 @@ Astro.cookies.set('onur-motto', String(mottoIndex), {
 const motto = mottos[mottoIndex]!;
 ---
 
-<Layout title={publicPreview('/')!.title} motto={motto}>
+<Layout title={publicPreview('/')!.title}>
   <main {...stylex.attrs(styles.main)} aria-label="Portfolio">
     <h1 {...stylex.attrs(styles.heading)}>{motto}</h1>
     <section

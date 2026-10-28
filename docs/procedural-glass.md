@@ -38,3 +38,7 @@ The navbar's one-pixel outline uses `edge.ring`, derived from exactly the same c
 The result is an artistic single-surface optical approximation. It is not a physically complete or mathematically perfect reproduction of Apple Liquid Glass: it has no full environment reflection, multiple scattering or measured material calibration.
 
 See [the mathematical contract and derivations](glass-mathematical-contract.md) for the precise conditions, proofs and finite-precision limitations.
+
+## Opening performance
+
+Chromium generates displacement pixels and encodes the PNG in a Vite module Worker using OffscreenCanvas. The main thread only applies the resulting Blob URL and bounded lighting updates. Stale responses are discarded on resize, preference changes and bfcache suspension; restoration rebuilds the current geometry. Replaced Blob URLs are revoked. Other browser tiers skip displacement generation entirely and retain the CSS material. Worker errors retain readable native navigation.

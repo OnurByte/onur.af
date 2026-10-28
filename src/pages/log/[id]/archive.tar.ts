@@ -3,10 +3,8 @@ import { resolve } from 'node:path';
 import publicKey from '../../../../public/pgp.asc?raw';
 import { getLogEntryById, logEntries } from '../../../portfolio/log';
 import { buildLogBundle } from '../../../portfolio/log-bundle';
-import {
-  getLogSignatures,
-  getLogProofs,
-} from '../../../portfolio/verified-proofs';
+import { getLogSignatures } from '../../../portfolio/verified-signatures';
+import { getLogProofs } from '../../../portfolio/verified-proofs';
 import { readLogTimestampStore } from '../../../portfolio/log-timestamps';
 import { configuredKeyHistory } from '../../../portfolio/key-history';
 import publications from '../../../content/log-publications.json';

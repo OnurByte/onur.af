@@ -5,8 +5,8 @@ import {
   logProofUrl,
   logRevisionUrl,
 } from '../../portfolio/log';
+import { getLogSignatures } from '../../portfolio/verified-signatures';
 import {
-  getLogSignatures,
   getLogProofs,
   getLogTimestampProofs,
   getSignedIdentityStatement,

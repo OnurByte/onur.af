@@ -15,16 +15,8 @@ import {
   type KeyTrust,
 } from './key-history';
 
-export const identityAccounts = {
-  x: { label: '𝕏', profile: 'https://x.com/onurstirner', name: '@onurstirner' },
-  github: {
-    label: 'GitHub',
-    profile: 'https://github.com/onurbyte',
-    name: 'onurbyte',
-  },
-} as const;
+import { identityAccounts, identityStatementText } from './identity-accounts';
 
-export const identityStatementText = `I confirm that the X and GitHub accounts listed here are mine.\n${identityAccounts.x.profile}\n${identityAccounts.github.profile}\n`;
 function matchesCleartext(actual: string, expected: string) {
   const normalized = actual.replace(/\r\n/g, '\n');
   return normalized === expected || normalized === expected.replace(/\n$/, '');

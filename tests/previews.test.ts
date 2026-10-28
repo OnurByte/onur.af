@@ -104,3 +104,17 @@ test('motto selection excludes the previous motto and keeps both alternatives re
   for (const previous of [undefined, -1, 100, Number.NaN])
     expect(nextMottoIndex(previous, 0)).toBe(0);
 });
+
+test('historical proof previews use the requested revision and reject unknown revisions', () => {
+  const path = '/log/cryptic-watchtower-watches/verified';
+  expect(publicPreview(path, 1)?.title).toBe(
+    'Build something useful ⁜ Verified',
+  );
+  expect(publicPreview(path, 2)?.title).toBe(
+    'Become a massive value provider ⁜ Verified',
+  );
+  expect(publicPreview(path, 999)).toBeUndefined();
+  expect(publicPreviewByKey('verified-cryptic-watchtower-watches', 1)).toEqual(
+    publicPreview(path, 1),
+  );
+});

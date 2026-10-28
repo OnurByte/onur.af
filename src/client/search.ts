@@ -1,4 +1,3 @@
-import MiniSearch from 'minisearch';
 import { openDialog, closeDialog } from './dialogs';
 export {};
 const trigger = document.querySelector<HTMLButtonElement>('#open-search');
@@ -19,16 +18,24 @@ const entries = [...(results?.children ?? [])].map((item) => {
     node,
   };
 });
-const index = new MiniSearch({ idField: 'id', fields: ['text'] });
-index.addAll(entries.map(({ text }, id) => ({ id, text })));
-const rankedSearch = (query: string) =>
-  new Set(
-    index
-      .search(query, { prefix: true, combineWith: 'AND' })
-      .map(({ id }) => Number(id)),
-  );
+let rankedSearch: ((query: string) => Set<number>) | undefined;
+let engineTask: Promise<void> | undefined;
+function prepareEngine(): void {
+  engineTask ??= import('./search-engine')
+    .then(({ createRankedSearch }) => {
+      rankedSearch = createRankedSearch(entries.map(({ text }) => text));
+      if (dialog?.open) search();
+    })
+    .catch(() => {
+      // The local substring filter remains fully usable offline or on load failure.
+      engineTask = undefined;
+    });
+}
+trigger?.addEventListener('pointerenter', prepareEngine, { once: true });
+trigger?.addEventListener('focus', prepareEngine, { once: true });
 function open() {
   if (!dialog || !input) return;
+  prepareEngine();
   openDialog(dialog, trigger);
   input.focus();
   input.select();
@@ -112,7 +119,7 @@ function search() {
   if (!input || !status || !results) return;
   const terms = input.value.trim().slice(0, 200).toLowerCase().split(/\s+/);
   const query = input.value.trim().slice(0, 200);
-  const ranked = query ? rankedSearch(query) : undefined;
+  const ranked = query ? rankedSearch?.(query) : undefined;
   const matches = entries.filter(
     ({ text }, id) =>
       terms.every((term) => text.includes(term)) || (ranked?.has(id) ?? false),

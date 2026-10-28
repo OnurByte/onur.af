@@ -113,3 +113,30 @@ test('log and proof cards include the same seal on the right', async () => {
   }
   expect(seals[0]!.equals(seals[1]!)).toBe(true);
 });
+
+test('historical social cards bind their image bytes and cache entry to the revision', async () => {
+  const key = 'verified-cryptic-watchtower-watches';
+  const first = await socialImage(key, 0, 1);
+  expect(await socialImage(key, 0, 1)).toBe(first);
+  expect(await socialImage(key, 0, 2)).not.toEqual(first);
+  const response = await socialImageResponse(key, imageUrl('?r=1'));
+  expect(Buffer.from(await response.arrayBuffer()).equals(first)).toBe(true);
+  expect((await socialImageResponse(key, imageUrl('?r=999'))).status).toBe(404);
+  expect((await socialImageResponse('home', imageUrl('?r=1'))).status).toBe(
+    400,
+  );
+  expect((await socialImageResponse(key, imageUrl('?r=1&r=2'))).status).toBe(
+    400,
+  );
+});
+
+test('public share images are indexable while unlisted evidence images remain excluded', async () => {
+  expect(
+    (await socialImageResponse('home', imageUrl())).headers.get('X-Robots-Tag'),
+  ).toBeNull();
+  expect(
+    (
+      await socialImageResponse('log-obscure-archive-remembers', imageUrl())
+    ).headers.get('X-Robots-Tag'),
+  ).toBe('noindex');
+});

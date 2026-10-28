@@ -1,4 +1,5 @@
-import { createGlassField, glassMotion } from '../portfolio/glass-optics';
+import { glassMotion } from '../portfolio/glass-optics';
+import type { GlassMapRequest, GlassMapResponse } from './glass-worker';
 
 const refreshSurface = new WeakMap<HTMLElement, () => void>();
 
@@ -12,6 +13,11 @@ export function initGlassSurface(nav: HTMLElement, animated = false) {
   let opaque = matchMedia('(prefers-reduced-transparency: reduce)');
   let contrast = matchMedia('(prefers-contrast: more)');
   const chromium = /Chrome\//.test(navigator.userAgent);
+  const canGenerate =
+    chromium && 'Worker' in window && 'OffscreenCanvas' in window;
+  let worker: Worker | undefined;
+  let requestId = 0;
+  let mapUrl: string | undefined;
   const seed = crypto.getRandomValues(new Uint32Array(1))[0]!;
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
@@ -104,6 +110,7 @@ export function initGlassSurface(nav: HTMLElement, animated = false) {
     if (!nav) return;
     bounds = nav.getBoundingClientRect();
     if (blocked()) {
+      requestId++;
       nav.style.setProperty('--glass-optics', 'none');
       nav.style.setProperty('--glass-fill', 'var(--background)');
       nav.style.setProperty('--glass-reflection', '0');
@@ -113,7 +120,14 @@ export function initGlassSurface(nav: HTMLElement, animated = false) {
     }
     nav.style.removeProperty('--glass-fill');
     nav.style.removeProperty('--glass-reflection');
-    if (!chromium) nav.style.removeProperty('--glass-optics');
+    if (!canGenerate) {
+      requestId++;
+      nav.style.removeProperty('--glass-optics');
+      nav.dataset['glassState'] = 'reflective';
+      if (reduced.matches) cancel();
+      else resume();
+      return;
+    }
     const width = Math.round(bounds.width + (animated ? 24 : 0)),
       height = Math.round(bounds.height + (animated ? 8 : 0));
     if (width < 2 || width > 2048 || height < 2 || height > 2048) return;
@@ -124,37 +138,63 @@ export function initGlassSurface(nav: HTMLElement, animated = false) {
     );
     const key = `${width}:${height}:${resolution}`;
     if (key !== size) {
-      const field = createGlassField(
-        { width, height, radius: 12, resolution },
-        seed,
-      );
-      const canvas = document.createElement('canvas');
-      canvas.width = field.width;
-      canvas.height = field.height;
-      const context = canvas.getContext('2d');
-      if (!context) return;
-      const image = context.createImageData(field.width, field.height);
-      image.data.set(field.displacement);
-      context.putImageData(image, 0, 0);
-      map.setAttribute('href', canvas.toDataURL());
-      for (const element of [filter, map]) {
-        element.setAttribute('x', '0');
-        element.setAttribute('y', '0');
-        element.setAttribute('width', String(width));
-        element.setAttribute('height', String(height));
+      try {
+        if (!worker) {
+          worker = new Worker(new URL('./glass-worker.ts', import.meta.url), {
+            type: 'module',
+          });
+          worker.onmessage = (event: MessageEvent<GlassMapResponse>) => {
+            const result = event.data;
+            if (result.id !== requestId || blocked() || hidden) return;
+            if ('error' in result) {
+              nav.style.removeProperty('--glass-optics');
+              nav.dataset['glassState'] = 'reflective';
+              return;
+            }
+            const previousUrl = mapUrl;
+            mapUrl = URL.createObjectURL(result.blob);
+            map.setAttribute('href', mapUrl);
+            if (previousUrl) URL.revokeObjectURL(previousUrl);
+            for (const element of [filter, map]) {
+              element.setAttribute('x', '0');
+              element.setAttribute('y', '0');
+              element.setAttribute('width', String(result.width));
+              element.setAttribute('height', String(result.height));
+            }
+            nav.style.setProperty(
+              '--glass-optics',
+              `blur(6px) url("#${id}") grayscale(1)`,
+            );
+            nav.dataset['glassState'] = reduced.matches
+              ? 'static'
+              : 'refractive';
+          };
+          worker.onerror = () => {
+            nav.style.removeProperty('--glass-optics');
+            nav.dataset['glassState'] = 'reflective';
+            worker?.terminate();
+            worker = undefined;
+            size = '';
+          };
+        }
+        const message: GlassMapRequest = {
+          id: ++requestId,
+          geometry: { width, height, radius: 12, resolution },
+          seed,
+        };
+        worker.postMessage(message);
+        size = key;
+      } catch {
+        nav.style.removeProperty('--glass-optics');
+        nav.dataset['glassState'] = 'reflective';
       }
-      size = key;
-    }
-    if (chromium)
+    } else if (mapUrl) {
       nav.style.setProperty(
         '--glass-optics',
         `blur(6px) url("#${id}") grayscale(1)`,
       );
-    nav.dataset['glassState'] = reduced.matches
-      ? 'static'
-      : chromium
-        ? 'refractive'
-        : 'reflective';
+      nav.dataset['glassState'] = reduced.matches ? 'static' : 'refractive';
+    }
     if (reduced.matches) {
       cancel();
       displace.setAttribute('scale', '9');
@@ -183,13 +223,20 @@ export function initGlassSurface(nav: HTMLElement, animated = false) {
     if (document.hidden) cancel();
     else resume();
   });
-  window.addEventListener('pagehide', () => {
+  window.addEventListener('pagehide', (event) => {
     hidden = true;
+    // Invalidate any response arriving while this page is held in bfcache.
+    requestId++;
+    size = '';
     cancel();
+    if (!event.persisted) {
+      worker?.terminate();
+      if (mapUrl) URL.revokeObjectURL(mapUrl);
+    }
   });
   window.addEventListener('pageshow', () => {
     hidden = false;
-    resume();
+    rebuild();
   });
   refreshSurface.set(nav, rebuild);
   rebuild();
