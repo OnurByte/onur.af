@@ -119,7 +119,6 @@ const deferred = name.startsWith('tech');
 <span
   {...stylex.attrs(
     shell.icon,
-    iconMaterial.depth,
     (name.startsWith('tech') ||
       name.startsWith('share') ||
       name === 'quote' ||
@@ -151,19 +150,21 @@ const deferred = name.startsWith('tech');
   style={deferred ? undefined : `--icon-source: url("${source}")`}
   aria-hidden="true"
 >
-  <span
-    {...stylex.attrs(iconMaterial.face)}
-    hidden={deferred}
-    data-icon-source={deferred ? source : undefined}
-  ></span>
-  {deferred && (
-    <noscript>
-      <span
-        {...stylex.attrs(iconMaterial.face)}
-        style={`--icon-source: url("${source}")`}
-      ></span>
-    </noscript>
-  )}
+  <span {...stylex.attrs(iconMaterial.depth)}>
+    <span
+      {...stylex.attrs(iconMaterial.face)}
+      hidden={deferred}
+      data-icon-source={deferred ? source : undefined}
+    ></span>
+    {deferred && (
+      <noscript>
+        <span
+          {...stylex.attrs(iconMaterial.face)}
+          style={`--icon-source: url("${source}")`}
+        ></span>
+      </noscript>
+    )}
+  </span>
 </span>
 
 <script>

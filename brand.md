@@ -92,7 +92,7 @@ Connect öğeleri normal 8 px köşeler kullanır; squircle ve hareketli yüksel
 
 Mevcut Onur işareti korunur. Logo sabittir; animasyon, rastgele renk veya farklı sayfalarda farklı yorum kullanılmaz.
 
-Bütün sabit SVG dosyaları `public/brand/` altında bulunur. Arayüzde tek `Icon.astro` bileşeni üzerinden yüklenir. Logo 56 × 56 px, TOR ve RSS 32 × 32 px, I2P 64 × 32 px'dir. Kaynak oranları korunur; ikonlar açık temada siyah, koyu temada beyaz ağırlıklı monokrom görünür. Ortak `src/styles/icon-material.ts`, SVG alfa silueti üzerinde üst soldan aydınlanan hafif yüzey tonları, ince alt kenar ve yumuşak yönlü gölge sağlar. Arka plan kutusu, animasyon veya siluet değişikliği eklenmez. Yüksek kontrast ve zorunlu renk modlarında düz, okunaklı semboller kullanılır.
+Bütün sabit SVG dosyaları `public/brand/` altında bulunur. Arayüzde tek `Icon.astro` bileşeni üzerinden yüklenir. Logo 56 × 56 px, TOR ve RSS 32 × 32 px, I2P 64 × 32 px'dir. Kaynak oranları korunur; ikonlar açık temada siyah, koyu temada beyaz ağırlıklı monokrom görünür. Ortak `src/styles/icon-material.ts`, SVG alfa silueti üzerinde üst soldan aydınlanan hafif yüzey tonları, tek ışık yönü ve kısa kenara orantılı tek, ince alfa gölgesi sağlar. Gölge ofseti kısa kenarın %0,75 / %1,5’i, bulanıklığı %1’idir; üst üste gölge ve ters ışık geçişi kullanılmaz. Arka plan kutusu, animasyon veya siluet değişikliği eklenmez. Yüksek kontrast ve zorunlu renk modlarında düz, okunaklı semboller kullanılır.
 
 İkon adları ve ölçüleri ortak bileşende tanımlanır. SVG kodunu sayfaya gömme veya yeni bir ikon için ayrı render yolu kurma. Kaynak ve sahiplik bilgileri [SOURCES.md](public/brand/SOURCES.md) içinde tutulur. Favicon ve sosyal kartlar da mevcut Onur işaretini kullanır.
 
