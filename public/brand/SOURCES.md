@@ -26,7 +26,7 @@ Site typography: system sans-serif. Social cards bundle Liberation Sans regular 
 
 - `heart.svg`, `repost.svg`: original 16 px white outline glyphs authored for native post counters; rendered through the common icon registry.
 
-- `proof.svg`: original monochrome 16 px identity-proof check authored for this portfolio.
+- `proof.svg`: owner-provided layered verification seal reference, adapted to monochrome alpha material. The original three path geometries and 22 × 22 coordinate space are preserved: outer seal, inset face and recessed check edge. Rendered at 16 px through the shared icon component. Reference gradient definitions were not supplied; neutral alpha levels provide the rim and check edge without adding a brand color.
 
 - `discord.svg`, `reddit.svg`, `telegram.svg`: Simple Icons (https://github.com/simple-icons/simple-icons), CC0, white monochrome variants.
 - `share.svg`, `share-link.svg`, `share-mail.svg`: original portfolio interface artwork, white monochrome.
