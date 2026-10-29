@@ -12,7 +12,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const diagnostic = { method, route };
   let response: Response;
   try {
-    if (method === 'GET' || method === 'HEAD') {
+    // Build-time URLs can end in `/`; redirecting here would bake a self-redirect
+    // into the static HTML that Vercel serves with status 200.
+    if (!context.isPrerendered && (method === 'GET' || method === 'HEAD')) {
       const pathname = publicPathRedirect(context.url.pathname);
       if (pathname) {
         await debugLog({
