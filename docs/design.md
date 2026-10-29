@@ -12,6 +12,7 @@ The site uses one restrained, monochrome design implemented with StyleX. The off
 - Spacing: multiples of 4 px. Use 8/12 px within small groups, 16/20/24 px between related elements, 32/40 px between sections.
 - Alignment: header, main and footer share a 960 px maximum width and 24 px side gutters, reduced to 20 px below 620 px. Limit prose to 65 characters and donation controls to 740 px inside this common alignment.
 - Responsive groups wrap instead of overflowing. Preserve visible keyboard focus and reduced-motion preferences.
+- Individual Log articles center the shared reading-width column inside the common main container, leaving balanced space on both sides. Keep the existing mobile gutters and Scroll Rail reservation; titles, metadata, body and revision history share this reading alignment.
 - QR codes keep a white background for scanning. Footer icons retain their existing proportions; the RSS icon is white in dark mode and black in light mode for visibility.
 
 Do not add page-specific button radii, fonts or colors. Keep the existing StyleX patterns and shared system color tokens. StyleX is compiled locally; the browser does not download a CSS framework or execute a CDN runtime.
@@ -34,7 +35,7 @@ Favicons remain document metadata links. Payment QR codes are generated per dona
 
 Home source sections follow the [native embed contract](home-embeds.md). Providers supply normalized data only; all typography, layout, status text and links are rendered by the portfolio. No iframe, provider UI, raw HTML or provider scripts. Use sections with a 1 px outer border in the shared border color, 12 px corners, 16 px mobile / 24 px desktop padding, local monochrome provider icons, normal-weight 18 px section heading, 14 px secondary text and 32 px column gaps. Place these secondary sources after the introduction, Logs, Connect and compact Technologies; use one column through 900 px and two above. Empty registry renders nothing. Keep every provider-independent state accessible in the existing system themes.
 
-Embed provider icons share a non-shrinking square sized to the combined title line height, 4 px gap and profile line height (51.6 px at the default font size), with contained SVG artwork and no inner padding. Header titles and 14 px profile links stack together beside that box so profile length cannot change icon sizing or header alignment. Entries use 24 px spacing; secondary text uses 14 px / 1.6 line height. All colors inherit shared theme tokens.
+Embed provider icons share a non-shrinking square sized to the combined title line height, 4 px gap and 24 px identity/proof row (53.2 px at the default font size), with contained SVG artwork and no inner padding. Header titles and 14 px profile links stack together beside that box so profile length cannot change icon sizing or header alignment. Entries use 24 px spacing; secondary text uses 14 px / 1.6 line height. All colors inherit shared theme tokens.
 
 The Spotify source appears below the two home columns as a full-width native section. Its provider heading and track information form a horizontal row that wraps on narrow screens; use the same border, 12 px corners, padding, type scale and monochrome icon registry as the other embeds.
 
@@ -104,8 +105,29 @@ Provider sections show two primary entries initially. A native details/summary l
 
 ## Custom pointer
 
+The cursor must invert the actual content under its footprint, including text, icons, controls and selected passages. Its interior stays opposite to the underlying surface: black becomes white and white becomes black, in both system themes. Content remains legible through the cursor with its colors inverted. Selection must preserve this same inversion; replacing the filled cursor with an outline or transparent interior does not satisfy this rule.
+
 The pointer is a filled 24 px circle using white with difference blending, so the content beneath it is inverted. Enabled actions expand it to 32 px; pressing contracts it by 4 px. Text inputs and editable content use a 4 × 24 px form. Pointer position updates immediately. Reduced motion disables size transitions while preserving the custom pointer. Disabled controls retain the resting circle. The CSS circular cursor covers initial loading, keyboard mode and JavaScript-free pages; system arrows, hands and text pointers are suppressed throughout the document and dialog backdrops. Touch input adds no pointer. Native browser chrome remains outside the site's control.
 
 ## Selection and home motto
 
 Text selection uses one connected monochrome outline, a 4 px horizontal / 3 px vertical outside inset and the shared 8 px control radius. Round only the outside contour, not every inline fragment independently. Preserve native selection, copy and context menus; editable fields and unsupported modes retain the native monochrome fallback. The shared layout applies selection rendering site-wide, while annotation controls mount only inside Log revisions. Each new homepage response excludes the previous motto for that browser session, storing only the previous variant index in an HTTP-only same-site functional cookie. The motto remains server-rendered; it does not change after first paint.
+
+## Quote links
+
+Log text selection offers **Annotate** as text and an adjacent 44 px icon-only
+**Copy quote link** action with an accessible name. They share one neutral 1 px outer border, the shared 8 px control radius,
+no gap and a single internal divider. Only the outer corners are rounded.
+Both retain the opaque monochrome selection-control surface and inverted hover state. Copying works
+independently of annotation publication availability and reports clipboard
+success or failure through a live status. Successful copying dismisses the selection
+actions until a new selection is made; clipboard failures keep them available.
+
+Quote URLs use `/log/{id}/quote/v{revision}-{start}-{end}`. Offsets refer to the
+rendered revision's UTF-16 text, excluding generated controls. The destination
+renders that revision, selects and scrolls to the passage, and includes a visible
+quotation for JavaScript-free readers. Quote-specific Open Graph, X and Discord
+metadata use text derived from that revision; the 1200 × 630 image reuses the
+Log seal and monochrome card. Invalid revisions, empty selections, broken Unicode
+boundaries and out-of-range offsets return 404. Quote pages are not indexed.
+No annotation, signature or database record is created by copying a link.

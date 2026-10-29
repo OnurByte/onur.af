@@ -48,15 +48,6 @@ export const witnessStyles = stylex.create({
     maxHeight: 120,
     overflowY: 'auto',
   },
-  annotationTrigger: {
-    position: 'fixed',
-    left: 'var(--annotation-x)',
-    top: 'var(--annotation-y)',
-    zIndex: 40,
-    backgroundColor: { default: 'var(--background)', ':hover': 'var(--text)' },
-    color: { default: 'var(--text)', ':hover': 'var(--background)' },
-    maxWidth: 'calc(100vw - 40px)',
-  },
   chart: {
     display: 'block',
     width: '100%',

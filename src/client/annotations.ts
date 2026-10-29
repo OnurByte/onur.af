@@ -1,3 +1,4 @@
+import { quotePath } from '../portfolio/quote-link';
 import {
   locateAnnotation,
   webAnnotation,
@@ -228,10 +229,17 @@ export function initAnnotations(): void {
     const selectButton = root.querySelector<HTMLButtonElement>(
       '[data-annotation-select]',
     );
+    const selectionActions = root.querySelector<HTMLElement>(
+      '[data-selection-actions]',
+    );
+    const copyQuote =
+      root.querySelector<HTMLButtonElement>('[data-quote-copy]');
+    const quoteStatus = root.querySelector<HTMLElement>('[data-quote-status]');
     let selectedTarget: TextTarget | undefined;
+    let copiedTarget: TextTarget | undefined;
     let selecting = false;
     function captureSelection(): void {
-      if (!selectButton || !body) return;
+      if (!selectionActions || !body) return;
       const selection = getSelection();
       if (
         selecting ||
@@ -239,7 +247,9 @@ export function initAnnotations(): void {
         selection.isCollapsed ||
         !body.contains(selection.getRangeAt(0).commonAncestorContainer)
       ) {
-        selectButton.hidden = true;
+        selectionActions.hidden = true;
+        if (!selection?.rangeCount || selection.isCollapsed)
+          copiedTarget = undefined;
         return;
       }
       if (form?.matches(':popover-open')) return;
@@ -255,6 +265,14 @@ export function initAnnotations(): void {
           start,
           start + cleanText(range.cloneContents()).length,
         );
+        if (
+          copiedTarget?.position.start === selectedTarget.position.start &&
+          copiedTarget.position.end === selectedTarget.position.end
+        ) {
+          selectionActions.hidden = true;
+          return;
+        }
+        copiedTarget = undefined;
         const edge = document.createRange();
         if (selection.focusNode) {
           edge.setStart(selection.focusNode, selection.focusOffset);
@@ -270,26 +288,27 @@ export function initAnnotations(): void {
           focusRect.top < innerHeight - 20
             ? focusRect
             : (visibleRects.at(-1) ?? range.getBoundingClientRect());
-        selectButton.style.setProperty(
+        selectionActions.style.setProperty(
           '--annotation-x',
           `${String(Math.max(20, Math.min(innerWidth - 200, rect.left)))}px`,
         );
-        selectButton.style.setProperty(
+        selectionActions.style.setProperty(
           '--annotation-y',
           `${String(rect.bottom + 64 <= innerHeight ? Math.max(112, rect.bottom + 16) : Math.max(112, rect.top - 64))}px`,
         );
-        selectButton.hidden = rect.bottom < 100 || rect.top > innerHeight;
+        selectionActions.hidden = rect.bottom < 100 || rect.top > innerHeight;
       } catch {
-        selectButton.hidden = true;
+        selectionActions.hidden = true;
       }
     }
-    if (selectButton) {
-      selectButton.hidden = true;
+    if (selectionActions) {
+      selectionActions.hidden = true;
       document.addEventListener('selectionchange', captureSelection);
       document.addEventListener('pointerdown', (event) => {
         if (event.target instanceof Node && body.contains(event.target)) {
           selecting = true;
-          selectButton.hidden = true;
+          copiedTarget = undefined;
+          selectionActions.hidden = true;
         }
       });
       document.addEventListener('pointerup', () => {
@@ -301,25 +320,52 @@ export function initAnnotations(): void {
         selecting = false;
         captureSelection();
       });
-      selectButton.addEventListener('pointerdown', (event) => {
+      selectionActions.addEventListener('pointerdown', (event) => {
         event.preventDefault();
+      });
+      window.addEventListener('resize', captureSelection);
+      copyQuote?.addEventListener('click', () => {
+        if (!selectedTarget) return;
+        const quoteTarget = selectedTarget;
+        const path = quotePath(
+          required(root.dataset['log']),
+          Number(root.dataset['revision']),
+          selectedTarget.position.start,
+          selectedTarget.position.end,
+        );
+        if (quoteStatus) quoteStatus.textContent = '';
+        void Promise.resolve()
+          .then(() =>
+            navigator.clipboard.writeText(new URL(path, location.origin).href),
+          )
+          .then(() => {
+            copiedTarget = quoteTarget;
+            captureSelection();
+            if (quoteStatus) quoteStatus.textContent = 'Quote link copied.';
+          })
+          .catch(() => {
+            if (quoteStatus)
+              quoteStatus.textContent =
+                'Could not copy the quote link. Try again.';
+          });
       });
       window.addEventListener(
         'scroll',
         () => {
-          if (!selectButton.hidden) captureSelection();
+          if (!selectionActions.hidden) captureSelection();
         },
         { passive: true },
       );
-      selectButton.addEventListener('click', () => {
+      selectButton?.addEventListener('click', () => {
         if (!selectedTarget) return;
         target = selectedTarget;
         editing = undefined;
         reporting = false;
         updateAction();
-        selectButton.hidden = true;
+        selectionActions.hidden = true;
         openComposer();
       });
+      captureSelection();
     }
     root
       .querySelector('[data-annotation-cancel]')
@@ -604,9 +650,9 @@ export function initAnnotations(): void {
         /* Article remains readable. */
       }
     }
-    void loadPublished();
+    if (root.dataset['annotationEnabled'] === 'true') void loadPublished();
     window.addEventListener('annotation-published-changed', () => {
-      void loadPublished();
+      if (root.dataset['annotationEnabled'] === 'true') void loadPublished();
     });
   }
 }

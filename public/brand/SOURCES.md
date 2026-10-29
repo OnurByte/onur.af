@@ -38,3 +38,5 @@ Site typography: system sans-serif. Social cards bundle Liberation Sans regular 
 - `src/assets/home-identity-portrait.webp`: exact WebP bytes extracted from the existing `home-identity-portrait.svg` wrapper. Astro generates responsive WebP sizes for the 96/240 px display without changing the portrait or its source SVG.
 
 - `cursor.svg`: original monochrome circular pointer authored for this portfolio. CSS cursor resource used before client initialization and without JavaScript; it is not an inline UI icon.
+
+- `quote.svg`: owner-supplied chain-link SVG for Copy quote link; original path and 24 × 24 viewBox preserved. White fill follows the shared monochrome icon material; rendered through `Icon.astro`.

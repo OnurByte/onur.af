@@ -151,8 +151,8 @@ export const shell = stylex.create({
   },
   icon: { display: 'block', flexShrink: 0, width: 32, height: 32 },
   providerIcon: {
-    width: 'calc(1.125rem * 1.4 + 4px + 0.875rem * 1.6)',
-    height: 'calc(1.125rem * 1.4 + 4px + 0.875rem * 1.6)',
+    width: 'calc(var(--font-item-title) * 1.4 + 4px + 24px)',
+    height: 'calc(var(--font-item-title) * 1.4 + 4px + 24px)',
     objectFit: 'contain',
     boxSizing: 'border-box',
   },

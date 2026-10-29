@@ -10,7 +10,8 @@ export const embeds = stylex.create({
       default: 'minmax(0, 1fr)',
       '@media (min-width: 901px)': 'repeat(2, minmax(0, 1fr))',
     },
-    gap: 'var(--space-6)',
+    rowGap: 'var(--space-6)',
+    columnGap: 'var(--space-8)',
     alignItems: 'start',
   },
   section: {
@@ -159,7 +160,7 @@ export const embeds = stylex.create({
     minWidth: 0,
   },
   identity: { display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 },
-  headingGroup: { minWidth: 0 },
+  headingGroup: { display: 'grid', minWidth: 0 },
   sourceIdentity: {
     marginTop: 4,
     fontSize: 'var(--font-small, 0.875rem)',
@@ -191,6 +192,12 @@ export const embeds = stylex.create({
     fontSize: 'var(--font-subheading)',
     fontWeight: 'var(--weight-heading)',
     lineHeight: 'var(--leading-heading)',
+    overflowWrap: 'anywhere',
+  },
+  providerTitle: {
+    fontSize: 'var(--font-item-title)',
+    fontWeight: 400,
+    lineHeight: 1.4,
     overflowWrap: 'anywhere',
   },
   link: { textUnderlineOffset: '0.3em', overflowWrap: 'anywhere' },

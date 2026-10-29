@@ -4,6 +4,7 @@ import { shell } from '../styles/shell';
 import { iconMaterial } from '../styles/icon-material';
 
 const icons = {
+  quote: { filename: 'quote.svg', width: 24, height: 24 },
   techJavascript: { filename: 'javascript.svg', width: 24, height: 24 },
   techTypescript: { filename: 'typescript.svg', width: 24, height: 24 },
   techPython: { filename: 'technologies/python.svg', width: 24, height: 24 },
@@ -121,6 +122,7 @@ const deferred = name.startsWith('tech');
     iconMaterial.depth,
     (name.startsWith('tech') ||
       name.startsWith('share') ||
+      name === 'quote' ||
       name === 'connectMail' ||
       name === 'connectGithub' ||
       name === 'connectKey' ||

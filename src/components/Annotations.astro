@@ -2,6 +2,8 @@
 import * as stylex from '@stylexjs/stylex';
 import { witnessStyles } from '../styles/witness';
 import { styles } from '../styles/pages';
+import Icon from './Icon.astro';
+import { quoteStyles } from '../styles/quote';
 import { edge } from '../styles/edge';
 import { annotationsEnabled } from '../server/annotations/service';
 interface Props {
@@ -10,15 +12,17 @@ interface Props {
   revisionHash: string;
 }
 const { logId, revision, revisionHash } = Astro.props;
+const enabled = annotationsEnabled();
 ---
 
-{annotationsEnabled() && (
+<>
   <aside
     data-annotations
+    data-annotation-enabled={enabled ? 'true' : 'false'}
     data-log={logId}
     data-revision={revision}
     data-revision-hash={revisionHash}
-    aria-label="Text annotations"
+    aria-label="Text selection actions"
   >
     <noscript>
       <p>
@@ -26,17 +30,49 @@ const { logId, revision, revisionHash } = Astro.props;
       </p>
     </noscript>
     <div data-annotation-controls hidden>
-      <button
-        type="button"
-        data-annotation-select
-        {...stylex.attrs(
-          styles.button,
-          styles.secondary,
-          witnessStyles.annotationTrigger,
-        )}
+      <div
+        data-selection-actions
+        role="group"
+        aria-label="Selection actions"
+        hidden
+        {...stylex.attrs(quoteStyles.toolbar)}
       >
-        Annotate selection
-      </button>
+        {enabled && (
+          <button
+            type="button"
+            data-annotation-select
+            {...stylex.attrs(
+              styles.button,
+              styles.secondary,
+              quoteStyles.action,
+              quoteStyles.firstAction,
+            )}
+          >
+            Annotate
+          </button>
+        )}
+        <button
+          type="button"
+          data-quote-copy
+          aria-label="Copy quote link"
+          title="Copy quote link"
+          {...stylex.attrs(
+            styles.button,
+            styles.secondary,
+            quoteStyles.action,
+            quoteStyles.iconButton,
+            quoteStyles.lastAction,
+            enabled ? quoteStyles.divider : quoteStyles.firstAction,
+          )}
+        >
+          <Icon name="quote" />
+        </button>
+      </div>
+      <span
+        data-quote-status
+        role="status"
+        {...stylex.attrs(quoteStyles.srOnly)}
+      ></span>
       <form
         data-annotation-form
         popover="manual"
@@ -130,7 +166,7 @@ const { logId, revision, revisionHash } = Astro.props;
       </template>
     </div>
   </aside>
-)}
+</>
 <script>
   if (document.querySelector('[data-annotations]')) {
     void import('../client/annotations')

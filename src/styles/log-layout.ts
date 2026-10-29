@@ -1,6 +1,6 @@
 import * as stylex from '@stylexjs/stylex';
 export const logLayout = stylex.create({
-  article: { maxWidth: 'var(--reading-width)' },
+  article: { maxWidth: 'var(--reading-width)', marginInline: 'auto' },
   heading: {
     display: 'grid',
     gridTemplateColumns: {

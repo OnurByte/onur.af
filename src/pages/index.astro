@@ -100,6 +100,7 @@ const motto = mottos[mottoIndex]!;
         </h2>
         {recentLogs.map((entry) => (
           <LogCard
+            headingLevel="h3"
             entry={entry}
             verified={Boolean(
               signatures[`${entry.id}-v${entry.revisions.at(-1)!.version}`],

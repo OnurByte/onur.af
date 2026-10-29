@@ -53,7 +53,7 @@ test('measurement and automatic annotations work with a pasted public key and no
         }
       });
   await selectText();
-  await root.getByRole('button', { name: 'Annotate selection' }).click();
+  await root.getByRole('button', { name: 'Annotate', exact: true }).click();
   const note = `Browser fixture ${crypto.randomUUID()} <script>alert(1)</script>`;
   await root.locator('[name="note"]').fill(note);
   await root.locator('[name="pgp"]').fill(pgpPublicKey);
@@ -67,7 +67,7 @@ test('measurement and automatic annotations work with a pasted public key and no
     root.locator('[data-annotation-export], [data-annotation-own]'),
   ).toHaveCount(0);
   await selectText();
-  await root.getByRole('button', { name: 'Annotate selection' }).click();
+  await root.getByRole('button', { name: 'Annotate', exact: true }).click();
   await root.locator('[data-annotation-related] summary').click();
   const marker = root
     .locator('[data-annotation-marker]')

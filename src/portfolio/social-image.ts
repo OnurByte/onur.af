@@ -56,9 +56,10 @@ export async function socialImage(
   return result;
 }
 
-async function renderSocialImage(
+export async function renderSocialImage(
   preview: NonNullable<ReturnType<typeof publicPreviewByKey>>,
   mottoIndex: number,
+  fixedDescriptionSize = false,
 ) {
   const font = await cardFonts();
   const text = async (
@@ -68,19 +69,26 @@ async function renderSocialImage(
     width = 1056,
     height?: number,
   ) => {
-    return sharp({
+    const fixedSize = fixedDescriptionSize && !bold;
+    const rendered = sharp({
       text: {
         text: `<span foreground="#ffffff">${escapeMarkup(value)}</span>`,
         font: `Liberation Sans${bold ? ' Bold' : ''} ${size}`,
         fontfile: bold ? font.bold : font.regular,
         width,
-        ...(height ? { height } : { dpi: 72 }),
+        ...(height && !fixedSize ? { height } : { dpi: 72 }),
         rgba: true,
         wrap: 'word',
       },
-    })
-      .png()
-      .toBuffer();
+    });
+    if (fixedSize && height)
+      rendered.resize({
+        width,
+        height,
+        fit: 'inside',
+        withoutEnlargement: true,
+      });
+    return rendered.png().toBuffer();
   };
   const sealId = preview.key.startsWith('log-')
     ? preview.key.slice(4)
