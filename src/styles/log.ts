@@ -60,6 +60,7 @@ export const logStyles = stylex.create({
     fontWeight: 'var(--weight-heading)',
     overflowWrap: 'anywhere',
   },
+  nestedTitle: { fontSize: 'var(--font-subheading)' },
   meta: {
     display: 'flex',
     flexWrap: 'wrap',

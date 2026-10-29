@@ -15,8 +15,9 @@ import LogSigil from './LogSigil.astro';
 interface Props {
   entry: LogEntry;
   verified: boolean;
+  headingLevel?: 'h2' | 'h3';
 }
-const { entry, verified } = Astro.props;
+const { entry, verified, headingLevel: Heading = 'h2' } = Astro.props;
 const metadata = logMetadata(entry);
 const publishedAt = entry.revisions[0]!.publishedAt;
 ---
@@ -25,8 +26,12 @@ const publishedAt = entry.revisions[0]!.publishedAt;
   class:list={['h-entry', stylex.attrs(logStyles.entryCard, edge.frame).class]}
   id={entry.id}
 >
-  <h2
-    class:list={['p-name', stylex.attrs(logStyles.title).class]}
+  <Heading
+    class:list={[
+      'p-name',
+      stylex.attrs(logStyles.title, Heading === 'h3' && logStyles.nestedTitle)
+        .class,
+    ]}
     id={`${entry.id}-title`}
   >
     <a
@@ -35,7 +40,7 @@ const publishedAt = entry.revisions[0]!.publishedAt;
     >
       {metadata.title}
     </a>
-  </h2>
+  </Heading>
   <div {...stylex.attrs(logStyles.meta)}>
     {verified ? (
       <a

@@ -31,7 +31,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     expect(d?.match(/M/g)).toHaveLength(1);
     expect(await page.evaluate(() => getSelection()?.toString())).toBe(text);
     const button = page
-      .getByRole('button', { name: 'Annotate selection' })
+      .getByRole('button', { name: 'Annotate', exact: true })
       .first();
     await expect(button).toBeVisible();
     await expect(button).toBeInViewport();
@@ -58,7 +58,7 @@ test('local annotations publish without measurement or approval', async ({
     selection?.addRange(range);
   });
   await page
-    .getByRole('button', { name: 'Annotate selection' })
+    .getByRole('button', { name: 'Annotate', exact: true })
     .first()
     .click();
   const note = `Local annotation ${crypto.randomUUID()}`;
@@ -149,7 +149,7 @@ test('annotation editor preserves the quote and draft without scrolling the docu
   const quote = await paragraph.textContent();
   const scroll = await page.evaluate(() => scrollY);
   await page
-    .getByRole('button', { name: 'Annotate selection' })
+    .getByRole('button', { name: 'Annotate', exact: true })
     .first()
     .click();
   const form = page.locator('[data-annotation-form]').first();
@@ -167,7 +167,7 @@ test('annotation editor preserves the quote and draft without scrolling the docu
   await page.keyboard.press('Escape');
   await expect(form).not.toBeVisible();
   await page
-    .getByRole('button', { name: 'Annotate selection' })
+    .getByRole('button', { name: 'Annotate', exact: true })
     .first()
     .click();
   await expect(form.locator('[name="note"]')).toHaveValue('Saved local draft');
@@ -255,7 +255,7 @@ test('mouse drag opens the Log annotation editor', async ({ page }) => {
   });
   await page.mouse.up();
   const button = page
-    .getByRole('button', { name: 'Annotate selection' })
+    .getByRole('button', { name: 'Annotate', exact: true })
     .first();
   await expect(button).toBeVisible();
   await button.click();

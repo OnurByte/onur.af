@@ -1,0 +1,39 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import Layout from '../../../../layouts/Layout.astro';
+import LogRevision from '../../../../components/LogRevision.astro';
+import { styles } from '../../../../styles/pages';
+import { logQuote } from '../../../../portfolio/log-quote';
+export const prerender = false;
+const quote = logQuote(Astro.params['id'], Astro.params['selection']);
+if (!quote) return Astro.rewrite('/404');
+---
+
+<Layout
+  title={`${quote.metadata.title} ⁜ Quote ⁜ Onur`}
+  description={quote.description}
+  language={quote.metadata.language}
+  previewRevision={quote.revision.version}
+  quote={{ logId: quote.entry.id, selector: Astro.params['selection']! }}
+  noindex
+>
+  <main {...stylex.attrs(styles.main)}>
+    <article data-quote-passage data-start={quote.start} data-end={quote.end}>
+      <h1 {...stylex.attrs(styles.heading)}>{quote.metadata.title}</h1>
+      <p>
+        Quote ⁜ Revision {quote.revision.version} ⁜{' '}
+        <a
+          href={`/log/${quote.entry.id}#${quote.entry.id}-v${quote.revision.version}-body`}
+        >
+          Read Log
+        </a>
+      </p>
+      <blockquote>{quote.text}</blockquote>
+      <LogRevision entry={quote.entry} version={quote.revision.version} />
+    </article>
+  </main>
+</Layout>
+<script>
+  import { focusQuotePassage } from '../../../../client/quote-passage';
+  focusQuotePassage();
+</script>

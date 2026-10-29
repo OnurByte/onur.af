@@ -30,6 +30,7 @@ interface Props {
   noindex?: boolean;
   language?: string;
   previewRevision?: number;
+  quote?: { logId: string; selector: string };
   article?: { publishedAt: string; modifiedAt: string; tags: string[] };
   structuredData?: object | undefined;
 }
@@ -41,13 +42,20 @@ const {
   article,
   structuredData,
   previewRevision,
+  quote,
 } = Astro.props;
 const links = portfolioLinks();
 const origin = siteOrigin(Astro.site);
-const preview = publicPreview(Astro.url.pathname, previewRevision);
+const preview = publicPreview(
+  quote ? `/log/${quote.logId}` : Astro.url.pathname,
+  previewRevision,
+);
 const description =
   suppliedDescription ?? preview?.description ?? siteDescription;
-const canonical = canonicalUrl(origin, Astro.url.pathname);
+const canonical =
+  quote && origin
+    ? new URL(Astro.url.pathname, origin).href
+    : canonicalUrl(origin, Astro.url.pathname);
 const robots = robotsMetaContent(
   robotsContent(Astro.url.pathname, {
     noindex: noindex || process.env['VERCEL_ENV'] === 'preview',
@@ -55,12 +63,23 @@ const robots = robotsMetaContent(
   }),
 );
 const indexable = isIndexableRobots(robots) && Boolean(canonical);
+const shareMetadata =
+  indexable ||
+  Boolean(
+    quote &&
+    process.env['VERCEL_ENV'] !== 'preview' &&
+    origin &&
+    preview &&
+    isIndexableRobots(robotsContent(`/log/${quote.logId}`)),
+  );
 const socialImage =
-  indexable && origin && preview
-    ? socialPreviewUrl(origin, preview)
+  shareMetadata && origin && preview
+    ? quote
+      ? new URL(`/log/${quote.logId}/quote/${quote.selector}.png`, origin).href
+      : socialPreviewUrl(origin, preview)
     : undefined;
 const shareUrl =
-  canonical && previewRevision
+  canonical && previewRevision && !quote
     ? `${canonical}?v=${String(previewRevision)}`
     : canonical;
 const imageAlt =
@@ -68,12 +87,12 @@ const imageAlt =
     ? mottos[0]
     : [preview?.title ?? title, description].filter(Boolean).join(' ⁜ ');
 const oembedUrl =
-  indexable && preview && shareUrl
+  indexable && !quote && preview && shareUrl
     ? `${origin}/oembed.json?url=${encodeURIComponent(shareUrl)}&format=json`
     : undefined;
 const iconUrl = origin ? `${origin}/brand/icon.png` : '/brand/icon.png';
 const discordEmbed =
-  indexable && preview
+  shareMetadata && preview
     ? {
         component: {
           type: 17,
@@ -163,7 +182,7 @@ const schema = Astro.url.pathname === '/' ? homePageSchema(origin) : undefined;
             : language.replace('-', '_')
       }
     />
-    {indexable && <meta property="og:url" content={shareUrl} />}
+    {shareMetadata && <meta property="og:url" content={shareUrl} />}
     {socialImage && (
       <>
         <meta property="og:image" content={socialImage} />

@@ -123,7 +123,7 @@ test('cursor stays above the annotation popover', async ({ page }) => {
     getSelection()?.addRange(range);
   });
   await page
-    .getByRole('button', { name: 'Annotate selection' })
+    .getByRole('button', { name: 'Annotate', exact: true })
     .first()
     .click();
   const form = page.locator('[data-annotation-form]').first();

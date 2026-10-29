@@ -18,11 +18,12 @@ const {
   ...attributes
 } = Astro.props;
 const identity = identityAccounts[account];
+const { class: wrapperClass, ...wrapperRest } = wrapperAttributes;
 ---
 
 <span
-  {...wrapperAttributes}
-  class={[stylex.attrs(proof.identity).class, wrapperAttributes.class]
+  {...wrapperRest}
+  class={[stylex.attrs(proof.identity).class, wrapperClass]
     .filter(Boolean)
     .join(' ')}
 >
