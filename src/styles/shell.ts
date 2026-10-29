@@ -149,7 +149,13 @@ export const shell = stylex.create({
     whiteSpace: 'nowrap',
     color: 'var(--text)',
   },
-  icon: { display: 'block', flexShrink: 0, width: 32, height: 32 },
+  icon: {
+    display: 'block',
+    flexShrink: 0,
+    width: 32,
+    height: 32,
+    containerType: 'size',
+  },
   providerIcon: {
     width: 'calc(var(--font-item-title) * 1.4 + 4px + 24px)',
     height: 'calc(var(--font-item-title) * 1.4 + 4px + 24px)',
