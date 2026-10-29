@@ -40,9 +40,9 @@ for (const colorScheme of ['light', 'dark'] as const) {
         (match) => Number(match[1]),
       );
       expect(lengths).toHaveLength(3);
-      expect(lengths[0]).toBeCloseTo(short * 0.0075, 4);
-      expect(lengths[1]).toBeCloseTo(short * 0.015, 4);
-      expect(lengths[2]).toBeCloseTo(short * 0.01, 4);
+      expect(lengths[0]).toBeCloseTo(short * 0.02, 4);
+      expect(lengths[1]).toBeCloseTo(short * 0.04, 4);
+      expect(lengths[2]).toBeCloseTo(short * 0.005, 4);
       expect(material.faceFilter).toBe('none');
       expect(material.mask).toContain('/brand/onur.svg');
       expect(material.gradient).toContain('135deg');
@@ -60,6 +60,15 @@ for (const colorScheme of ['light', 'dark'] as const) {
       if (!box) throw new Error('Missing icon bounds');
       expect(box.width).toBe(width === 360 ? 48 : 56);
     }
+    await icon.screenshot({
+      path: `/tmp/onur-visible-depth-brand-${colorScheme}.png`,
+    });
+    await page
+      .locator('[data-icon="proof"]')
+      .first()
+      .screenshot({
+        path: `/tmp/onur-proof-${colorScheme}.png`,
+      });
     const tech = page.locator('[data-icon^="tech"]').first();
     await tech.scrollIntoViewIfNeeded();
     await expect(tech.locator('[data-icon-source]')).toBeVisible();

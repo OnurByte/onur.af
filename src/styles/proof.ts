@@ -26,4 +26,10 @@ export const proof = stylex.create({
     ':focus-visible': { outline: '2px solid var(--text)', outlineOffset: 3 },
   },
   labeled: { gap: 4, width: 'auto', whiteSpace: 'nowrap' },
+  label: {
+    display: 'block',
+    lineHeight: 1,
+    textBoxTrim: 'trim-both',
+    textBoxEdge: 'cap alphabetic',
+  },
 });

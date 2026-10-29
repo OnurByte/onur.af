@@ -242,10 +242,3 @@ html[data-rounded-selection] ::selection {
   background-color: transparent;
   color: currentColor;
 }
-
-/* A filled difference cursor masks letters when it crosses the inverted selection. */
-html[data-rounded-selection] {
-  --cursor-fill: transparent;
-  --cursor-border-width: 1px;
-  --cursor-border-color: #fff;
-}

@@ -9,9 +9,9 @@ export const iconMaterial = stylex.create({
     width: '100%',
     height: '100%',
     filter: {
-      default: 'drop-shadow(0.75cqmin 1.5cqmin 1cqmin rgb(0 0 0 / 0.22))',
+      default: 'drop-shadow(2cqmin 4cqmin 0.5cqmin rgb(0 0 0 / 0.8))',
       '@media (prefers-color-scheme: dark)':
-        'drop-shadow(0.75cqmin 1.5cqmin 1cqmin rgb(255 255 255 / 0.12))',
+        'drop-shadow(2cqmin 4cqmin 0.5cqmin rgb(96 96 96 / 0.95))',
       '@media (prefers-contrast: more)': 'none',
       '@media (forced-colors: active)': 'none',
     },
@@ -27,9 +27,9 @@ export const iconMaterial = stylex.create({
     maskRepeat: 'no-repeat',
     backgroundColor: 'var(--text)',
     backgroundImage: {
-      default: 'linear-gradient(135deg, #242424 0%, #0d0d0d 100%)',
+      default: 'linear-gradient(135deg, #606060 0%, #0d0d0d 100%)',
       '@media (prefers-color-scheme: dark)':
-        'linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%)',
+        'linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%)',
       '@media (prefers-contrast: more)': 'none',
       '@media (forced-colors: active)': 'none',
     },
