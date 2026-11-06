@@ -1,8 +1,13 @@
+import { readTransparencyEvidence } from '../src/portfolio/transparency/evidence';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { readJsonFile, writeJsonFile } from '../src/server/json-file';
 import { logEntries } from '../src/portfolio/log';
-import { buildLogBundle, verifyLogBundle } from '../src/portfolio/log-bundle';
+import {
+  buildLogBundle,
+  verifyLogBundle,
+  attachTransparencyEvidence,
+} from '../src/portfolio/log-bundle';
 import {
   decodeProofArchive,
   readProofArchiveFile,
@@ -44,6 +49,38 @@ if (command === 'export' && target) {
     }
   } else await writeFile(output, bytes, { flag: 'wx' });
   console.log(`Exported ${entry.id} to ${output}`);
+} else if (command === 'attach-transparency' && target) {
+  const [
+    directory,
+    output,
+    fingerprintFlag,
+    fingerprint,
+    policyFlag,
+    policy,
+    ...extra
+  ] = args;
+  if (
+    !directory ||
+    !output ||
+    fingerprintFlag !== '--fingerprint' ||
+    !fingerprint ||
+    policyFlag !== '--policy-sha256' ||
+    !policy ||
+    extra.length
+  )
+    throw new Error(
+      'Usage: attach-transparency <archive.tar> <evidence-directory> <output.tar> --fingerprint <trusted-root> --policy-sha256 <trusted-policy>',
+    );
+  const bytes = await attachTransparencyEvidence(
+    await readProofArchiveFile(target),
+    await readTransparencyEvidence(directory),
+    fingerprint,
+    policy,
+  );
+  await writeFile(output, bytes, { flag: 'wx' });
+  console.log(
+    'Attached verified inclusion/quorum evidence. Independent monitor observation is not implied.',
+  );
 } else if (command === 'verify' && target) {
   const options = new Map<string, string>();
   for (let i = 0; i < args.length; i += 2) {

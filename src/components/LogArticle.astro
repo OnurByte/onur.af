@@ -20,6 +20,9 @@ import {
 } from '../server/witness/service';
 import { viewCountLabel } from '../portfolio/witness/presentation';
 import LogShare from './LogShare.astro';
+import { snapshotsFor, mementoPath } from '../portfolio/memento';
+import { visibleWebmentions } from '../server/webmentions/service';
+import { isListedLogEntry } from '../portfolio/log';
 import LogDiff from './LogDiff.astro';
 import LogRevision from './LogRevision.astro';
 import LogTags from './LogTags.astro';
@@ -40,6 +43,10 @@ const viewsLabel = viewCountLabel(
 const metadata = logMetadata(entry);
 const signatures = await getLogSignatures();
 const latest = entry.revisions.at(-1)!;
+const snapshots = snapshotsFor(entry.id);
+const mentions = isListedLogEntry(entry)
+  ? await visibleWebmentions(entry.id)
+  : [];
 const origin = siteOrigin(Astro.site);
 const references = buildContentIndex([entry], origin).documents[0]!
   .repositories;
@@ -160,6 +167,13 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
                 {date(revision.publishedAt)}
               </time>
             </h2>
+            {snapshots.some((s) => s.version === revision.version) && (
+              <p>
+                <a href={mementoPath(entry.id, revision.version)}>
+                  Archived revision
+                </a>
+              </p>
+            )}
             <LogDiff entry={entry} version={revision.version} />
             <LogRevision entry={entry} version={revision.version} archived />
             {signatures[`${entry.id}-v${revision.version}`] && (
@@ -174,6 +188,28 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
           </section>
         ))}
     </details>
+  )}
+  {mentions.length > 0 && (
+    <section aria-label="Referenced elsewhere">
+      <h2 {...stylex.attrs(logLayout.connectionHeading)}>
+        Referenced elsewhere
+      </h2>
+      <ul {...stylex.attrs(logLayout.list)}>
+        {mentions.map((mention) => (
+          <li>
+            <a href={mention.source} rel="nofollow ugc noreferrer">
+              {mention.title || mention.source}
+            </a>
+            {mention.kind === 'passage' && (
+              <>
+                {' '}
+                ⁜ <a href={mention.target}>Referenced passage</a>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
   )}
   {references.length > 0 && (
     <nav

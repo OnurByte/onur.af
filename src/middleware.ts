@@ -2,6 +2,10 @@ import { debugLog } from './server/debug-log';
 import { defineMiddleware } from 'astro:middleware';
 import { publicPathRedirect } from './portfolio/seo';
 import { compressHtml } from './server/html-compression';
+import { getLogEntryById, isListedLogEntry } from './portfolio/log';
+import { mementoLinks } from './portfolio/memento';
+import { parseLogPagePath } from './portfolio/quote-link';
+import { webmentionsEnabled } from './server/webmentions/service';
 import {
   assertPublicationReadable,
   withPublicationRead,
@@ -70,6 +74,22 @@ export const onRequest = defineMiddleware(async (context, next) => {
       error,
     });
     throw error;
+  }
+  if (response.status === 200 && (method === 'GET' || method === 'HEAD')) {
+    const path = parseLogPagePath(context.url.pathname);
+    const entry = getLogEntryById(path?.id);
+    if (entry) {
+      if (!path?.quote)
+        response.headers.append(
+          'Link',
+          mementoLinks(entry.id, context.url.origin),
+        );
+      if (webmentionsEnabled() && isListedLogEntry(entry))
+        response.headers.append(
+          'Link',
+          `<${new URL('/api/webmention', context.url.origin).href}>; rel="webmention"`,
+        );
+    }
   }
   if (response.status >= 400) {
     await debugLog({

@@ -17,3 +17,13 @@ export function quotePath(
 ): string {
   return `/log/${encodeURIComponent(logId)}/quote/v${String(revision)}-${String(start)}-${String(end)}`;
 }
+/** The single grammar for a Log article path or one of its quote links. */
+export function parseLogPagePath(
+  pathname: string,
+): { id: string; quote: string | undefined } | null {
+  const match =
+    /^\/log\/([a-z]+-[a-z]+-[a-z]+)(?:\/quote\/(v[1-9][0-9]*-(?:0|[1-9][0-9]*)-[1-9][0-9]*))?$/.exec(
+      pathname,
+    );
+  return match?.[1] ? { id: match[1], quote: match[2] } : null;
+}

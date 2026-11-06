@@ -10,8 +10,20 @@ interface Props {
   logId: string;
   revision: number;
   revisionHash: string;
+  projectionVersion?: string | undefined;
+  projectionHash?: string | undefined;
+  archivedAt?: string | undefined;
+  mementoPath?: string | undefined;
 }
-const { logId, revision, revisionHash } = Astro.props;
+const {
+  logId,
+  revision,
+  revisionHash,
+  projectionVersion,
+  projectionHash,
+  archivedAt,
+  mementoPath,
+} = Astro.props;
 const enabled = annotationsEnabled();
 ---
 
@@ -22,6 +34,10 @@ const enabled = annotationsEnabled();
     data-log={logId}
     data-revision={revision}
     data-revision-hash={revisionHash}
+    data-projection-version={projectionVersion}
+    data-projection-hash={projectionHash}
+    data-archived-at={archivedAt}
+    data-memento-path={mementoPath}
     aria-label="Text selection actions"
   >
     <noscript>
@@ -143,6 +159,51 @@ const enabled = annotationsEnabled();
             Cancel
           </button>
         </div>
+        <details data-annotation-backup>
+          <summary>Annotation identity</summary>
+          <p {...stylex.attrs(witnessStyles.compactText)}>
+            Keep an encrypted backup to manage your annotations on another
+            device. Your recovery passphrase is never sent to the server.
+            Restoring replaces this device's annotation identity. Back it up
+            first if you use another identity here.
+          </p>
+          <label {...stylex.attrs(witnessStyles.field)}>
+            Recovery passphrase
+            <input
+              type="password"
+              name="recovery"
+              autocomplete="off"
+              maxlength="1024"
+              {...stylex.attrs(styles.keyInput)}
+            />
+          </label>
+          <label {...stylex.attrs(witnessStyles.field)}>
+            Encrypted backup file
+            <input
+              type="file"
+              name="backup"
+              accept="application/json,.json"
+              {...stylex.attrs(styles.keyInput)}
+            />
+          </label>
+          <div {...stylex.attrs(witnessStyles.actions)}>
+            <button
+              type="button"
+              data-annotation-backup-export
+              {...stylex.attrs(styles.button, styles.secondary)}
+            >
+              Download encrypted backup
+            </button>
+            <button
+              type="button"
+              data-annotation-backup-import
+              {...stylex.attrs(styles.button, styles.secondary)}
+            >
+              Restore encrypted backup
+            </button>
+          </div>
+          <p data-annotation-backup-status role="status"></p>
+        </details>
         <p data-annotation-status role="status"></p>
       </form>
       <div

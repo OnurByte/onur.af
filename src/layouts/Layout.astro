@@ -1,6 +1,9 @@
 ---
 import * as stylex from '@stylexjs/stylex';
 import { siteSignature } from '../portfolio/signature';
+import { getLogEntryById, isListedLogEntry } from '../portfolio/log';
+import { parseLogPagePath } from '../portfolio/quote-link';
+import { webmentionsEnabled } from '../server/webmentions/service';
 import { scrollProfileForPath } from '../portfolio/scroll';
 import { shell } from '../styles/shell';
 import { edge } from '../styles/edge';
@@ -45,6 +48,7 @@ const {
   quote,
 } = Astro.props;
 const links = portfolioLinks();
+const protocolEntry = getLogEntryById(parseLogPagePath(Astro.url.pathname)?.id);
 const origin = siteOrigin(Astro.site);
 const preview = publicPreview(
   quote ? `/log/${quote.logId}` : Astro.url.pathname,
@@ -155,6 +159,19 @@ const schema = Astro.url.pathname === '/' ? homePageSchema(origin) : undefined;
     {description && <meta name="description" content={description} />}
     <meta name="robots" content={robots} />
     {canonical && <link rel="canonical" href={canonical} />}
+    {protocolEntry && !quote && (
+      <>
+        <link rel="timegate" href={`/log/${protocolEntry.id}/timegate`} />
+        <link
+          rel="timemap"
+          type="application/link-format"
+          href={`/log/${protocolEntry.id}/timemap`}
+        />
+      </>
+    )}
+    {protocolEntry &&
+      isListedLogEntry(protocolEntry) &&
+      webmentionsEnabled() && <link rel="webmention" href="/api/webmention" />}
     {Object.values(identityAccounts).map((account) => (
       <link rel="me" href={account.profile} />
     ))}

@@ -3,6 +3,8 @@ export async function finishPublication(
   run: (args: string[]) => Promise<void>,
 ) {
   for (const args of [
+    ['scripts/log-projections.ts', 'prepare'],
+    ['scripts/log-snapshots.ts', 'prepare'],
     ['scripts/log-timestamps.ts', '--check'],
     ['scripts/log-publications.ts', 'append'],
     ['scripts/publication-checkpoints.ts', 'stamp'],

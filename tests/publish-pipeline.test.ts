@@ -1,3 +1,5 @@
+import { z } from 'astro/zod';
+import { validateSnapshot } from '../src/portfolio/memento';
 import { test, expect } from 'bun:test';
 import {
   mkdtemp,
@@ -127,6 +129,23 @@ import { execFileSync } from 'node:child_process';
       const publisher = ['scripts/publish-log.ts', 'veiled-compass-turns'];
       const published = run(publisher);
       expect(published).toContain('staged proofs');
+      const captures = z
+        .record(z.string(), z.unknown())
+        .parse(
+          JSON.parse(
+            await readFile(
+              join(root, 'src/content/log-snapshots.json'),
+              'utf8',
+            ),
+          ) as unknown,
+        );
+      const capture = validateSnapshot(captures['veiled-compass-turns-v1']);
+      expect(capture.kind).toBe('reconstructed');
+      expect(Date.parse(capture.archivedAt)).toBeGreaterThan(
+        Date.parse(capture.publishedAt),
+      );
+      const frozenCapture = capture.htmlHash;
+
       const proof = JSON.parse(
         await readFile(join(root, 'src/content/log-proofs.json'), 'utf8'),
       );
@@ -186,6 +205,19 @@ import { execFileSync } from 'node:child_process';
         'utf8',
       );
       run(publisher);
+      const after = z
+        .record(z.string(), z.unknown())
+        .parse(
+          JSON.parse(
+            await readFile(
+              join(root, 'src/content/log-snapshots.json'),
+              'utf8',
+            ),
+          ) as unknown,
+        );
+      expect(validateSnapshot(after['veiled-compass-turns-v1']).htmlHash).toBe(
+        frozenCapture,
+      );
       expect(
         await readFile(join(root, 'src/content/log-signatures.json'), 'utf8'),
       ).toBe(retained);

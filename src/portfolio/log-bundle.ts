@@ -1,3 +1,8 @@
+import { parseStatement } from './transparency/statement';
+import {
+  transparencyArchiveFiles,
+  verifyTransparencyEvidence,
+} from './transparency/evidence';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { readProofMediaFile } from './log-proof-media';
@@ -293,4 +298,60 @@ export async function verifyLogBundle(
     checkpointCompared: !!savedCheckpoint,
     bitcoinConfirmed: false,
   };
+}
+
+/** Add a fully verified transparency package without changing existing evidence bytes. */
+export async function attachTransparencyEvidence(
+  archive: Uint8Array,
+  evidence: ReadonlyMap<string, Uint8Array>,
+  trustedFingerprint: string,
+  trustedPolicySha256: string,
+): Promise<Buffer> {
+  await verifyLogBundle(archive, trustedFingerprint);
+  const files = decodeProofArchive(archive);
+  const bundleText = (name: string) => {
+    const bytes = files.get(name);
+    if (!bytes) throw new Error(`Missing bundle file: ${name}`);
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  };
+  const statementBytes = evidence.get('publication.statement');
+  if (!statementBytes)
+    throw new Error(
+      'Missing or oversized transparency evidence: publication.statement',
+    );
+  const statement = parseStatement(
+    new TextDecoder('utf-8', { fatal: true }).decode(statementBytes),
+  );
+  const publications = z
+    .object({ editions: z.array(z.object({ manifest: z.string() })) })
+    .parse(JSON.parse(bundleText('publications.json')) as unknown);
+  const edition = publications.editions[statement.sequence - 1];
+  if (!edition) throw new Error('Transparency edition is absent from bundle');
+  await verifyTransparencyEvidence(
+    evidence,
+    edition.manifest,
+    bundleText('keys/root.asc'),
+    trustedFingerprint,
+    trustedPolicySha256,
+  );
+  for (const [name, bytes] of transparencyArchiveFiles(
+    statement.sequence,
+    evidence,
+  )) {
+    const previous = files.get(name);
+    if (previous && proofDigest(previous) !== proofDigest(bytes))
+      throw new Error('Existing transparency evidence differs');
+    files.set(name, Buffer.from(bytes));
+  }
+  const index = indexSchema.parse(
+    JSON.parse(bundleText('bundle.json')) as unknown,
+  );
+  files.delete('bundle.json');
+  index.files = Object.fromEntries(
+    [...files].map(([name, bytes]) => [name, proofDigest(bytes)]),
+  );
+  files.set('bundle.json', Buffer.from(`${JSON.stringify(index, null, 2)}\n`));
+  const result = encodeProofArchive(files);
+  await verifyLogBundle(result, trustedFingerprint);
+  return result;
 }

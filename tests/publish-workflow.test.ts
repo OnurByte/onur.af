@@ -11,6 +11,8 @@ test('a failed RSS signing gate prevents publication verification and success', 
     }),
   ).rejects.toThrow('Signing key unavailable');
   expect(completed).toEqual([
+    'scripts/log-projections.ts prepare',
+    'scripts/log-snapshots.ts prepare',
     'scripts/log-timestamps.ts --check',
     'scripts/log-publications.ts append',
     'scripts/publication-checkpoints.ts stamp',
@@ -23,6 +25,8 @@ test('successful local publication signs RSS and verifies all proofs before retu
     completed.push(args.join(' '));
   });
   expect(completed).toEqual([
+    'scripts/log-projections.ts prepare',
+    'scripts/log-snapshots.ts prepare',
     'scripts/log-timestamps.ts --check',
     'scripts/log-publications.ts append',
     'scripts/publication-checkpoints.ts stamp',
