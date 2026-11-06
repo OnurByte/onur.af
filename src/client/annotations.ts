@@ -128,6 +128,12 @@ export function initAnnotations(): void {
       '[data-annotation-controls]',
     );
     if (controls) controls.hidden = false;
+    const identity = root.querySelector<HTMLFormElement>(
+      '[data-annotation-identity]',
+    );
+    identity?.addEventListener('submit', (event) => {
+      event.preventDefault();
+    });
     const backupStatus = root.querySelector<HTMLElement>(
       '[data-annotation-backup-status]',
     );
@@ -154,7 +160,7 @@ export function initAnnotations(): void {
             const encrypted = await encryptManagement(
               saved,
               notes,
-              formText(form, 'recovery'),
+              formText(required(identity), 'recovery'),
             );
             const url = URL.createObjectURL(
               new Blob([encrypted], { type: 'application/json' }),
@@ -167,7 +173,7 @@ export function initAnnotations(): void {
               URL.revokeObjectURL(url);
             }, 1000);
             const recovery =
-              form.querySelector<HTMLInputElement>('[name="recovery"]');
+              identity?.querySelector<HTMLInputElement>('[name="recovery"]');
             if (recovery) recovery.value = '';
             if (backupStatus)
               backupStatus.textContent =
@@ -189,7 +195,7 @@ export function initAnnotations(): void {
         void (async () => {
           try {
             const file =
-              form.querySelector<HTMLInputElement>('[name="backup"]')
+              identity?.querySelector<HTMLInputElement>('[name="backup"]')
                 ?.files?.[0];
             if (!file || file.size > maxEncryptedBackupLength)
               throw new Error('Invalid backup file');
@@ -197,7 +203,7 @@ export function initAnnotations(): void {
               backupStatus.textContent = 'Restoring encrypted backup…';
             const restored = await decryptManagement(
               await file.text(),
-              formText(form, 'recovery'),
+              formText(required(identity), 'recovery'),
             );
             const updates = new Map<string, string>();
             for (const note of restored.notes) {
@@ -225,7 +231,7 @@ export function initAnnotations(): void {
               throw error;
             }
             const recovery =
-              form.querySelector<HTMLInputElement>('[name="recovery"]');
+              identity.querySelector<HTMLInputElement>('[name="recovery"]');
             if (recovery) recovery.value = '';
             window.dispatchEvent(new Event('annotation-owned-changed'));
             window.dispatchEvent(new Event('annotation-published-changed'));

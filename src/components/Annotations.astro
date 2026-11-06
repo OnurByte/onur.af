@@ -25,6 +25,8 @@ const {
   mementoPath,
 } = Astro.props;
 const enabled = annotationsEnabled();
+// Identity backup is ownership management, kept out of the minimal composer.
+const identityId = `annotation-identity-${logId}-v${String(revision)}`;
 ---
 
 <>
@@ -159,52 +161,64 @@ const enabled = annotationsEnabled();
             Cancel
           </button>
         </div>
-        <details data-annotation-backup>
-          <summary>Annotation identity</summary>
-          <p {...stylex.attrs(witnessStyles.compactText)}>
-            Keep an encrypted backup to manage your annotations on another
-            device. Your recovery passphrase is never sent to the server.
-            Restoring replaces this device's annotation identity. Back it up
-            first if you use another identity here.
-          </p>
-          <label {...stylex.attrs(witnessStyles.field)}>
-            Recovery passphrase
-            <input
-              type="password"
-              name="recovery"
-              autocomplete="off"
-              maxlength="1024"
-              {...stylex.attrs(styles.keyInput)}
-            />
-          </label>
-          <label {...stylex.attrs(witnessStyles.field)}>
-            Encrypted backup file
-            <input
-              type="file"
-              name="backup"
-              accept="application/json,.json"
-              {...stylex.attrs(styles.keyInput)}
-            />
-          </label>
-          <div {...stylex.attrs(witnessStyles.actions)}>
-            <button
-              type="button"
-              data-annotation-backup-export
-              {...stylex.attrs(styles.button, styles.secondary)}
-            >
-              Download encrypted backup
-            </button>
-            <button
-              type="button"
-              data-annotation-backup-import
-              {...stylex.attrs(styles.button, styles.secondary)}
-            >
-              Restore encrypted backup
-            </button>
-          </div>
-          <p data-annotation-backup-status role="status"></p>
-        </details>
+        <button
+          type="button"
+          popovertarget={identityId}
+          {...stylex.attrs(styles.button, styles.secondary)}
+        >
+          Annotation identity
+        </button>
         <p data-annotation-status role="status"></p>
+      </form>
+      <form
+        id={identityId}
+        data-annotation-identity
+        popover="auto"
+        aria-label="Annotation identity"
+        {...stylex.attrs(witnessStyles.composer, edge.frame)}
+      >
+        <p {...stylex.attrs(witnessStyles.compactText)}>
+          Keep an encrypted backup to manage your annotations on another device.
+          Your recovery passphrase is never sent to the server. Restoring
+          replaces this device's annotation identity. Back it up first if you
+          use another identity here.
+        </p>
+        <label {...stylex.attrs(witnessStyles.field)}>
+          Recovery passphrase
+          <input
+            type="password"
+            name="recovery"
+            autocomplete="off"
+            maxlength="1024"
+            {...stylex.attrs(styles.keyInput)}
+          />
+        </label>
+        <label {...stylex.attrs(witnessStyles.field)}>
+          Encrypted backup file
+          <input
+            type="file"
+            name="backup"
+            accept="application/json,.json"
+            {...stylex.attrs(styles.keyInput)}
+          />
+        </label>
+        <div {...stylex.attrs(witnessStyles.actions)}>
+          <button
+            type="button"
+            data-annotation-backup-export
+            {...stylex.attrs(styles.button, styles.secondary)}
+          >
+            Download encrypted backup
+          </button>
+          <button
+            type="button"
+            data-annotation-backup-import
+            {...stylex.attrs(styles.button, styles.secondary)}
+          >
+            Restore encrypted backup
+          </button>
+        </div>
+        <p data-annotation-backup-status role="status"></p>
       </form>
       <div
         popover="auto"
