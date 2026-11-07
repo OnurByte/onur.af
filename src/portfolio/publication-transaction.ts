@@ -4,6 +4,7 @@ import {
   mkdir,
   readFile,
   readdir,
+  readlink,
   realpath,
   rename,
   rm,
@@ -11,7 +12,7 @@ import {
   writeFile,
 } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 
 const TARGETS = [
   'src/content',
@@ -23,6 +24,9 @@ const TARGETS = [
 const LOCK = '.log-publication.lock';
 const JOURNAL = '.log-publication-journal.json';
 const READERS = '.log-publication-readers';
+const LOCK_HELD = 'Another log publication transaction holds the lock';
+const backupDirectory = (root: string, id: string) =>
+  join(root, `.log-publication-backup-${id}`);
 type Journal = {
   id: string;
   phase: 'activating' | 'committed';
@@ -89,16 +93,12 @@ export async function recoverPublication(root: string) {
   if (!(await exists(journalPath))) return false;
   const journal = await readJournal(journalPath);
   if (journal.phase === 'committed') {
-    await rm(join(root, `.log-publication-backup-${journal.id}`), {
-      recursive: true,
-      force: true,
-    });
-    await rm(journalPath, { force: true });
+    await discardJournal(root, journal, journalPath);
     return true;
   }
   for (const target of [...journal.activated].reverse()) {
     const live = join(root, target),
-      backup = join(root, `.log-publication-backup-${journal.id}`, target);
+      backup = join(backupDirectory(root, journal.id), target);
     if (await exists(backup)) {
       await rm(live, { recursive: true, force: true });
       await mkdir(join(live, '..'), { recursive: true });
@@ -107,12 +107,13 @@ export async function recoverPublication(root: string) {
       await rm(live, { recursive: true, force: true });
     }
   }
-  await rm(join(root, `.log-publication-backup-${journal.id}`), {
-    recursive: true,
-    force: true,
-  });
-  await rm(journalPath, { force: true });
+  await discardJournal(root, journal, journalPath);
   return true;
+}
+
+async function discardJournal(root: string, journal: Journal, path: string) {
+  await rm(backupDirectory(root, journal.id), { recursive: true, force: true });
+  await rm(path, { force: true });
 }
 
 /** Prepare in a copied checkout, then journal and activate the proof stores. */
@@ -129,28 +130,29 @@ export async function runPublicationTransaction(
   } catch (e) {
     if ((e as NodeJS.ErrnoException).code !== 'EEXIST') throw e;
     const oldLock = await readFile(lockPath, 'utf8');
-    const owner = Number(oldLock.trim());
+    // The lock file holds `<pid>\n<token>\n`; only the first line is the pid.
+    const owner = Number(oldLock.split('\n')[0]);
     if (!Number.isSafeInteger(owner) || owner <= 0 || processAlive(owner))
-      throw new Error('Another log publication transaction holds the lock');
+      throw new Error(LOCK_HELD);
     const stalePath = `${lockPath}.${randomUUID()}.stale`;
     await rename(lockPath, stalePath).catch(() => {
-      throw new Error('Another log publication transaction holds the lock');
+      throw new Error(LOCK_HELD);
     });
     if ((await readFile(stalePath, 'utf8')) !== oldLock) {
       if (!(await exists(lockPath))) await rename(stalePath, lockPath);
-      throw new Error('Another log publication transaction holds the lock');
+      throw new Error(LOCK_HELD);
     }
     try {
       await writeFile(lockPath, lockContents, { flag: 'wx' });
     } catch {
       if (!(await exists(lockPath))) await rename(stalePath, lockPath);
-      throw new Error('Another log publication transaction holds the lock');
+      throw new Error(LOCK_HELD);
     }
     await rm(stalePath, { force: true });
   }
   const id = randomUUID(),
     stage = join(root, '..', `.log-publication-stage-${id}`),
-    backupRoot = join(root, `.log-publication-backup-${id}`);
+    backupRoot = backupDirectory(root, id);
   const journalPath = join(root, JOURNAL);
   try {
     await recoverPublication(root);
@@ -316,7 +318,6 @@ function processAlive(pid: number) {
 }
 
 async function snapshot(root: string, targets: string[]) {
-  const { createHash } = await import('node:crypto');
   const hash = createHash('sha256');
   async function walk(path: string, label: string) {
     if (!(await exists(path))) {
@@ -325,7 +326,6 @@ async function snapshot(root: string, targets: string[]) {
     }
     const stat = await lstat(path);
     if (stat.isSymbolicLink()) {
-      const { readlink } = await import('node:fs/promises');
       hash.update(frame(`link:${label}:`));
       hash.update(frame(await readlink(path)));
       return;
