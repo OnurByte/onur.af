@@ -2,6 +2,7 @@ import { openDialog, closeDialog } from './dialogs';
 const trigger = document.querySelector<HTMLButtonElement>('#open-share');
 const dialog = document.querySelector<HTMLDialogElement>('#share-dialog');
 const query = document.querySelector<HTMLInputElement>('#share-query');
+const status = document.querySelector<HTMLElement>('#share-status');
 const rows = [
   ...(dialog?.querySelectorAll<HTMLElement>('[data-share-label]') ?? []),
 ];
@@ -21,7 +22,6 @@ function filterActions() {
   }
 }
 query?.addEventListener('input', filterActions);
-const status = document.querySelector<HTMLElement>('#share-status');
 function open() {
   if (!dialog) return;
   if (status) {

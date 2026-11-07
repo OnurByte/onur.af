@@ -1,118 +1,23 @@
-import { quotePath } from '../portfolio/quote-link';
-import {
-  locateAnnotation,
-  webAnnotation,
-} from '../portfolio/annotations/web-annotation';
 import { z } from 'astro/zod';
-import { annotationSchema } from '../portfolio/annotations/protocol';
-import {
-  savedKeysSchema,
-  mergeOwned,
-  encryptManagement,
-  decryptManagement,
-  validateManagementKeys,
-  maxEncryptedBackupLength,
-} from '../portfolio/annotations/management';
-import type { AnnotationTimeState } from '../portfolio/annotations/web-annotation';
-function formText(form: HTMLFormElement, name: string): string {
-  const value = new FormData(form).get(name);
-  return typeof value === 'string' ? value : '';
-}
+import { mergeOwned } from '../portfolio/annotations/management';
 import { required } from '../portfolio/required';
+import { initPublishedNotes } from './annotation-notes';
+import { initSelectionActions } from './annotation-selection';
 import {
-  anchorSelection,
+  currentPublicKey,
+  encode,
+  formText,
+  initAnnotationBackup,
+  keys,
+  storedNotes,
+} from './annotation-identity';
+import {
   annotationBytes,
+  annotationSchema,
   type AnnotationPayload,
   type TextTarget,
 } from '../portfolio/annotations/protocol';
-const encode = (bytes: ArrayBuffer) =>
-  btoa(String.fromCharCode(...new Uint8Array(bytes)));
-interface SavedKeys {
-  privateKey: JsonWebKey;
-  publicKey: string;
-}
-async function keys(): Promise<{
-  privateKey: CryptoKey;
-  publicKey: string;
-}> {
-  const raw = localStorage.getItem('annotation-key-v1');
-  if (raw) {
-    const saved = await validateManagementKeys(JSON.parse(raw));
-    return {
-      privateKey: await crypto.subtle.importKey(
-        'jwk',
-        saved.privateKey,
-        { name: 'Ed25519' },
-        false,
-        ['sign'],
-      ),
-      publicKey: saved.publicKey,
-    };
-  }
-  const pair = await crypto.subtle.generateKey({ name: 'Ed25519' }, true, [
-    'sign',
-    'verify',
-  ]);
-  const saved: SavedKeys = {
-    privateKey: await crypto.subtle.exportKey('jwk', pair.privateKey),
-    publicKey: encode(await crypto.subtle.exportKey('spki', pair.publicKey)),
-  };
-  localStorage.setItem('annotation-key-v1', JSON.stringify(saved));
-  return { privateKey: pair.privateKey, publicKey: saved.publicKey };
-}
-function storedNotes(raw: string | null): AnnotationPayload[] {
-  return z.array(annotationSchema).parse(JSON.parse(raw ?? '[]'));
-}
-/** Invalid local key material grants no ownership instead of breaking the viewer. */
-function currentPublicKey(): string | undefined {
-  try {
-    return savedKeysSchema.safeParse(
-      JSON.parse(localStorage.getItem('annotation-key-v1') ?? 'null'),
-    ).data?.publicKey;
-  } catch {
-    return undefined;
-  }
-}
-/** The Memento path resolves against the exported source so both share one origin. */
-function timeState(
-  data: DOMStringMap,
-  origin: string,
-): AnnotationTimeState | undefined {
-  const {
-    revisionHash,
-    projectionVersion,
-    projectionHash,
-    archivedAt,
-    mementoPath,
-  } = data;
-  if (
-    !revisionHash ||
-    !projectionVersion ||
-    !projectionHash ||
-    !archivedAt ||
-    !mementoPath
-  )
-    return undefined;
-  return {
-    revisionHash,
-    projectionVersion,
-    projectionHash,
-    archivedAt,
-    memento: new URL(mementoPath, origin).href,
-  };
-}
-function cleanText(node: Node): string {
-  const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, {
-    acceptNode: (n) =>
-      n.parentElement?.closest('button,template,[data-annotation-marker]')
-        ? NodeFilter.FILTER_REJECT
-        : NodeFilter.FILTER_ACCEPT,
-  });
-  let text = '';
-  let next: Node | null;
-  while ((next = walker.nextNode())) text += next.textContent ?? '';
-  return text;
-}
+
 export function initAnnotations(): void {
   for (const root of document.querySelectorAll<HTMLElement>(
     '[data-annotations]',
@@ -128,129 +33,10 @@ export function initAnnotations(): void {
       '[data-annotation-controls]',
     );
     if (controls) controls.hidden = false;
-    const identity = root.querySelector<HTMLFormElement>(
-      '[data-annotation-identity]',
-    );
-    identity?.addEventListener('submit', (event) => {
-      event.preventDefault();
-    });
-    const backupStatus = root.querySelector<HTMLElement>(
-      '[data-annotation-backup-status]',
-    );
-    let recovering = false;
-    root
-      .querySelector('[data-annotation-backup-export]')
-      ?.addEventListener('click', () => {
-        if (recovering) return;
-        recovering = true;
-        void (async () => {
-          try {
-            if (backupStatus)
-              backupStatus.textContent = 'Preparing encrypted backup…';
-            await keys();
-            const saved = savedKeysSchema.parse(
-              JSON.parse(localStorage.getItem('annotation-key-v1') ?? 'null'),
-            );
-            const notes: AnnotationPayload[] = [];
-            for (let index = 0; index < localStorage.length; index++) {
-              const name = localStorage.key(index);
-              if (name?.startsWith('annotation-own:'))
-                notes.push(...storedNotes(localStorage.getItem(name)));
-            }
-            const encrypted = await encryptManagement(
-              saved,
-              notes,
-              formText(required(identity), 'recovery'),
-            );
-            const url = URL.createObjectURL(
-              new Blob([encrypted], { type: 'application/json' }),
-            );
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'annotation-identity.encrypted.json';
-            link.click();
-            setTimeout(() => {
-              URL.revokeObjectURL(url);
-            }, 1000);
-            const recovery =
-              identity?.querySelector<HTMLInputElement>('[name="recovery"]');
-            if (recovery) recovery.value = '';
-            if (backupStatus)
-              backupStatus.textContent =
-                'Encrypted backup downloaded. Keep the file and passphrase safe.';
-          } catch {
-            if (backupStatus)
-              backupStatus.textContent =
-                'Could not create the backup. Use a passphrase of at least 12 characters.';
-          } finally {
-            recovering = false;
-          }
-        })();
-      });
-    root
-      .querySelector('[data-annotation-backup-import]')
-      ?.addEventListener('click', () => {
-        if (recovering) return;
-        recovering = true;
-        void (async () => {
-          try {
-            const file =
-              identity?.querySelector<HTMLInputElement>('[name="backup"]')
-                ?.files?.[0];
-            if (!file || file.size > maxEncryptedBackupLength)
-              throw new Error('Invalid backup file');
-            if (backupStatus)
-              backupStatus.textContent = 'Restoring encrypted backup…';
-            const restored = await decryptManagement(
-              await file.text(),
-              formText(required(identity), 'recovery'),
-            );
-            const updates = new Map<string, string>();
-            for (const note of restored.notes) {
-              const name = `annotation-own:${note.logId}`;
-              const current = storedNotes(
-                updates.get(name) ?? localStorage.getItem(name),
-              );
-              updates.set(name, JSON.stringify(mergeOwned(current, [note])));
-            }
-            updates.set('annotation-key-v1', JSON.stringify(restored.keys));
-            const before = new Map(
-              [...updates.keys()].map((name) => [
-                name,
-                localStorage.getItem(name),
-              ]),
-            );
-            try {
-              for (const [name, value] of updates)
-                localStorage.setItem(name, value);
-            } catch (error) {
-              for (const [name, value] of before) {
-                if (value === null) localStorage.removeItem(name);
-                else localStorage.setItem(name, value);
-              }
-              throw error;
-            }
-            const recovery =
-              identity.querySelector<HTMLInputElement>('[name="recovery"]');
-            if (recovery) recovery.value = '';
-            window.dispatchEvent(new Event('annotation-owned-changed'));
-            window.dispatchEvent(new Event('annotation-published-changed'));
-            if (backupStatus)
-              backupStatus.textContent =
-                'Annotation identity restored on this device.';
-          } catch {
-            if (backupStatus)
-              backupStatus.textContent =
-                'Could not restore this backup. Check the file and recovery passphrase.';
-          } finally {
-            recovering = false;
-          }
-        })();
-      });
+    initAnnotationBackup(root);
     let target: TextTarget | undefined;
     let editing: AnnotationPayload | undefined;
     let reporting = false;
-    let selectedRange: Range | undefined;
     const draftKey = `annotation-draft:${required(root.dataset['log'])}:v${required(root.dataset['revision'])}`;
     const draftSchema = z.object({
       target: annotationSchema.shape.target,
@@ -292,7 +78,7 @@ export function initAnnotations(): void {
           form.querySelector<HTMLTextAreaElement>('[name="note"]'),
         ).value = draft.body;
       const rect =
-        selectedRange?.getBoundingClientRect() ?? body.getBoundingClientRect();
+        picker.range()?.getBoundingClientRect() ?? body.getBoundingClientRect();
       const bodyRect = body.getBoundingClientRect();
       const width = Math.min(360, innerWidth - 40);
       const x =
@@ -332,13 +118,7 @@ export function initAnnotations(): void {
       form.hidePopover();
       form.hidden = true;
       document.dispatchEvent(new CustomEvent('annotation-focus'));
-      if (restore && selectedRange) {
-        const selection = getSelection();
-        selection?.removeAllRanges();
-        selection?.addRange(selectedRange.cloneRange());
-        captureSelection();
-        selectButton?.focus({ preventScroll: true });
-      }
+      if (restore) picker.restore();
     }
     form.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
@@ -389,147 +169,18 @@ export function initAnnotations(): void {
     window.addEventListener('storage', (event) => {
       if (event.key === ownKey) syncOwn();
     });
-    const selectButton = root.querySelector<HTMLButtonElement>(
-      '[data-annotation-select]',
-    );
-    const selectionActions = root.querySelector<HTMLElement>(
-      '[data-selection-actions]',
-    );
-    const copyQuote =
-      root.querySelector<HTMLButtonElement>('[data-quote-copy]');
-    const quoteStatus = root.querySelector<HTMLElement>('[data-quote-status]');
-    let selectedTarget: TextTarget | undefined;
-    let copiedTarget: TextTarget | undefined;
-    let selecting = false;
-    function captureSelection(): void {
-      if (!selectionActions || !body) return;
-      const selection = getSelection();
-      if (
-        selecting ||
-        !selection?.rangeCount ||
-        selection.isCollapsed ||
-        !body.contains(selection.getRangeAt(0).commonAncestorContainer)
-      ) {
-        selectionActions.hidden = true;
-        if (!selection?.rangeCount || selection.isCollapsed)
-          copiedTarget = undefined;
-        return;
-      }
-      if (form?.matches(':popover-open')) return;
-      const range = selection.getRangeAt(0);
-      selectedRange = range.cloneRange();
-      try {
-        const before = document.createRange();
-        before.selectNodeContents(body);
-        before.setEnd(range.startContainer, range.startOffset);
-        const start = cleanText(before.cloneContents()).length;
-        selectedTarget = anchorSelection(
-          cleanText(body),
-          start,
-          start + cleanText(range.cloneContents()).length,
-        );
-        if (
-          copiedTarget?.position.start === selectedTarget.position.start &&
-          copiedTarget.position.end === selectedTarget.position.end
-        ) {
-          selectionActions.hidden = true;
-          return;
-        }
-        copiedTarget = undefined;
-        const edge = document.createRange();
-        if (selection.focusNode) {
-          edge.setStart(selection.focusNode, selection.focusOffset);
-          edge.collapse(true);
-        }
-        const visibleRects = Array.from(range.getClientRects()).filter(
-          (rect) => rect.bottom > 112 && rect.top < innerHeight - 20,
-        );
-        const focusRect = edge.getClientRects()[0];
-        const rect =
-          focusRect &&
-          focusRect.bottom > 112 &&
-          focusRect.top < innerHeight - 20
-            ? focusRect
-            : (visibleRects.at(-1) ?? range.getBoundingClientRect());
-        selectionActions.style.setProperty(
-          '--annotation-x',
-          `${String(Math.max(20, Math.min(innerWidth - 200, rect.left)))}px`,
-        );
-        selectionActions.style.setProperty(
-          '--annotation-y',
-          `${String(rect.bottom + 64 <= innerHeight ? Math.max(112, rect.bottom + 16) : Math.max(112, rect.top - 64))}px`,
-        );
-        selectionActions.hidden = rect.bottom < 100 || rect.top > innerHeight;
-      } catch {
-        selectionActions.hidden = true;
-      }
-    }
-    if (selectionActions) {
-      selectionActions.hidden = true;
-      document.addEventListener('selectionchange', captureSelection);
-      document.addEventListener('pointerdown', (event) => {
-        if (event.target instanceof Node && body.contains(event.target)) {
-          selecting = true;
-          copiedTarget = undefined;
-          selectionActions.hidden = true;
-        }
-      });
-      document.addEventListener('pointerup', () => {
-        if (!selecting) return;
-        selecting = false;
-        captureSelection();
-      });
-      document.addEventListener('pointercancel', () => {
-        selecting = false;
-        captureSelection();
-      });
-      selectionActions.addEventListener('pointerdown', (event) => {
-        event.preventDefault();
-      });
-      window.addEventListener('resize', captureSelection);
-      copyQuote?.addEventListener('click', () => {
-        if (!selectedTarget) return;
-        const quoteTarget = selectedTarget;
-        const path = quotePath(
-          required(root.dataset['log']),
-          Number(root.dataset['revision']),
-          selectedTarget.position.start,
-          selectedTarget.position.end,
-        );
-        if (quoteStatus) quoteStatus.textContent = '';
-        void Promise.resolve()
-          .then(() =>
-            navigator.clipboard.writeText(new URL(path, location.origin).href),
-          )
-          .then(() => {
-            copiedTarget = quoteTarget;
-            captureSelection();
-            if (quoteStatus) quoteStatus.textContent = 'Quote link copied.';
-          })
-          .catch(() => {
-            if (quoteStatus)
-              quoteStatus.textContent =
-                'Could not copy the quote link. Try again.';
-          });
-      });
-      window.addEventListener(
-        'scroll',
-        () => {
-          if (!selectionActions.hidden) captureSelection();
-        },
-        { passive: true },
-      );
-      selectButton?.addEventListener('click', () => {
-        if (!selectedTarget) return;
-        target = selectedTarget;
+    const picker = initSelectionActions({
+      root,
+      body,
+      form,
+      onAnnotate(selected) {
+        target = selected;
         editing = undefined;
         reporting = false;
         updateAction();
-        selectionActions.hidden = true;
         openComposer();
-      });
-      captureSelection();
-    }
+      },
+    });
     root
       .querySelector('[data-annotation-cancel]')
       ?.addEventListener('click', () => {
@@ -622,208 +273,49 @@ export function initAnnotations(): void {
       if (!noteViewer.matches(':popover-open'))
         document.dispatchEvent(new CustomEvent('annotation-focus'));
     });
-    let loadSequence = 0;
-    async function loadPublished(): Promise<void> {
-      if (!body || !form || !status) return;
-      const sequence = ++loadSequence;
-      try {
-        const response = await fetch(
-          `/api/annotations?${new URLSearchParams({ log: required(root.dataset['log']), v: required(root.dataset['revision']) })}`,
-        );
-        if (!response.ok) return;
-        const data = z
-          .object({ annotations: z.array(annotationSchema) })
-          .parse(await response.json());
-        if (sequence !== loadSequence) return;
-        root.querySelectorAll('[data-annotation-marker]').forEach((marker) => {
-          marker.remove();
-        });
-        const viewer = root.querySelector<HTMLElement>(
-          '[data-annotation-viewer]',
-        );
-        const template = root.querySelector<HTMLTemplateElement>(
-          '[data-annotation-marker-template]',
-        );
-        const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, {
-          acceptNode: (n) =>
-            n.parentElement?.closest('button,template')
-              ? NodeFilter.FILTER_REJECT
-              : NodeFilter.FILTER_ACCEPT,
-        });
-        const nodes: Node[] = [];
-        let node: Node | null;
-        while ((node = walker.nextNode())) nodes.push(node);
-        for (const note of data.annotations) {
-          if (note.revisionHash !== root.dataset['revisionHash']) continue;
-          const position = locateAnnotation(cleanText(body), note.target);
-          if (!position) continue;
-          let offset = 0;
-          const endNode = nodes.find((n) => {
-            offset += (n.textContent ?? '').length;
-            return offset >= position.end;
-          });
-          const anchor = endNode?.parentElement?.closest(
-            'p,li,h2,h3,h4,blockquote,pre',
-          );
-          const marker = template?.content.firstElementChild?.cloneNode(true);
-          if (!anchor || !(marker instanceof HTMLButtonElement) || !viewer)
-            continue;
-          marker.dataset['annotationId'] = note.id;
-          marker.dataset['start'] = String(position.start);
-          marker.dataset['end'] = String(position.end);
-          marker.textContent = `Read note: ${note.body.slice(0, 60)}`;
-          marker.hidden = true;
-          marker.setAttribute(
-            'aria-label',
-            `Read annotation on ${note.target.quote.exact.slice(0, 80)}`,
-          );
-          marker.addEventListener('click', () => {
-            const focus = document.createRange();
-            let base = 0;
-            let started = false;
-            for (const node of nodes) {
-              const length = node.textContent?.length ?? 0;
-              if (!started && position.start <= base + length) {
-                focus.setStart(node, Math.max(0, position.start - base));
-                started = true;
-              }
-              if (started && position.end <= base + length) {
-                focus.setEnd(node, Math.max(0, position.end - base));
-                break;
-              }
-              base += length;
-            }
-            document.dispatchEvent(
-              new CustomEvent('annotation-focus', { detail: focus }),
-            );
-
-            const quote = document.createElement('blockquote');
-            quote.textContent = note.target.quote.exact;
-            const noteBody = document.createElement('p');
-            noteBody.textContent = note.body;
-            const actionTemplate = root.querySelector<HTMLTemplateElement>(
-              '[data-annotation-action-template]',
-            );
-            const report = document.createElement('button');
-            const actionClass =
-              actionTemplate?.content.firstElementChild?.className;
-            if (typeof actionClass === 'string') report.className = actionClass;
-            report.type = 'button';
-            report.textContent = 'Report annotation';
-            report.addEventListener('click', () => {
-              editing = note;
-              reporting = true;
-              updateAction();
-              target = note.target;
-              required(
-                form.querySelector<HTMLTextAreaElement>('[name="note"]'),
-              ).value = '';
-              viewer.hidePopover();
-              openComposer();
-              status.textContent = 'Describe the issue and submit your report.';
-            });
-            const download = document.createElement('button');
-            download.type = 'button';
-            download.textContent = 'Download annotation';
-            if (typeof actionClass === 'string')
-              download.className = actionClass;
-            download.addEventListener('click', () => {
-              const canonical = document.querySelector<HTMLLinkElement>(
-                'link[rel="canonical"]',
-              )?.href;
-              const source = new URL(
-                `/log/${note.logId}`,
-                canonical ?? location.origin,
-              );
-              source.hash = `${note.logId}-v${String(note.revision)}-body`;
-              const url = URL.createObjectURL(
-                new Blob(
-                  [
-                    JSON.stringify(
-                      webAnnotation(
-                        note,
-                        source.href,
-                        cleanText(body),
-                        timeState(root.dataset, source.origin),
-                      ),
-                      null,
-                      2,
-                    ),
-                  ],
-                  { type: 'application/ld+json' },
-                ),
-              );
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = `annotation-${note.id}.jsonld`;
-              link.click();
-              setTimeout(() => {
-                URL.revokeObjectURL(url);
-              }, 1000);
-            });
-            const close = document.createElement('button');
-            close.type = 'button';
-            close.textContent = 'Close annotation';
-            if (typeof actionClass === 'string') close.className = actionClass;
-            close.addEventListener('click', () => {
-              viewer.hidePopover();
-              marker.focus();
-            });
-            const actions: HTMLButtonElement[] = [];
-            if (
-              own.some(
-                (p) =>
-                  p.id === note.id &&
-                  p.publicKey === note.publicKey &&
-                  currentPublicKey() === note.publicKey,
-              )
-            ) {
-              for (const action of ['edit', 'withdraw'] as const) {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.textContent =
-                  action === 'edit' ? 'Edit annotation' : 'Withdraw annotation';
-                if (typeof actionClass === 'string')
-                  button.className = actionClass;
-                button.addEventListener('click', () => {
-                  editing = note;
-                  reporting = false;
-                  target = note.target;
-                  required(
-                    form.querySelector<HTMLTextAreaElement>('[name="note"]'),
-                  ).value = note.body;
-                  required(
-                    form.querySelector<HTMLSelectElement>('[name="action"]'),
-                  ).value = action;
-                  viewer.hidePopover();
-                  if (action === 'withdraw') void submit();
-                  else {
-                    updateAction();
-                    openComposer();
-                  }
-                });
-                actions.push(button);
-              }
-            }
-            viewer.replaceChildren(
-              quote,
-              noteBody,
-              ...actions,
-              report,
-              download,
-              close,
-            );
-            viewer.showPopover();
-          });
-          root.querySelector('[data-annotation-notes]')?.append(marker);
+    const notes = initPublishedNotes({
+      root,
+      body,
+      viewer: noteViewer,
+      isOwn: (note) =>
+        own.some(
+          (p) =>
+            p.id === note.id &&
+            p.publicKey === note.publicKey &&
+            currentPublicKey() === note.publicKey,
+        ),
+      onReport(note) {
+        editing = note;
+        reporting = true;
+        updateAction();
+        target = note.target;
+        required(
+          form.querySelector<HTMLTextAreaElement>('[name="note"]'),
+        ).value = '';
+        openComposer();
+        status.textContent = 'Describe the issue and submit your report.';
+      },
+      onManage(note, action) {
+        editing = note;
+        reporting = false;
+        target = note.target;
+        required(
+          form.querySelector<HTMLTextAreaElement>('[name="note"]'),
+        ).value = note.body;
+        required(
+          form.querySelector<HTMLSelectElement>('[name="action"]'),
+        ).value = action;
+        if (action === 'withdraw') void submit();
+        else {
+          updateAction();
+          openComposer();
         }
-      } catch {
-        /* Article remains readable. */
-      }
-    }
-    if (root.dataset['annotationEnabled'] === 'true') void loadPublished();
+      },
+    });
+    const enabled = root.dataset['annotationEnabled'] === 'true';
+    if (enabled) void notes.reload();
     window.addEventListener('annotation-published-changed', () => {
-      if (root.dataset['annotationEnabled'] === 'true') void loadPublished();
+      if (enabled) void notes.reload();
     });
   }
 }

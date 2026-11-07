@@ -1,8 +1,6 @@
+import { loadSiteTrust, loadPublicationChain } from './trust';
 import { readJsonFile, writeJsonFile } from '../src/server/json-file';
-import { readFile } from 'node:fs/promises';
 import ots from 'opentimestamps';
-import { verifyLogPublicationChain } from '../src/portfolio/log-publications';
-import { loadConfiguredKeyTrust } from '../src/portfolio/key-history';
 import {
   publicationCheckpoint,
   compareCheckpoint,
@@ -22,15 +20,8 @@ if (
   throw new Error(
     'Usage: bun run checkpoints export | compare <saved-file> | stamp | upgrade | --check',
   );
-const publicKey = await readFile('public/pgp.asc', 'utf8');
-const trust = await loadConfiguredKeyTrust(
-  publicKey,
-  await readJsonFile('src/content/key-history.json'),
-);
-const publications = await verifyLogPublicationChain(
-  await readJsonFile('src/content/log-publications.json'),
-  trust,
-);
+const trust = await loadSiteTrust();
+const publications = await loadPublicationChain(trust);
 if (command === 'export')
   console.log(JSON.stringify(publicationCheckpoint(publications), null, 2));
 else if (command === 'compare') {

@@ -2,6 +2,7 @@
 import * as stylex from '@stylexjs/stylex';
 import { edge } from '../../styles/edge';
 import Icon from '../Icon.astro';
+import TrackItem from './TrackItem.astro';
 import { embeds as styles, recentMarker } from '../../styles/embeds';
 import type { Embed } from '../../portfolio/embeds';
 interface Props {
@@ -57,19 +58,8 @@ const time = (ms: number) =>
       hidden={!embed.items.length}
     >
       <ul {...stylex.attrs(styles.list)} hidden={!embed.items.length}>
-        {embed.items.map((track) => (
-          <li {...stylex.attrs(styles.recentItem)}>
-            <a
-              {...stylex.attrs(styles.link)}
-              href={track.href}
-              rel="noreferrer"
-            >
-              {track.title}
-            </a>
-            {track.detail && (
-              <span {...stylex.attrs(styles.detail)}>{track.detail}</span>
-            )}
-          </li>
+        {embed.items.map((item) => (
+          <TrackItem track={item} />
         ))}
       </ul>
       <div
@@ -114,15 +104,8 @@ const time = (ms: number) =>
   >
     <h3 {...stylex.attrs(styles.recentHeading)}>Recent</h3>
     <ol {...stylex.attrs(styles.list, styles.recentList)}>
-      {recent.map((track) => (
-        <li {...stylex.attrs(styles.recentItem)}>
-          <a {...stylex.attrs(styles.link)} href={track.href} rel="noreferrer">
-            {track.title}
-          </a>
-          {track.detail && (
-            <span {...stylex.attrs(styles.detail)}>{track.detail}</span>
-          )}
-        </li>
+      {recent.map((item) => (
+        <TrackItem track={item} />
       ))}
     </ol>
   </div>
@@ -131,19 +114,8 @@ const time = (ms: number) =>
       <details {...stylex.attrs(styles.spotifyRecent)}>
         <summary {...stylex.attrs(styles.moreSummary)}>Recent tracks</summary>
         <ol {...stylex.attrs(styles.list, styles.recentList)}>
-          {recent.map((track) => (
-            <li {...stylex.attrs(styles.recentItem)}>
-              <a
-                {...stylex.attrs(styles.link)}
-                href={track.href}
-                rel="noreferrer"
-              >
-                {track.title}
-              </a>
-              {track.detail && (
-                <span {...stylex.attrs(styles.detail)}>{track.detail}</span>
-              )}
-            </li>
+          {recent.map((item) => (
+            <TrackItem track={item} />
           ))}
         </ol>
       </details>

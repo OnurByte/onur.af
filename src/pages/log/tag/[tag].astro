@@ -5,19 +5,25 @@ import Layout from '../../../layouts/Layout.astro';
 import LogCard from '../../../components/LogCard.astro';
 import { styles } from '../../../styles/pages';
 import { logStyles } from '../../../styles/log';
-import { logTags, logTagIndexable } from '../../../portfolio/log-tags';
+import {
+  logTags,
+  logTagIndexable,
+  logTagUrl,
+} from '../../../portfolio/log-tags';
 import { logTagDefinitions } from '../../../portfolio/log';
-import { logTagUrl } from '../../../portfolio/log-tags';
 import { getLogSignatures } from '../../../portfolio/verified-signatures';
 export function getStaticPaths() {
   return Object.keys(logTagDefinitions).map((tag) => ({ params: { tag } }));
 }
-const tag = logTags().find((tag) => tag.slug === Astro.params['tag']);
+const available = logTags();
 const slug = Astro.params['tag']!;
 const definition = logTagDefinitions[slug];
 if (!definition) return Astro.rewrite('/404');
-const subject = tag ?? { slug, ...definition, entries: [] };
-const available = logTags();
+const subject = available.find((tag) => tag.slug === slug) ?? {
+  slug,
+  ...definition,
+  entries: [],
+};
 const broader = available.find((item) => item.slug === subject.broader);
 const narrower = available.filter((item) => item.broader === subject.slug);
 const related = available.filter((item) =>

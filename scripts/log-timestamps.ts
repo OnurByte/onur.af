@@ -1,11 +1,12 @@
+import { loadSiteTrust, loadPublicationChain } from './trust';
 import { readJsonFile, writeJsonFile } from '../src/server/json-file';
 import ots from 'opentimestamps';
-import { readFile } from 'node:fs/promises';
 import { logEntries, getLogEntryById } from '../src/portfolio/log';
-import { digest, verifyLogSignatures } from '../src/portfolio/log-signatures';
-import { revisionPublicationSequences } from '../src/portfolio/log-signatures';
-import { verifyLogPublicationChain } from '../src/portfolio/log-publications';
-import { loadConfiguredKeyTrust } from '../src/portfolio/key-history';
+import {
+  digest,
+  verifyLogSignatures,
+  revisionPublicationSequences,
+} from '../src/portfolio/log-signatures';
 import {
   detachedLogRevision,
   validateLogTimestamps,
@@ -32,22 +33,8 @@ export async function upgradeReceipts(
 }
 async function main() {
   const target = new URL('../src/content/log-timestamps.json', import.meta.url);
-  const publicKey = await readFile(
-    new URL('../public/pgp.asc', import.meta.url),
-    'utf8',
-  );
-  const trust = await loadConfiguredKeyTrust(
-    publicKey,
-    await readJsonFile(
-      new URL('../src/content/key-history.json', import.meta.url),
-    ),
-  );
-  const publications = await verifyLogPublicationChain(
-    await readJsonFile(
-      new URL('../src/content/log-publications.json', import.meta.url),
-    ),
-    trust,
-  );
+  const trust = await loadSiteTrust();
+  const publications = await loadPublicationChain(trust);
   const sequences = revisionPublicationSequences(publications, logEntries);
   const signatures = await readJsonFile(
     new URL('../src/content/log-signatures.json', import.meta.url),

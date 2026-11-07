@@ -1,5 +1,6 @@
+import { loadSiteTrust } from './trust';
+import { runCli } from './cli';
 import { readJsonFile, writeJsonFile } from '../src/server/json-file';
-import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { readKey } from 'openpgp';
 import { logProofStoreSchema, proofDigest } from '../src/portfolio/log-proof';
@@ -13,30 +14,18 @@ import {
 import { logEntries } from '../src/portfolio/log';
 import {
   assertAllLogRevisionsSigned,
+  revisionPublicationSequences,
   verifyLogSignatures,
 } from '../src/portfolio/log-signatures';
 import { verifyBytes } from '../src/portfolio/proofs';
-import {
-  loadConfiguredKeyTrust,
-  resolveTrustedCertificate,
-} from '../src/portfolio/key-history';
-import { revisionPublicationSequences } from '../src/portfolio/log-signatures';
+import { resolveTrustedCertificate } from '../src/portfolio/key-history';
 import { signXmlWithGpg } from '../src/portfolio/rss-signing';
 import signatureArtifacts from '../src/content/log-signatures.json' with { type: 'json' };
 
 const storeFile = fileURLToPath(
   new URL('../src/content/log-publications.json', import.meta.url),
 );
-const publicKeyFile = new URL('../public/pgp.asc', import.meta.url);
 const [command, ...extra] = process.argv.slice(2);
-
-async function readStore(): Promise<unknown> {
-  return await readJsonFile(storeFile);
-}
-
-async function writeStore(input: unknown) {
-  await writeJsonFile(storeFile, input);
-}
 
 function liveEntries(
   proofDigests: Record<string, string>,
@@ -82,12 +71,8 @@ async function main() {
   if (extra.length || (command !== 'append' && command !== '--check'))
     throw new Error('Usage: bun scripts/log-publications.ts append | --check');
 
-  const publicKey = await readFile(publicKeyFile, 'utf8');
-  const trust = await loadConfiguredKeyTrust(
-    publicKey,
-    await readJsonFile('src/content/key-history.json'),
-  );
-  const store = await readStore();
+  const trust = await loadSiteTrust();
+  const store = await readJsonFile(storeFile);
   const chain = await verifyLogPublicationChain(store, trust);
   const sequences = revisionPublicationSequences(chain, logEntries);
   const signatures = await verifyLogSignatures(
@@ -177,15 +162,10 @@ async function main() {
     ],
   };
   await verifyLogPublications(logEntries, signatures, next, trust);
-  await writeStore(next);
+  await writeJsonFile(storeFile, next);
   console.log(
     `Signed Log publication edition ${manifest.sequence} with ${manifest.entries.length} revision(s).`,
   );
 }
 
-main().catch((error: unknown) => {
-  console.error(
-    error instanceof Error ? error.message : 'Log publication failed',
-  );
-  process.exitCode = 1;
-});
+runCli(main, 'Log publication failed');

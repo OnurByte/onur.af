@@ -1,3 +1,4 @@
+import { isRecord } from '../portfolio/is-record';
 import { moneroAddress, paymentStatuses, type PaymentStatus } from './protocol';
 import { formatXmrAmount, parseXmrAmount, parseXmrAmountOrZero } from './money';
 
@@ -33,9 +34,8 @@ export interface DonationAgentClient {
 }
 
 function record(value: unknown): Record<string, unknown> {
-  if (!value || typeof value !== 'object' || Array.isArray(value))
-    throw new Error('invalid agent response');
-  return value as Record<string, unknown>;
+  if (!isRecord(value)) throw new Error('invalid agent response');
+  return value;
 }
 
 function finiteNumber(
@@ -99,6 +99,11 @@ function agentOrder(
   };
 }
 
+function orderRequest(id: string, amount: string) {
+  if (!id || id.length > 2048) throw new Error('donation id is required');
+  return { id, expectedAmount: formatXmrAmount(parseXmrAmount(amount)) };
+}
+
 function localHttpUrl(value: string): URL {
   let url: URL;
   try {
@@ -157,8 +162,7 @@ export function createDonationAgentClient({
 
   return {
     async create(id, amount) {
-      if (!id || id.length > 2048) throw new Error('donation id is required');
-      const expectedAmount = formatXmrAmount(parseXmrAmount(amount));
+      const { expectedAmount } = orderRequest(id, amount);
       return agentOrder(
         await request('/order', {
           method: 'POST',
@@ -169,8 +173,7 @@ export function createDonationAgentClient({
       );
     },
     async recover(id, amount) {
-      if (!id || id.length > 2048) throw new Error('donation id is required');
-      const expectedAmount = formatXmrAmount(parseXmrAmount(amount));
+      const { expectedAmount } = orderRequest(id, amount);
       return agentOrder(
         await request(`/order/${encodeURIComponent(id)}`),
         id,

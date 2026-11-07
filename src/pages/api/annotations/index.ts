@@ -1,3 +1,4 @@
+import { runtimeEnv } from '../../../server/runtime-env';
 import {
   readRequestBody,
   RequestBodyTooLarge,
@@ -12,9 +13,11 @@ import {
   annotationsEnabled,
 } from '../../../server/annotations/service';
 import { z } from 'astro/zod';
-import { annotationSchema } from '../../../portfolio/annotations/protocol';
+import {
+  annotationSchema,
+  resolveSelection,
+} from '../../../portfolio/annotations/protocol';
 import { verifyAnnotation } from '../../../server/annotations/signature';
-import { resolveSelection } from '../../../portfolio/annotations/protocol';
 import { jsonResponse } from '../../../server/http';
 export const GET: APIRoute = async ({ url }) => {
   if (!annotationsEnabled())
@@ -43,9 +46,7 @@ export const POST: APIRoute = async ({ request, url, clientAddress }) => {
   )
     return jsonResponse({ error: 'Invalid request' }, 403);
   try {
-    const rateSecret =
-      process.env['ANNOTATIONS_RATE_SECRET'] ??
-      import.meta.env['ANNOTATIONS_RATE_SECRET'];
+    const rateSecret = runtimeEnv('ANNOTATIONS_RATE_SECRET');
     if (!rateSecret || rateSecret.length < 32)
       return jsonResponse({ error: 'Annotations unavailable' }, 503);
     if (

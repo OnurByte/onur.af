@@ -2,7 +2,10 @@ import { fromHtml } from 'hast-util-from-html';
 import { visit } from 'unist-util-visit';
 import { unified } from 'unified';
 import rehypeStringify from 'rehype-stringify';
-import { projectionText } from '../src/portfolio/text-projection';
+import {
+  projectionText,
+  revisionProjection,
+} from '../src/portfolio/text-projection';
 import { test, expect } from 'bun:test';
 import {
   selectMemento,
@@ -13,7 +16,6 @@ import {
   timeMap,
 } from '../src/portfolio/memento';
 import { logEntries } from '../src/portfolio/log';
-import { revisionProjection } from '../src/portfolio/text-projection';
 const entry = logEntries[0];
 if (!entry) throw new Error('Missing fixture');
 const snapshot = await createSnapshot(

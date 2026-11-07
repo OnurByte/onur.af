@@ -24,39 +24,42 @@ const { sources, references, prefix } = Astro.props;
       <span {...stylex.attrs(logLayout.sourceCount)}>({sources.length})</span>
     </summary>
     <ol {...stylex.attrs(logLayout.sourceList)}>
-      {sources.map((source, index) => (
-        <li id={`${prefix}source-${index + 1}`}>
-          <a {...stylex.attrs(logLayout.link)} href={source.url}>
-            {source.title.replaceAll('\u2014', '⁜')}
-          </a>
-          {archiveForSource(source.url) && (
-            <a
-              class:list={[
-                'log-source-backlink',
-                stylex.attrs(logLayout.link, logLayout.backlink).class,
-              ]}
-              href={archiveForSource(source.url)?.url}
-              title={`Archived ${archiveForSource(source.url)?.capturedAt}`}
-            >
-              Archive
+      {sources.map((source, index) => {
+        const archive = archiveForSource(source.url);
+        return (
+          <li id={`${prefix}source-${index + 1}`}>
+            <a {...stylex.attrs(logLayout.link)} href={source.url}>
+              {source.title.replaceAll('\u2014', '⁜')}
             </a>
-          )}
-          {references
-            .filter((reference) => reference.source === index + 1)
-            .map((reference) => (
+            {archive && (
               <a
                 class:list={[
                   'log-source-backlink',
                   stylex.attrs(logLayout.link, logLayout.backlink).class,
                 ]}
-                href={`#${reference.id}`}
-                aria-label={`Back to citation for source ${index + 1}`}
+                href={archive.url}
+                title={`Archived ${archive.capturedAt}`}
               >
-                ↩
+                Archive
               </a>
-            ))}
-        </li>
-      ))}
+            )}
+            {references
+              .filter((reference) => reference.source === index + 1)
+              .map((reference) => (
+                <a
+                  class:list={[
+                    'log-source-backlink',
+                    stylex.attrs(logLayout.link, logLayout.backlink).class,
+                  ]}
+                  href={`#${reference.id}`}
+                  aria-label={`Back to citation for source ${index + 1}`}
+                >
+                  ↩
+                </a>
+              ))}
+          </li>
+        );
+      })}
     </ol>
   </details>
 )}

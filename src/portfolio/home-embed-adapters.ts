@@ -28,15 +28,8 @@ export function createHomeEmbedSources(
   now: () => number = Date.now,
   { cache }: { cache?: EmbedCache } = {},
 ): readonly EmbedSource[] {
-  let lastX:
-    | { snapshot: z.infer<typeof embedSnapshotSchema>; fetchedAt: number }
-    | undefined;
-  let lastGithub:
-    | { snapshot: z.infer<typeof embedSnapshotSchema>; fetchedAt: number }
-    | undefined;
-  let xRefresh: Promise<unknown> | undefined;
-  let githubRefresh: Promise<unknown> | undefined;
   const cacheVersion = 3;
+  const freshMs = 1_800_000;
   const cacheSchema = z.object({
     snapshot: embedSnapshotSchema,
     fetchedAt: z.number().nonnegative(),
@@ -61,7 +54,7 @@ export function createHomeEmbedSources(
             )
               return undefined;
             if (id === 'x' && parsed.data.version !== cacheVersion)
-              return { ...parsed.data, fetchedAt: now() - 1_800_000 };
+              return { ...parsed.data, fetchedAt: now() - freshMs };
             return {
               ...parsed.data,
               snapshot: {
@@ -85,6 +78,47 @@ export function createHomeEmbedSources(
     } catch {
       /* Read-only storage must not discard valid upstream data. */
     }
+  }
+  type Snapshot = z.infer<typeof embedSnapshotSchema>;
+  type Items = Snapshot['items'];
+  /**
+   * Serves a fresh snapshot from memory or the cache, coalesces concurrent
+   * refreshes, and falls back to the last good items (marked stale) on failure.
+   */
+  function cachedLoader(
+    id: 'x' | 'github',
+    refresh: (signal: AbortSignal, previous?: Snapshot) => Promise<Items>,
+  ) {
+    let last: { snapshot: Snapshot; fetchedAt: number } | undefined;
+    let inflight: Promise<Snapshot> | undefined;
+    return async (signal: AbortSignal): Promise<Snapshot> => {
+      last ??= await restore(id);
+      if (last && now() - last.fetchedAt < freshMs) return last.snapshot;
+      if (inflight) return inflight;
+      inflight = (async () => {
+        try {
+          const items = await refresh(signal, last?.snapshot);
+          const fetchedAt = now();
+          const snapshot = embedSnapshotSchema.parse({
+            status: items.length ? 'ready' : 'empty',
+            items,
+            updatedAt: new Date(fetchedAt).toISOString(),
+          });
+          last = { snapshot, fetchedAt };
+          await persist(id, last);
+          return snapshot;
+        } catch (error) {
+          if (last?.snapshot.items.length)
+            return { ...last.snapshot, status: 'stale' as const };
+          throw error;
+        }
+      })();
+      try {
+        return await inflight;
+      } finally {
+        inflight = undefined;
+      }
+    };
   }
   async function gitshowPage(path: string, signal: AbortSignal) {
     const response = await request(`https://gitshow.dev/onurbyte${path}`, {
@@ -156,113 +190,55 @@ export function createHomeEmbedSources(
       title: 'Tweets',
       source: '𝕏 ⁜ @onurstirner',
       href: 'https://x.com/onurstirner',
-      async load(signal) {
-        if (!lastX) lastX = await restore('x');
-        if (lastX && now() - lastX.fetchedAt < 1_800_000) return lastX.snapshot;
-        if (xRefresh) return xRefresh;
-        xRefresh = (async () => {
-          try {
-            const timeline = await xTimeline(signal);
-            const items = uniquePosts(timeline).map((post) => ({
-              kind: 'post' as const,
-              title: '@onurstirner',
-              href: `https://x.com/onurstirner/status/${post.id}`,
-              text: post.text.trim().slice(0, 5000),
-              ...(post.likes !== undefined ? { likes: post.likes } : {}),
-              ...(post.reposts !== undefined ? { reposts: post.reposts } : {}),
-              publishedAt: new Date(
-                post.created_timestamp * 1000,
-              ).toISOString(),
-            }));
-            const fetchedAt = now();
-            const snapshot = embedSnapshotSchema.parse({
-              status: items.length ? 'ready' : 'empty',
-              items,
-              updatedAt: new Date(fetchedAt).toISOString(),
-            });
-            lastX = { snapshot, fetchedAt };
-            await persist('x', lastX);
-            return snapshot;
-          } catch (error) {
-            if (lastX?.snapshot.items.length)
-              return { ...lastX.snapshot, status: 'stale' };
-            throw error;
-          }
-        })();
-        try {
-          return await xRefresh;
-        } finally {
-          xRefresh = undefined;
-        }
-      },
+      load: cachedLoader('x', async (signal) =>
+        uniquePosts(await xTimeline(signal)).map((post) => ({
+          kind: 'post' as const,
+          title: '@onurstirner',
+          href: `https://x.com/onurstirner/status/${post.id}`,
+          text: post.text.trim().slice(0, 5000),
+          ...(post.likes !== undefined ? { likes: post.likes } : {}),
+          ...(post.reposts !== undefined ? { reposts: post.reposts } : {}),
+          publishedAt: new Date(post.created_timestamp * 1000).toISOString(),
+        })),
+      ),
     },
     {
       id: 'github',
       title: 'Repositories',
       source: 'GitHub ⁜ onurbyte',
       href: 'https://github.com/onurbyte',
-      async load(signal) {
-        if (!lastGithub) lastGithub = await restore('github');
-        if (lastGithub && now() - lastGithub.fetchedAt < 1_800_000)
-          return lastGithub.snapshot;
-        if (githubRefresh) return githubRefresh;
-        githubRefresh = (async () => {
-          try {
-            const repositories = parseGitShowRepositories(
-              await gitshowPage(
-                '',
-                AbortSignal.any([signal, AbortSignal.timeout(5000)]),
-              ),
+      load: cachedLoader('github', async (signal, previousSnapshot) => {
+        const repositories = parseGitShowRepositories(
+          await gitshowPage(
+            '',
+            AbortSignal.any([signal, AbortSignal.timeout(5000)]),
+          ),
+        );
+        return Promise.all(
+          repositories.slice(0, 5).map(async (repo) => {
+            const previous = previousSnapshot?.items.find(
+              (item) =>
+                item.kind === 'repository' &&
+                item.href.toLowerCase() === repo.html_url.toLowerCase(),
             );
-            const items = await Promise.all(
-              repositories.slice(0, 5).map(async (repo) => {
-                const previous = lastGithub?.snapshot.items.find(
-                  (item) =>
-                    item.kind === 'repository' &&
-                    item.href.toLowerCase() === repo.html_url.toLowerCase(),
-                );
-                const commits =
-                  (await commitCount(repo.name, signal)) ??
-                  (previous?.kind === 'repository'
-                    ? previous.commits
-                    : undefined);
-                return {
-                  kind: 'repository' as const,
-                  title: repo.name.slice(0, 160),
-                  href: repo.html_url,
-                  ...(repo.description?.trim()
-                    ? { detail: repo.description.trim().slice(0, 240) }
-                    : {}),
-                  ...(repo.language
-                    ? { language: repo.language.slice(0, 80) }
-                    : {}),
-                  ...(commits !== undefined
-                    ? { commits, commitWeeks: 12 }
-                    : {}),
-                };
-              }),
-            );
-            const fetchedAt = now();
-            const snapshot = embedSnapshotSchema.parse({
-              status: items.length ? 'ready' : 'empty',
-              items,
-              updatedAt: new Date(fetchedAt).toISOString(),
-            });
-            lastGithub = { snapshot, fetchedAt };
-            await persist('github', lastGithub);
-            return snapshot;
-          } catch (error) {
-            if (lastGithub?.snapshot.items.length)
-              return { ...lastGithub.snapshot, status: 'stale' };
-            throw error;
-          }
-        })();
-        try {
-          return await githubRefresh;
-        } finally {
-          githubRefresh = undefined;
-        }
-      },
+            const commits =
+              (await commitCount(repo.name, signal)) ??
+              (previous?.kind === 'repository' ? previous.commits : undefined);
+            return {
+              kind: 'repository' as const,
+              title: repo.name.slice(0, 160),
+              href: repo.html_url,
+              ...(repo.description?.trim()
+                ? { detail: repo.description.trim().slice(0, 240) }
+                : {}),
+              ...(repo.language
+                ? { language: repo.language.slice(0, 80) }
+                : {}),
+              ...(commits !== undefined ? { commits, commitWeeks: 12 } : {}),
+            };
+          }),
+        );
+      }),
     },
   ];
 }

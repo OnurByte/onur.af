@@ -1,5 +1,6 @@
 import { randomUUID, type KeyObject } from 'node:crypto';
 import type { Pool } from 'pg';
+import { advisoryLock, inTransaction } from '../transaction';
 import {
   signCorrection,
   correctionHash,
@@ -12,12 +13,8 @@ export async function appendCorrection(
   reason: string,
   key: KeyObject,
 ): Promise<Correction> {
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
-    await client.query(
-      "SELECT pg_advisory_xact_lock(hashtextextended('witness:corrections',0))",
-    );
+  return inTransaction(pool, async (client) => {
+    await advisoryLock(client, 'witness:corrections');
     const previous = await client.query<{ record: Correction['record'] }>(
       'SELECT record FROM witness_corrections ORDER BY sequence DESC LIMIT 1',
     );
@@ -45,12 +42,6 @@ export async function appendCorrection(
         correction.signature,
       ],
     );
-    await client.query('COMMIT');
     return correction;
-  } catch (error) {
-    await client.query('ROLLBACK');
-    throw error;
-  } finally {
-    client.release();
-  }
+  });
 }

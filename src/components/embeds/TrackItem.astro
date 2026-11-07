@@ -1,0 +1,15 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { embeds as styles } from '../../styles/embeds';
+interface Props {
+  track: { href: string; title: string; detail?: string | undefined };
+}
+const { track } = Astro.props;
+---
+
+<li {...stylex.attrs(styles.recentItem)}>
+  <a {...stylex.attrs(styles.link)} href={track.href} rel="noreferrer">
+    {track.title}
+  </a>
+  {track.detail && <span {...stylex.attrs(styles.detail)}>{track.detail}</span>}
+</li>

@@ -1,7 +1,7 @@
 import { expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
-import { annotationSchema } from '../../src/portfolio/annotations/protocol';
 import {
+  annotationSchema,
   anchorSelection,
   resolveSelection,
   annotationBytes,

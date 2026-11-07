@@ -168,7 +168,11 @@ export async function socialImageResponse(page: string | undefined, url: URL) {
   if (!page || !publicPreviewByKey(page))
     return new Response('Not found', { status: 404 });
   const indices = url.searchParams.getAll('m');
-  if (indices.length > 1 || (indices.length && !/^[0-2]$/.test(indices[0]!)))
+  if (
+    indices.length > 1 ||
+    (indices.length &&
+      !(/^[0-9]$/.test(indices[0]!) && Number(indices[0]) < mottos.length))
+  )
     return new Response('Invalid motto', { status: 400 });
   const revisions = url.searchParams.getAll('r');
   const initial = publicPreviewByKey(page);

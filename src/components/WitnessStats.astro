@@ -24,19 +24,20 @@ try {
 } catch {
   rangeError = true;
 }
-const state = await witnessStats(logId, periodDays(period), range);
-const chart =
-  state.status === 'available'
-    ? dailySeries(
-        state.stats.days,
-        range
-          ? Math.round(
-              (Date.parse(range.to) - Date.parse(range.from)) / 86400000,
-            ) + 1
-          : periodDays(period),
-        range?.to ?? state.stats.asOf.slice(0, 10),
-      )
-    : undefined;
+const selectedDays = periodDays(period);
+const state = await witnessStats(logId, selectedDays, range);
+const stats = state.status === 'available' ? state.stats : undefined;
+const chart = stats
+  ? dailySeries(
+      stats.days,
+      range
+        ? Math.round(
+            (Date.parse(range.to) - Date.parse(range.from)) / 86400000,
+          ) + 1
+        : selectedDays,
+      range?.to ?? stats.asOf.slice(0, 10),
+    )
+  : undefined;
 let annotationCount: number | undefined;
 if (annotationsEnabled()) {
   try {
@@ -49,18 +50,14 @@ if (annotationsEnabled()) {
     /* Independent annotation failures do not hide witness evidence. */
   }
 }
-const activeDays = state.status === 'available' ? state.stats.days.length : 0;
-const peak =
-  state.status === 'available'
-    ? [...state.stats.days].sort(
-        (a, b) => b.count - a.count || a.day.localeCompare(b.day),
-      )[0]
-    : undefined;
+const activeDays = stats?.days.length ?? 0;
+const peak = stats
+  ? [...stats.days].sort(
+      (a, b) => b.count - a.count || a.day.localeCompare(b.day),
+    )[0]
+  : undefined;
 const periodDaysCount = chart?.days.length ?? 0;
-const average =
-  state.status === 'available' && periodDaysCount
-    ? state.stats.unique / periodDaysCount
-    : 0;
+const average = stats && periodDaysCount ? stats.unique / periodDaysCount : 0;
 const share = (count: number, total: number) =>
   total
     ? `${((count / total) * 100).toLocaleString('en-US', { maximumFractionDigits: 1 })}%`
@@ -69,11 +66,8 @@ const periodLabel = range
   ? `${range.from} to ${range.to}`
   : period === 'all'
     ? 'All time'
-    : `Last ${String(periodDays(period))} days`;
-const chartMax =
-  state.status === 'available'
-    ? Math.max(1, ...state.stats.days.map((day) => day.count))
-    : 1;
+    : `Last ${String(selectedDays)} days`;
+const chartMax = Math.max(1, ...(stats?.days.map((day) => day.count) ?? []));
 const number = (value: number) => value.toLocaleString('en-US');
 ---
 

@@ -1,0 +1,18 @@
+---
+import * as stylex from '@stylexjs/stylex';
+import { logLayout } from '../styles/log-layout';
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+---
+
+<nav
+  class:list={['log-connections', stylex.attrs(logLayout.connections).class]}
+  aria-label={label}
+>
+  <h2 {...stylex.attrs(logLayout.connectionHeading)}>{label}</h2>
+  <ul {...stylex.attrs(logLayout.list)}>
+    <slot />
+  </ul>
+</nav>

@@ -1,12 +1,9 @@
+import { loadSiteTrust, loadPublicationChain } from './trust';
+import { runCli } from './cli';
 import { readJsonFile, writeJsonFile } from '../src/server/json-file';
-import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { readKey } from 'openpgp';
-import {
-  loadConfiguredKeyTrust,
-  resolveTrustedCertificate,
-} from '../src/portfolio/key-history';
-import { verifyLogPublicationChain } from '../src/portfolio/log-publications';
+import { resolveTrustedCertificate } from '../src/portfolio/key-history';
 import {
   logEntries,
   getLogEntryById,
@@ -41,18 +38,8 @@ async function save(name: string, data: unknown) {
   await writeJsonFile(target, data);
 }
 async function main() {
-  const publicKey = await readFile(
-    new URL('../public/pgp.asc', import.meta.url),
-    'utf8',
-  );
-  const trust = await loadConfiguredKeyTrust(
-    publicKey,
-    await readJsonFile(file('key-history')),
-  );
-  const publications = await verifyLogPublicationChain(
-    await readJsonFile(file('log-publications')),
-    trust,
-  );
+  const trust = await loadSiteTrust();
+  const publications = await loadPublicationChain(trust);
   const sequences = revisionPublicationSequences(publications, logEntries);
   const nextPublicationSequence =
     (publications.latest?.manifest.sequence ?? 0) + 1;
@@ -176,9 +163,4 @@ async function main() {
     'Usage: bun scripts/proofs.ts --check | log <id> [version] | identity-statement | identity <x|github> [proof-url]',
   );
 }
-main().catch((error: unknown) => {
-  console.error(
-    error instanceof Error ? error.message : 'Proof publishing failed',
-  );
-  process.exitCode = 1;
-});
+runCli(main, 'Proof publishing failed');

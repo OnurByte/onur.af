@@ -1,4 +1,5 @@
 import type { Pool } from 'pg';
+import { inTransaction } from '../transaction';
 import { randomUUID } from 'node:crypto';
 import type {
   MentionTarget,
@@ -107,9 +108,7 @@ export class WebmentionStore {
     ]);
   }
   async block(origin: string): Promise<void> {
-    const client = await this.pool.connect();
-    try {
-      await client.query('BEGIN');
+    await inTransaction(this.pool, async (client) => {
       await client.query(
         'INSERT INTO webmention_blocked_sources VALUES($1) ON CONFLICT DO NOTHING',
         [origin],
@@ -118,13 +117,7 @@ export class WebmentionStore {
         "UPDATE webmentions SET moderation='blocked' WHERE source=$1 OR left(source,length($1)+1)=$2",
         [origin, `${origin}/`],
       );
-      await client.query('COMMIT');
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
+    });
   }
   async visible(logId: string): Promise<VisibleMention[]> {
     const result = await this.pool.query<VisibleMention>(

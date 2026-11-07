@@ -1,5 +1,10 @@
 import { z } from 'astro/zod';
-import { witnessEventSchema } from './protocol';
+import {
+  witnessEventSchema,
+  eventHash,
+  merkleTree,
+  type WitnessEvent,
+} from './protocol';
 export const batchEvidenceSchema = z.strictObject({
   manifest: z.strictObject({
     format: z.literal('onur-witness-batch-v1'),
@@ -17,8 +22,13 @@ export const batchEvidenceSchema = z.strictObject({
   signature: z.string().max(1024),
 });
 import { required } from '../required';
-import { createHash, sign, verify, type KeyObject } from 'node:crypto';
-import { eventHash, merkleTree, type WitnessEvent } from './protocol';
+import {
+  createHash,
+  sign,
+  verify,
+  type KeyObject,
+  createPublicKey,
+} from 'node:crypto';
 export interface BatchManifest {
   format: 'onur-witness-batch-v1';
   id: string;
@@ -55,7 +65,6 @@ function keyId(key: KeyObject): string {
     .update(publicKey.export({ type: 'spki', format: 'der' }))
     .digest('hex');
 }
-import { createPublicKey } from 'node:crypto';
 function requirePublic(key: KeyObject): KeyObject {
   return createPublicKey(key);
 }

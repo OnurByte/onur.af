@@ -13,8 +13,8 @@ import {
   validateKeyHistory,
   type KeyTransition,
 } from '../src/portfolio/key-history';
-import { verifyBytes } from '../src/portfolio/proofs';
 import {
+  verifyBytes,
   canonicalIdentityStatement,
   verifyIdentitySignature,
   verifyIdentityStatement,

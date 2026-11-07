@@ -1,3 +1,4 @@
+import { runtimeEnv } from '../../server/runtime-env';
 import type { APIRoute } from 'astro';
 import { resolveMentionTarget } from '../../portfolio/inbound-webmention';
 import { validatePublicUrl } from '../../portfolio/public-request';
@@ -29,9 +30,7 @@ export async function handleWebmention({
   )
     return jsonResponse({ error: 'Expected form data' }, 415);
   try {
-    const secret =
-      process.env['WEBMENTIONS_RATE_SECRET'] ??
-      import.meta.env['WEBMENTIONS_RATE_SECRET'];
+    const secret = runtimeEnv('WEBMENTIONS_RATE_SECRET');
     if (!secret || secret.length < 32)
       return jsonResponse({ error: 'Webmentions unavailable' }, 503);
     const store = webmentionStore();

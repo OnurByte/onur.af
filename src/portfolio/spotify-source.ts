@@ -2,12 +2,12 @@ import { z } from 'astro/zod';
 import type { EmbedSource } from './embed-sources';
 import type { EmbedCache } from './embed-cache';
 import { embedSnapshotSchema, trackItemSchema } from './embeds';
+import { discordUserId } from './identity-accounts';
 
-const discordId = '1434953668959932426';
 const presenceSchema = z.object({
   success: z.literal(true),
   data: z.object({
-    discord_user: z.object({ id: z.literal(discordId) }),
+    discord_user: z.object({ id: z.literal(discordUserId) }),
     listening_to_spotify: z.boolean(),
     spotify: z
       .object({
@@ -87,7 +87,7 @@ export function createSpotifySource(
         let current: Track | undefined;
         try {
           const response = await request(
-            `https://api.lanyard.rest/v1/users/${discordId}`,
+            `https://api.lanyard.rest/v1/users/${discordUserId}`,
             {
               signal: AbortSignal.any([signal, AbortSignal.timeout(5000)]),
               headers: { Accept: 'application/json' },

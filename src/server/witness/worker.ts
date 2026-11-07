@@ -1,6 +1,7 @@
 import { required } from '../../portfolio/required';
 import { randomUUID, type KeyObject } from 'node:crypto';
 import type { Pool } from 'pg';
+import { advisoryLock, inTransaction } from '../transaction';
 import {
   buildBatch,
   manifestHash,
@@ -16,21 +17,14 @@ export async function sealBatch(
   pool: Pool,
   key: KeyObject,
 ): Promise<BatchEvidence | null> {
-  const client = await pool.connect();
-  try {
-    await client.query('BEGIN');
-    await client.query(
-      "SELECT pg_advisory_xact_lock(hashtextextended('witness:batch-worker',0))",
-    );
+  return inTransaction(pool, async (client) => {
+    await advisoryLock(client, 'witness:batch-worker');
     const rows = await client.query<{
       record: WitnessEvent;
     }>(
       'SELECT record FROM witness_events WHERE batch_id IS NULL ORDER BY id LIMIT 10000 FOR UPDATE',
     );
-    if (!rows.rowCount) {
-      await client.query('COMMIT');
-      return null;
-    }
+    if (!rows.rowCount) return null;
     const previous = await client.query<{
       manifest: BatchManifest;
     }>('SELECT manifest FROM witness_batches ORDER BY sequence DESC LIMIT 1');
@@ -63,14 +57,8 @@ export async function sealBatch(
           required(evidence.events[i]).eventId,
         ],
       );
-    await client.query('COMMIT');
     return evidence;
-  } catch (error) {
-    await client.query('ROLLBACK');
-    throw error;
-  } finally {
-    client.release();
-  }
+  });
 }
 export async function readBatch(
   pool: Pool,

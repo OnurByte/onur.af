@@ -1,8 +1,6 @@
+import { isRecord } from './is-record';
 import type { Embed } from './embeds';
 type Track = NonNullable<Embed['recentTracks']>[number];
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
 const record = (value: unknown): Record<string, unknown> => {
   if (!isRecord(value)) throw new Error('Invalid Spotify response');
   return value;
