@@ -29,18 +29,42 @@ export function locateAnnotation(
   }
   return match;
 }
+export interface AnnotationTimeState {
+  revisionHash: string;
+  projectionVersion: string;
+  projectionHash: string;
+  archivedAt: string;
+  memento: string;
+}
 export function webAnnotation(
   note: AnnotationPayload,
   source: string,
   text: string,
+  state?: AnnotationTimeState,
 ) {
+  if (
+    state &&
+    (state.revisionHash !== note.revisionHash ||
+      !/^[a-f0-9]{64}$/.test(state.projectionHash) ||
+      !Number.isFinite(Date.parse(state.archivedAt)) ||
+      state.projectionVersion !== 'onur-text-v1' ||
+      state.memento !==
+        new URL(`/log/${note.logId}/memento/v${String(note.revision)}`, source)
+          .href)
+  )
+    throw new Error('Historical annotation identity does not match');
   const position = locateAnnotation(text, note.target);
   if (!position)
     throw new Error('Annotation target does not match this revision');
   const wellFormed = (value: string) =>
     value.replace(/^[\uDC00-\uDFFF]|[\uD800-\uDBFF]$/g, '');
   return {
-    '@context': 'http://www.w3.org/ns/anno.jsonld',
+    '@context': state
+      ? [
+          'http://www.w3.org/ns/anno.jsonld',
+          { onur: 'https://onur.af/ns/publishing#' },
+        ]
+      : 'http://www.w3.org/ns/anno.jsonld',
     id: `urn:uuid:${note.id}`,
     type: 'Annotation',
     motivation: 'commenting',
@@ -48,6 +72,18 @@ export function webAnnotation(
     target: {
       type: 'SpecificResource',
       source,
+      ...(state
+        ? {
+            state: {
+              type: 'TimeState',
+              sourceDate: state.archivedAt,
+              cached: `${state.memento}#${note.logId}-v${String(note.revision)}-body`,
+            },
+            'onur:revisionHash': state.revisionHash,
+            'onur:projectionVersion': state.projectionVersion,
+            'onur:projectionHash': state.projectionHash,
+          }
+        : {}),
       selector: [
         {
           type: 'TextQuoteSelector',

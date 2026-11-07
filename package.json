@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "test": "bun test",
-    "build": "bun run key-history:verify && bun run proofs:verify && bun run rss:verify && bun run timestamps:verify && bun run log-publications:verify && bun run checkpoints --check && bun run sources --check && bun run derived:verify && bun run log-proofs:verify && bun run proof-verifier:build && bun run evidence:build && astro build",
+    "build": "bun run log:projections --check && bun run log:snapshots --check && bun run key-history:verify && bun run proofs:verify && bun run rss:verify && bun run timestamps:verify && bun run log-publications:verify && bun run checkpoints --check && bun run sources --check && bun run derived:verify && bun run log-proofs:verify && bun run proof-verifier:build && bun run evidence:build && astro build",
     "gateway": "bun src/gateway.ts",
     "preview": "astro preview",
     "start": "node --env-file-if-exists=.env ./dist/server/entry.mjs",
@@ -47,7 +47,11 @@
     "measure:home": "bun scripts/measure-home.ts",
     "witness": "bun scripts/witness.ts",
     "annotations": "bun scripts/annotations.ts",
-    "icons:optimize": "bun scripts/optimize-icons.ts"
+    "icons:optimize": "bun scripts/optimize-icons.ts",
+    "log:projections": "bun scripts/log-projections.ts",
+    "log:snapshots": "bun scripts/log-snapshots.ts",
+    "webmentions": "bun scripts/webmentions.ts",
+    "transparency": "bun scripts/transparency.ts"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.7",

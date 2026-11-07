@@ -8,7 +8,12 @@ import { annotationSchema } from '../portfolio/annotations/protocol';
 import {
   savedKeysSchema,
   mergeOwned,
+  encryptManagement,
+  decryptManagement,
+  validateManagementKeys,
+  maxEncryptedBackupLength,
 } from '../portfolio/annotations/management';
+import type { AnnotationTimeState } from '../portfolio/annotations/web-annotation';
 function formText(form: HTMLFormElement, name: string): string {
   const value = new FormData(form).get(name);
   return typeof value === 'string' ? value : '';
@@ -32,7 +37,7 @@ async function keys(): Promise<{
 }> {
   const raw = localStorage.getItem('annotation-key-v1');
   if (raw) {
-    const saved = savedKeysSchema.parse(JSON.parse(raw));
+    const saved = await validateManagementKeys(JSON.parse(raw));
     return {
       privateKey: await crypto.subtle.importKey(
         'jwk',
@@ -54,6 +59,47 @@ async function keys(): Promise<{
   };
   localStorage.setItem('annotation-key-v1', JSON.stringify(saved));
   return { privateKey: pair.privateKey, publicKey: saved.publicKey };
+}
+function storedNotes(raw: string | null): AnnotationPayload[] {
+  return z.array(annotationSchema).parse(JSON.parse(raw ?? '[]'));
+}
+/** Invalid local key material grants no ownership instead of breaking the viewer. */
+function currentPublicKey(): string | undefined {
+  try {
+    return savedKeysSchema.safeParse(
+      JSON.parse(localStorage.getItem('annotation-key-v1') ?? 'null'),
+    ).data?.publicKey;
+  } catch {
+    return undefined;
+  }
+}
+/** The Memento path resolves against the exported source so both share one origin. */
+function timeState(
+  data: DOMStringMap,
+  origin: string,
+): AnnotationTimeState | undefined {
+  const {
+    revisionHash,
+    projectionVersion,
+    projectionHash,
+    archivedAt,
+    mementoPath,
+  } = data;
+  if (
+    !revisionHash ||
+    !projectionVersion ||
+    !projectionHash ||
+    !archivedAt ||
+    !mementoPath
+  )
+    return undefined;
+  return {
+    revisionHash,
+    projectionVersion,
+    projectionHash,
+    archivedAt,
+    memento: new URL(mementoPath, origin).href,
+  };
 }
 function cleanText(node: Node): string {
   const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, {
@@ -82,6 +128,125 @@ export function initAnnotations(): void {
       '[data-annotation-controls]',
     );
     if (controls) controls.hidden = false;
+    const identity = root.querySelector<HTMLFormElement>(
+      '[data-annotation-identity]',
+    );
+    identity?.addEventListener('submit', (event) => {
+      event.preventDefault();
+    });
+    const backupStatus = root.querySelector<HTMLElement>(
+      '[data-annotation-backup-status]',
+    );
+    let recovering = false;
+    root
+      .querySelector('[data-annotation-backup-export]')
+      ?.addEventListener('click', () => {
+        if (recovering) return;
+        recovering = true;
+        void (async () => {
+          try {
+            if (backupStatus)
+              backupStatus.textContent = 'Preparing encrypted backup…';
+            await keys();
+            const saved = savedKeysSchema.parse(
+              JSON.parse(localStorage.getItem('annotation-key-v1') ?? 'null'),
+            );
+            const notes: AnnotationPayload[] = [];
+            for (let index = 0; index < localStorage.length; index++) {
+              const name = localStorage.key(index);
+              if (name?.startsWith('annotation-own:'))
+                notes.push(...storedNotes(localStorage.getItem(name)));
+            }
+            const encrypted = await encryptManagement(
+              saved,
+              notes,
+              formText(required(identity), 'recovery'),
+            );
+            const url = URL.createObjectURL(
+              new Blob([encrypted], { type: 'application/json' }),
+            );
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'annotation-identity.encrypted.json';
+            link.click();
+            setTimeout(() => {
+              URL.revokeObjectURL(url);
+            }, 1000);
+            const recovery =
+              identity?.querySelector<HTMLInputElement>('[name="recovery"]');
+            if (recovery) recovery.value = '';
+            if (backupStatus)
+              backupStatus.textContent =
+                'Encrypted backup downloaded. Keep the file and passphrase safe.';
+          } catch {
+            if (backupStatus)
+              backupStatus.textContent =
+                'Could not create the backup. Use a passphrase of at least 12 characters.';
+          } finally {
+            recovering = false;
+          }
+        })();
+      });
+    root
+      .querySelector('[data-annotation-backup-import]')
+      ?.addEventListener('click', () => {
+        if (recovering) return;
+        recovering = true;
+        void (async () => {
+          try {
+            const file =
+              identity?.querySelector<HTMLInputElement>('[name="backup"]')
+                ?.files?.[0];
+            if (!file || file.size > maxEncryptedBackupLength)
+              throw new Error('Invalid backup file');
+            if (backupStatus)
+              backupStatus.textContent = 'Restoring encrypted backup…';
+            const restored = await decryptManagement(
+              await file.text(),
+              formText(required(identity), 'recovery'),
+            );
+            const updates = new Map<string, string>();
+            for (const note of restored.notes) {
+              const name = `annotation-own:${note.logId}`;
+              const current = storedNotes(
+                updates.get(name) ?? localStorage.getItem(name),
+              );
+              updates.set(name, JSON.stringify(mergeOwned(current, [note])));
+            }
+            updates.set('annotation-key-v1', JSON.stringify(restored.keys));
+            const before = new Map(
+              [...updates.keys()].map((name) => [
+                name,
+                localStorage.getItem(name),
+              ]),
+            );
+            try {
+              for (const [name, value] of updates)
+                localStorage.setItem(name, value);
+            } catch (error) {
+              for (const [name, value] of before) {
+                if (value === null) localStorage.removeItem(name);
+                else localStorage.setItem(name, value);
+              }
+              throw error;
+            }
+            const recovery =
+              identity.querySelector<HTMLInputElement>('[name="recovery"]');
+            if (recovery) recovery.value = '';
+            window.dispatchEvent(new Event('annotation-owned-changed'));
+            window.dispatchEvent(new Event('annotation-published-changed'));
+            if (backupStatus)
+              backupStatus.textContent =
+                'Annotation identity restored on this device.';
+          } catch {
+            if (backupStatus)
+              backupStatus.textContent =
+                'Could not restore this backup. Check the file and recovery passphrase.';
+          } finally {
+            recovering = false;
+          }
+        })();
+      });
     let target: TextTarget | undefined;
     let editing: AnnotationPayload | undefined;
     let reporting = false;
@@ -209,9 +374,7 @@ export function initAnnotations(): void {
     form.addEventListener('change', updateAction);
     const ownKey = `annotation-own:${required(root.dataset['log'])}`;
     function readOwn(): AnnotationPayload[] {
-      return z
-        .array(annotationSchema)
-        .parse(JSON.parse(localStorage.getItem(ownKey) ?? '[]'));
+      return storedNotes(localStorage.getItem(ownKey));
     }
     let own: AnnotationPayload[] = [];
     function syncOwn(): void {
@@ -577,7 +740,12 @@ export function initAnnotations(): void {
                 new Blob(
                   [
                     JSON.stringify(
-                      webAnnotation(note, source.href, cleanText(body)),
+                      webAnnotation(
+                        note,
+                        source.href,
+                        cleanText(body),
+                        timeState(root.dataset, source.origin),
+                      ),
                       null,
                       2,
                     ),
@@ -604,7 +772,10 @@ export function initAnnotations(): void {
             const actions: HTMLButtonElement[] = [];
             if (
               own.some(
-                (p) => p.id === note.id && p.publicKey === note.publicKey,
+                (p) =>
+                  p.id === note.id &&
+                  p.publicKey === note.publicKey &&
+                  currentPublicKey() === note.publicKey,
               )
             ) {
               for (const action of ['edit', 'withdraw'] as const) {

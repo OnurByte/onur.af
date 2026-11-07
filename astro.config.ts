@@ -26,7 +26,8 @@ export default defineConfig({
       canonicalOrigin: site,
       dynamicLogs:
         process.env['WITNESS_ENABLED'] === '1' ||
-        process.env['ANNOTATIONS_ENABLED'] === '1',
+        process.env['ANNOTATIONS_ENABLED'] === '1' ||
+        process.env['WEBMENTIONS_ENABLED'] === '1',
     }),
   ],
   // The shared stylesheet is bounded by the opening-performance browser budget.

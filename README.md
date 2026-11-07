@@ -68,7 +68,7 @@ Publishing, signing, wallet operations and deployment are separate owner actions
 
 ## A Cypherpunk's Manifesto
 
-*Eric Hughes ⁜ 9 March 1993*
+_Eric Hughes ⁜ 9 March 1993_
 
 > Privacy is necessary for an open society in the electronic age. Privacy is not secrecy.
 

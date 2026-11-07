@@ -1,3 +1,4 @@
+import { rejects } from 'node:assert/strict';
 import { expect, test } from 'bun:test';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -6,7 +7,11 @@ import { generateKey, readPrivateKey, createMessage, sign } from 'openpgp';
 import { parseLog, revisionMarkdown } from '../src/portfolio/log';
 import { canonicalLogPublication } from '../src/portfolio/log-publications';
 import { canonicalLogProof, proofDigest } from '../src/portfolio/log-proof';
-import { buildLogBundle, verifyLogBundle } from '../src/portfolio/log-bundle';
+import {
+  buildLogBundle,
+  verifyLogBundle,
+  attachTransparencyEvidence,
+} from '../src/portfolio/log-bundle';
 import {
   decodeProofArchive,
   encodeProofArchive,
@@ -92,27 +97,31 @@ test('portable v2 bundle verifies without a site and rejects substituted roots, 
       timestamps: {},
       publicDirectory: root,
     });
+    await rejects(
+      attachTransparencyEvidence(bytes, new Map(), fingerprint, '0'.repeat(64)),
+      /Missing or oversized transparency evidence/,
+    );
     const verified = await verifyLogBundle(bytes, fingerprint);
     expect(verified.revisions[0]!.coverage).toBe('text-and-original-media');
     expect(
       (await verifyLogBundle(bytes, fingerprint, verified.checkpoint))
         .checkpointCompared,
     ).toBe(true);
-    await expect(verifyLogBundle(bytes, '0'.repeat(40))).rejects.toThrow(
-      'fingerprint',
-    );
-    await expect(
+    await rejects(verifyLogBundle(bytes, '0'.repeat(40)), /fingerprint/);
+    await rejects(
       verifyLogBundle(bytes, fingerprint, {
         ...verified.checkpoint,
         sequence: 2,
       }),
-    ).rejects.toThrow('missing');
-    await expect(
+      /missing/,
+    );
+    await rejects(
       verifyLogBundle(bytes, fingerprint, {
         ...verified.checkpoint,
         publisher: '0'.repeat(40),
       }),
-    ).rejects.toThrow('publisher');
+      /publisher/,
+    );
     const files = decodeProofArchive(bytes);
     files.delete(`proofs/${entry.id}-v1.json`);
     files.delete(`proofs/${entry.id}-v1.json.asc`);
@@ -123,9 +132,10 @@ test('portable v2 bundle verifies without a site and rejects substituted roots, 
     delete index.files[`proofs/${entry.id}-v1.json`];
     delete index.files[`proofs/${entry.id}-v1.json.asc`];
     files.set('bundle.json', Buffer.from(JSON.stringify(index)));
-    await expect(
+    await rejects(
       verifyLogBundle(encodeProofArchive(files), fingerprint),
-    ).rejects.toThrow('Publication-bound proof');
+      /Publication-bound proof/,
+    );
   } finally {
     await rm(root, { recursive: true, force: true });
   }

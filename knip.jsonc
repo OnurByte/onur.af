@@ -23,8 +23,8 @@
     "scripts/**/*.ts",
     "tests/**/*.{ts,js,mjs}",
   ],
-  // These are host-provided tools used for optional, isolated GPG fixtures.
-  "ignoreBinaries": ["gpg", "gpgconf"],
+  // Host-provided tools for optional GPG fixtures and explicit Sigsum submission.
+  "ignoreBinaries": ["gpg", "gpgconf", "sigsum-submit"],
   // The browser test creates this module in a temporary checkout before Node imports it.
   "ignoreUnresolved": ["./proof-fixtures.mjs"],
 }

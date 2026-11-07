@@ -22,6 +22,7 @@ import {
   getLogTimestampProofs,
 } from '../../../portfolio/verified-proofs';
 import { validateProofTimestamp } from '../../../portfolio/log-proof';
+import { snapshotsFor, mementoPath } from '../../../portfolio/memento';
 import WitnessStats from '../../../components/WitnessStats.astro';
 import SignedMessage from '../../../components/SignedMessage.astro';
 const entry = getLogEntryById(Astro.params['id']);
@@ -34,6 +35,9 @@ const revision = entry.revisions.find(
 );
 if (!revision) return Astro.rewrite('/404');
 const metadata = logMetadata(entry, version);
+const hasSnapshot = snapshotsFor(entry.id).some(
+  (item) => item.version === version,
+);
 const key = `${entry.id}-v${version}`;
 const signature = (await getLogSignatures())[key];
 if (!signature) return Astro.rewrite('/404');
@@ -176,6 +180,23 @@ const revisionHref = (selected: number) => {
           label="PGP signature"
         />
         <p {...stylex.attrs(logStyles.hash)}>SHA-256 {signature.sha256}</p>
+        {hasSnapshot && (
+          <p {...stylex.attrs(styles.paragraph)}>
+            <a
+              {...stylex.attrs(styles.walletLink)}
+              href={mementoPath(entry.id, version)}
+            >
+              Archived revision
+            </a>{' '}
+            ⁜{' '}
+            <a
+              {...stylex.attrs(styles.walletLink)}
+              href={`${logUrl(entry)}/timemap`}
+            >
+              TimeMap
+            </a>
+          </p>
+        )}
       </section>
 
       <section

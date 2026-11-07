@@ -48,7 +48,12 @@ export function anchorSelection(
     start < 0 ||
     end <= start ||
     end > text.length ||
-    end - start > maxQuoteLength
+    end - start > maxQuoteLength ||
+    [start, end].some(
+      (offset) =>
+        /[\uD800-\uDBFF]/.test(text[offset - 1] ?? '') &&
+        /[\uDC00-\uDFFF]/.test(text[offset] ?? ''),
+    )
   )
     throw new Error('Invalid annotation selection');
   return {

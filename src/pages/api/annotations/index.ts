@@ -6,7 +6,7 @@ import { requestLimitKey, takeRateLimit } from '../../../server/request-limits';
 import type { APIRoute } from 'astro';
 import { createHash } from 'node:crypto';
 import { getLogEntryById, revisionMarkdown } from '../../../portfolio/log';
-import { renderLogContent } from '../../../portfolio/log-markdown';
+import { revisionProjection } from '../../../portfolio/text-projection';
 import {
   annotationStore,
   annotationsEnabled,
@@ -16,15 +16,6 @@ import { annotationSchema } from '../../../portfolio/annotations/protocol';
 import { verifyAnnotation } from '../../../server/annotations/signature';
 import { resolveSelection } from '../../../portfolio/annotations/protocol';
 import { jsonResponse } from '../../../server/http';
-import { fromHtml } from 'hast-util-from-html';
-import type { Nodes } from 'hast';
-function textContent(node: Nodes): string {
-  return node.type === 'text'
-    ? node.value
-    : 'children' in node
-      ? node.children.map(textContent).join('')
-      : '';
-}
 export const GET: APIRoute = async ({ url }) => {
   if (!annotationsEnabled())
     return jsonResponse({ error: 'Annotations disabled' }, 503);
@@ -89,9 +80,7 @@ export const POST: APIRoute = async ({ request, url, clientAddress }) => {
         .digest('hex') !== p.revisionHash
     )
       return jsonResponse({ error: 'Unknown signed revision' }, 400);
-    const html = renderLogContent(revision.body, '', 0).html;
-    // The DOM text protocol is textContent, not layout-aware innerText.
-    const text = textContent(fromHtml(html, { fragment: true }));
+    const text = revisionProjection(entry, p.revision).text;
     if (!resolveSelection(text, p.target))
       return jsonResponse({ error: 'Selection does not match revision' }, 400);
     await annotationStore().submit(p, body.signature);

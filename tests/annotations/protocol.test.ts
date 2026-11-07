@@ -119,3 +119,13 @@ test('pasted PGP public keys are format checked and bound to the signature', () 
   expect(removed).toBe(pgpPublicKey);
   expect(verifyAnnotation(withoutPgp, signature)).toBe(false);
 });
+
+test('UTF-16 selectors reject endpoints inside surrogate pairs', () => {
+  expect(() => anchorSelection('😀', 0, 1)).toThrow(
+    'Invalid annotation selection',
+  );
+  expect(() => anchorSelection('😀', 1, 2)).toThrow(
+    'Invalid annotation selection',
+  );
+  expect(anchorSelection('😀', 0, 2).quote.exact).toBe('😀');
+});

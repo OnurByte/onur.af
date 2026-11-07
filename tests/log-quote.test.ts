@@ -1,5 +1,9 @@
 import { expect, test } from 'bun:test';
-import { quotePath, parseQuoteRange } from '../src/portfolio/quote-link';
+import {
+  quotePath,
+  parseQuoteRange,
+  parseLogPagePath,
+} from '../src/portfolio/quote-link';
 import { logQuote, renderedQuoteText } from '../src/portfolio/log-quote';
 import { logEntries } from '../src/portfolio/log';
 
@@ -40,4 +44,23 @@ test('quote metadata is derived from the requested revision and rejects invalid 
   expect(logQuote(entry.id, 'v999-0-10')).toBeNull();
   expect(logQuote(entry.id, 'v1-0-9999999')).toBeNull();
   expect(logQuote('missing', 'v1-0-10')).toBeNull();
+});
+
+test('Log page paths share one grammar for articles and quote links', () => {
+  expect(parseLogPagePath('/log/one-two-three')).toEqual({
+    id: 'one-two-three',
+    quote: undefined,
+  });
+  expect(parseLogPagePath('/log/one-two-three/quote/v2-0-5')).toEqual({
+    id: 'one-two-three',
+    quote: 'v2-0-5',
+  });
+  for (const path of [
+    '/log/one-two-three/',
+    '/log/one-two-three/quote/v0-0-5',
+    '/log/one-two-three/quote/v1-01-5',
+    '/log/one-two-three/quote/anything',
+    '/log/one-two-three/verified',
+  ])
+    expect(parseLogPagePath(path)).toBeNull();
 });

@@ -2,6 +2,7 @@
 import { logContent } from '../styles/log-content';
 import { presentLogContent } from '../portfolio/log-presentation';
 import Annotations from './Annotations.astro';
+import { snapshotsFor, mementoPath } from '../portfolio/memento';
 import { getLogSignatures } from '../portfolio/verified-signatures';
 import LogSources from './LogSources.astro';
 import 'katex/dist/katex.min.css';
@@ -10,20 +11,17 @@ import { applyLogImages } from '../portfolio/log-images';
 import * as stylex from '@stylexjs/stylex';
 import { styles } from '../styles/pages';
 import { logMetadata, type LogEntry } from '../portfolio/log';
-import { renderLogContent } from '../portfolio/log-markdown';
+import { revisionProjection } from '../portfolio/text-projection';
 interface Props {
   entry: LogEntry;
   version: number;
   archived?: boolean;
 }
 const { entry, version, archived = false } = Astro.props;
-const revision = entry.revisions[version - 1]!;
 const metadata = logMetadata(entry, version);
-const content = renderLogContent(
-  revision.body,
-  archived ? `${entry.id}-v${version}-` : '',
-  metadata.sources.length,
-);
+const projection = revisionProjection(entry, version);
+const snapshot = snapshotsFor(entry.id).find((s) => s.version === version);
+const content = archived ? projection.archivedRender : projection.render;
 const revisionSignature = (await getLogSignatures())[`${entry.id}-v${version}`];
 const coverImage = metadata.cover ? images[metadata.cover.src] : undefined;
 ---
@@ -51,6 +49,8 @@ const coverImage = metadata.cover ? images[metadata.cover.src] : undefined;
 <div
   id={`${entry.id}-v${version}-body`}
   data-annotation-revision={version}
+  data-projection-version={projection.projectionVersion}
+  data-projection-hash={projection.projectionHash}
   data-scroll-headings={archived ? undefined : ''}
   data-scroll-archive={archived ? '' : undefined}
   lang={metadata.language}
@@ -66,6 +66,10 @@ const coverImage = metadata.cover ? images[metadata.cover.src] : undefined;
     logId={entry.id}
     revision={version}
     revisionHash={revisionSignature.sha256}
+    projectionVersion={projection.projectionVersion}
+    projectionHash={projection.projectionHash}
+    archivedAt={snapshot?.archivedAt}
+    mementoPath={snapshot ? mementoPath(entry.id, version) : undefined}
   />
 )}
 <LogSources

@@ -1,24 +1,8 @@
-import { fromHtml } from 'hast-util-from-html';
-import type { Root, RootContent } from 'hast';
 import { getLogEntryById, logMetadata } from './log';
-import { renderLogContent } from './log-markdown';
+import { revisionProjection } from './text-projection';
 import { parseQuoteRange } from './quote-link';
 
-export function renderedQuoteText(html: string): string {
-  function text(node: Root | RootContent): string {
-    if (node.type === 'text') return node.value;
-    if ('children' in node) {
-      if (
-        node.type === 'element' &&
-        ['button', 'template'].includes(node.tagName)
-      )
-        return '';
-      return node.children.map(text).join('');
-    }
-    return '';
-  }
-  return text(fromHtml(html, { fragment: true }));
-}
+export { projectionText as renderedQuoteText } from './text-projection';
 export function logQuote(id: string | undefined, selector: string | undefined) {
   const range = parseQuoteRange(selector);
   const entry = id ? getLogEntryById(id) : undefined;
@@ -27,12 +11,7 @@ export function logQuote(id: string | undefined, selector: string | undefined) {
   );
   if (!range || !entry || !revision) return null;
   const metadata = logMetadata(entry, revision.version);
-  const html = renderLogContent(
-    revision.body,
-    '',
-    metadata.sources.length,
-  ).html;
-  const text = renderedQuoteText(html);
+  const text = revisionProjection(entry, revision.version).text;
   if (range.end > text.length) return null;
   // Never split a Unicode surrogate pair at a URL boundary.
   if (

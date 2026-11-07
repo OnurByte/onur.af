@@ -21,6 +21,7 @@ import {
   sign,
 } from 'openpgp';
 import { parseLog, revisionMarkdown } from '../../src/portfolio/log';
+import { freezeProjection } from '../../src/portfolio/text-projection';
 import { canonicalLogPublication } from '../../src/portfolio/log-publications';
 import { digest } from '../../src/portfolio/log-signatures';
 import sharp from 'sharp';
@@ -186,6 +187,21 @@ $$
       join(directory, 'src/content/log.json'),
       JSON.stringify(entries),
     );
+    // Publication freezes each revision's text projection before rendering.
+    await writeFile(
+      join(directory, 'src/content/log-projections.json'),
+      JSON.stringify(
+        Object.fromEntries(
+          entries.flatMap((entry) =>
+            entry.revisions.map((revision) => [
+              `${entry.id}-v${String(revision.version)}`,
+              freezeProjection(entry, revision.version),
+            ]),
+          ),
+        ),
+      ),
+    );
+    await writeFile(join(directory, 'src/content/log-snapshots.json'), '{}');
     await writeFile(
       join(directory, 'src/content/introduction.json'),
       JSON.stringify({ logId: entries[0]!.id }),
