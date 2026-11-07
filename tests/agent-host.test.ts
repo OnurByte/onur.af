@@ -638,8 +638,8 @@ test.skipIf(!Bun.env['TEST_DATABASE_URL'])(
       } catch {
         /* lock was not acquired */
       }
-      first.release();
-      second.release();
+      await first.release();
+      await second.release();
       await firstSql.close();
       await secondSql.close();
     }
