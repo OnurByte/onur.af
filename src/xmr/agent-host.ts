@@ -1,10 +1,7 @@
 import { moneroConfiguration } from '../donations/config';
-import {
-  moneroAddress as ADDRESS,
-  paymentStatuses as STATUSES,
-} from '../donations/protocol';
-import { requiredEnv as required } from '../server/env';
-import { jsonNoStore as json } from '../server/http';
+import { moneroAddress, paymentStatuses } from '../donations/protocol';
+import { requiredEnv } from '../server/env';
+import { jsonNoStore } from '../server/http';
 import { createRequire } from 'node:module';
 import { timingSafeEqual } from 'node:crypto';
 import { formatXmrAmount, parseXmrAmount } from '../donations/money';
@@ -12,11 +9,49 @@ import { formatXmrAmount, parseXmrAmount } from '../donations/money';
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const LOCK_ID = 874120398123n;
+const MIN_CONFIRMATIONS = 10;
+const DEFAULT_PORT = 8788;
+const ADDRESS_PREFIXES = { mainnet: '48', stagenet: '57', testnet: '9B' };
+
+type MoneroNetwork = keyof typeof ADDRESS_PREFIXES;
+
 const validNumber = (value: unknown, integer = false) =>
   typeof value === 'number' &&
   Number.isFinite(value) &&
   value >= 0 &&
   (!integer || Number.isInteger(value));
+
+/** Runs operations one after another; a failure never blocks later ones. */
+function createSerialQueue() {
+  let tail = Promise.resolve();
+  return <T>(operation: () => Promise<T>): Promise<T> => {
+    const next = tail.then(operation, operation);
+    tail = next.then(
+      () => undefined,
+      () => undefined,
+    );
+    return next;
+  };
+}
+
+/** Checks the fields shared by API-facing and ledger-stored orders. */
+function hasValidOrderFields(order: XmrOrder, network: MoneroNetwork): boolean {
+  return (
+    typeof order.amount === 'string' &&
+    typeof order.address === 'string' &&
+    moneroAddress.test(order.address) &&
+    ADDRESS_PREFIXES[network].includes(order.address.charAt(0)) &&
+    typeof order.status === 'string' &&
+    paymentStatuses.has(order.status) &&
+    typeof order.paid === 'boolean' &&
+    order.paid === (order.status === 'paid') &&
+    (order.receivedXmr === undefined || validNumber(order.receivedXmr)) &&
+    (order.pendingXmr === undefined || validNumber(order.pendingXmr)) &&
+    (order.lockedXmr === undefined || validNumber(order.lockedXmr)) &&
+    (order.confirmations === undefined ||
+      validNumber(order.confirmations, true))
+  );
+}
 
 type XmrOrder = {
   id: string;
@@ -173,7 +208,7 @@ export function createWriterLockGuard({
           if (!healthy)
             throw new Error('xmr agent database writer lock is unavailable');
           const owner = await checkOwnership();
-          if (owner.pid !== backendPid || owner.held !== true)
+          if (owner.pid !== backendPid || !owner.held)
             throw new Error('xmr agent database writer lock was lost');
         })
         .catch((error) => {
@@ -199,7 +234,7 @@ export function createOrderHandler({
   onUnhealthy,
   getSyncing,
   refreshOrder,
-  minConfirmations = 10,
+  minConfirmations = MIN_CONFIRMATIONS,
   network = 'stagenet',
 }: {
   agent: Pick<PaymentAgent, 'get' | 'createOrder'>;
@@ -209,11 +244,10 @@ export function createOrderHandler({
   getSyncing?: () => Promise<boolean>;
   refreshOrder?: (id: string) => Promise<void>;
   minConfirmations?: number;
-  network?: 'mainnet' | 'stagenet' | 'testnet';
+  network?: MoneroNetwork;
 }): OrderHandler {
   let healthy = true;
-  let serial = Promise.resolve();
-  const prefixes = { mainnet: '48', stagenet: '57', testnet: '9B' }[network];
+  const serialize = createSerialQueue();
   const unhealthy = () => {
     if (!healthy) return;
     healthy = false;
@@ -234,20 +268,8 @@ export function createOrderHandler({
     const order = value as XmrOrder;
     if (
       order.id !== id ||
-      typeof order.amount !== 'string' ||
-      formatXmrAmount(parseXmrAmount(order.amount)) !== amount ||
-      typeof order.address !== 'string' ||
-      !ADDRESS.test(order.address) ||
-      !prefixes.includes(order.address.charAt(0)) ||
-      typeof order.status !== 'string' ||
-      !STATUSES.has(order.status) ||
-      typeof order.paid !== 'boolean' ||
-      order.paid !== (order.status === 'paid') ||
-      (order.receivedXmr !== undefined && !validNumber(order.receivedXmr)) ||
-      (order.pendingXmr !== undefined && !validNumber(order.pendingXmr)) ||
-      (order.lockedXmr !== undefined && !validNumber(order.lockedXmr)) ||
-      (order.confirmations !== undefined &&
-        !validNumber(order.confirmations, true))
+      !hasValidOrderFields(order, network) ||
+      formatXmrAmount(parseXmrAmount(order.amount)) !== amount
     )
       throw new Error('invalid payment order');
     return order;
@@ -259,17 +281,10 @@ export function createOrderHandler({
     status: order.status,
     birthdayHeight: order.birthdayHeight ?? undefined,
   });
-  const serialize = async <T>(operation: () => Promise<T>): Promise<T> => {
-    const next = serial.then(operation, operation);
-    serial = next.then(
-      () => undefined,
-      () => undefined,
-    );
-    return next;
-  };
 
   const handler = (async (request: Request): Promise<Response> => {
-    if (!healthy) return json({ error: 'payment agent unavailable' }, 503);
+    if (!healthy)
+      return jsonNoStore({ error: 'payment agent unavailable' }, 503);
     const path = new URL(request.url).pathname;
     if (request.method === 'POST' && path === '/order') {
       if (
@@ -280,41 +295,42 @@ export function createOrderHandler({
           .toLowerCase()
           .startsWith('application/json')
       ) {
-        return json({ error: 'application/json required' }, 415);
+        return jsonNoStore({ error: 'application/json required' }, 415);
       }
       let body: unknown;
       try {
         const text = await request.text();
         if (new TextEncoder().encode(text).byteLength > 4096)
-          return json({ error: 'request too large' }, 413);
+          return jsonNoStore({ error: 'request too large' }, 413);
         body = JSON.parse(text);
       } catch {
-        return json({ error: 'invalid JSON' }, 400);
+        return jsonNoStore({ error: 'invalid JSON' }, 400);
       }
       if (!body || typeof body !== 'object' || Array.isArray(body))
-        return json({ error: 'order object required' }, 400);
+        return jsonNoStore({ error: 'order object required' }, 400);
       const input = body as Record<string, unknown>;
       if (
         typeof input['id'] !== 'string' ||
         !UUID.test(input['id']) ||
         typeof input['amount'] !== 'string'
       )
-        return json({ error: 'invalid order' }, 400);
+        return jsonNoStore({ error: 'invalid order' }, 400);
       const id = input['id'].toLowerCase();
       let amount: string;
       try {
         amount = formatXmrAmount(parseXmrAmount(input['amount']));
       } catch {
-        return json({ error: 'invalid amount' }, 400);
+        return jsonNoStore({ error: 'invalid amount' }, 400);
       }
 
       return serialize(async () => {
-        if (!healthy) return json({ error: 'payment agent unavailable' }, 503);
+        if (!healthy)
+          return jsonNoStore({ error: 'payment agent unavailable' }, 503);
         let existing: XmrOrder | null;
         try {
           existing = agent.get(id);
         } catch {
-          return json({ error: 'payment agent unavailable' }, 503);
+          return jsonNoStore({ error: 'payment agent unavailable' }, 503);
         }
         if (existing) {
           try {
@@ -322,24 +338,24 @@ export function createOrderHandler({
               typeof existing.amount === 'string' &&
               formatXmrAmount(parseXmrAmount(existing.amount)) !== amount
             ) {
-              return json(
+              return jsonNoStore(
                 { error: 'order id already belongs to a different amount' },
                 409,
               );
             }
             const order = validOrder(existing, id, amount);
             await durable();
-            return json(responseOrder(order));
+            return jsonNoStore(responseOrder(order));
           } catch {
             unhealthy();
-            return json({ error: 'payment agent unavailable' }, 503);
+            return jsonNoStore({ error: 'payment agent unavailable' }, 503);
           }
         }
         let created: XmrOrder;
         try {
           created = await agent.createOrder({ id, amount });
         } catch {
-          return json(
+          return jsonNoStore(
             { error: 'payment agent unavailable; retry with the same id' },
             503,
           );
@@ -349,14 +365,14 @@ export function createOrderHandler({
           order = validOrder(created, id, amount);
         } catch {
           unhealthy();
-          return json({ error: 'payment agent unavailable' }, 503);
+          return jsonNoStore({ error: 'payment agent unavailable' }, 503);
         }
         try {
           await durable();
         } catch {
-          return json({ error: 'payment agent unavailable' }, 503);
+          return jsonNoStore({ error: 'payment agent unavailable' }, 503);
         }
-        return json(responseOrder(order), 201);
+        return jsonNoStore(responseOrder(order), 201);
       });
     }
 
@@ -366,29 +382,37 @@ export function createOrderHandler({
       try {
         id = decodeURIComponent(match[1]).toLowerCase();
       } catch {
-        return json({ error: 'invalid order id' }, 400);
+        return jsonNoStore({ error: 'invalid order id' }, 400);
       }
-      if (!UUID.test(id)) return json({ error: 'invalid order id' }, 400);
+      if (!UUID.test(id))
+        return jsonNoStore({ error: 'invalid order id' }, 400);
       return serialize(async () => {
-        if (!healthy) return json({ error: 'payment agent unavailable' }, 503);
+        if (!healthy)
+          return jsonNoStore({ error: 'payment agent unavailable' }, 503);
         try {
           await refreshOrder?.(id);
         } catch {
           unhealthy();
-          return json({ error: 'payment agent unavailable' }, 503);
+          return jsonNoStore({ error: 'payment agent unavailable' }, 503);
         }
-        const order = agent.get(id);
-        if (!order) return json({ error: 'unknown order' }, 404);
+        let order: XmrOrder | null;
+        try {
+          order = agent.get(id);
+        } catch {
+          unhealthy();
+          return jsonNoStore({ error: 'payment agent unavailable' }, 503);
+        }
+        if (!order) return jsonNoStore({ error: 'unknown order' }, 404);
         try {
           validOrder(order, id, formatXmrAmount(parseXmrAmount(order.amount)));
         } catch {
           unhealthy();
-          return json({ error: 'invalid stored payment order' }, 503);
+          return jsonNoStore({ error: 'invalid stored payment order' }, 503);
         }
         try {
           await durable();
         } catch {
-          return json({ error: 'payment agent unavailable' }, 503);
+          return jsonNoStore({ error: 'payment agent unavailable' }, 503);
         }
         let syncing = true;
         try {
@@ -396,7 +420,7 @@ export function createOrderHandler({
         } catch {
           syncing = true;
         }
-        return json({
+        return jsonNoStore({
           id: order.id,
           address: order.address,
           paid: order.paid === true,
@@ -415,7 +439,7 @@ export function createOrderHandler({
         });
       });
     }
-    return json({ error: 'not found' }, 404);
+    return jsonNoStore({ error: 'not found' }, 404);
   }) as OrderHandler;
 
   handler.markUnhealthy = unhealthy;
@@ -470,37 +494,84 @@ export async function reconcilePaidOrders(
 function validStoredOrder(
   value: unknown,
   id: string,
-  network: 'mainnet' | 'stagenet' | 'testnet',
+  network: MoneroNetwork,
 ): XmrOrder {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new Error('invalid xmr agent order ledger');
   const order = value as XmrOrder;
-  const prefix = { mainnet: '48', stagenet: '57', testnet: '9B' }[network];
   if (
     order.id !== id ||
-    typeof order.amount !== 'string' ||
+    !hasValidOrderFields(order, network) ||
     formatXmrAmount(parseXmrAmount(order.amount)) !== order.amount ||
-    typeof order.address !== 'string' ||
-    !ADDRESS.test(order.address) ||
-    !prefix.includes(order.address.charAt(0)) ||
     !Number.isSafeInteger(order.index) ||
     Number(order.index) < 0 ||
     (order.birthdayHeight != null &&
       (!Number.isSafeInteger(order.birthdayHeight) ||
-        Number(order.birthdayHeight) < 0)) ||
-    typeof order.status !== 'string' ||
-    !STATUSES.has(order.status) ||
-    typeof order.paid !== 'boolean' ||
-    order.paid !== (order.status === 'paid') ||
-    (order.receivedXmr !== undefined && !validNumber(order.receivedXmr)) ||
-    (order.pendingXmr !== undefined && !validNumber(order.pendingXmr)) ||
-    (order.lockedXmr !== undefined && !validNumber(order.lockedXmr)) ||
-    (order.confirmations !== undefined &&
-      !validNumber(order.confirmations, true))
+        Number(order.birthdayHeight) < 0))
   ) {
     throw new Error('invalid xmr agent order ledger');
   }
   return order;
+}
+
+type AgentSql = InstanceType<typeof Bun.SQL>;
+
+/**
+ * A bare `$1::jsonb` parameter stores a JSON string as a jsonb *string*, which
+ * is how earlier versions persisted orders. Accept those rows and decode them.
+ */
+function storedJson(value: unknown): unknown {
+  if (typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value) as unknown;
+  } catch {
+    throw new Error('invalid xmr agent order ledger');
+  }
+}
+
+/** Creates the ledger table if needed and loads every stored order, rejecting corruption. */
+export async function loadOrderLedger(
+  sql: AgentSql,
+  network: MoneroNetwork,
+): Promise<Map<string, XmrOrder>> {
+  await sql`CREATE TABLE IF NOT EXISTS xmr_agent_orders (
+    order_id uuid PRIMARY KEY,
+    order_data jsonb NOT NULL
+  )`;
+  const rows = await sql<
+    { order_id: string; order_data: unknown }[]
+  >`SELECT order_id, order_data FROM xmr_agent_orders`;
+  const orders = new Map<string, XmrOrder>();
+  const usedIndexes = new Set<number>();
+  for (const row of rows) {
+    const order = validStoredOrder(
+      storedJson(row.order_data),
+      row.order_id,
+      network,
+    );
+    if (usedIndexes.has(Number(order.index)))
+      throw new Error('duplicate xmr subaddress index in order ledger');
+    usedIndexes.add(Number(order.index));
+    orders.set(order.id, order);
+  }
+  return orders;
+}
+
+/** Atomically replaces the stored ledger with the in-memory orders. */
+export async function replaceOrderLedger(
+  sql: AgentSql,
+  orders: ReadonlyMap<string, XmrOrder>,
+): Promise<void> {
+  const snapshot = [...orders.values()].map((order) => ({
+    id: order.id,
+    json: JSON.stringify(order),
+  }));
+  await sql.begin(async (tx) => {
+    await tx`DELETE FROM xmr_agent_orders`;
+    for (const row of snapshot) {
+      await tx`INSERT INTO xmr_agent_orders (order_id, order_data) VALUES (${row.id}::uuid, ${row.json}::text::jsonb)`;
+    }
+  });
 }
 
 export async function validateWalletLedger(
@@ -519,29 +590,70 @@ export async function validateWalletLedger(
   }
 }
 
-async function startXmrAgent(): Promise<{
-  port: number;
-  stop(force?: boolean): Promise<void>;
-}> {
-  process.umask(0o077);
-  const token = required('XMR_AGENT_TOKEN');
+function readAgentConfiguration(): {
+  token: string;
+  databaseUrl: string;
+  primaryAddress: string;
+  privateViewKey: string;
+  walletPath: string;
+  restoreHeight: number;
+  network: MoneroNetwork;
+} {
+  const token = requiredEnv('XMR_AGENT_TOKEN');
   if (token.length < 32 || /[\r\n]/.test(token))
     throw new Error('XMR_AGENT_TOKEN must have at least 32 characters');
-  const databaseUrl = required('DONATION_DATABASE_URL');
-  const { primaryAddress } = moneroConfiguration();
+  const databaseUrl = requiredEnv('DONATION_DATABASE_URL');
+  const { primaryAddress, network } = moneroConfiguration();
   if (!primaryAddress) throw new Error('XMR_PRIMARY_ADDRESS is required');
-  const privateViewKey = required('XMR_VIEW_KEY');
-  const walletPath = required('XMR_WALLET_PATH');
-  const restoreHeightText = required('XMR_RESTORE_HEIGHT');
+  const privateViewKey = requiredEnv('XMR_VIEW_KEY');
+  const walletPath = requiredEnv('XMR_WALLET_PATH');
+  const restoreHeightText = requiredEnv('XMR_RESTORE_HEIGHT');
   if (
     !/^\d+$/.test(restoreHeightText) ||
     !Number.isSafeInteger(Number(restoreHeightText))
   )
     throw new Error('XMR_RESTORE_HEIGHT must be a nonnegative safe integer');
-  const restoreHeight = Number(restoreHeightText);
-  const network = moneroConfiguration().network;
   if (network !== 'mainnet' && network !== 'stagenet' && network !== 'testnet')
     throw new Error('XMR_NETWORK must be mainnet, stagenet or testnet');
+  return {
+    token,
+    databaseUrl,
+    primaryAddress,
+    privateViewKey,
+    walletPath,
+    restoreHeight: Number(restoreHeightText),
+    network,
+  };
+}
+
+/** Rejects requests without the exact bearer token before they reach the handler. */
+function authorizeRequest(token: string) {
+  const expected = Buffer.from(`Bearer ${token}`);
+  return (request: Request): Response | undefined => {
+    const actual = Buffer.from(request.headers.get('authorization') || '');
+    if (actual.length === expected.length && timingSafeEqual(actual, expected))
+      return undefined;
+    return Response.json(
+      { error: 'unauthorized' },
+      { status: 401, headers: { 'cache-control': 'no-store' } },
+    );
+  };
+}
+
+async function startXmrAgent(): Promise<{
+  port: number;
+  stop(force?: boolean): Promise<void>;
+}> {
+  process.umask(0o077);
+  const {
+    token,
+    databaseUrl,
+    primaryAddress,
+    privateViewKey,
+    walletPath,
+    restoreHeight,
+    network,
+  } = readAgentConfiguration();
   const { nodesFromEnv } = require('xmr-pay/nodes') as {
     nodesFromEnv(env: NodeJS.ProcessEnv): unknown[];
   };
@@ -586,22 +698,7 @@ async function startXmrAgent(): Promise<{
       onLost: () => markHostUnhealthy(),
     });
     await assertWriterLock();
-    await sql`CREATE TABLE IF NOT EXISTS xmr_agent_orders (
-      order_id uuid PRIMARY KEY,
-      order_data jsonb NOT NULL
-    )`;
-    const rows = await sql<
-      { order_id: string; order_data: unknown }[]
-    >`SELECT order_id, order_data FROM xmr_agent_orders`;
-    const orders = new Map<string, XmrOrder>();
-    const usedIndexes = new Set<number>();
-    for (const row of rows) {
-      const order = validStoredOrder(row.order_data, row.order_id, network);
-      if (usedIndexes.has(Number(order.index)))
-        throw new Error('duplicate xmr subaddress index in order ledger');
-      usedIndexes.add(Number(order.index));
-      orders.set(order.id, order);
-    }
+    const orders = await loadOrderLedger(sql, network);
 
     const { createScanner } = require('xmr-pay/scanner') as {
       createScanner(options: Record<string, unknown>): Promise<WalletScanner>;
@@ -621,52 +718,23 @@ async function startXmrAgent(): Promise<{
       throw new Error('refusing to start xmr agent without a view-only wallet');
     await validateWalletLedger(scanner, orders, primaryAddress);
 
-    let persistTail = Promise.resolve();
     let paidCallbackTail = Promise.resolve();
-    const serializeWrites = <T>(operation: () => Promise<T>): Promise<T> => {
-      const save = persistTail.then(operation, operation);
-      persistTail = save.then(
-        () => undefined,
-        () => undefined,
-      );
-      return save;
-    };
-    let scannerWorkTail = Promise.resolve();
-    const withScannerWork = <T>(operation: () => Promise<T>): Promise<T> => {
-      const work = scannerWorkTail.then(operation, operation);
-      scannerWorkTail = work.then(
-        () => undefined,
-        () => undefined,
-      );
-      return work;
-    };
+    const serializeWrites = createSerialQueue();
+    const withScannerWork = createSerialQueue();
+    const saveScanner = () =>
+      withScannerWork(async () => {
+        await assertWriterLock();
+        await scanner.save();
+      });
     const saveOrderSnapshot = async () => {
       await assertWriterLock();
-      const snapshot = [...orders.values()].map((order) => ({
-        id: order.id,
-        json: JSON.stringify(order),
-      }));
-      await sql.begin(async (tx) => {
-        await tx`DELETE FROM xmr_agent_orders`;
-        for (const row of snapshot) {
-          await tx`INSERT INTO xmr_agent_orders (order_id, order_data) VALUES (${row.id}::uuid, ${row.json}::jsonb)`;
-        }
-      });
+      await replaceOrderLedger(sql, orders);
     };
-    const saveWallet = () =>
-      serializeWrites(() =>
-        withScannerWork(async () => {
-          await assertWriterLock();
-          await scanner.save();
-        }),
-      );
+    const saveWallet = () => serializeWrites(saveScanner);
     const persistOrders = () => serializeWrites(saveOrderSnapshot);
     const persistAgentUpdate = () =>
       serializeWrites(async () => {
-        await withScannerWork(async () => {
-          await assertWriterLock();
-          await scanner.save();
-        });
+        await saveScanner();
         await saveOrderSnapshot();
       });
     const persistPaidUpdate = () => {
@@ -703,7 +771,7 @@ async function startXmrAgent(): Promise<{
     paymentAgent = createPaymentAgent({
       scanner,
       store: orders,
-      minConfirmations: 10,
+      minConfirmations: MIN_CONFIRMATIONS,
       toleranceXmr: '0',
       pollMs: 15000,
       activePollMs: 3000,
@@ -728,7 +796,7 @@ async function startXmrAgent(): Promise<{
         } else {
           for (const [orderId, order] of orders) target.set(orderId, order);
         }
-        changed = await reconcilePaidOrders(scanner, target, 10);
+        changed = await reconcilePaidOrders(scanner, target, MIN_CONFIRMATIONS);
         if (checkUnpaid) {
           for (const order of paymentAgent!.list())
             if (!order.paid)
@@ -771,7 +839,7 @@ async function startXmrAgent(): Promise<{
           return true;
         }
       },
-      minConfirmations: 10,
+      minConfirmations: MIN_CONFIRMATIONS,
       network,
     });
     await refreshPaidOrders();
@@ -799,28 +867,17 @@ async function startXmrAgent(): Promise<{
     await persistOrders();
     poller.start();
 
-    const expectedToken = Buffer.from(`Bearer ${token}`);
+    const requestedPort = Number(process.env['XMR_AGENT_PORT'] || DEFAULT_PORT);
+    const authorize = authorizeRequest(token);
     const activeRequests = new Set<Promise<Response>>();
     server = Bun.serve({
       hostname: '127.0.0.1',
-      port: Number(process.env['XMR_AGENT_PORT'] || 8788),
+      port: requestedPort,
       maxRequestBodySize: 4096,
       async fetch(request) {
-        const operation = (async () => {
-          const actualToken = Buffer.from(
-            request.headers.get('authorization') || '',
-          );
-          if (
-            actualToken.length !== expectedToken.length ||
-            !timingSafeEqual(actualToken, expectedToken)
-          ) {
-            return Response.json(
-              { error: 'unauthorized' },
-              { status: 401, headers: { 'cache-control': 'no-store' } },
-            );
-          }
-          return handler!(request);
-        })();
+        const operation = Promise.resolve(
+          authorize(request) ?? handler!(request),
+        );
         activeRequests.add(operation);
         try {
           return await operation;
@@ -830,10 +887,9 @@ async function startXmrAgent(): Promise<{
       },
     });
 
-    const listeningPort = Number(process.env['XMR_AGENT_PORT'] || 8788);
     let stopped = false;
     return {
-      port: server.port ?? listeningPort,
+      port: server.port ?? requestedPort,
       async stop(force = false) {
         if (stopped) return;
         stopped = true;
@@ -843,15 +899,13 @@ async function startXmrAgent(): Promise<{
         await poller?.stop();
         paymentAgent?.stop();
         await Promise.allSettled([...activeRequests]);
-        await Promise.resolve();
         await paidCallbackTail;
-        await scannerWorkTail;
+        await withScannerWork(() => Promise.resolve());
         if (updateTimer) clearTimeout(updateTimer);
         updateTimer = undefined;
         try {
           await saveWallet();
           await persistOrders();
-          await persistTail;
         } finally {
           await scanner.close(false);
           try {

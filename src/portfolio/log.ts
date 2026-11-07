@@ -212,13 +212,16 @@ export function readingTime(markdown: string): string {
     : `${Math.ceil(seconds / 60)} min read`;
 }
 export function logFeedEntries(entries: readonly LogEntry[]) {
-  return entries.filter(isListedLogEntry).map((entry) => ({
-    id: `log-${entry.id}`,
-    title: logMetadata(entry).title,
-    summary: logMetadata(entry).summary,
-    publishedAt: entry.revisions[0]!.publishedAt,
-    url: logUrl(entry),
-  }));
+  return entries.filter(isListedLogEntry).map((entry) => {
+    const { title, summary } = logMetadata(entry);
+    return {
+      id: `log-${entry.id}`,
+      title,
+      summary,
+      publishedAt: entry.revisions[0]!.publishedAt,
+      url: logUrl(entry),
+    };
+  });
 }
 export function isListedLogEntry(entry: Pick<LogEntry, 'visibility'>) {
   return entry.visibility !== 'unlisted';

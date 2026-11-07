@@ -9,8 +9,8 @@ import {
   logUrl,
   logMetadata,
   type LogEntry,
+  logTagDefinitions,
 } from './log';
-import { logTagDefinitions } from './log';
 import { logTags, logTagUrl } from './log-tags';
 export const publicPaths: readonly string[] = [
   '/',
@@ -179,12 +179,13 @@ export function sitemapXml(origin: string | undefined): string {
       .replaceAll("'", '&apos;')
       .replaceAll('<', '&lt;')
       .replaceAll('>', '&gt;');
+  const tags = logTags();
   const urls = origin
     ? [
         ...publicPaths,
         ...proofPaths,
         ...logPaths(listedLogEntries),
-        ...logTags()
+        ...tags
           .filter((tag) => tag.indexable)
           .map((tag) => logTagUrl(tag.slug)),
       ]
@@ -192,7 +193,7 @@ export function sitemapXml(origin: string | undefined): string {
           const entry = logEntries.find(
             (entry) => logUrl(entry) === path || logProofUrl(entry) === path,
           );
-          const tag = logTags().find((tag) => logTagUrl(tag.slug) === path);
+          const tag = tags.find((tag) => logTagUrl(tag.slug) === path);
           const updated =
             entry?.revisions.at(-1)?.publishedAt ??
             tag?.entries

@@ -8,7 +8,10 @@ import { scrollProfileForPath } from '../portfolio/scroll';
 import { shell } from '../styles/shell';
 import { edge } from '../styles/edge';
 import '../styles/global.css';
-import { identityAccounts } from '../portfolio/identity-accounts';
+import {
+  discordUserId,
+  identityAccounts,
+} from '../portfolio/identity-accounts';
 import { portfolioLinks } from '../portfolio/links';
 import { mottos, publicPreview, socialPreviewUrl } from '../portfolio/previews';
 import Brand from '../components/Brand.astro';
@@ -116,7 +119,7 @@ const discordEmbed =
                   type: 2,
                   style: 5,
                   label: 'Discord',
-                  url: 'https://discord.com/users/1434953668959932426',
+                  url: `https://discord.com/users/${discordUserId}`,
                 },
               ],
             },

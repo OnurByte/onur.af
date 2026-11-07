@@ -1,10 +1,9 @@
+import { loadSiteTrust, loadPublicationChain } from './trust';
 import { execFile } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { readKey } from 'openpgp';
-import { readJsonFile, writeJsonFile } from '../src/server/json-file';
-import { loadConfiguredKeyTrust } from '../src/portfolio/key-history';
-import { verifyLogPublicationChain } from '../src/portfolio/log-publications';
+import { writeJsonFile } from '../src/server/json-file';
 import {
   canonicalAuthority,
   canonicalStatement,
@@ -60,7 +59,8 @@ const required = (name: string) => {
   if (!value) throw new Error(`Missing ${name}`);
   return value;
 };
-const root = await readFile('public/pgp.asc', 'utf8');
+const trust = await loadSiteTrust();
+const root = trust.root;
 const trustedFingerprint = required('--fingerprint').toUpperCase();
 if (
   (await readKey({ armoredKey: root })).getFingerprint().toUpperCase() !==
@@ -69,14 +69,7 @@ if (
   throw new Error(
     'Configured root does not match independently trusted fingerprint',
   );
-const trust = await loadConfiguredKeyTrust(
-  root,
-  await readJsonFile('src/content/key-history.json'),
-);
-const publications = await verifyLogPublicationChain(
-  await readJsonFile('src/content/log-publications.json'),
-  trust,
-);
+const publications = await loadPublicationChain(trust);
 if (command === 'prepare') {
   const sequence = Number(required('--sequence'));
   const edition = publications.editions.find(

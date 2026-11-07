@@ -1,3 +1,4 @@
+import { runCli } from './cli';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { readKey } from 'openpgp';
@@ -77,9 +78,4 @@ async function main() {
   );
 }
 
-main().catch((error: unknown) => {
-  console.error(
-    error instanceof Error ? error.message : 'Key history operation failed',
-  );
-  process.exitCode = 1;
-});
+runCli(main, 'Key history operation failed');

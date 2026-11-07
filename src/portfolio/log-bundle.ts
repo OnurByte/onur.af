@@ -33,6 +33,40 @@ const indexSchema = z
     files: z.record(z.string(), z.string().regex(/^[a-f0-9]{64}$/)),
   })
   .strict();
+const utf8 = new TextDecoder('utf-8', { fatal: true });
+const checkpointSchema = z
+  .object({
+    format: z.literal(1),
+    sequence: z.number().int().positive(),
+    sha256: z.string().regex(/^[a-f0-9]{64}$/),
+    publisher: z.string().optional(),
+    keyHistory: z
+      .object({
+        sequence: z.number().int().nonnegative(),
+        sha256: z.string().regex(/^[a-f0-9]{64}$/),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
+const bundleFile = (files: ReadonlyMap<string, Uint8Array>, path: string) => {
+  const value = files.get(path);
+  if (!value) throw new Error(`Missing bundle file: ${path}`);
+  return value;
+};
+const inventory = (files: ReadonlyMap<string, Uint8Array>) =>
+  Object.fromEntries(
+    [...files].map(([name, bytes]) => [name, proofDigest(bytes)]),
+  );
+/** Anchors a key-history position: the root fingerprint at 0, else the latest transition. */
+const keyHistoryDigest = (
+  transitions: readonly unknown[],
+  fingerprint: string,
+  sequence: number,
+) =>
+  proofDigest(
+    sequence === 0 ? fingerprint : JSON.stringify(transitions[sequence - 1]),
+  );
 export type BundleSources = {
   entry: LogEntry;
   signatures: Record<string, { signature: string }>;
@@ -103,9 +137,7 @@ export async function buildLogBundle(input: BundleSources): Promise<Buffer> {
     format: 'onur.log.bundle.v1' as const,
     id: input.entry.id,
     versions: input.entry.revisions.map((item) => item.version),
-    files: Object.fromEntries(
-      [...files].map(([name, bytes]) => [name, proofDigest(bytes)]),
-    ),
+    files: inventory(files),
   };
   put('bundle.json', `${JSON.stringify(index, null, 2)}\n`);
   const bytes = encodeProofArchive(files);
@@ -123,13 +155,8 @@ export async function verifyLogBundle(
   if (!/^(?:[A-Fa-f0-9]{40}|[A-Fa-f0-9]{64})$/.test(trustedFingerprint))
     throw new Error('Supply a full independently trusted fingerprint');
   const files = decodeProofArchive(bytes);
-  const get = (path: string) => {
-    const value = files.get(path);
-    if (!value) throw new Error(`Missing bundle file: ${path}`);
-    return value;
-  };
-  const text = (path: string) =>
-    new TextDecoder('utf-8', { fatal: true }).decode(get(path));
+  const get = (path: string) => bundleFile(files, path);
+  const text = (path: string) => utf8.decode(get(path));
   const index = indexSchema.parse(JSON.parse(text('bundle.json')) as unknown);
   if (files.size !== Object.keys(index.files).length + 1)
     throw new Error('Unexpected bundle files');
@@ -156,33 +183,15 @@ export async function verifyLogBundle(
     JSON.parse(text('checkpoints.json')) as unknown,
   );
   if (savedCheckpoint) {
-    const checkpoint = z
-      .object({
-        format: z.literal(1),
-        sequence: z.number().int().positive(),
-        sha256: z.string().regex(/^[a-f0-9]{64}$/),
-        publisher: z.string().optional(),
-        keyHistory: z
-          .object({
-            sequence: z.number().int().nonnegative(),
-            sha256: z.string().regex(/^[a-f0-9]{64}$/),
-          })
-          .strict()
-          .optional(),
-      })
-      .strict()
-      .parse(savedCheckpoint);
+    const checkpoint = checkpointSchema.parse(savedCheckpoint);
     if (checkpoint.publisher && checkpoint.publisher !== fingerprint)
       throw new Error('Checkpoint publisher mismatch');
     if (checkpoint.keyHistory) {
       const retained = checkpoint.keyHistory;
-      const previous = history.transitions[retained.sequence - 1];
       if (
         retained.sequence > history.transitions.length ||
         retained.sha256 !==
-          proofDigest(
-            retained.sequence === 0 ? fingerprint : JSON.stringify(previous),
-          )
+          keyHistoryDigest(history.transitions, fingerprint, retained.sequence)
       )
         throw new Error('Saved key history checkpoint differs');
     }
@@ -223,11 +232,10 @@ export async function verifyLogBundle(
       ),
     );
     if (!first) throw new Error('Missing original publication');
-    await verifyBytes(
-      new TextDecoder('utf-8', { fatal: true }).decode(markdown),
-      signature,
-      { ...trust, sequence: first.manifest.sequence },
-    );
+    await verifyBytes(utf8.decode(markdown), signature, {
+      ...trust,
+      sequence: first.manifest.sequence,
+    });
     const bound = (entry as typeof entry & { proofSha256?: string })
       .proofSha256;
     const statementPath = `proofs/${key}.json`;
@@ -265,7 +273,7 @@ export async function verifyLogBundle(
       const receipt = files.get(`revisions/${key}.md.ots`);
       if (receipt)
         validateProofTimestamp(
-          new TextDecoder('utf-8', { fatal: true }).decode(markdown),
+          utf8.decode(markdown),
           receipt.toString('base64'),
         );
       results.push({
@@ -288,10 +296,10 @@ export async function verifyLogBundle(
       publisher: fingerprint,
       keyHistory: {
         sequence: history.transitions.length,
-        sha256: proofDigest(
-          history.transitions.length
-            ? JSON.stringify(history.transitions.at(-1))
-            : fingerprint,
+        sha256: keyHistoryDigest(
+          history.transitions,
+          fingerprint,
+          history.transitions.length,
         ),
       },
     },
@@ -309,19 +317,13 @@ export async function attachTransparencyEvidence(
 ): Promise<Buffer> {
   await verifyLogBundle(archive, trustedFingerprint);
   const files = decodeProofArchive(archive);
-  const bundleText = (name: string) => {
-    const bytes = files.get(name);
-    if (!bytes) throw new Error(`Missing bundle file: ${name}`);
-    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
-  };
+  const bundleText = (name: string) => utf8.decode(bundleFile(files, name));
   const statementBytes = evidence.get('publication.statement');
   if (!statementBytes)
     throw new Error(
       'Missing or oversized transparency evidence: publication.statement',
     );
-  const statement = parseStatement(
-    new TextDecoder('utf-8', { fatal: true }).decode(statementBytes),
-  );
+  const statement = parseStatement(utf8.decode(statementBytes));
   const publications = z
     .object({ editions: z.array(z.object({ manifest: z.string() })) })
     .parse(JSON.parse(bundleText('publications.json')) as unknown);
@@ -347,9 +349,7 @@ export async function attachTransparencyEvidence(
     JSON.parse(bundleText('bundle.json')) as unknown,
   );
   files.delete('bundle.json');
-  index.files = Object.fromEntries(
-    [...files].map(([name, bytes]) => [name, proofDigest(bytes)]),
-  );
+  index.files = inventory(files);
   files.set('bundle.json', Buffer.from(`${JSON.stringify(index, null, 2)}\n`));
   const result = encodeProofArchive(files);
   await verifyLogBundle(result, trustedFingerprint);

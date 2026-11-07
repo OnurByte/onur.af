@@ -1,5 +1,6 @@
 import { required } from '../portfolio/required';
 import { z } from 'astro/zod';
+import { downloadBlob } from './download';
 function isVisible(): boolean {
   return document.visibilityState === 'visible';
 }
@@ -54,14 +55,7 @@ export function initWitness(): void {
             headers: { Authorization: `Bearer ${receiptToken}` },
           });
           if (!response.ok) throw new Error('Unavailable');
-          const url = URL.createObjectURL(await response.blob());
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `witness-${eventId}.json`;
-          link.click();
-          setTimeout(() => {
-            URL.revokeObjectURL(url);
-          }, 1000);
+          downloadBlob(await response.blob(), `witness-${eventId}.json`);
         } catch {
           status.textContent = 'Receipt unavailable. Try again later.';
         }
@@ -96,13 +90,7 @@ export function initWitness(): void {
     container.append(controls);
   }
   async function measure(): Promise<void> {
-    if (
-      privacyDeclined ||
-      document.visibilityState !== 'visible' ||
-      !container ||
-      !button ||
-      !status
-    )
+    if (privacyDeclined || !isVisible() || !container || !button || !status)
       return;
     button.disabled = true;
     try {

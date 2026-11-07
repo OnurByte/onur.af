@@ -6,6 +6,7 @@ import {
   writeFile,
   readFile,
   rm,
+  mkdir,
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -25,7 +26,6 @@ import { freezeProjection } from '../../src/portfolio/text-projection';
 import { canonicalLogPublication } from '../../src/portfolio/log-publications';
 import { digest } from '../../src/portfolio/log-signatures';
 import sharp from 'sharp';
-import { mkdir } from 'node:fs/promises';
 import AxeBuilder from '@axe-core/playwright';
 import { type IdentityClaim } from '../../src/portfolio/proofs';
 const execute = promisify(execFile);

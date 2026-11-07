@@ -50,6 +50,22 @@ test('a concurrent writer is rejected by the exclusive lock', async () => {
   await expect(assertPublicationReadable(root)).rejects.toThrow('in progress');
 });
 
+test('a lock left by a dead process is recovered', async () => {
+  const root = await fixture();
+  const child = Bun.spawn(['true']);
+  await child.exited;
+  await writeFile(
+    join(root, '.log-publication.lock'),
+    `${String(child.pid)}\n3f2b8c1e-0000-4000-8000-000000000000\n`,
+  );
+  await runPublicationTransaction(root, async (stage) => {
+    await writeFile(join(stage, 'src/content/log.json'), 'recovered');
+  });
+  expect(await readFile(join(root, 'src/content/log.json'), 'utf8')).toBe(
+    'recovered',
+  );
+});
+
 test('writer activation waits for a leased reader to finish', async () => {
   const root = await fixture();
   let releaseReader!: () => void;

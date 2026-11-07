@@ -3,12 +3,15 @@ import { resolve } from 'node:path';
 import ots from 'opentimestamps';
 import { z } from 'astro/zod';
 import { logEntries, revisionMarkdown, type LogEntry } from './log';
-import { digest, verifyLogSignatures } from './log-signatures';
+import {
+  digest,
+  verifyLogSignatures,
+  revisionPublicationSequences,
+} from './log-signatures';
 import rawTimestamps from '../content/log-timestamps.json' with { type: 'json' };
 import rawSignatures from '../content/log-signatures.json' with { type: 'json' };
 import rawPublications from '../content/log-publications.json' with { type: 'json' };
 import { verifyLogPublicationChain } from './log-publications';
-import { revisionPublicationSequences } from './log-signatures';
 import type { KeyTrust } from './key-history';
 
 const schema = z.record(

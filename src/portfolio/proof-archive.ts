@@ -1,3 +1,4 @@
+import { open } from 'node:fs/promises';
 /** Deliberately narrow POSIX ustar: regular files only, bounded sizes, no links or extraction. */
 const MAX_ARCHIVE = 256 * 1024 * 1024;
 function safeName(name: string) {
@@ -109,7 +110,6 @@ export function decodeProofArchive(input: Uint8Array): Map<string, Buffer> {
 
 /** Bound allocation before reading an untrusted archive from disk. */
 export async function readProofArchiveFile(path: string): Promise<Buffer> {
-  const { open } = await import('node:fs/promises');
   const file = await open(path, 'r');
   try {
     const stat = await file.stat();

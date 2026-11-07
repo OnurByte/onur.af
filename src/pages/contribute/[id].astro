@@ -1,24 +1,23 @@
 ---
 import { moneroConfiguration } from '../../donations/config';
+import { donationId } from '../../donations/protocol';
 import * as stylex from '@stylexjs/stylex';
 import { styles } from '../../styles/pages';
 import Layout from '../../layouts/Layout.astro';
 import { makePaymentURI, qrSvg } from 'xmr-pay/core';
-import { parseCheckoutDonation } from '../../donations/checkout';
+import { checkoutState, parseCheckoutDonation } from '../../donations/checkout';
 import { donationGateway } from '../../server/donation-gateway';
 export const prerender = false;
 Astro.response.headers.set('Cache-Control', 'private, no-store');
 Astro.response.headers.set('Referrer-Policy', 'same-origin');
 Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
 const id = (Astro.params['id'] ?? '').toLowerCase();
-const UUID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 let donation: ReturnType<typeof parseCheckoutDonation> | undefined;
 let unavailable = false;
 const network = moneroConfiguration().network;
 const networkValid = ['mainnet', 'stagenet', 'testnet'].includes(network);
 if (!networkValid) unavailable = true;
-if (UUID.test(id)) {
+if (donationId.test(id)) {
   try {
     const { url: base, token } = donationGateway();
     const endpoint = new URL(`/donations/${id}`, base);
@@ -41,22 +40,7 @@ if (UUID.test(id)) {
   Astro.response.status = 404;
 }
 if (unavailable && Astro.response.status !== 404) Astro.response.status = 503;
-const state =
-  unavailable || donation?.unavailable
-    ? 'unavailable'
-    : donation?.syncing
-      ? 'syncing'
-      : donation?.status === 'paid'
-        ? 'paid'
-        : ['partial', 'underpaid'].includes(donation?.status ?? '')
-          ? 'partial'
-          : ['unconfirmed', 'locked', 'mempool'].includes(
-                donation?.status ?? '',
-              )
-            ? 'confirming'
-            : donation?.status === 'pending'
-              ? 'waiting'
-              : 'syncing';
+const state = checkoutState(donation, unavailable);
 const paymentAmount =
   state === 'partial'
     ? donation?.shortfall && donation.shortfall !== '0'

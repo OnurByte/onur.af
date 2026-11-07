@@ -6,6 +6,7 @@ import {
   identityStatement,
   verifyIdentitySignature,
   verifyIdentityStatement,
+  verifyBytes,
 } from './proofs';
 
 let signedIdentityCache:
@@ -44,7 +45,6 @@ import {
   proofDigest,
   validateProofTimestamp,
 } from './log-proof';
-import { verifyBytes } from './proofs';
 import { assertPublicationReadable } from './publication-transaction';
 let logProofCache: ReturnType<typeof verifyLogProofs> | undefined;
 /** Build verifies original media; runtime additionally verifies signed statement/publication bindings. */

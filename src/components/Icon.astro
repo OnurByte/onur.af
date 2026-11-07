@@ -71,11 +71,8 @@ const icons = {
     height: 24,
   },
 
-  connectMail: { filename: 'connect-mail.svg', width: 24, height: 24 },
   connectGithub: { filename: 'github.svg', width: 24, height: 24 },
-  connectKey: { filename: 'search-key.svg', width: 24, height: 24 },
   xmpp: { filename: 'xmpp.svg', width: 24, height: 24 },
-  shareMark: { filename: 'share-mark.svg', width: 16, height: 16 },
   shareX: { filename: 'x.svg', width: 24, height: 24 },
   shareRss: { filename: 'rss.svg', width: 24, height: 24 },
   discord: { filename: 'discord.svg', width: 24, height: 24 },
@@ -89,7 +86,6 @@ const icons = {
   onur: { filename: 'onur.svg', width: 56, height: 56 },
   tor: { filename: 'tor.svg', width: 32, height: 32 },
   i2p: { filename: 'i2p.svg', width: 64, height: 32 },
-  searchI2p: { filename: 'i2p.svg', width: 32, height: 32 },
   x: { filename: 'x.svg', width: 52, height: 52 },
   spotify: { filename: 'spotify.svg', width: 52, height: 52 },
   github: { filename: 'github.svg', width: 52, height: 52 },
@@ -101,9 +97,6 @@ const icons = {
   chevronDown: { filename: 'chevron-down.svg', width: 16, height: 16 },
   rss: { filename: 'rss.svg', width: 32, height: 32 },
   search: { filename: 'search.svg', width: 32, height: 32 },
-  searchHome: { filename: 'search-home.svg', width: 32, height: 32 },
-  searchDonate: { filename: 'search-donate.svg', width: 32, height: 32 },
-  searchKey: { filename: 'search-key.svg', width: 32, height: 32 },
 } as const;
 
 interface Props {
@@ -122,9 +115,7 @@ const deferred = name.startsWith('tech');
     (name.startsWith('tech') ||
       name.startsWith('share') ||
       name === 'quote' ||
-      name === 'connectMail' ||
       name === 'connectGithub' ||
-      name === 'connectKey' ||
       name === 'xmpp' ||
       name === 'discord' ||
       name === 'reddit' ||
@@ -132,8 +123,7 @@ const deferred = name.startsWith('tech');
       shell.shareIcon,
     (name === 'x' || name === 'github' || name === 'spotify') &&
       shell.providerIcon,
-    (name === 'shareMark' ||
-      name === 'proof' ||
+    (name === 'proof' ||
       name === 'shift' ||
       name === 'rust' ||
       name === 'typescript' ||

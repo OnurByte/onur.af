@@ -46,14 +46,15 @@ async function signingKey(): Promise<KeyObject> {
   return key;
 }
 
-const [command, arg, output, ...rest] = process.argv.slice(2);
+// Positional meaning depends on the command: audit takes (evidence, keys, ...), correct takes (event, action, ...).
+const [command, arg, second, ...rest] = process.argv.slice(2);
 if (command === 'audit') {
-  if (!arg || !output)
+  if (!arg || !second)
     throw new Error('Usage: witness audit evidence.json public-key.pem');
   const records = z
     .array(batchEvidenceSchema)
     .parse(JSON.parse(await readFile(arg, 'utf8')));
-  const key = parseWitnessTrust(await readFile(output, 'utf8'));
+  const key = parseWitnessTrust(await readFile(second, 'utf8'));
   let previous: string | null = null;
   let total = 0;
   const ids = new Set<string>();
@@ -142,14 +143,14 @@ if (command === 'audit') {
     } else if (command === 'correct') {
       if (
         !arg ||
-        !['suppress', 'restore'].includes(output ?? '') ||
+        !['suppress', 'restore'].includes(second ?? '') ||
         !rest.length
       )
         throw new Error('Usage: correct EVENT_ID suppress|restore REASON');
       const correction = await appendCorrection(
         pool,
         arg,
-        output === 'suppress',
+        second === 'suppress',
         rest.join(' '),
         await signingKey(),
       );
@@ -190,7 +191,7 @@ if (command === 'audit') {
       );
     } else
       throw new Error(
-        'Commands: migrate, seal, stamp, upgrade, verify, export, audit',
+        'Commands: migrate, seal, stamp, upgrade, verify, retain, correct, export, audit',
       );
   } finally {
     await pool.end();

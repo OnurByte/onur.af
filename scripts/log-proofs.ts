@@ -1,22 +1,21 @@
-import { readFile } from 'node:fs/promises';
+import { loadSiteTrust, loadPublicationChain } from './trust';
 import { resolve } from 'node:path';
 import ots from 'opentimestamps';
 import { readJsonFile, writeJsonFile } from '../src/server/json-file';
 import { logEntries } from '../src/portfolio/log';
 import { verifyLogSignatures } from '../src/portfolio/log-signatures';
-import { verifyLogPublicationChain } from '../src/portfolio/log-publications';
 import {
   createLogProofStatement,
   proofFiles,
   verifyLogProofStore,
 } from '../src/portfolio/log-proof-store';
 import {
+  proofDigest,
   proofSignatureTimestamp,
   verifyLogProof,
 } from '../src/portfolio/log-proof';
 import { signXmlWithGpg } from '../src/portfolio/rss-signing';
 import { assertPublicationReadable } from '../src/portfolio/publication-transaction';
-import { loadConfiguredKeyTrust } from '../src/portfolio/key-history';
 
 await assertPublicationReadable(process.cwd());
 const [command, id, ...extra] = process.argv.slice(2);
@@ -30,13 +29,8 @@ if (
     'Usage: bun scripts/log-proofs.ts --check | prepare [id] | upgrade [id]',
   );
 const publicDirectory = resolve('public');
-const root = await readFile('public/pgp.asc', 'utf8');
-const history = await readJsonFile('src/content/key-history.json');
-const trust = await loadConfiguredKeyTrust(root, history);
-const publications = await verifyLogPublicationChain(
-  await readJsonFile('src/content/log-publications.json'),
-  trust,
-);
+const trust = await loadSiteTrust();
+const publications = await loadPublicationChain(trust);
 const publicationSequence = (publications.latest?.manifest.sequence ?? 0) + 1;
 const sequenceByRevision = Object.fromEntries(
   publications.editions
@@ -71,7 +65,6 @@ if (command === '--check') {
         .proofSha256;
       if (bound) {
         const artifact = store[`${item.id}-v${item.version}`];
-        const { proofDigest } = await import('../src/portfolio/log-proof');
         if (!artifact || proofDigest(artifact.statement) !== bound)
           throw new Error('Publication-bound proof is missing or changed');
       }

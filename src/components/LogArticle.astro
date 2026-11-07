@@ -9,6 +9,7 @@ import {
   logUrl,
   readingTime,
   type LogEntry,
+  isListedLogEntry,
 } from '../portfolio/log';
 import { getLogSignatures } from '../portfolio/verified-signatures';
 import { buildContentIndex } from '../portfolio/content-index';
@@ -19,10 +20,10 @@ import {
   witnessMeasurementReady,
 } from '../server/witness/service';
 import { viewCountLabel } from '../portfolio/witness/presentation';
+import ConnectionList from './ConnectionList.astro';
 import LogShare from './LogShare.astro';
 import { snapshotsFor, mementoPath } from '../portfolio/memento';
 import { visibleWebmentions } from '../server/webmentions/service';
-import { isListedLogEntry } from '../portfolio/log';
 import LogDiff from './LogDiff.astro';
 import LogRevision from './LogRevision.astro';
 import LogTags from './LogTags.astro';
@@ -212,70 +213,43 @@ const date = (value: string) => new Date(value).toISOString().slice(0, 10);
     </section>
   )}
   {references.length > 0 && (
-    <nav
-      class:list={[
-        'log-connections',
-        stylex.attrs(logLayout.connections).class,
-      ]}
-      aria-label="Referenced code"
-    >
-      <h2 {...stylex.attrs(logLayout.connectionHeading)}>Referenced code</h2>
-      <ul {...stylex.attrs(logLayout.list)}>
-        {references.map((reference) => (
-          <li>
-            <a
-              {...stylex.attrs(logLayout.link)}
-              href={reference.url}
-              rel="noreferrer"
-            >
-              {reference.repository}
-              {reference.commit ? ` ⁜ ${reference.commit.slice(0, 12)}` : ''}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <ConnectionList label="Referenced code">
+      {references.map((reference) => (
+        <li>
+          <a
+            {...stylex.attrs(logLayout.link)}
+            href={reference.url}
+            rel="noreferrer"
+          >
+            {reference.repository}
+            {reference.commit ? ` ⁜ ${reference.commit.slice(0, 12)}` : ''}
+          </a>
+        </li>
+      ))}
+    </ConnectionList>
   )}
   {connections.related.length > 0 && (
-    <nav
-      class:list={[
-        'log-connections',
-        stylex.attrs(logLayout.connections).class,
-      ]}
-      aria-label="Further reading"
-    >
-      <h2 {...stylex.attrs(logLayout.connectionHeading)}>Further reading</h2>
-      <ul {...stylex.attrs(logLayout.list)}>
-        {connections.related.map((related) => (
-          <li>
-            <a {...stylex.attrs(logLayout.link)} href={logUrl(related)}>
-              {logMetadata(related).title}
-            </a>
-            {'reason' in related && <p>{related.reason}</p>}
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <ConnectionList label="Further reading">
+      {connections.related.map((related) => (
+        <li>
+          <a {...stylex.attrs(logLayout.link)} href={logUrl(related)}>
+            {logMetadata(related).title}
+          </a>
+          {'reason' in related && <p>{related.reason}</p>}
+        </li>
+      ))}
+    </ConnectionList>
   )}
   {connections.referencedBy.length > 0 && (
-    <nav
-      class:list={[
-        'log-connections',
-        stylex.attrs(logLayout.connections).class,
-      ]}
-      aria-label="Referenced by"
-    >
-      <h2 {...stylex.attrs(logLayout.connectionHeading)}>Referenced by</h2>
-      <ul {...stylex.attrs(logLayout.list)}>
-        {connections.referencedBy.map((related) => (
-          <li>
-            <a {...stylex.attrs(logLayout.link)} href={logUrl(related)}>
-              {logMetadata(related).title}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <ConnectionList label="Referenced by">
+      {connections.referencedBy.map((related) => (
+        <li>
+          <a {...stylex.attrs(logLayout.link)} href={logUrl(related)}>
+            {logMetadata(related).title}
+          </a>
+        </li>
+      ))}
+    </ConnectionList>
   )}
 </article>
 

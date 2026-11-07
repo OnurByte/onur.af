@@ -1,6 +1,4 @@
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
+import { isRecord } from '../../portfolio/is-record';
 import type { Visit } from './store';
 export function parseVisit(value: unknown): Visit {
   if (!isRecord(value)) throw new Error('Invalid visit');

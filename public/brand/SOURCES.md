@@ -7,7 +7,6 @@ Technology list expanded from public OnurByte repositories (19 October 2026): [I
 
 - `rss.svg`: existing portfolio RSS glyph extracted from the layout; loaded as a local image.
 - `search.svg`: original magnifying-glass outline glyph authored for this portfolio; loaded as a local image.
-- `search-home.svg`, `search-donate.svg`, `search-key.svg`: original outline glyphs authored for this portfolio's search results; loaded as local images.
 
 - `onur.svg`: owner-supplied `/home/yargc/Downloads/logo (4).svg`, unchanged.
 - `icon.png`, `apple-touch-icon.png`: raster versions of `onur.svg`, pure white mark on black; icon 512 × 512, touch icon 180 × 180.
@@ -31,9 +30,7 @@ Site typography: system sans-serif. Social cards bundle Liberation Sans regular 
 - `discord.svg`, `reddit.svg`, `telegram.svg`: Simple Icons (https://github.com/simple-icons/simple-icons), CC0, white monochrome variants.
 - `share.svg`, `share-link.svg`, `share-mail.svg`: original portfolio interface artwork, white monochrome.
 
-- `share-mark.svg`: original portfolio artwork; three linked diamond nodes, white monochrome.
 - `xmpp.svg`: XMPP Foundation & Nicola Spanti, user-selected black XMPP logo from https://commons.wikimedia.org/wiki/File:Xmpp-logo-dark.svg ; original SVG and viewBox preserved. MIT/Expat license, copyright XMPP Standards Foundation; see `xmpp-LICENSE.txt`. Shared CSS handles monochrome theme rendering.
-- `connect-mail.svg`: Tabler Icons `mail-fast`, https://github.com/tabler/tabler-icons/blob/main/icons/outline/mail-fast.svg ; MIT, copyright Paweł Kuna. Original paths and 24 × 24 viewBox preserved; stroke set to white for shared theme rendering. License: `tabler-LICENSE.txt`. The Share dialog retains its own mail icon.
 
 - `src/assets/home-identity-portrait.webp`: exact WebP bytes extracted from the existing `home-identity-portrait.svg` wrapper. Astro generates responsive WebP sizes for the 96/240 px display without changing the portrait or its source SVG.
 

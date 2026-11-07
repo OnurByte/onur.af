@@ -1,12 +1,16 @@
 import { scrollToPage } from './smooth-scroll';
 import { initGlassSurface } from './glass-surface';
 
+function cloneTemplate(template: HTMLTemplateElement): HTMLElement {
+  return template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+}
+
 export function initScrollRail() {
-  const root = document.querySelector<HTMLElement>('[data-scroll-rail]');
-  if (!root) return;
+  const rail = document.querySelector<HTMLElement>('[data-scroll-rail]');
+  if (!rail) return;
+  const root: HTMLElement = rail;
   const track = root.querySelector<HTMLElement>('[data-scroll-track]')!;
   const thumb = root.querySelector<HTMLElement>('[data-scroll-thumb]')!;
-  const trigger = track;
   const panel = root.querySelector<HTMLElement>('#scroll-sections')!;
   const list = root.querySelector<HTMLElement>('[data-scroll-list]')!;
   const content = document.getElementById('content')!;
@@ -64,7 +68,7 @@ export function initScrollRail() {
     }
     sections = next;
     geometryDirty = true;
-    root!.style.setProperty(
+    root.style.setProperty(
       '--rail-height',
       `${Math.max(48, Math.min(320, Math.max(sections.length, 2) * 24))}px`,
     );
@@ -72,9 +76,7 @@ export function initScrollRail() {
     markers.forEach((marker) => marker.remove());
     markers = [];
     links = sections.map((section) => {
-      const item = entryTemplate.content.firstElementChild!.cloneNode(
-        true,
-      ) as HTMLElement;
+      const item = cloneTemplate(entryTemplate);
       const link = item.querySelector('a')!;
       link.href = `#${encodeURIComponent(section.id)}`;
       link.dataset['section'] = section.id;
@@ -84,15 +86,13 @@ export function initScrollRail() {
         : 0;
       link.style.setProperty('--section-depth', String(Math.min(3, depth)));
       list.append(item);
-      const marker = markerTemplate.content.firstElementChild!.cloneNode(
-        true,
-      ) as HTMLElement;
+      const marker = cloneTemplate(markerTemplate);
       const tick = marker.querySelector('a')!;
       tick.href = link.href;
       tick.draggable = false;
       tick.dataset['section'] = section.id;
       tick.setAttribute('aria-label', link.textContent!);
-      root!.append(marker);
+      root.append(marker);
       markers.push(marker);
       return link;
     });
@@ -102,14 +102,12 @@ export function initScrollRail() {
     );
     if (!sections.length) {
       close();
-      const marker = markerTemplate.content.firstElementChild!.cloneNode(
-        true,
-      ) as HTMLElement;
+      const marker = cloneTemplate(markerTemplate);
       const tick = marker.querySelector('a')!;
       tick.setAttribute('aria-hidden', 'true');
       tick.style.pointerEvents = 'none';
       marker.style.top = '50%';
-      root!.append(marker);
+      root.append(marker);
       markers.push(marker);
     }
   }
@@ -119,7 +117,7 @@ export function initScrollRail() {
       0,
       document.documentElement.scrollHeight - innerHeight,
     );
-    const bounds = root!.getBoundingClientRect();
+    const bounds = root.getBoundingClientRect();
     trackTop = bounds.top;
     trackHeight = bounds.height;
     thumbSize = Math.min(
@@ -206,14 +204,14 @@ export function initScrollRail() {
         close();
     });
   });
-  trigger.addEventListener('click', () => {
+  track.addEventListener('click', () => {
     dismissed = false;
     open();
   });
   root.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       event.preventDefault();
-      trigger.focus();
+      track.focus();
       dismissed = true;
       close();
     }

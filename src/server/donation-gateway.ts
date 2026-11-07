@@ -1,13 +1,9 @@
+import { runtimeEnv } from './runtime-env';
 import { isIP } from 'node:net';
 
 export function donationGateway() {
-  const rawUrl =
-    process.env['DONATION_GATEWAY_URL'] ??
-    import.meta.env['DONATION_GATEWAY_URL'] ??
-    'http://127.0.0.1:8790';
-  const token =
-    process.env['DONATION_GATEWAY_TOKEN'] ??
-    import.meta.env['DONATION_GATEWAY_TOKEN'];
+  const rawUrl = runtimeEnv('DONATION_GATEWAY_URL') ?? 'http://127.0.0.1:8790';
+  const token = runtimeEnv('DONATION_GATEWAY_TOKEN');
   let url: URL;
   try {
     url = new URL(rawUrl);

@@ -168,7 +168,7 @@
       "count": 10
     },
     "@typescript-eslint/no-non-null-assertion": {
-      "count": 21
+      "count": 15
     },
     "@typescript-eslint/no-unnecessary-condition": {
       "count": 1
@@ -177,7 +177,7 @@
       "count": 1
     },
     "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 4
+      "count": 2
     },
     "@typescript-eslint/restrict-template-expressions": {
       "count": 4
@@ -235,18 +235,10 @@
       "count": 3
     },
     "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 4
+      "count": 3
     },
     "@typescript-eslint/restrict-template-expressions": {
       "count": 1
-    }
-  },
-  "src/donations/checkout.ts": {
-    "@typescript-eslint/no-unsafe-type-assertion": {
-      "count": 2
-    },
-    "no-empty": {
-      "count": 2
     }
   },
   "src/donations/config.ts": {
@@ -304,9 +296,6 @@
     }
   },
   "src/pages/proofs/[file].ts": {
-    "@typescript-eslint/prefer-regexp-exec": {
-      "count": 3
-    },
     "@typescript-eslint/restrict-template-expressions": {
       "count": 3
     }
@@ -367,9 +356,6 @@
     },
     "@typescript-eslint/no-unsafe-return": {
       "count": 1
-    },
-    "@typescript-eslint/prefer-nullish-coalescing": {
-      "count": 2
     }
   },
   "src/portfolio/introduction.ts": {
@@ -581,7 +567,7 @@
   },
   "src/portfolio/proofs.ts": {
     "@typescript-eslint/no-non-null-assertion": {
-      "count": 10
+      "count": 9
     },
     "@typescript-eslint/prefer-optional-chain": {
       "count": 2
@@ -732,7 +718,7 @@
       "count": 9
     },
     "@typescript-eslint/no-unnecessary-boolean-literal-compare": {
-      "count": 2
+      "count": 1
     },
     "@typescript-eslint/no-unnecessary-condition": {
       "count": 5
@@ -747,7 +733,7 @@
       "count": 8
     },
     "@typescript-eslint/prefer-nullish-coalescing": {
-      "count": 4
+      "count": 3
     },
     "@typescript-eslint/prefer-regexp-exec": {
       "count": 1

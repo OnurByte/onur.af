@@ -1,5 +1,6 @@
+import { loadSiteTrust, loadPublicationChain } from './trust';
+import { runCli } from './cli';
 import { readJsonFile, writeJsonFile } from '../src/server/json-file';
-import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { readKey } from 'openpgp';
 import { rssXml } from '../src/portfolio/feeds';
@@ -12,16 +13,11 @@ import {
 } from '../src/portfolio/rss-signatures';
 import { validSiteUrl } from '../src/portfolio/seo';
 import { signXmlWithGpg } from '../src/portfolio/rss-signing';
-import {
-  loadConfiguredKeyTrust,
-  resolveTrustedCertificate,
-} from '../src/portfolio/key-history';
-import { verifyLogPublicationChain } from '../src/portfolio/log-publications';
+import { resolveTrustedCertificate } from '../src/portfolio/key-history';
 
 const artifactPath = fileURLToPath(
   new URL('../src/content/rss-signature.json', import.meta.url),
 );
-const keyPath = fileURLToPath(new URL('../public/pgp.asc', import.meta.url));
 
 async function main() {
   const args = process.argv.slice(2);
@@ -44,19 +40,8 @@ async function main() {
     );
   const xml = rssXml(origin, rssEntries);
   if (!xml) throw new Error('Unable to generate RSS XML');
-  const publicKey = await readFile(keyPath, 'utf8');
-  const trust = await loadConfiguredKeyTrust(
-    publicKey,
-    await readJsonFile(
-      new URL('../src/content/key-history.json', import.meta.url),
-    ),
-  );
-  const publications = await verifyLogPublicationChain(
-    await readJsonFile(
-      new URL('../src/content/log-publications.json', import.meta.url),
-    ),
-    trust,
-  );
+  const trust = await loadSiteTrust();
+  const publications = await loadPublicationChain(trust);
   if (checkOnly) {
     const parsed = rssSignatureSchema.parse(artifact);
     if (parsed.origin !== origin)
@@ -100,7 +85,4 @@ async function main() {
   );
 }
 
-main().catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : 'RSS signing failed');
-  process.exitCode = 1;
-});
+runCli(main, 'RSS signing failed');

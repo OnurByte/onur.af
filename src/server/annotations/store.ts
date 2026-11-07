@@ -1,5 +1,6 @@
 import { required } from '../../portfolio/required';
 import type { Pool } from 'pg';
+import { advisoryLock, inTransaction } from '../transaction';
 import { verifyAnnotation } from './signature';
 import {
   annotationBytes,
@@ -32,13 +33,8 @@ export class AnnotationStore {
   async submit(payload: AnnotationPayload, signature: string): Promise<void> {
     if (!verifyAnnotation(payload, signature))
       throw new Error('Invalid annotation signature');
-    const client = await this.pool.connect();
-    try {
-      await client.query('BEGIN');
-      await client.query(
-        'SELECT pg_advisory_xact_lock(hashtextextended($1,0))',
-        [`annotation:${payload.id}`],
-      );
+    await inTransaction(this.pool, async (client) => {
+      await advisoryLock(client, `annotation:${payload.id}`);
       const rows = await client.query<{
         public_key: string;
         sequence: number;
@@ -74,7 +70,6 @@ export class AnnotationStore {
             signature,
           ],
         );
-        await client.query('COMMIT');
         return;
       }
       if (previous) {
@@ -118,13 +113,7 @@ export class AnnotationStore {
         'INSERT INTO annotation_history(id,sequence,payload,signature) VALUES($1,$2,$3,$4)',
         [payload.id, payload.sequence, JSON.stringify(payload), signature],
       );
-      await client.query('COMMIT');
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
-    } finally {
-      client.release();
-    }
+    });
   }
   async visible(logId: string, revision: number): Promise<AnnotationPayload[]> {
     const rows = await this.pool.query<{

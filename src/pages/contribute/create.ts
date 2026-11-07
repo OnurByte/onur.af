@@ -1,3 +1,4 @@
+import { donationId } from '../../donations/protocol';
 import { readRequestBody } from '../../server/request-body';
 import { moneroConfiguration } from '../../donations/config';
 import { readyDonationSchema } from '../../donations/contracts';
@@ -5,8 +6,6 @@ import type { APIRoute } from 'astro';
 import { donationGateway } from '../../server/donation-gateway';
 import { formatXmrAmount, parseXmrAmount } from '../../donations/money';
 
-const UUID =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const AMOUNTS = new Set(['0.01', '0.05', '0.1', '0.25']);
 const MAX_BODY = 2048;
 
@@ -47,7 +46,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     const ids = data.getAll('id');
     const choice = data.getAll('amount');
     const custom = data.getAll('customAmount');
-    if (ids.length !== 1 || !UUID.test(ids[0]!))
+    if (ids.length !== 1 || !donationId.test(ids[0]!))
       return new Response('Choose a valid amount.', { status: 400 });
     const id = ids[0]!.toLowerCase();
     retryId = id;

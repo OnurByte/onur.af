@@ -17,6 +17,32 @@ import {
 
 import { identityAccounts, identityStatementText } from './identity-accounts';
 
+/** Rejects stray text or armor headers, then parses the clear-signed message. */
+async function readSignedCleartext(signedMessage: string) {
+  if (
+    !/^-----BEGIN PGP SIGNED MESSAGE-----\r?\n(?:Hash: [A-Za-z0-9, -]+\r?\n)*\r?\n/.test(
+      signedMessage,
+    ) ||
+    !/-----END PGP SIGNATURE-----\r?\n?$/.test(signedMessage)
+  )
+    throw new Error('Unexpected unsigned text or armor headers');
+  const message = await readCleartextMessage({
+    cleartextMessage: signedMessage,
+  });
+  return { message, text: message.getText().replace(/\r\n/g, '\n') };
+}
+
+/** Requires exactly one valid cleartext signature from the given key. */
+async function verifySingleSignature(
+  message: Awaited<ReturnType<typeof readCleartextMessage>>,
+  key: Awaited<ReturnType<typeof readKey>>,
+) {
+  const result = await verify({ message, verificationKeys: key });
+  if (result.signatures.length !== 1)
+    throw new Error('Expected one cleartext signature');
+  await result.signatures[0]!.verified;
+}
+
 function matchesCleartext(actual: string, expected: string) {
   const normalized = actual.replace(/\r\n/g, '\n');
   return normalized === expected || normalized === expected.replace(/\n$/, '');
@@ -60,17 +86,9 @@ export async function verifyIdentityStatement(
   publicKey: string | KeyTrust,
 ): Promise<VerifiedIdentityStatement> {
   const statement = identityStatementSchema.parse(input);
-  if (
-    !/^-----BEGIN PGP SIGNED MESSAGE-----\r?\n(?:Hash: [A-Za-z0-9, -]+\r?\n)*\r?\n/.test(
-      statement.signedMessage,
-    ) ||
-    !/-----END PGP SIGNATURE-----\r?\n?$/.test(statement.signedMessage)
-  )
-    throw new Error('Unexpected unsigned text or armor headers');
-  const message = await readCleartextMessage({
-    cleartextMessage: statement.signedMessage,
-  });
-  const signedText = message.getText().replace(/\r\n/g, '\n');
+  const { message, text: signedText } = await readSignedCleartext(
+    statement.signedMessage,
+  );
   const v2 = signedText.match(
     /^onurbyte-identity-statement-v2\npublication-sequence:([1-9][0-9]*)\nsigner:([A-F0-9]{40,64})\n\n([\s\S]*)$/,
   );
@@ -87,10 +105,7 @@ export async function verifyIdentityStatement(
   const fingerprint = key.getFingerprint().toUpperCase();
   if (v2 && v2[2] !== fingerprint)
     throw new Error('Identity statement signer fingerprint mismatch');
-  const result = await verify({ message, verificationKeys: key });
-  if (result.signatures.length !== 1)
-    throw new Error('Expected one cleartext signature');
-  await result.signatures[0]!.verified;
+  await verifySingleSignature(message, key);
   return {
     ...statement,
     fingerprint,
@@ -141,17 +156,9 @@ export async function verifyIdentitySignature(
     (proof.proofUrl && !accountLocation(proof))
   )
     throw new Error('Invalid account or counterpart URL');
-  if (
-    !/^-----BEGIN PGP SIGNED MESSAGE-----\r?\n(?:Hash: [A-Za-z0-9, -]+\r?\n)*\r?\n/.test(
-      proof.signedMessage,
-    ) ||
-    !/-----END PGP SIGNATURE-----\r?\n?$/.test(proof.signedMessage)
-  )
-    throw new Error('Unexpected unsigned text or armor headers');
-  const message = await readCleartextMessage({
-    cleartextMessage: proof.signedMessage,
-  });
-  const signedText = message.getText().replace(/\r\n/g, '\n');
+  const { message, text: signedText } = await readSignedCleartext(
+    proof.signedMessage,
+  );
   const legacy = proof.publicationSequence === undefined;
   if (legacy) {
     if (
@@ -179,10 +186,7 @@ export async function verifyIdentitySignature(
   const fingerprint = key.getFingerprint().toUpperCase();
   if (!legacy && proof.signerFingerprint !== fingerprint)
     throw new Error('Identity proof signer fingerprint mismatch');
-  const result = await verify({ message, verificationKeys: key });
-  if (result.signatures.length !== 1)
-    throw new Error('Expected one cleartext signature');
-  await result.signatures[0]!.verified;
+  await verifySingleSignature(message, key);
   return {
     ...proof,
     fingerprint,

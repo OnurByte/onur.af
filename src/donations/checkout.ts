@@ -1,5 +1,11 @@
 import { formatXmrAmount, parseXmrAmount, parseXmrAmountOrZero } from './money';
+import { isRecord } from '../portfolio/is-record';
 import { donationSubaddressPrefix, paymentStatuses } from './protocol';
+
+const count = (value: unknown): number | undefined =>
+  typeof value === 'number' && Number.isSafeInteger(value) && value >= 0
+    ? value
+    : undefined;
 
 /** Validate gateway data before exposing amounts and payment progress to a page. */
 export function parseCheckoutDonation(
@@ -7,8 +13,8 @@ export function parseCheckoutDonation(
   id: string,
   network: string,
 ) {
-  if (!value || typeof value !== 'object') throw new Error('unavailable');
-  const row = value as Record<string, unknown>;
+  if (!isRecord(value)) throw new Error('unavailable');
+  const row = value;
   const subaddressPrefix = donationSubaddressPrefix(network);
   const address = row['address'];
   const amount = row['amount'];
@@ -20,10 +26,7 @@ export function parseCheckoutDonation(
   )
     throw new Error('unavailable');
   parseXmrAmount(amount);
-  const status =
-    row['status'] && typeof row['status'] === 'object'
-      ? (row['status'] as Record<string, unknown>)
-      : undefined;
+  const status = isRecord(row['status']) ? row['status'] : undefined;
   const paymentStatus =
     typeof status?.['status'] === 'string'
       ? status['status']
@@ -34,16 +37,8 @@ export function parseCheckoutDonation(
     paymentStatus && paymentStatuses.has(paymentStatus)
       ? paymentStatus
       : undefined;
-  const confirmations =
-    typeof status?.['confirmations'] === 'number' &&
-    Number.isSafeInteger(status['confirmations'])
-      ? status['confirmations']
-      : undefined;
-  const minConfirmations =
-    typeof status?.['minConfirmations'] === 'number' &&
-    Number.isSafeInteger(status['minConfirmations'])
-      ? status['minConfirmations']
-      : undefined;
+  const confirmations = count(status?.['confirmations']);
+  const minConfirmations = count(status?.['minConfirmations']);
   let received: string | undefined;
   if (
     typeof status?.['receivedXmr'] === 'number' &&
@@ -54,13 +49,17 @@ export function parseCheckoutDonation(
       received = formatXmrAmount(
         parseXmrAmountOrZero(status['receivedXmr'].toFixed(12)),
       );
-    } catch {}
+    } catch {
+      /* A malformed optional amount is simply not shown. */
+    }
   }
   let shortfall: string | undefined;
   if (typeof status?.['shortfallXmr'] === 'string') {
     try {
       shortfall = formatXmrAmount(parseXmrAmountOrZero(status['shortfallXmr']));
-    } catch {}
+    } catch {
+      /* A malformed optional amount is simply not shown. */
+    }
   }
   return {
     id,
@@ -74,4 +73,30 @@ export function parseCheckoutDonation(
     shortfall,
     unavailable: row['unavailable'] === true || knownStatus === undefined,
   };
+}
+
+type CheckoutDonation = ReturnType<typeof parseCheckoutDonation>;
+export type CheckoutState =
+  'unavailable' | 'syncing' | 'paid' | 'partial' | 'confirming' | 'waiting';
+
+const stateByStatus: Record<string, CheckoutState> = {
+  paid: 'paid',
+  partial: 'partial',
+  underpaid: 'partial',
+  unconfirmed: 'confirming',
+  locked: 'confirming',
+  mempool: 'confirming',
+  pending: 'waiting',
+};
+
+/** Collapse gateway status into the one state the contribution page presents. */
+export function checkoutState(
+  donation: CheckoutDonation | undefined,
+  unavailable: boolean,
+): CheckoutState {
+  if (unavailable || !donation || donation.unavailable) return 'unavailable';
+  if (donation.syncing) return 'syncing';
+  return (
+    (donation.status ? stateByStatus[donation.status] : undefined) ?? 'syncing'
+  );
 }

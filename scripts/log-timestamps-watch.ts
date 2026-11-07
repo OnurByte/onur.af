@@ -1,12 +1,10 @@
+import { loadSiteTrust, loadPublicationChain } from './trust';
 import { readJsonFile } from '../src/server/json-file';
 import { z } from 'astro/zod';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { parseLog } from '../src/portfolio/log';
-import { loadConfiguredKeyTrust } from '../src/portfolio/key-history';
-import { verifyLogPublicationChain } from '../src/portfolio/log-publications';
 import { revisionPublicationSequences } from '../src/portfolio/log-signatures';
 import {
   validateLogTimestamps,
@@ -21,7 +19,7 @@ let lastState = '';
 let lastError = '';
 let failures = 0;
 async function inspect() {
-  const [entries, receipts, signatures, publicKey] = await Promise.all([
+  const [entries, receipts, signatures] = await Promise.all([
     readJsonFile(new URL('../src/content/log.json', import.meta.url)),
     readJsonFile(
       new URL('../src/content/log-timestamps.json', import.meta.url),
@@ -29,21 +27,10 @@ async function inspect() {
     readJsonFile(
       new URL('../src/content/log-signatures.json', import.meta.url),
     ),
-    readFile(new URL('../public/pgp.asc', import.meta.url), 'utf8'),
   ]);
   const parsedEntries = parseLog(entries);
-  const trust = await loadConfiguredKeyTrust(
-    publicKey,
-    await readJsonFile(
-      new URL('../src/content/key-history.json', import.meta.url),
-    ),
-  );
-  const publications = await verifyLogPublicationChain(
-    await readJsonFile(
-      new URL('../src/content/log-publications.json', import.meta.url),
-    ),
-    trust,
-  );
+  const trust = await loadSiteTrust();
+  const publications = await loadPublicationChain(trust);
   const records = await validateLogTimestamps(
     parsedEntries,
     receipts,
