@@ -86,7 +86,7 @@ test('article cards contain the visible title in their actual link', async ({
 }) => {
   for (const path of ['/', '/log']) {
     await page.goto(path);
-    const title = page.locator('main article h2').first();
+    const title = page.locator('main article :is(h2, h3)').first();
     await expect(title.locator('a[href]')).toHaveText(
       (await title.innerText()).trim(),
     );
