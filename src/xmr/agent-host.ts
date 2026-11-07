@@ -859,7 +859,7 @@ async function startXmrAgent(): Promise<{
           } catch {
             /* the session may have been lost */
           }
-          lock!.release();
+          await lock!.release();
           await sql.close();
         }
       },
@@ -877,7 +877,7 @@ async function startXmrAgent(): Promise<{
       } catch {
         /* connection may not own the advisory lock */
       }
-      lock.release();
+      await lock.release();
     }
     await sql.close();
     throw error;
