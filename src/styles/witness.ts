@@ -22,6 +22,10 @@ export const witnessStyles = stylex.create({
     backgroundColor: 'var(--background)',
     color: 'var(--text)',
   },
+  // A popover panel must stay display:none until opened; composer's grid would override that.
+  popoverPanel: {
+    display: { default: 'none', ':popover-open': 'grid' },
+  },
   field: { display: 'grid', gap: 8, minWidth: 0 },
   noteInput: {
     fontFamily: 'inherit',

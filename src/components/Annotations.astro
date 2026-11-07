@@ -175,7 +175,11 @@ const identityId = `annotation-identity-${logId}-v${String(revision)}`;
         data-annotation-identity
         popover="auto"
         aria-label="Annotation identity"
-        {...stylex.attrs(witnessStyles.composer, edge.frame)}
+        {...stylex.attrs(
+          witnessStyles.composer,
+          witnessStyles.popoverPanel,
+          edge.frame,
+        )}
       >
         <p {...stylex.attrs(witnessStyles.compactText)}>
           Keep an encrypted backup to manage your annotations on another device.
